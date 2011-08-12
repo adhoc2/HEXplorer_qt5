@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setOrganizationName("Ch.Hoël");
     app.setApplicationName("HEXplorer");
-    app.setApplicationVersion("0.4.22");
+    app.setApplicationVersion("0.4.23");
 
     MDImain w;
     w.show();
