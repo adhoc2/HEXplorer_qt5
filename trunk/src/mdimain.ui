@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MDImain</class>
+ <widget class="QMainWindow" name="MDImain">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>922</width>
+    <height>777</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>HEXplorer</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="icones.qrc">
+    <normaloff>:/icones/space_shuttle.ico</normaloff>:/icones/space_shuttle.ico</iconset>
+  </property>
+  <property name="iconSize">
+   <size>
+    <width>50</width>
+    <height>50</height>
+   </size>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="margin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="CTabWidget" name="tabWidget">
+      <property name="acceptDrops">
+       <bool>true</bool>
+      </property>
+      <property name="currentIndex">
+       <number>1</number>
+      </property>
+      <property name="tabsClosable">
+       <bool>true</bool>
+      </property>
+      <property name="movable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Tab 1</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Tab 2</string>
+       </attribute>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>922</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="defaultUp">
+    <bool>false</bool>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuRecent_Files">
+     <property name="title">
+      <string>Recent projects</string>
+     </property>
+    </widget>
+    <addaction name="actionNewA2lProject"/>
+    <addaction name="menuRecent_Files"/>
+    <addaction name="separator"/>
+    <addaction name="actionCheck_for_updates"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpen_Saphir_file"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionSettings"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionCompare_dataset"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuWindow"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QDockWidget" name="outputListWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>922</width>
+     <height>150</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>524287</width>
+     <height>500</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::BottomDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>application output</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_7">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QListWidget" name="listWidget">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>480</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="projectTreeView">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="baseSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>Open projects</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_3">
+    <property name="minimumSize">
+     <size>
+      <width>150</width>
+      <height>0</height>
+     </size>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_4">
+     <property name="spacing">
+      <number>2</number>
+     </property>
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QLineEdit" name="lineEdit"/>
+     </item>
+     <item>
+      <widget class="QTreeView" name="treeView">
+       <property name="dragEnabled">
+        <bool>false</bool>
+       </property>
+       <property name="sortingEnabled">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>150</width>
+     <height>300</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>different labels</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_5">
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QTreeView" name="treeView_2"/>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QToolBar" name="toolBar_a2l">
+   <property name="windowTitle">
+    <string>A2L toolbar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>25</width>
+     <height>25</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QToolBar" name="toolBar_data">
+   <property name="windowTitle">
+    <string>HEX toolbar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>25</width>
+     <height>25</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionExit">
+   <property name="icon">
+    <iconset resource="icones.qrc">
+     <normaloff>:/icones/exit2.png</normaloff>:/icones/exit2.png</iconset>
+   </property>
+   <property name="text">
+    <string>exit</string>
+   </property>
+  </action>
+  <action name="actionNewA2lProject">
+   <property name="icon">
+    <iconset resource="icones.qrc">
+     <normaloff>:/icones/milky_cartable.png</normaloff>:/icones/milky_cartable.png</iconset>
+   </property>
+   <property name="text">
+    <string>new project (A2L)</string>
+   </property>
+  </action>
+  <action name="actionFind">
+   <property name="icon">
+    <iconset resource="icones.qrc">
+     <normaloff>:/icones/milky_find.png</normaloff>:/icones/milky_find.png</iconset>
+   </property>
+   <property name="text">
+    <string>Find</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="actionGenerateHexFile">
+   <property name="icon">
+    <iconset resource="icones.qrc">
+     <normaloff>:/icones/milky_save.png</normaloff>:/icones/milky_save.png</iconset>
+   </property>
+   <property name="text">
+    <string>save Hex</string>
+   </property>
+   <property name="toolTip">
+    <string>save hex</string>
+   </property>
+  </action>
+  <action name="actionCompareHex">
+   <property name="icon">
+    <iconset resource="icones.qrc">
+     <normaloff>:/icones/milky_stereoAvanceRapide.png</normaloff>:/icones/milky_stereoAvanceRapide.png</iconset>
+   </property>
+   <property name="text">
+    <string>compare</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="icones.qrc">
+     <normaloff>:/icones/milky_info.png</normaloff>:/icones/milky_info.png</iconset>
+   </property>
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionCreate_database">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/icones/RootIcon.ico</normaloff>:/icones/RootIcon.ico</iconset>
+   </property>
+   <property name="text">
+    <string>open session</string>
+   </property>
+  </action>
+  <action name="actionCompare_dataset">
+   <property name="icon">
+    <iconset resource="icones.qrc">
+     <normaloff>:/icones/milky_loopHex.png</normaloff>:/icones/milky_loopHex.png</iconset>
+   </property>
+   <property name="text">
+    <string>quicklook</string>
+   </property>
+  </action>
+  <action name="actionChooseLabels">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/icones/find.png</normaloff>:/icones/find.png</iconset>
+   </property>
+   <property name="text">
+    <string>labels</string>
+   </property>
+   <property name="toolTip">
+    <string>choose labels</string>
+   </property>
+  </action>
+  <action name="actionSave_session">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/icones/RootIcon.ico</normaloff>:/icones/RootIcon.ico</iconset>
+   </property>
+   <property name="text">
+    <string>save session</string>
+   </property>
+  </action>
+  <action name="actionCheck_for_updates">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icones.qrc">
+     <normaloff>:/icones/update.png</normaloff>:/icones/update.png</iconset>
+   </property>
+   <property name="text">
+    <string>Check for updates</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="icon">
+    <iconset resource="icones.qrc">
+     <normaloff>:/icones/milky_outils.png</normaloff>:/icones/milky_outils.png</iconset>
+   </property>
+   <property name="text">
+    <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionOpen_Saphir_file">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>open Saphir file</string>
+   </property>
+  </action>
+  <action name="actionOpen_script">
+   <property name="text">
+    <string>open script</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CTabWidget</class>
+   <extends>QTabWidget</extends>
+   <header>ctabwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="icones.qrc"/>
+ </resources>
+ <connections/>
+</ui>
