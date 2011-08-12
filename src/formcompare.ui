@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FormCompare</class>
+ <widget class="QWidget" name="FormCompare">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>646</width>
+    <height>549</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_3">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QCheckBox" name="checkBoxSrc">
+         <property name="text">
+          <string>source</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBoxTrg">
+         <property name="text">
+          <string>target</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="MyQLineEdit" name="lineEdit">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="dragEnabled">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="MyQLineEdit" name="lineEdit_2">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QToolButton" name="choose">
+       <property name="toolTip">
+        <string>choose labels</string>
+       </property>
+       <property name="text">
+        <string>choose</string>
+       </property>
+       <property name="icon">
+        <iconset resource="icones.qrc">
+         <normaloff>:/icones/milky_plus.png</normaloff>:/icones/milky_plus.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonIconOnly</enum>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="quicklook">
+       <property name="toolTip">
+        <string>quicklook</string>
+       </property>
+       <property name="text">
+        <string>quicklook</string>
+       </property>
+       <property name="icon">
+        <iconset resource="icones.qrc">
+         <normaloff>:/icones/milky_stereoPlay.png</normaloff>:/icones/milky_stereoPlay.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="compare">
+       <property name="toolTip">
+        <string>compare</string>
+       </property>
+       <property name="text">
+        <string>compare</string>
+       </property>
+       <property name="icon">
+        <iconset resource="icones.qrc">
+         <normaloff>:/icones/milky_stereoAvanceRapide.png</normaloff>:/icones/milky_stereoAvanceRapide.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="copy">
+       <property name="toolTip">
+        <string>copy</string>
+       </property>
+       <property name="text">
+        <string>copy</string>
+       </property>
+       <property name="icon">
+        <iconset resource="icones.qrc">
+         <normaloff>:/icones/milky_stereoCopy.png</normaloff>:/icones/milky_stereoCopy.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="export_labels">
+       <property name="toolTip">
+        <string>export selected labels</string>
+       </property>
+       <property name="text">
+        <string>export .csv</string>
+       </property>
+       <property name="icon">
+        <iconset resource="icones.qrc">
+         <normaloff>:/icones/milky_flecheDroite.png</normaloff>:/icones/milky_flecheDroite.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="export_subset">
+       <property name="toolTip">
+        <string>export subset</string>
+       </property>
+       <property name="text">
+        <string>export subset</string>
+       </property>
+       <property name="icon">
+        <iconset resource="icones.qrc">
+         <normaloff>:/icones/milky_exportSubset.png</normaloff>:/icones/milky_exportSubset.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="SpreadsheetView" name="tableView">
+     <property name="contextMenuPolicy">
+      <enum>Qt::CustomContextMenu</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QProgressBar" name="progressBar">
+     <property name="value">
+      <number>24</number>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SpreadsheetView</class>
+   <extends>QTableView</extends>
+   <header location="global">spreadsheetview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MyQLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header location="global">myqlineedit.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="icones.qrc"/>
+ </resources>
+ <connections/>
+</ui>

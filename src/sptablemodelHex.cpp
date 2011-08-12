@@ -1,0 +1,1236 @@
+#include "sptablemodelHex.h"
+
+#include <QFont>
+#include "qdebug.h"
+
+SpTableModelHex::SpTableModelHex(QObject *parent) : QAbstractTableModel(parent)
+{
+    listDataModel = NULL;
+    nRow = 0;
+    nColumn = 0;
+}
+
+SpTableModelHex::~SpTableModelHex()
+{    
+   /* if (dat)
+    {
+        foreach (Data* data, *dat)
+        {
+            delete data;
+        }
+    }
+   */
+
+    delete listDataModel;
+
+}
+
+int SpTableModelHex::rowCount(const QModelIndex & /* parent */) const
+{
+    return nRow;
+}
+
+int SpTableModelHex::columnCount(const QModelIndex & /* parent */) const
+{    
+    return nColumn;
+}
+
+QVariant SpTableModelHex::data(const QModelIndex &index, int role) const
+{    
+    if (!index.isValid()) return QVariant();
+
+    int row = index.row();
+    int column = index.column();
+
+    // binary search
+    int ind = 0;
+    int starting = 0;
+    int ending = listDataIndex.size() - 1;
+    int mid = 0;
+    int length = 0;
+    bool found = false;
+    while (!found)
+    {
+        if (ending < starting)
+        {
+            ind = -1;
+            found = true;
+        }
+
+        length = ending - starting;
+
+        if (length == 0)
+        {
+            ind = ending;
+            found = true;
+        }
+
+        mid = starting + int(length / 2);
+
+        if (row < listDataIndex.at(mid))
+        {
+            ending = mid - 1;
+        }
+        else if (row > listDataIndex.at(mid))
+        {
+            //if (row < listDataIndex.at(mid + 1))
+            if (row < (listDataIndex.at(mid) + listDataModel->at(mid)->size))
+            {
+                ind = mid;
+                found = true;
+            }
+            else
+            {
+                starting = mid + 1;
+            }
+        }
+        else
+        {
+            ind = mid;
+            found = true;
+        }
+    }
+    int sum = listDataIndex.at(ind);
+
+    switch (role)
+    {
+    case Qt::DisplayRole :
+        {
+            if (row - sum == 0 && column == 0)
+                return (listDataModel->at(ind)->getName() + " " + listDataModel->at(ind)->getUnit());
+            else if (row - sum == 1 && column == 0)
+                return listDataModel->at(ind)->getComment();
+            else if (row - sum  == 0 && column == 1)
+                return listDataModel->at(ind)->getSubset();
+            else if (row - sum == 0 && column == 2)
+                return listDataModel->at(ind)->getMaxDim();
+
+            if (listDataModel->at(ind)->xCount() == 0) //Value
+            {
+                if (row - sum == 2 && column == 1)
+                   return listDataModel->at(ind)->getHexZ(0);
+            }
+            else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() == 0) //Curve
+            {
+                if (row - sum == 2 && column >= 1 && column <= listDataModel->at(ind)->xCount())
+                    return listDataModel->at(ind)->getX(column - 1);                
+                else if (row - sum == 2 && column == 0)
+                {
+                    return listDataModel->at(ind)->getInputQuantityX();
+                }
+                else if (row - sum == 3 && column >= 1 &&  column <= listDataModel->at(ind)->zCount())
+                    return listDataModel->at(ind)->getHexZ(column - 1);
+            }
+            else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() > 0) //Map
+            {                
+                if (row - sum == 2 && column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
+                    return listDataModel->at(ind)->getX(column - 2);
+                else if (row - sum == 2 && column == 0)
+                {
+                    return listDataModel->at(ind)->getInputQuantityX();
+                }
+                else if (row - sum == 3 && column == 0)
+                {
+                    return listDataModel->at(ind)->getInputQuantityY();
+                }
+                if (row - sum >= 3 && row - sum < listDataModel->at(ind)->size - 1)
+                {
+                    if (column == 1)
+                    {
+
+                        //qDebug()<< "i : " << row - sum - 3 << " and max : " << listDataModel->at(ind)->yCount();
+                        return listDataModel->at(ind)->getY(row - sum - 3);
+                    }
+                    else if (column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
+                    {
+                        int dataRow = row - sum - 3;
+                        int dataCol = column - 2;
+                        return listDataModel->at(ind)->getHexZ(dataRow, dataCol);
+                        //return dat->at(ind)->getZ((row - sum - 3) + dat->at(ind)->yCount() * (column - 2));
+                    }
+                }
+            }
+        }
+        break;
+
+    case Qt::DecorationRole: // The data to be rendered as a decoration in the form of an icon.
+        break;
+
+    case Qt::EditRole:
+        {
+            if (row - sum == 0 && column == 0)
+                return (listDataModel->at(ind)->getName() + " " + listDataModel->at(ind)->getUnit());
+            else if (row - sum == 1 && column == 0)
+                return listDataModel->at(ind)->getComment();
+            else if (row - sum  == 0 && column == 1)
+                return listDataModel->at(ind)->getSubset();
+
+            if (listDataModel->at(ind)->xCount() == 0) //Value
+            {
+                if (row - sum == 2 && column == 1)
+                   return listDataModel->at(ind)->getHexZ(0);
+            }
+            else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() == 0) //Curve
+            {
+                if (row - sum == 2 && column >= 1 && column <= listDataModel->at(ind)->xCount())
+                    return listDataModel->at(ind)->getX(column - 1);
+                else if (row - sum == 3 && column >= 1 &&  column <= listDataModel->at(ind)->zCount())
+                    return listDataModel->at(ind)->getHexZ(column - 1);
+            }
+            else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() > 0) //Map
+            {
+                if (row - sum == 2 && column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
+                    return listDataModel->at(ind)->getX(column - 2);
+                if (row - sum >= 3 && row - sum < listDataModel->at(ind)->size - 1)
+                {
+                    if (column == 1)
+                    {
+                        return listDataModel->at(ind)->getY(row - sum - 3);
+                    }
+                    else if (column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
+                    {
+                        int dataRow = row - sum - 3;
+                        int dataCol = column - 2;
+                        return listDataModel->at(ind)->getHexZ(dataRow, dataCol);
+                        //return dat->at(ind)->getZ((row - sum - 3) + dat->at(ind)->yCount() * (column - 2));
+                    }
+                }
+            }
+        }
+        break;
+
+    case Qt::ToolTipRole:
+        {
+            if (listDataModel->at(ind)->xCount() == 0) //Value
+            {
+                if (row - sum == 2 && column == 1)
+                   return listDataModel->at(ind)->getHexZ(0);
+            }
+            else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() == 0) //Curve
+            {
+                if (row - sum == 2 && column >= 1 && column <= listDataModel->at(ind)->xCount())
+                    return listDataModel->at(ind)->getX(column - 1);
+                else if (row - sum == 3 && column >= 1 &&  column <= listDataModel->at(ind)->zCount())
+                    return listDataModel->at(ind)->getHexZ(column - 1);
+            }
+            else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() > 0) //Map
+            {
+                if (row - sum == 2 && column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
+                    return listDataModel->at(ind)->getX(column - 2);
+                if (row - sum >= 3 && row - sum < listDataModel->at(ind)->size - 1)
+                {
+                    if (column == 1)
+                    {
+                        return listDataModel->at(ind)->getY(row - sum - 3);
+                    }
+                    else if (column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
+                    {
+                        int dataRow = row - sum - 3;
+                        int dataCol = column - 2;
+                        return listDataModel->at(ind)->getHexZ(dataRow, dataCol);
+                        //return dat->at(ind)->getZ((row - sum - 3) + dat->at(ind)->yCount() * (column - 2));
+                    }
+                }
+            }
+        }
+        break;
+
+    case Qt::StatusTipRole: // The data displayed in the status bar.
+        break;
+
+    case Qt::WhatsThisRole: // The data displayed for the item in "What's This?" mode.
+        break;
+
+    case Qt::SizeHintRole: // The size hint for the item that will be supplied to views.
+        break;
+
+    case Qt::FontRole : // The font used for items rendered with the default delegate.
+        {
+            QFont font;
+            if (row - sum == 0 && column == 0)
+                font.setBold(true);
+            else if (row - sum == 1 && column == 0)
+                font.setItalic(true);
+            else if (row - sum  == 0 && column == 1)
+                font.setBold(true);
+
+            if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() == 0) //Curve
+            {
+                if (row - sum == 2 && column >= 1 && column <= listDataModel->at(ind)->xCount())
+                     font.setBold(false);
+            }
+            else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() > 0) //Map
+            {
+                if (row - sum == 2 && column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
+                     font.setBold(false);
+                if (row - sum >= 3 && row - sum < listDataModel->at(ind)->size - 1)
+                {
+                    if (column == 1)
+                    {
+                         font.setBold(false);
+                    }
+                }
+            }
+
+            return font;
+        }
+        break;
+
+    case Qt::TextAlignmentRole:
+        break;
+
+    case Qt::BackgroundRole:
+        {
+            QColor myjaune = QColor::fromHsv(60, 110, 255);
+            QColor mybleu = QColor::fromHsv(200, 110, 255);
+            QColor myvert = QColor::fromHsv(120, 110, 255);
+
+            if (row - sum == 0 && column == 2)
+            {
+                if (listDataModel->at(ind)->getMaxDim() != "")
+                {
+                    return myvert;
+                }
+            }
+
+            if (listDataModel->at(ind)->xCount() == 0) //Value
+            {
+                if (row - sum == 2 && column == 1)
+                {
+                    return myjaune;
+                }
+            }
+            else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() == 0) //Curve
+            {
+                if (row - sum == 2 && column >= 1 && column <= listDataModel->at(ind)->xCount())
+                {
+                    return mybleu;
+                }
+                else if (row - sum == 3 && column >= 1 &&  column <= listDataModel->at(ind)->zCount())
+                {
+                    return myjaune;
+                }
+            }
+            else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() > 0) //Map
+            {
+                if (row - sum == 2 && column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
+                {
+                    return mybleu;
+                }
+                if (row - sum >= 3 && row - sum < listDataModel->at(ind)->size - 1)
+                {
+                    if (column == 1)
+                    {
+                        return mybleu;
+                    }
+                    else if (column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
+                    {
+                        return myjaune;
+                    }
+                }
+            }
+        }
+        break;
+
+    case Qt::ForegroundRole: // the foreground brush (text color, typically) used for items rendered with the default delegate.
+        {
+            QColor color1 = Qt::red;
+            QColor color2 = Qt::blue;
+
+            if (row - sum == 0 && column == 0)
+                return Qt::blue;
+            else if (row - sum  == 0 && column == 1)
+                return Qt::red;
+
+            if (listDataModel->at(ind)->xCount() == 0) //Value
+            {
+                if (row - sum == 2 && column == 1)
+                {
+                    bool bl1;
+                    double val1 = listDataModel->at(ind)->getZ(0).toDouble(&bl1);
+                    bool bl2;
+                    double val2 = listDataModel->at(ind)->getOrgZ(0).toDouble(&bl2);
+
+                    if (bl1 && bl2)
+                    {
+                        if (val1 > val2)
+                            return color1;
+                        else if (val1 < val2)
+                            return color2;
+                    }
+                    else
+                    {
+                        if (listDataModel->at(ind)->getZ(0) != listDataModel->at(ind)->getOrgZ(0))
+                            return color1;
+                    }
+                }
+            }
+            else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() == 0) //Curve
+            {
+                if (row - sum == 2 && column >= 1 && column <= listDataModel->at(ind)->xCount())
+                {
+                    bool bl1;
+                    double val1 = listDataModel->at(ind)->getX(column - 1).toDouble(&bl1);
+                    bool bl2;
+                    double val2 = listDataModel->at(ind)->getOrgX(column - 1).toDouble(&bl2);
+
+                    if (bl1 && bl2)
+                    {
+                        if (val1 > val2)
+                            return color1;
+                        else if (val1 < val2)
+                            return color2;
+                    }
+                    else
+                    {
+                        if (listDataModel->at(ind)->getX(column - 1) != listDataModel->at(ind)->getOrgX(column - 1))
+                            return color1;
+                    }
+                }
+                else if (row - sum == 3 && column >= 1 &&  column <= listDataModel->at(ind)->zCount())
+                {
+
+                    bool bl1;
+                    double val1 = listDataModel->at(ind)->getZ(column - 1).toDouble(&bl1);
+                    bool bl2;
+                    double val2 = listDataModel->at(ind)->getOrgZ(column - 1).toDouble(&bl2);
+
+                    if (bl1 && bl2)
+                    {
+                        if (val1 > val2)
+                            return color1;
+                        else if (val1 < val2)
+                            return color2;
+                    }
+                    else
+                    {
+                        if (listDataModel->at(ind)->getZ(column - 1) != listDataModel->at(ind)->getOrgZ(column - 1))
+                            return color1;
+                    }
+                }
+            }
+            else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() > 0) //Map
+            {
+                if (row - sum == 2 && column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
+                {
+                    bool bl1, bl2;
+                    double val1 = listDataModel->at(ind)->getX(column - 2).toDouble(&bl1);
+                    double val2 = listDataModel->at(ind)->getOrgX(column - 2).toDouble(&bl2);
+
+                    if (bl1 && bl2)
+                    {
+                        if (val1 > val2)
+                            return color1;
+                        else if (val1 < val2)
+                            return color2;
+                    }
+                    else
+                    {
+                        if (listDataModel->at(ind)->getX(column - 2) != listDataModel->at(ind)->getOrgX(column - 2))
+                            return color1;
+                    }
+                }
+                if (row - sum >= 3 && row - sum < listDataModel->at(ind)->size - 1)
+                {
+                    if (column == 1)
+                    {
+                        bool bl1, bl2;
+                        double val1 = listDataModel->at(ind)->getY(row - sum - 3).toDouble(&bl1);
+                        double val2 = listDataModel->at(ind)->getOrgY(row - sum - 3).toDouble(&bl2);
+
+                        if (bl1 && bl2)
+                        {
+                            if (val1 > val2)
+                                return color1;
+                            else if (val1 < val2)
+                                return color2;
+                        }
+                        else
+                        {
+                            if (listDataModel->at(ind)->getY(row - sum - 3) != listDataModel->at(ind)->getOrgY(row - sum - 3))
+                                return color1;
+                        }
+                    }
+                    else if (column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
+                    {
+                        int dataRow = row - sum - 3;
+                        int dataCol = column - 2;
+
+                        bool bl1, bl2;
+                        double val1 = listDataModel->at(ind)->getZ(dataRow, dataCol, &bl1);
+                        double val2 = listDataModel->at(ind)->getOrgZ(dataRow, dataCol, &bl2);
+
+                        if (bl1 && bl2)
+                        {
+                            if (val1 > val2)
+                                return color1;
+                            else if (val1 < val2)
+                                return color2;
+                        }
+                        else
+                        {
+                            if (listDataModel->at(ind)->getZ(dataRow, dataCol)!= listDataModel->at(ind)->getOrgZ(dataRow, dataCol))
+                                return color1;
+                        }
+                    }
+                }
+            }
+        }
+        break;
+    }
+
+    return QVariant();
+}
+
+bool SpTableModelHex::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (index.isValid() && role == Qt::EditRole)
+    {
+        int row = index.row();
+        int column = index.column();
+
+        // binary search
+        int ind = 0;
+        int starting = 0;
+        int ending = listDataIndex.size() - 1;
+        int mid = 0;
+        int length = 0;
+        bool found = false;
+        while (!found)
+        {
+            if (ending < starting)
+            {
+                ind = -1;
+                found = true;
+            }
+
+            length = ending - starting;
+
+            if (length == 0)
+            {
+                ind = ending;
+                found = true;
+            }
+
+            mid = starting + int(length / 2);
+
+            if (row < listDataIndex.at(mid))
+            {
+                ending = mid - 1;
+            }
+            else if (row > listDataIndex.at(mid))
+            {
+                //if (row < listDataIndex.at(mid + 1))
+                if (row < (listDataIndex.at(mid) + listDataModel->at(mid)->size))
+                {
+                    ind = mid;
+                    found = true;
+                }
+                else
+                {
+                    starting = mid + 1;
+                }
+            }
+            else
+            {
+                ind = mid;
+                found = true;
+            }
+        }
+        int sum = listDataIndex.at(ind);
+
+        // value
+        if (listDataModel->at(ind)->xCount() == 0)
+        {
+            if ((row - sum == 2) && (column == 1))
+            {
+                if (value.toString() != listDataModel->at(ind)->getZ(0))
+                {
+                    listDataModel->at(ind)->setHexZ(0, value.toString());
+                }
+            }
+        }
+        // curve
+        else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() == 0)
+        {
+            if (row - sum == 2 && column >= 1 && column <= listDataModel->at(ind)->xCount())
+            {
+                if (value.toString() != listDataModel->at(ind)->getX(column - 1))
+                {
+                    listDataModel->at(ind)->setX(column - 1 , value.toString());
+                }
+            }
+            else if (row - sum == 3 && column >= 1 &&  column <= listDataModel->at(ind)->zCount())
+            {
+                if (value.toString() != listDataModel->at(ind)->getZ(column - 1))
+                {
+                    listDataModel->at(ind)->setHexZ(column - 1, value.toString());
+                }
+            }
+        }
+        // map
+        else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() > 0)
+        {
+
+            if (row - sum == 2 && column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
+            {
+                if (value.toString() != listDataModel->at(ind)->getX(column - 2))
+                {
+                    listDataModel->at(ind)->setX(column - 2, value.toString());
+                }
+            }
+            if (row - sum >= 3 && row - sum < listDataModel->at(ind)->size - 1)
+            {
+                if (column == 1 && value.toString() != listDataModel->at(ind)->getY(row - sum - 3))
+                {
+                    listDataModel->at(ind)->setY(row - sum - 3, value.toString());
+                }
+                else if (column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
+                {
+                    int dataRow = row - sum - 3;
+                    int dataCol = column - 2;
+                    if (value.toString() != listDataModel->at(ind)->getZ(dataRow, dataCol))
+                    {
+                        listDataModel->at(ind)->setHexZ(dataRow, dataCol, value.toString());
+                        //dat->at(ind)->setZ((row - sum - 3) + dat->at(ind)->yCount() * (column - 2), value.toString());
+                    }
+                }
+            }
+        }
+
+        //update the tableView
+        emit dataChanged(index, index);
+
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool SpTableModelHex::setData(const QModelIndex &index, const QModelIndexList &indexList ,const QVariant &value, int role)
+{
+    if (index.isValid() && role == Qt::EditRole)
+    {
+        int row = index.row();
+        int column = index.column();
+
+        // binary search
+        int ind = 0;
+        int starting = 0;
+        int ending = listDataIndex.size() - 1;
+        int mid = 0;
+        int length = 0;
+        bool found = false;
+        while (!found)
+        {
+            if (ending < starting)
+            {
+                ind = -1;
+                found = true;
+            }
+
+            length = ending - starting;
+
+            if (length == 0)
+            {
+                ind = ending;
+                found = true;
+            }
+
+            mid = starting + int(length / 2);
+
+            if (row < listDataIndex.at(mid))
+            {
+                ending = mid - 1;
+            }
+            else if (row > listDataIndex.at(mid))
+            {
+                //if (row < listDataIndex.at(mid + 1))
+                if (row < (listDataIndex.at(mid) + listDataModel->at(mid)->size))
+                {
+                    ind = mid;
+                    found = true;
+                }
+                else
+                {
+                    starting = mid + 1;
+                }
+            }
+            else
+            {
+                ind = mid;
+                found = true;
+            }
+        }
+        int sum = listDataIndex.at(ind);
+
+        // value
+        if (listDataModel->at(ind)->xCount() == 0)
+        {
+            if ((row - sum == 2) && (column == 1))
+            {
+                if (value.toString() != listDataModel->at(ind)->getZ(0))
+                {                    
+                    listDataModel->at(ind)->setHexZ(0, value.toString());
+                }
+            }
+        }
+        // curve
+        else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() == 0)
+        {
+            if (row - sum == 2 && column >= 1 && column <= listDataModel->at(ind)->xCount())
+            {
+                if (value.toString() != listDataModel->at(ind)->getX(column - 1))
+                {
+                    listDataModel->at(ind)->setX(column - 1 , value.toString());
+                }
+            }
+            else if (row - sum == 3 && column >= 1 &&  column <= listDataModel->at(ind)->zCount())
+            {
+                if (value.toString() != listDataModel->at(ind)->getZ(column - 1))
+                {
+                    listDataModel->at(ind)->setHexZ(column - 1, value.toString());
+                }
+            }
+        }
+        // map
+        else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() > 0)
+        {
+            if (row - sum == 2 && column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
+            {
+                if (value.toString() != listDataModel->at(ind)->getX(column - 2))
+                {
+                    listDataModel->at(ind)->setX(column - 2, value.toString());
+                }
+            }
+            if (row - sum >= 3 && row - sum < listDataModel->at(ind)->size - 1)
+            {
+                if (column == 1 && value.toString() != listDataModel->at(ind)->getY(row - sum - 3))
+                {
+                    listDataModel->at(ind)->setY(row - sum - 3, value.toString());
+                }
+                else if (column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
+                {
+                    int dataRow = row - sum - 3;
+                    int dataCol = column - 2;
+                    if (value.toString() != listDataModel->at(ind)->getZ(dataRow, dataCol))
+                    {
+                        listDataModel->at(ind)->setHexZ(dataRow, dataCol, value.toString());
+                        //dat->at(ind)->setZ((row - sum - 3) + dat->at(ind)->yCount() * (column - 2), value.toString());
+                    }
+                }
+            }
+        }
+
+        //update the tableView
+        QModelIndex topLeft = indexList.at(0);
+        QModelIndex btmRight = indexList.at(indexList.count() - 1);
+        if (index == btmRight)
+            emit dataChanged(topLeft, btmRight);
+
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool SpTableModelHex::resetData(const QModelIndex &index, int role)
+{
+    if (index.isValid() && role == Qt::EditRole)
+    {
+        int row = index.row();
+        int column = index.column();
+
+        // binary search
+        int ind = 0;
+        int starting = 0;
+        int ending = listDataIndex.size() - 1;
+        int mid = 0;
+        int length = 0;
+        bool found = false;
+        while (!found)
+        {
+            if (ending < starting)
+            {
+                ind = -1;
+                found = true;
+            }
+
+            length = ending - starting;
+
+            if (length == 0)
+            {
+                ind = ending;
+                found = true;
+            }
+
+            mid = starting + int(length / 2);
+
+            if (row < listDataIndex.at(mid))
+            {
+                ending = mid - 1;
+            }
+            else if (row > listDataIndex.at(mid))
+            {
+                //if (row < listDataIndex.at(mid + 1))
+                if (row < (listDataIndex.at(mid) + listDataModel->at(mid)->size))
+                {
+                    ind = mid;
+                    found = true;
+                }
+                else
+                {
+                    starting = mid + 1;
+                }
+            }
+            else
+            {
+                ind = mid;
+                found = true;
+            }
+        }
+        int sum = listDataIndex.at(ind);
+
+        // value
+        if (listDataModel->at(ind)->xCount() == 0)
+        {
+            if ((row - sum == 2) && (column == 1))
+            {
+                listDataModel->at(ind)->resetValZ(0);
+            }
+        }
+        // curve
+        else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() == 0)
+        {
+            if (row - sum == 2 && column >= 1 && column <= listDataModel->at(ind)->xCount())
+            {
+                listDataModel->at(ind)->resetValX(column - 1);
+            }
+            else if (row - sum == 3 && column >= 1 &&  column <= listDataModel->at(ind)->zCount())
+            {
+                listDataModel->at(ind)->resetValZ(column - 1);
+            }
+        }
+        // map
+        else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() > 0)
+        {
+            if (row - sum == 2 && column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
+            {
+                listDataModel->at(ind)->resetValX(column - 2);
+            }
+            if (row - sum >= 3 && row - sum < listDataModel->at(ind)->size - 1)
+            {
+                if (column == 1)
+                {
+                    listDataModel->at(ind)->resetValY(row - sum - 3);
+                }
+                else if (column >= 2 && column <= listDataModel->at(ind)->xCount() + 1 )
+                {
+                    int dataRow = row - sum - 3;
+                    int dataCol = column - 2;
+                    listDataModel->at(ind)->resetValZ(dataRow, dataCol);
+                }
+            }
+        }
+
+        //update the tableView
+        emit dataChanged(index, index);
+
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool SpTableModelHex::resetData(const QModelIndexList &indexList, int role)
+{
+    foreach (QModelIndex index, indexList)
+    {
+        if (index.isValid() && role == Qt::EditRole)
+        {
+            int row = index.row();
+            int column = index.column();
+
+            // binary search
+            int ind = 0;
+            int starting = 0;
+            int ending = listDataIndex.size() - 1;
+            int mid = 0;
+            int length = 0;
+            bool found = false;
+            while (!found)
+            {
+                if (ending < starting)
+                {
+                    ind = -1;
+                    found = true;
+                }
+
+                length = ending - starting;
+
+                if (length == 0)
+                {
+                    ind = ending;
+                    found = true;
+                }
+
+                mid = starting + int(length / 2);
+
+                if (row < listDataIndex.at(mid))
+                {
+                    ending = mid - 1;
+                }
+                else if (row > listDataIndex.at(mid))
+                {
+                    //if (row < listDataIndex.at(mid + 1))
+                    if (row < (listDataIndex.at(mid) + listDataModel->at(mid)->size))
+                    {
+                        ind = mid;
+                        found = true;
+                    }
+                    else
+                    {
+                        starting = mid + 1;
+                    }
+                }
+                else
+                {
+                    ind = mid;
+                    found = true;
+                }
+            }
+            int sum = listDataIndex.at(ind);
+
+            // value
+            if (listDataModel->at(ind)->xCount() == 0)
+            {
+                if ((row - sum == 2) && (column == 1))
+                {
+                    listDataModel->at(ind)->resetValZ(0);
+                }
+            }
+            // curve
+            else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() == 0)
+            {
+                if (row - sum == 2 && column >= 1 && column <= listDataModel->at(ind)->xCount())
+                {
+                    listDataModel->at(ind)->resetValX(column - 1);
+                }
+                else if (row - sum == 3 && column >= 1 &&  column <= listDataModel->at(ind)->zCount())
+                {
+                    listDataModel->at(ind)->resetValZ(column - 1);
+                }
+            }
+            // map
+            else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() > 0)
+            {
+                if (row - sum == 2 && column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
+                {
+                    listDataModel->at(ind)->resetValX(column - 2);
+                }
+                if (row - sum >= 3 && row - sum < listDataModel->at(ind)->size - 1)
+                {
+                    if (column == 1)
+                    {
+                        listDataModel->at(ind)->resetValY(row - sum - 3);
+                    }
+                    else if (column >= 2 && column <= listDataModel->at(ind)->xCount() + 1 )
+                    {
+                        int dataRow = row - sum - 3;
+                        int dataCol = column - 2;
+                        listDataModel->at(ind)->resetValZ(dataRow, dataCol);
+                        //dat->at(ind)->resetValZ((row - sum - 3) + dat->at(ind)->yCount() * (column - 2));
+                    }
+                }
+            }
+        }
+    }
+
+    //update the tableView
+    QModelIndex topLeft = indexList.at(0);
+    QModelIndex btmRight = indexList.at(indexList.count() - 1);
+    emit dataChanged(topLeft, btmRight);
+
+    return true;
+}
+
+bool SpTableModelHex::undoData(const QModelIndexList &indexList, int role)
+{
+    foreach (QModelIndex index, indexList)
+    {
+        if (index.isValid() && role == Qt::EditRole)
+        {
+            int row = index.row();
+            int column = index.column();
+
+            // determine the label in function of the row
+            int ind = 0;
+            int sum = 0;
+
+            while (row >= sum)
+            {
+                sum += listDataModel->at(ind)->size;
+                ind++;
+            }
+            ind--;
+            sum -= listDataModel->at(ind)->size;
+
+            // value
+            if (listDataModel->at(ind)->xCount() == 0)
+            {
+                if ((row - sum == 2) && (column == 1))
+                {
+                    listDataModel->at(ind)->undoValZ(0);
+                }
+            }
+            // curve
+            else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() == 0)
+            {
+                if (row - sum == 2 && column >= 1 && column <= listDataModel->at(ind)->xCount())
+                {
+                    listDataModel->at(ind)->undoValX(column - 1);
+                }
+                else if (row - sum == 3 && column >= 1 &&  column <= listDataModel->at(ind)->zCount())
+                {
+                    listDataModel->at(ind)->undoValZ(column - 1);
+                }
+            }
+            // map
+            else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() > 0)
+            {
+                if (row - sum == 2 && column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
+                {
+                    listDataModel->at(ind)->undoValX(column - 2);
+                }
+                if (row - sum >= 3 && row - sum < listDataModel->at(ind)->size - 1)
+                {
+                    if (column == 1)
+                    {
+                        listDataModel->at(ind)->undoValY(row - sum - 3);
+                    }
+                    else if (column >= 2 && column <= listDataModel->at(ind)->xCount() + 1 )
+                    {
+                        int dataRow = row - sum - 3;
+                        int dataCol = column - 2;
+                        listDataModel->at(ind)->undoValZ(dataRow, dataCol);
+                        //dat->at(ind)->resetValZ((row - sum - 3) + dat->at(ind)->yCount() * (column - 2));
+                    }
+                }
+            }
+        }
+    }
+
+    //update the tableView
+    QModelIndex topLeft = indexList.at(0);
+    QModelIndex btmRight = indexList.at(indexList.count() - 1);
+    emit dataChanged(topLeft, btmRight);
+
+    return true;
+}
+
+Qt::ItemFlags SpTableModelHex::flags(const QModelIndex &index) const
+ {
+     Qt::ItemFlags flags = QAbstractItemModel::flags(index);
+     flags |= Qt::ItemIsEditable;
+     return flags;
+ }
+
+QVariant SpTableModelHex::headerData(int section, Qt::Orientation /* orientation */, int role) const
+{
+
+    if (role != Qt::DisplayRole)
+        return QVariant();
+
+    return QString::number(section);
+}
+
+void SpTableModelHex::setList(QList<Data *> *labelList)
+{
+    //set the list
+    listDataModel = labelList;
+
+    //calculate the listDataIndex
+    listDataIndex.clear();
+    listDataIndex.append(0);
+    for (int i = 1; i < listDataModel->count(); i++)
+    {
+        listDataIndex.append(listDataIndex.at(i - 1) + listDataModel->at(i - 1)->size);
+    }
+
+    //calculate nRow;
+    nRow = 0;
+    for (int i = 0; i < listDataModel->count(); i++)
+        nRow += listDataModel->at(i)->size;
+
+    //calculate nCol
+    nColumn = 0;
+    for (int i = 0; i < listDataModel->count(); i++)
+        if (listDataModel->at(i)->xCount() + 2 > nColumn)
+            nColumn = listDataModel->at(i)->xCount() + 2;
+
+    reset();
+}
+
+QList<Data*> *SpTableModelHex::getList()
+{
+    return listDataModel;
+}
+
+Data *SpTableModelHex::getLabel(const QModelIndex &index, int role)
+{
+    if (index.isValid() && role == Qt::EditRole)
+    {
+        int row = index.row();
+
+        // binary search
+        int ind = 0;
+        int starting = 0;
+        int ending = listDataIndex.size() - 1;
+        int mid = 0;
+        int length = 0;
+        bool found = false;
+        while (!found)
+        {
+            if (ending < starting)
+            {
+                ind = -1;
+                found = true;
+            }
+
+            length = ending - starting;
+
+            if (length == 0)
+            {
+                ind = ending;
+                found = true;
+            }
+
+            mid = starting + int(length / 2);
+
+            if (row < listDataIndex.at(mid))
+            {
+                ending = mid - 1;
+            }
+            else if (row > listDataIndex.at(mid))
+            {
+                //if (row < listDataIndex.at(mid + 1))
+                if (row < (listDataIndex.at(mid) + listDataModel->at(mid)->size))
+                {
+                    ind = mid;
+                    found = true;
+                }
+                else
+                {
+                    starting = mid + 1;
+                }
+            }
+            else
+            {
+                ind = mid;
+                found = true;
+            }
+        }
+
+        return listDataModel->at(ind);
+
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+QModelIndex SpTableModelHex::getIndex(int row, int col)
+{
+   return createIndex(row, col);
+}
+
+QModelIndex SpTableModelHex::getFirstZindex(Data *data)
+{
+    int i = 0;
+    int row = 0;
+    while (listDataModel->at(i) != data)
+    {
+        row += listDataModel->at(i)->size;
+        i++;
+    }
+
+    if (data->xCount() == 0)
+    {
+        return createIndex(row + 2, 1);
+    }
+    else if (data->yCount() == 0)
+    {
+        return createIndex(row + 3, 1);
+    }
+    else
+    {
+        return createIndex(row + 3, 2);
+    }
+}
+
+QModelIndexList SpTableModelHex::selectAllX(Data *data)
+{
+    QModelIndexList listIndex;
+    listIndex.clear();
+
+    if (data->xCount() == 0)
+        return listIndex;
+
+    QModelIndex index = getFirstZindex(data);
+
+    for (int i = 0; i < data->xCount(); i++)
+    {
+        QModelIndex ind = createIndex(index.row() - 1, index.column() + i);
+        listIndex.append(ind);
+
+    }
+    return listIndex;
+}
+
+QModelIndexList SpTableModelHex::selectAllY(Data *data)
+{
+    QModelIndexList listIndex;
+    listIndex.clear();
+
+    if (data->yCount() == 0)
+        return listIndex;
+
+    QModelIndex index = getFirstZindex(data);
+
+    for (int i = 0; i < data->yCount(); i++)
+    {
+        QModelIndex ind = createIndex(index.row() + i, index.column() - 1);
+        listIndex.append(ind);
+
+    }
+    return listIndex;
+}
+
+QModelIndexList SpTableModelHex::selectAllZ(Data *data)
+{
+    QModelIndexList listIndex;
+    QModelIndex index = getFirstZindex(data);
+
+    int line = 0;
+    if (data->yCount() == 0)
+        line = 1;
+    else
+        line = data->yCount();
+
+    for (int i = 0; i < line; i++)
+    {
+        for (int j = 0; j < data->xCount(); j++)
+        {
+            QModelIndex ind = createIndex(index.row() + i, index.column() + j);
+            listIndex.append(ind);
+        }
+    }
+    return listIndex;
+}
