@@ -15,10 +15,10 @@ RC_FILE = myappicon.rc
 equals( QMAKE_CXX, cl) {
 
     # --- LIBS Path --- #
-    QSCINTILLA_ROOT = ..\LIBS\QScintilla-gpl-2.5.1
-    WINHOARD_ROOT = ..\LIBS\hoard-38\src
-    QWT_ROOT = ..\LIBS\qwt-6.0.0
-    QWT3D_ROOT = ..\LIBS\qwtplot3d
+    QSCINTILLA_ROOT = LIBS\QScintilla-gpl-2.5.1
+    WINHOARD_ROOT = LIBS\hoard-38\src
+    QWT_ROOT = LIBS\qwt-6.0.1
+    QWT3D_ROOT = LIBS\qwtplot3d
 #    MATLAB_ROOT = C:\Programme\MATLAB\R2009b\extern
     # ----------------- #
 
@@ -69,8 +69,8 @@ equals( QMAKE_CXX, cl) {
 !equals( QMAKE_CXX, cl) {
 
     # --- LIBS Path --- #
-    QSCINTILLA_ROOT = ../LIBS/QScintilla-gpl-2.4.6
-    QWT_ROOT = ../LIBS/qwt-6.0.0-rc5
+    QSCINTILLA_ROOT = ../LIBS/QScintilla-gpl-2.5.1
+    QWT_ROOT = ../LIBS/qwt-6.0.1
     QWT3D_ROOT = ../LIBS/qwtplot3d
     # ----------------- #
 
