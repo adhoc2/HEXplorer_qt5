@@ -3,14 +3,15 @@
 
 = Download =
 
-Add your content here.
+HEXplorer is packaged for the following systems below, so if you use one of them, simply follow the instructions. Otherwise you can install the sources directly.
 
 
 = Source =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+You need to download the following source :
+   * QSintilla
+   * Qwt
+   * Qwtplot3D
+   * Winhoard (only for windows)
 
 = Packages =
