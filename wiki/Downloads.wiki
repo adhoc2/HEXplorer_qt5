@@ -13,3 +13,5 @@ You need to download the following source :
    * [http://www.hoard.org/ Winhoard] (only for windows)
 
 = Packages =
+   * Windows:
+   Download the windows installer from the frontpage (Featured Downloads) and execute it.
