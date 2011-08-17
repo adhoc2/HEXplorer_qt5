@@ -1,6 +1,4 @@
-#summary One-sentence summary of this page.
 #labels Featured
-
 = Download =
 
 HEXplorer is packaged for the following systems below, so if you use one of them, simply follow the instructions. Otherwise you can install the sources directly.
@@ -9,7 +7,7 @@ HEXplorer is packaged for the following systems below, so if you use one of them
 = Source =
 
 You need to download the following source :
-   * QSintilla
+   * [http://www.riverbankcomputing.co.uk/software/qscintilla/download QScintilla]
    * Qwt
    * Qwtplot3D
    * Winhoard (only for windows)
