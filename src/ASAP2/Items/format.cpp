@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,FORMAT> FORMAT::itemFactory;
 
-FORMAT::FORMAT(QTextStream &in, Node *parentNode)  : Item(parentNode)
+FORMAT::FORMAT(QTextStream  &in, Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -26,7 +26,7 @@ FORMAT::~FORMAT()
 }
 
 void FORMAT::parseFixPar(QList<TokenTyp> *typePar,
-                          QTextStream &in)
+                          QTextStream  &in)
 {
     //Mandatory PARAMETERS
     TokenTyp token;

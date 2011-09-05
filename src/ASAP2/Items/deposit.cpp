@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,DEPOSIT> DEPOSIT::itemFactory;
 
-DEPOSIT::DEPOSIT(QTextStream &in, Node *parentNode)  : Item(parentNode)
+DEPOSIT::DEPOSIT(QTextStream  &in, Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -28,7 +28,7 @@ DEPOSIT::~DEPOSIT()
     }
 }
 
-void DEPOSIT::parseFixPar(QList<TokenTyp> *typePar, QTextStream &in)
+void DEPOSIT::parseFixPar(QList<TokenTyp> *typePar, QTextStream  &in)
 {
     //Mandatory PARAMETERS
     TokenTyp token;

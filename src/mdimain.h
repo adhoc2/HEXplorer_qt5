@@ -47,6 +47,7 @@ protected:
     virtual void closeEvent(QCloseEvent *e);
 
 private:
+    //bool boolCiao;
     QString getUserName();
     QString strippedName(const QString &fullFileName);
     enum { MaxRecentFiles = 5};
@@ -120,6 +121,7 @@ private slots:
      void on_actionSettings_triggered();
      void on_actionCheck_for_updates_triggered();
      void initCheckUpdates();
+     //void say_Ciao();
      void openRecentFile();
      void read_ValuesFromCsv();
      void read_ValuesFromCdfx();
@@ -178,6 +180,7 @@ private slots:
 
 signals:
     void check();
+    //void adieu();
 
 };
 

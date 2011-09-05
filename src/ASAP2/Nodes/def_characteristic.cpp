@@ -11,7 +11,7 @@ Factory<Node,DEF_CHARACTERISTIC> DEF_CHARACTERISTIC::nodeFactory;
 bool nodeLessThan( const Node *a, const Node *b );
 bool itemLessThan( const Item *a, const Item *b );
 
-DEF_CHARACTERISTIC::DEF_CHARACTERISTIC(QTextStream &in, Node *parentNode)
+DEF_CHARACTERISTIC::DEF_CHARACTERISTIC(QTextStream  &in, Node *parentNode)
     : Node(parentNode, parentNode->lex, parentNode->errorList)
 {
     //get grammar
@@ -85,7 +85,7 @@ std::string  DEF_CHARACTERISTIC::pixmap()
     return ":/icones/CHAR.bmp";
 }
 
-TokenTyp DEF_CHARACTERISTIC::parseListChar(QTextStream &in)
+TokenTyp DEF_CHARACTERISTIC::parseListChar(QTextStream  &in)
 {
     TokenTyp token = lex->getNextToken(in);
 

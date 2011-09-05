@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,ALIGNMENT_FLOAT32_IEEE> ALIGNMENT_FLOAT32_IEEE::itemFactory;
 
-ALIGNMENT_FLOAT32_IEEE::ALIGNMENT_FLOAT32_IEEE(QTextStream &in, Node *parentNode)  : Item(parentNode)
+ALIGNMENT_FLOAT32_IEEE::ALIGNMENT_FLOAT32_IEEE(QTextStream  &in, Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -25,7 +25,7 @@ ALIGNMENT_FLOAT32_IEEE::~ALIGNMENT_FLOAT32_IEEE()
     }
 }
 
-void ALIGNMENT_FLOAT32_IEEE::parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in)
+void ALIGNMENT_FLOAT32_IEEE::parseFixPar(QList<TokenTyp> *typePar,  QTextStream  &in)
 {
     //Mandatory PARAMETERS
     TokenTyp token;

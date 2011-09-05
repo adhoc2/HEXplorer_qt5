@@ -8,6 +8,7 @@
 #include <cstring>
 #include <errno.h>
 
+
 bool compareNode(Node *a, Node *b)
 {
    if (QString(a->name) < QString(b->name))
@@ -83,7 +84,10 @@ Node *Node::child(QString str, bool bin)
         node.name = new char[str.length() + 1];
         strcpy(node.name, str.toLocal8Bit().data());
         QList<Node*>::iterator i =  qBinaryFind(childNodes.begin(), childNodes.end(), &node, nodeLessThan);
+
         if (i == childNodes.end())
+//        Node* toto = interpolationSearch(childNodes, str);
+//        if (toto == 0)
         {
             delete[] node.name;
             return NULL;
@@ -92,6 +96,7 @@ Node *Node::child(QString str, bool bin)
         {
             delete[] node.name;
             return *i;
+            //return toto;
         }
     }
     else
@@ -231,4 +236,121 @@ std::string Node::fixPar(QString str)
     std::string tt = map->value(str.toLocal8Bit().data());
     delete map;
     return  tt;
+}
+
+Node* Node::interpolationSearch(QList<Node *> sortedArray, QString str)
+{
+    int low = 0;
+    int high = sortedArray.length() - 1;
+    int mid;
+
+
+    while (QString(sortedArray.at(low)->name) <= str && QString(sortedArray.at(high)->name) >= str)
+    {
+        qDebug() << str.toStdString().c_str() << " :" << sortedArray.at(low)->name << " = " << distance(str , sortedArray.at(low)->name);
+        qDebug() << sortedArray.at(high)->name << " :" << sortedArray.at(low)->name << " = " << distance(sortedArray.at(high)->name, sortedArray.at(low)->name);
+
+        mid = low +
+                (distance(str.toStdString().c_str() , sortedArray.at(low)->name) * (high - low)) /
+                (distance(sortedArray.at(high)->name, sortedArray.at(low)->name));
+
+        if (QString(sortedArray.at(mid)->name) < str)
+            low = mid + 1;
+        else if (QString(sortedArray.at(mid)->name) > str)
+            high = mid - 1;
+        else
+            return sortedArray.at(mid);
+    }
+
+    if (QString(sortedArray.at(low)->name) == str)
+        return sortedArray.at(low);
+    else
+        return 0;
+}
+
+int Node::distance(QString source, QString target)
+{
+    // Step 1
+
+      const int n = source.length();
+      const int m = target.length();
+      if (n == 0) {
+        return m;
+      }
+      if (m == 0) {
+        return n;
+      }
+
+      // Good form to declare a TYPEDEF
+
+      typedef std::vector< std::vector<int> > Tmatrix;
+
+      Tmatrix matrix(n+1);
+
+      // Size the vectors in the 2.nd dimension. Unfortunately C++ doesn't
+      // allow for allocation on declaration of 2.nd dimension of vec of vec
+
+      for (int i = 0; i <= n; i++) {
+        matrix[i].resize(m+1);
+      }
+
+      // Step 2
+
+      for (int i = 0; i <= n; i++) {
+        matrix[i][0]=i;
+      }
+
+      for (int j = 0; j <= m; j++) {
+        matrix[0][j]=j;
+      }
+
+      // Step 3
+
+      for (int i = 1; i <= n; i++) {
+
+        const char s_i = source.at(i-1).toAscii();
+
+        // Step 4
+
+        for (int j = 1; j <= m; j++) {
+
+          const char t_j = target.at(j-1).toAscii();
+
+          // Step 5
+
+          int cost;
+          if (s_i == t_j) {
+            cost = 0;
+          }
+          else {
+            cost = 1;
+          }
+
+          // Step 6
+
+          int above = matrix[i-1][j];
+          int left = matrix[i][j-1];
+          int diag = matrix[i-1][j-1];
+          int cell = std::min( above + 1, std::min(left + 1, diag + cost));
+
+          // Step 6A: Cover transposition, in addition to deletion,
+          // insertion and substitution. This step is taken from:
+          // Berghel, Hal ; Roach, David : "An Extension of Ukkonen's
+          // Enhanced Dynamic Programming ASM Algorithm"
+          // (http://www.acm.org/~hlb/publications/asm/asm.html)
+
+          if (i>2 && j>2) {
+            int trans=matrix[i-2][j-2]+1;
+            if (source[i-2]!=t_j) trans++;
+            if (s_i!=target[j-2]) trans++;
+            if (cell>trans) cell=trans;
+          }
+
+          matrix[i][j]=cell;
+        }
+      }
+
+      // Step 7
+
+      return matrix[n][m];
 }

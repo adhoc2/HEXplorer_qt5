@@ -49,6 +49,7 @@
     #include "windows.h"
 #endif
 #include "freezetablewidget.h"
+//#include "ciao.h"
 
 #include "qdebug.h"
 
@@ -131,6 +132,10 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
     // check for updates
     connect(this, SIGNAL(check()), this, SLOT(initCheckUpdates()), Qt::QueuedConnection);
     emit check();
+
+    // check for message
+//    connect(this, SIGNAL(adieu()), this, SLOT(say_Ciao()), Qt::QueuedConnection);
+//    emit adieu();
 
 }
 
@@ -848,7 +853,7 @@ void MDImain::on_actionAbout_triggered()
                    "M, Radio Tarifa, Al, John, Paco, Noir dez, et tous les autres...\n\n"
                    "build " + qApp->applicationVersion() + " compiled with MSVC2010\n\n"
                    "This software uses external libraries :\n"
-                   "   - Qt framework 4.7.3 (Nokia)\n"
+                   "   - Qt framework 4.7.4 (Nokia)\n"
                    "   - QScintilla (as efficient text editor)\n"
                    "   - Qwt (as 2D graph plotter)\n"
                    "   - Qwtplot3D (as 3D graph plotter)\n"
@@ -3801,6 +3806,31 @@ void MDImain::initCheckUpdates()
 
    registerVersion();
 }
+
+//void MDImain::say_Ciao()
+//{
+//    //ce n'est qu'un au revoir !!
+//    //to save the choice of the user into the message window.
+//    QSettings settings;
+//    QStringList list = settings.allKeys();
+//    if (list.contains("sayCiao"))
+//    {
+//        boolCiao = settings.value("sayCiao").toBool();
+//    }
+//    else
+//        boolCiao = true;
+
+//    //if the message window has to be open
+//    if (boolCiao)
+//    {
+//        Ciao *myCiao = new Ciao(boolCiao, this);
+//        myCiao->exec();
+
+//        //save show again boolean
+//        settings.setValue("sayCiao", boolCiao);
+
+//    }
+//}
 
 bool MDImain::registerVersion()
 {

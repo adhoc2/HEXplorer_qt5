@@ -6,7 +6,7 @@
 Factory<Item,ADDR_EPK> ADDR_EPK::itemFactory;
 
 
-ADDR_EPK::ADDR_EPK(QTextStream &in, Node *parentNode) : Item(parentNode)
+ADDR_EPK::ADDR_EPK(QTextStream  &in, Node *parentNode) : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -27,7 +27,7 @@ ADDR_EPK::~ADDR_EPK()
     }
 }
 
-void ADDR_EPK::parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in)
+void ADDR_EPK::parseFixPar(QList<TokenTyp> *typePar,  QTextStream  &in)
 {
     //Mandatory PARAMETERS
     TokenTyp token;

@@ -2,7 +2,7 @@
 #define CHOOSESUBSET_H
 
 #include <QDialog>
-#include <QStringlist>
+#include <QStringList>
 class A2LFILE;
 class HexFile;
 

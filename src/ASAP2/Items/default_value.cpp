@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,DEFAULT_VALUE> DEFAULT_VALUE::itemFactory;
 
-DEFAULT_VALUE::DEFAULT_VALUE(QTextStream &in, Node *parentNode)  : Item(parentNode)
+DEFAULT_VALUE::DEFAULT_VALUE(QTextStream  &in, Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -28,7 +28,7 @@ DEFAULT_VALUE::~DEFAULT_VALUE()
     }
 }
 
-void DEFAULT_VALUE::parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in)
+void DEFAULT_VALUE::parseFixPar(QList<TokenTyp> *typePar,  QTextStream  &in)
 {
     //Mandatory PARAMETERS
     TokenTyp token;

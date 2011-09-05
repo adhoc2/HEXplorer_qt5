@@ -15,7 +15,7 @@ class FORMAT : public Item
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar, QTextStream  &in);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;

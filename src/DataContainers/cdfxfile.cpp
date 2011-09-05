@@ -109,6 +109,7 @@ bool SwInstance::isConsistentWith(Data *data)
 //         }
 //     }
 
+     data;
      isValid = true;
      return true;
 }
@@ -263,7 +264,7 @@ void CdfxFile::parseMSRSW(QDomNode &node)
 
             //SW-SYSTEM (*)
             QDomNodeList listSwSystem = swSystems.elementsByTagName("SW-SYSTEM");
-            for (int i = 0; i < listSwSystem.length(); i++)
+            for (uint i = 0; i < listSwSystem.length(); i++)
             {
                 //parse the SW-SYSTEM
                 QDomNode qnode= listSwSystem.at(i);

@@ -16,8 +16,13 @@
 #include "item.h"
 #include "threadparse.h"
 #include "a2lgrammar.h"
+#include <sstream>
 
+#include <iostream>
+#include <fstream>
+#include <string>
 using namespace std;
+
 
 A2l::A2l(QString fullFileName, QObject *parent): QObject(parent)
 {
@@ -78,37 +83,52 @@ void A2l::parse()
         return;
     else
     {
+        QTime timer;
+        timer.start();
         readSubset();
+        qDebug() << "5- readSubset " << timer.elapsed();
     }
 
     //get and write the timer value
     double t = timer.elapsed();
     QString sec ;
     sec.setNum(t/1000);
-    this->outputList.append("elapsed time for parsing = " + sec + " s");
+    this->outputList.append("elapsed time to parse the A2L file = " + sec + " s");
 
 }
 
 void A2l::parseSTA2l()
 {
-    //create a Stream to parse the file
-    QString str;
-    QTextStream in;
+//    QFile file(fullA2lName);
+//    if (!file.open(QFile::ReadOnly))
+//    {
+//        this->outputList.append("Cannot read file " + this->fullA2lName);
+//        return;
+//    }
 
-    QFile file(fullA2lName);
-    if (!file.open(QFile::ReadOnly))
+//    QTextStream in1(&file);
+//    QString str;
+//    str = in1.readAll();
+//    file.close();
+
+    //create a stream into the file (Merci Oscar...)
+    FILE* fid = fopen(fullA2lName.toStdString().c_str(),"r");
+    if (!fid)
     {
         this->outputList.append("Cannot read file " + this->fullA2lName);
         return;
     }
-
-    QTextStream in1(&file);
-    str = in1.readAll();
-    file.close();
-    in.setString(&str);
+    fseek(fid, 0, SEEK_END);
+    long size = ftell(fid);
+    rewind(fid);
+    char* buffer = (char*)malloc(size*sizeof(char));
+    fread(buffer, sizeof(char), size, fid);
+    fclose(fid);
+    QString strr(buffer);
+    QTextStream in(&strr, QIODevice::ReadOnly);
 
     // set the maximum for the progressbar
-    progBarMaxValue = str.length();
+    progBarMaxValue = strr.length();
 
     //delete previous tree and create a new rootNode
     A2lLexer *lexer = new A2lLexer();
@@ -138,18 +158,39 @@ void A2l::parseSTA2l()
 
 bool A2l::parseOpenMPA2l()
 {
-    //open the selected file
-    QFile file(fullA2lName);
-    if (!file.open(QFile::ReadOnly))
+    QTime time;
+    time.start();
+
+//    //open the selected file
+//    QFile file(fullA2lName);
+//    if (!file.open(QFile::ReadOnly))
+//    {
+//        this->outputList.append("Cannot read file " + this->fullA2lName);
+//        return true;
+//    }
+
+//    //create a stream into the file
+//    QTextStream in(&file);
+//    QString str = in.readAll();
+//    file.close();
+
+    //create a stream into the file (Merci Oscar...)
+    FILE* fid = fopen(fullA2lName.toStdString().c_str(),"r");
+    if (!fid)
     {
         this->outputList.append("Cannot read file " + this->fullA2lName);
-        return true;
+        return false;
     }
+    fseek(fid, 0, SEEK_END);
+    long size = ftell(fid);
+    rewind(fid);
+    char* buffer = (char*)malloc(size*sizeof(char));
+    fread(buffer, sizeof(char), size, fid);
+    fclose(fid);
+    QString str(buffer);
 
-    //create a stream into the file
-    QTextStream in(&file);
-    QString str = in.readAll();
-    file.close();
+    qDebug() << "1- read " << time.elapsed();
+    time.restart();
 
     //trunk a2lfile into 2 parts for multi-threading
     QString str1;
@@ -160,8 +201,14 @@ bool A2l::parseOpenMPA2l()
         return true;
     }
 
+    qDebug() << str1.size();
+    qDebug() << str2.size();
+
     // set the maximum for the progressbar
-    progBarMaxValue = str1.length() + str2.length();
+    progBarMaxValue = str.length();
+
+    qDebug() << "2- trunk " << time.elapsed();
+    time.restart();
 
     //create nodeA2l
     A2LFILE *nodeA2l1 = 0;
@@ -257,12 +304,18 @@ bool A2l::parseOpenMPA2l()
         outputList.append("thread 2 executed in " + num2 + " sec");
     }
 
+    qDebug() << "3- parse " << time.elapsed();
+    time.restart();
+
     //merge the 2 a2lFile
     merge(nodeA2l2, nodeA2l1);
     a2lFile = nodeA2l1;
 
+    qDebug() << "4- merge " << time.elapsed();
+
+
     //delete nodeA2l2; MEMORY LEAK !!!
-    //cannot be deleted because of the lexer and gramamr
+    //cannot be deleted because of the lexer and grammar
 
     return true;
 }
@@ -499,9 +552,18 @@ void A2l::readSubset()
 void A2l::checkProgressStream(int pos)
 {
     omp_set_lock(&lockValue);
-
     progressVal += pos;
-    emit incProgressBar(progressVal, progBarMaxValue);
+
+    double div = (double)progressVal/(double)progBarMaxValue;
+
+    if (div > 0.98)
+    {
+        emit incProgressBar(progBarMaxValue, progBarMaxValue);
+    }
+    else
+    {
+         emit incProgressBar(progressVal, progBarMaxValue);
+    }
 
     omp_unset_lock(&lockValue);
 }

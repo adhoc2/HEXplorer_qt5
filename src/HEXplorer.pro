@@ -15,11 +15,10 @@ RC_FILE = myappicon.rc
 equals( QMAKE_CXX, cl) {
 
     # --- LIBS Path --- #
-    QSCINTILLA_ROOT = LIBS\QScintilla-gpl-2.5.1
-    WINHOARD_ROOT = LIBS\hoard-38\src
-    QWT_ROOT = LIBS\qwt-6.0.1
-    QWT3D_ROOT = LIBS\qwtplot3d
-#    MATLAB_ROOT = C:\Programme\MATLAB\R2009b\extern
+    QSCINTILLA_ROOT = .\LIBS\QScintilla-gpl-2.5.1
+    WINHOARD_ROOT = .\LIBS\hoard-38\src
+    QWT_ROOT = .\LIBS\qwt-6.0.1
+    QWT3D_ROOT = .\LIBS\qwtplot3d
     # ----------------- #
 
     message("*** Compiler used : windows compiler $$QMAKE_CXX ***")
@@ -227,7 +226,8 @@ HEADERS += a2l.h \
     dialogdatadimension.h \
     charmodel.h \
     freezetablewidget.h \
-    sptablemodelHex.h
+    sptablemodelHex.h \
+    ciao.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -243,7 +243,8 @@ FORMS += formeditor.ui \
     dialogbitdisplay.ui \
     formscript.ui \
     dialogchooseexportformat.ui \
-    dialogdatadimension.ui
+    dialogdatadimension.ui \
+    ciao.ui
 SOURCES += a2l.cpp \
     formeditor.cpp \
     main.cpp \
@@ -373,4 +374,5 @@ SOURCES += a2l.cpp \
     dialogdatadimension.cpp \
     charmodel.cpp \
     freezetablewidget.cpp \
-    sptablemodelHex.cpp
+    sptablemodelHex.cpp \
+    ciao.cpp

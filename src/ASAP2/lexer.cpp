@@ -19,22 +19,47 @@ bool Buffer::isFull()
 
 void Buffer::read(QTextStream &in)
 {
-    QChar c;
-    in >> c;
+        char c;
+        in >> c;
+
+
+        if (c != 0 && c < 128)
+        {
+            value = c;
+            state = true;
+        }
+        else if (c > 127)
+        {
+            value = '?';
+            state = true;
+        }
+        else
+        {
+            value = 0;
+            state = false;
+        }
+
+
+//    QChar c;
+//    in >> c;
 
     
-    if (c != 0 && c.unicode() < 128)
-    {
-        value = c.toAscii();
-        state = true;
-    }
-    else if (c.unicode() > 127)
-        value = '?';
-    else
-    {
-        value = 0;
-        state = false;
-    }
+//    if (c != 0 && c.unicode() < 128)
+//    {
+//        value = c.toAscii();
+//        state = true;
+//    }
+//    else if (c.unicode() > 127)
+//    {
+//        value = '?';
+//        state = true;
+//    }
+
+//    else
+//    {
+//        value = 0;
+//        state = false;
+//    }
 }
 
 char Buffer::getAndClear()
@@ -65,6 +90,7 @@ A2lLexer::A2lLexer(QObject *parent) : QObject(parent)
     buffer = new Buffer();
     index = 0;
     position = 0;
+    previousLine = 0;
 }
 
 A2lLexer::~A2lLexer()
@@ -192,11 +218,12 @@ TokenTyp A2lLexer::getNextToken(QTextStream &in)
         }
     }
 
-    // emit erturn token for progressBar
+    // emit return token for progressBar
     if (in.pos() - position > 20000 || in.atEnd())
     {
-        emit returnedToken(in.pos() - position);
+        emit returnedToken(in.pos() - position + line - previousLine );
         position = in.pos();
+        previousLine = line;
     }
 
     return token;

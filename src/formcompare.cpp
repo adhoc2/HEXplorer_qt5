@@ -841,147 +841,330 @@ void FormCompare::on_compare_clicked()
     }
 
     int step = 0;
-    foreach (Data* data1, *listCompareSrc)
+    QList<Data*>::iterator i = listCompareSrc->begin();
+    QList<Data*>::iterator j = listCompareTrg->begin();
+    while ((i != listCompareSrc->end()) && (j != listCompareTrg->end()))
     {
-         QList<Data*>::iterator i =  qBinaryFind(listCompareTrg->begin(), listCompareTrg->end(), data1, dataLessThan);
-         if (i == listCompareTrg->end())
-         {
-             //listNotFoundSrc.append(data1);
-             listCompareSrc->removeOne(data1);
-         }
-         else
-         {
-             bool different = false;
-             Data *data2 = *i;
-             bool bl1;
-             bool bl2;
-             double val1 = 0;
-             double val2 = 0;
+        Data* di = *i;
+        Data* dj = *j;
+        if (di->getName() == dj->getName())
+        {
+            bool different = false;
+            bool bl1;
+            bool bl2;
+            double val1 = 0;
+            double val2 = 0;
 
-             //unit
-             if (data1->getUnit() != data2->getUnit())
-                 different = true;
+            //unit
+            if (di->getUnit() != dj->getUnit())
+                different = true;
 
-             //axisX
-             if (data1->isAxisXComparable && data2->isAxisXComparable)
-             {
-                 if (data1->xCount() == data2->xCount())
-                 {
-                     for (int i = 0; i < data1->xCount(); i++)
-                     {
-                         val1 = data1->getX(i).toDouble(&bl1);
-                         val2 = data2->getX(i).toDouble(&bl2);
-                         if (bl1 && bl2)
-                         {
-                             if (val1 != val2)
-                                different = true;
-                         }
-                         else
-                         {
-                             if (data1->getX(i) != data2->getX(i))
-                                 different = true;
-                         }
-                     }
-                 }
-                 else
-                     different = true;
-             }
-
-             //axisY
-             if (data1->isAxisYComparable && data2->isAxisYComparable)
-             {
-                 if (data1->yCount() == data2->yCount())
-                 {
-                    for (int i = 0; i < data1->yCount(); i++)
+            //axisX
+            if (!different && di->isAxisXComparable && dj->isAxisXComparable)
+            {
+                if (di->xCount() == dj->xCount())
+                {
+                    for (int i = 0; i < di->xCount(); i++)
                     {
-                        val1 = data1->getY(i).toDouble(&bl1);
-                        val2 = data2->getY(i).toDouble(&bl2);
+                        val1 = di->getX(i).toDouble(&bl1);
+                        val2 = dj->getX(i).toDouble(&bl2);
                         if (bl1 && bl2)
                         {
-                            if (val1 != val2)
-                               different = true;
+                            if (val1 != val2) {
+                                different = true;
+                                break;
+                            }
                         }
                         else
                         {
-                            if (data1->getY(i) != data2->getY(i))
+                            if (di->getX(i) != dj->getX(i)) {
                                 different = true;
+                                break;
+                            }
                         }
-                     }
-                 }
-                 else
-                     different = true;
-             }
+                    }
+                }
+                else {
+                    different = true;
+                }
+            }
 
-             //Zvalues
-             if (data1->zCount() == data2->zCount())
-             {
-                 int Nrow = data1->yCount();
-                 int Ncol = data1->xCount();
+            //axisY
+            if (!different && di->isAxisYComparable && dj->isAxisYComparable)
+            {
+                if (di->yCount() == dj->yCount())
+                {
+                    for (int i = 0; i < di->yCount(); i++)
+                    {
+                        val1 = di->getY(i).toDouble(&bl1);
+                        val2 = dj->getY(i).toDouble(&bl2);
+                        if (bl1 && bl2)
+                        {
+                            if (val1 != val2) {
+                                different = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            if (di->getY(i) != dj->getY(i)) {
+                                different = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else {
+                    different = true;
+                }
+            }
 
-                 //check map // curve
-                 if (Nrow == 0)
-                 {
-                     Nrow = 1;
-                 }
+            //Zvalues
+            if (!different && (di->zCount() == dj->zCount()))
+            {
+                int Nrow = di->yCount();
+                int Ncol = di->xCount();
 
-                 if (Ncol == 0)
-                 {
-                     Ncol = 1;
-                 }
+                //check map // curve
+                if (Nrow == 0)
+                {
+                    Nrow = 1;
+                }
+
+                if (Ncol == 0)
+                {
+                    Ncol = 1;
+                }
 
                 for (int i = 0; i < Nrow; i++)
-                 {
+                {
                     for (int j = 0; j < Ncol; j++)
-                     {
-                        val1 = data1->getZ(i, j, &bl1);
-                        val2 = data2->getZ(i, j, &bl2);
+                    {
+                        val1 = di->getZ(i, j, &bl1);
+                        val2 = dj->getZ(i, j, &bl2);
 
                         if (bl1 && bl2)
                         {
                             if (val1 != val2)
                             {
                                 different = true;
+                                break;
                             }
                         }
                         else
                         {
-                            if (data1->getZ(i, j) != data2->getZ(i, j))
+                            if (di->getZ(i, j) != dj->getZ(i, j)) {
                                 different = true;
+                                break;
+                            }
                         }
 
                     }
                 }
-             }
-             else
-                 different = true;
+            }
+            else
+                different = true;
 
-             if (!different)
-             {
-                 listCompareSrc->removeOne(data1);
-                 listCompareTrg->removeOne(data2);
-             }
-         }
+            if (!different)
+            {
+                i = listCompareSrc->erase(i);
+                j = listCompareTrg->erase(j);
+            }
+            else
+            {
+                i++;
+                j++;
+            }
 
-         //progressBar
-         step++;
-         if (step == stepMax)
-         {
+        }
+        else if (di->getName() < dj->getName())
+        {
+            i = listCompareSrc->erase(i);
+
+        }
+        else
+        {
+            j = listCompareTrg->erase(j);
+        }
+
+        //progressBar
+        step++;
+        if (step == stepMax)
+        {
             step = 0;
             ui->progressBar->setValue(ui->progressBar->value() + stepMax);
             qApp->processEvents();
-         }
-     }
-
-    // remove the data* from listDiffTrg not present into listDiffSrc
-    foreach (Data* data2, *listCompareTrg)
-    {
-         QList<Data*>::iterator i =  qBinaryFind(listCompareSrc->begin(), listCompareSrc->end(), data2, dataLessThan);
-         if (i == listCompareSrc->end())
-         {
-             //listNotFoundTrg.append(data2);
-             listCompareTrg->removeOne(data2);
-         }
+        }
     }
+
+    if (i != listCompareSrc->end() && j == listCompareTrg->end())
+    {
+        listCompareSrc->erase(i, listCompareSrc->end());
+    }
+    else if (i == listCompareSrc->end() && j != listCompareTrg->end())
+    {
+        listCompareTrg->erase(j, listCompareTrg->end());
+    }
+
+//    int step = 0;
+//    foreach (Data* data1, *listCompareSrc)
+//    {
+//         QList<Data*>::iterator i =  qBinaryFind(listCompareTrg->begin(), listCompareTrg->end(), data1, dataLessThan);
+//         if (i == listCompareTrg->end())
+//         {
+//             //listNotFoundSrc.append(data1);
+//             listCompareSrc->removeOne(data1);
+//         }
+//         else
+//         {
+//             bool different = false;
+//             Data *data2 = *i;
+//             bool bl1;
+//             bool bl2;
+//             double val1 = 0;
+//             double val2 = 0;
+
+//             //unit
+//             if (data1->getUnit() != data2->getUnit())
+//                 different = true;
+
+//             //axisX
+//             if (data1->isAxisXComparable && data2->isAxisXComparable)
+//             {
+//                 if (data1->xCount() == data2->xCount())
+//                 {
+//                     for (int i = 0; i < data1->xCount(); i++)
+//                     {
+//                         val1 = data1->getX(i).toDouble(&bl1);
+//                         val2 = data2->getX(i).toDouble(&bl2);
+//                         if (bl1 && bl2)
+//                         {
+//                             if (val1 != val2)
+//                             {
+//                                different = true;
+//                                break;
+//                             }
+//                         }
+//                         else
+//                         {
+//                             if (data1->getX(i) != data2->getX(i))
+//                             {
+//                                 different = true;
+//                                 break;
+//                             }
+//                         }
+//                     }
+//                 }
+//                 else
+//                     different = true;
+//             }
+
+//             //axisY
+//             if (!different && data1->isAxisYComparable && data2->isAxisYComparable)
+//             {
+//                 if (data1->yCount() == data2->yCount())
+//                 {
+//                    for (int i = 0; i < data1->yCount(); i++)
+//                    {
+//                        val1 = data1->getY(i).toDouble(&bl1);
+//                        val2 = data2->getY(i).toDouble(&bl2);
+//                        if (bl1 && bl2)
+//                        {
+//                            if (val1 != val2)
+//                            {
+//                               different = true;
+//                               break;
+//                            }
+//                        }
+//                        else
+//                        {
+//                            if (data1->getY(i) != data2->getY(i))
+//                            {
+//                                different = true;
+//                                break;
+//                            }
+//                        }
+//                     }
+//                 }
+//                 else
+//                     different = true;
+//             }
+
+//             //Zvalues
+//             if (!different && data1->zCount() == data2->zCount())
+//             {
+//                 int Nrow = data1->yCount();
+//                 int Ncol = data1->xCount();
+
+//                 //check map // curve
+//                 if (Nrow == 0)
+//                 {
+//                     Nrow = 1;
+//                 }
+
+//                 if (Ncol == 0)
+//                 {
+//                     Ncol = 1;
+//                 }
+
+//                for (int i = 0; i < Nrow; i++)
+//                 {
+//                    for (int j = 0; j < Ncol; j++)
+//                     {
+//                        val1 = data1->getZ(i, j, &bl1);
+//                        val2 = data2->getZ(i, j, &bl2);
+
+//                        if (bl1 && bl2)
+//                        {
+//                            if (val1 != val2)
+//                            {
+//                                different = true;
+//                            }
+//                        }
+//                        else
+//                        {
+//                            if (data1->getZ(i, j) != data2->getZ(i, j))
+//                            {
+//                                different = true;
+//                                break;
+//                            }
+//                        }
+
+//                    }
+//                }
+//             }
+//             else
+//                 different = true;
+
+//             if (!different)
+//             {
+//                 listCompareSrc->removeOne(data1);
+//                 //listCompareTrg->removeOne(data2);
+//                 listCompareTrg->erase(i);
+//             }
+//         }
+
+//         //progressBar
+//         step++;
+//         if (step == stepMax)
+//         {
+//            step = 0;
+//            ui->progressBar->setValue(ui->progressBar->value() + stepMax);
+//            qApp->processEvents();
+//         }
+//     }
+
+//    // remove the data* from listDiffTrg not present into listDiffSrc
+//    foreach (Data* data2, *listCompareTrg)
+//    {
+//         QList<Data*>::iterator i =  qBinaryFind(listCompareSrc->begin(), listCompareSrc->end(), data2, dataLessThan);
+//         if (i == listCompareSrc->end())
+//         {
+//             //listNotFoundTrg.append(data2);
+//             //listCompareTrg->removeOne(data2);
+//             listCompareTrg->erase(i);
+//         }
+//    }
 
     //set the progress bar at its maximum value
     ui->progressBar->setValue(ui->progressBar->maximum());

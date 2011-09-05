@@ -7,6 +7,7 @@
 #include <QPixmap>
 #include "Nodes/project.h"
 
+
 class WorkProject;
 class A2lGrammar;
 
@@ -14,7 +15,7 @@ class A2LFILE : public Node
 {
     public:
         A2LFILE(QTextStream &in, Node *parentNode, A2lLexer *lexer,
-                QStringList *errorList, QString fullFileName = "");
+                QStringList *errorList, QString fullFileName = "");       
         ~A2LFILE();
 
         std::string pixmap();
