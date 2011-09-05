@@ -200,7 +200,7 @@ TokenTyp LexerCsv::indentation(QTextStream &in, char &ch)
 
     // check the next character
     buffer->read(in);
-    if (isValueSeparator(buffer->check()))
+    if (isValueSeparator(buffer->getValue()))
     {
         lexem += buffer->getAndClear();
         return Indentation;
@@ -223,38 +223,38 @@ TokenTyp LexerCsv::commentM(QTextStream &in)
     while (!exit)
     {
         buffer->read(in);
-        if (buffer->check() == '*')
+        if (buffer->getValue() == '*')
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
-            while (buffer->check() == '*')
+            while (buffer->getValue() == '*')
             {
                 lexem += buffer->getAndClear();
                 buffer->read(in);
             }
 
-            if (buffer->check() == '/')
+            if (buffer->getValue() == '/')
             {
                 lexem += buffer->getAndClear();
                 exit = true;
             }
-            else if (buffer->check() == 0)
+            else if (buffer->getValue() == 0)
                 exit = true;
             else
             {
-                if (buffer->check() == '\n')
+                if (buffer->getValue() == '\n')
                     this->incLine();
                 lexem +=  buffer->getAndClear();
             }
 
         }
-        else if (buffer->check() == 0)
+        else if (buffer->getValue() == 0)
         {
             exit = true;
         }
         else
         {
-            if (buffer->check() == '\n')
+            if (buffer->getValue() == '\n')
                 this->incLine();
             lexem +=  buffer->getAndClear();
         }
@@ -271,7 +271,7 @@ TokenTyp LexerCsv::commentL(QTextStream &in)
     lexem = "*";
 
     buffer->read(in);
-    while (buffer->check() != '\n' && buffer->check() != '\r' && buffer->check() != 0)
+    while (buffer->getValue() != '\n' && buffer->getValue() != '\r' && buffer->getValue() != 0)
     {
         lexem += buffer->getAndClear();
         buffer->read(in);
@@ -286,7 +286,7 @@ TokenTyp LexerCsv::block(QTextStream &in, char &ch)
     lexem += ch;
 
     buffer->read(in);
-    while (isLetter(buffer->check()) || isDigit(buffer->check()) || buffer->check() == '_')
+    while (isLetter(buffer->getValue()) || isDigit(buffer->getValue()) || buffer->getValue() == '_')
     {
          lexem += buffer->getAndClear();
          buffer->read(in);
@@ -316,16 +316,16 @@ TokenTyp LexerCsv::identifier(QTextStream &in, char &ch)
         token = getPartialString(in);
         if (token == Identifier)
         {
-            if (buffer->check() == '.')
+            if (buffer->getValue() == '.')
             {
                 lexem += buffer->getAndClear();
                 buffer->read(in);
             }
-            else if (isNewLine(buffer->check()))
+            else if (isNewLine(buffer->getValue()))
             {
                 exit = true;
             }
-            else if (isValueSeparator(buffer->check()))
+            else if (isValueSeparator(buffer->getValue()))
             {
                 exit = true;
             }
@@ -358,31 +358,31 @@ TokenTyp LexerCsv::number(QTextStream &in, char &ch)
     lexem += ch;
 
     buffer->read(in);
-    while(isDigit(buffer->check()))
+    while(isDigit(buffer->getValue()))
     {        
         lexem += buffer->getAndClear();
         buffer->read(in);
     }
 
-    if (buffer->check() == decimalPointSeparator)
+    if (buffer->getValue() == decimalPointSeparator)
     {
         lexem += buffer->getAndClear();
         buffer->read(in);
-        while(isDigit(buffer->check()))
+        while(isDigit(buffer->getValue()))
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
         }
 
-        if (buffer->check() == 'E' || buffer->check() == 'e')
+        if (buffer->getValue() == 'E' || buffer->getValue() == 'e')
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
-            if (buffer->check() == '+' || buffer->check() == '-')
+            if (buffer->getValue() == '+' || buffer->getValue() == '-')
             {
                 lexem += buffer->getAndClear();
                 buffer->read(in);
-                while(isDigit(buffer->check()))
+                while(isDigit(buffer->getValue()))
                 {
                     lexem += buffer->getAndClear();
                     buffer->read(in);
@@ -404,15 +404,15 @@ TokenTyp LexerCsv::number(QTextStream &in, char &ch)
         }
 
     }
-    else if(buffer->check() == 'E' || buffer->check() == 'e')
+    else if(buffer->getValue() == 'E' || buffer->getValue() == 'e')
     {
         lexem += buffer->getAndClear();
         buffer->read(in);
-        if (buffer->check() == '+' || buffer->check() == '-')
+        if (buffer->getValue() == '+' || buffer->getValue() == '-')
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
-            while(isDigit(buffer->check()))
+            while(isDigit(buffer->getValue()))
             {
                 lexem += buffer->getAndClear();
                 buffer->read(in);
@@ -426,7 +426,7 @@ TokenTyp LexerCsv::number(QTextStream &in, char &ch)
             return token;
         }
     }
-    else if (buffer->check() == 'x')
+    else if (buffer->getValue() == 'x')
     {
          token = hexadecimal(in);
          return token;
@@ -449,17 +449,17 @@ TokenTyp LexerCsv::string(QTextStream &in)
     bool exit = false;
     while (!exit)
     {        
-        while (buffer->check() != stringDelimiter && buffer->check() != '\\' && buffer->check() != '\n' && buffer->check() != 0 )
+        while (buffer->getValue() != stringDelimiter && buffer->getValue() != '\\' && buffer->getValue() != '\n' && buffer->getValue() != 0 )
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
         }
 
-        if (buffer->check() == stringDelimiter)
+        if (buffer->getValue() == stringDelimiter)
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
-            if (buffer->check() == stringDelimiter)
+            if (buffer->getValue() == stringDelimiter)
             {
                 lexem += buffer->getAndClear();
                 buffer->read(in);
@@ -468,7 +468,7 @@ TokenTyp LexerCsv::string(QTextStream &in)
                 exit = true;
 
         }
-        else if (buffer->check() == '\\')
+        else if (buffer->getValue() == '\\')
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
@@ -492,7 +492,7 @@ TokenTyp LexerCsv::hexadecimal(QTextStream &in)
     lexem = "0x";
 
     buffer->read(in);
-    while (isHexDigit(buffer->check()))
+    while (isHexDigit(buffer->getValue()))
     {
         lexem += buffer->getAndClear();
         buffer->read(in);
@@ -504,24 +504,24 @@ TokenTyp LexerCsv::getPartialString(QTextStream &in)
 {
     TokenTyp token = Identifier;
 
-    while (isDigit(buffer->check()) || isLetter(buffer->check()) || buffer->check() == '_')
+    while (isDigit(buffer->getValue()) || isLetter(buffer->getValue()) || buffer->getValue() == '_')
     {
         lexem += buffer->getAndClear();
         buffer->read(in);        
     }
 
-    if (buffer->check() == '[')
+    if (buffer->getValue() == '[')
     {
         lexem += buffer->getAndClear();
         buffer->read(in);        
 
-        while (isDigit(buffer->check()) || isLetter(buffer->check()) || buffer->check() == '_')
+        while (isDigit(buffer->getValue()) || isLetter(buffer->getValue()) || buffer->getValue() == '_')
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
         }
 
-        if (buffer->check() == ']')
+        if (buffer->getValue() == ']')
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
@@ -529,13 +529,13 @@ TokenTyp LexerCsv::getPartialString(QTextStream &in)
         else
             token = myUnknown;
     }
-    else if (buffer->check() == '.')
+    else if (buffer->getValue() == '.')
     {
     }
-    else if (isValueSeparator(buffer->check()))
+    else if (isValueSeparator(buffer->getValue()))
     {
     }
-    else if (!isNewLine(buffer->check()))
+    else if (!isNewLine(buffer->getValue()))
     {
         lexem += buffer->getAndClear();
         token = myUnknown;

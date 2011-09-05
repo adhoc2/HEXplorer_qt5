@@ -143,6 +143,8 @@ void A2l::parseSTA2l()
     strcpy(nodeA2l->name, QFileInfo(fullA2lName).fileName().toLocal8Bit().data());
     a2lFile = nodeA2l;
 
+    qDebug() << lexer->tamere;
+
     // show error
     if (errorList->isEmpty())
     {
@@ -189,7 +191,7 @@ bool A2l::parseOpenMPA2l()
     fclose(fid);
     QString str(buffer);
 
-    qDebug() << "1- read " << time.elapsed();
+    qDebug() << "\n1- read " << time.elapsed();
     time.restart();
 
     //trunk a2lfile into 2 parts for multi-threading
@@ -200,9 +202,6 @@ bool A2l::parseOpenMPA2l()
         parseSTA2l();
         return true;
     }
-
-    qDebug() << str1.size();
-    qDebug() << str2.size();
 
     // set the maximum for the progressbar
     progBarMaxValue = str.length();
@@ -367,6 +366,7 @@ bool A2l::trunkA2l(QString &str, QString &str1, QString &str2)
                "    PROJECT_NO P_662\n"
                "  /end HEADER \n"
                "  /begin MODULE CHUNKstart DIM \"\"\n" + str1.right(str1.size()- lastBeginChar) + str2;
+
 
         str1 = str1.left(lastBeginChar) + "\nCHUNKend";
 

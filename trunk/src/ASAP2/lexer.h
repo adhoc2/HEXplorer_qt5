@@ -27,7 +27,7 @@ class Buffer
         Buffer();
         void read(QTextStream &in);
         char getAndClear();
-        char check();
+        char getValue();
         void clear();
         bool isFull();
 
@@ -53,7 +53,9 @@ class A2lLexer : public QObject
         void backward(QTextStream &in);
         A2lGrammar *grammar;
 
-    private:
+        int tamere;
+
+    private:        
         Buffer *buffer;
         int position;
         int previousLine;
@@ -62,7 +64,6 @@ class A2lLexer : public QObject
         std::string lexem;
         QHash<QString, TokenTyp> keywordsList;
         TokenTyp begin(QTextStream &in, char ch);
-        //TokenTyp oldIdentifier(QTextStream &in, char &ch);
         TokenTyp identifier(QTextStream &in, char &ch);
         TokenTyp string(QTextStream &in);
         TokenTyp commentL(QTextStream &in);
