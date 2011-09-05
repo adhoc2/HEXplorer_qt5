@@ -226,8 +226,7 @@ HEADERS += a2l.h \
     dialogdatadimension.h \
     charmodel.h \
     freezetablewidget.h \
-    sptablemodelHex.h \
-    ciao.h
+    sptablemodelHex.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -243,8 +242,7 @@ FORMS += formeditor.ui \
     dialogbitdisplay.ui \
     formscript.ui \
     dialogchooseexportformat.ui \
-    dialogdatadimension.ui \
-    ciao.ui
+    dialogdatadimension.ui
 SOURCES += a2l.cpp \
     formeditor.cpp \
     main.cpp \
@@ -374,5 +372,4 @@ SOURCES += a2l.cpp \
     dialogdatadimension.cpp \
     charmodel.cpp \
     freezetablewidget.cpp \
-    sptablemodelHex.cpp \
-    ciao.cpp
+    sptablemodelHex.cpp
