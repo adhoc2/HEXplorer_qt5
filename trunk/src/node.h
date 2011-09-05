@@ -71,6 +71,10 @@ class Node
         Node* parentNode;
         void showError(QString str);
 
+private:
+        Node* interpolationSearch(QList<Node*> sortedArray, QString str);
+        int distance(QString source, QString target);
+
 };
 
 #endif

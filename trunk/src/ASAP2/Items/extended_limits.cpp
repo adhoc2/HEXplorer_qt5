@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,EXTENDED_LIMITS> EXTENDED_LIMITS::itemFactory;
 
-EXTENDED_LIMITS::EXTENDED_LIMITS(QTextStream &in, Node *parentNode)  : Item(parentNode)
+EXTENDED_LIMITS::EXTENDED_LIMITS(QTextStream  &in, Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -25,7 +25,7 @@ EXTENDED_LIMITS::~EXTENDED_LIMITS()
     }
 }
 
-void EXTENDED_LIMITS::parseFixPar(QList<TokenTyp> *typePar, QTextStream &in)
+void EXTENDED_LIMITS::parseFixPar(QList<TokenTyp> *typePar, QTextStream  &in)
 {
     //Mandatory PARAMETERS
     TokenTyp token;

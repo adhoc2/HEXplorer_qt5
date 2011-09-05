@@ -1,6 +1,9 @@
 #include "Nodes/project.h"
 #include <QMessageBox>
+#include <sstream>
 #include "a2lgrammar.h"
+
+using namespace std;
 
 PROJECT::PROJECT(QTextStream &in, Node *parentNode, A2lLexer *lexer)
     : Node(parentNode, lexer, parentNode->errorList)

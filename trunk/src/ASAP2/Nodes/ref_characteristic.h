@@ -10,7 +10,7 @@
 class REF_CHARACTERISTIC : public Node
 {
     public:
-        REF_CHARACTERISTIC(QTextStream &in, Node *parentNode);
+        REF_CHARACTERISTIC(QTextStream  &in, Node *parentNode);
         ~REF_CHARACTERISTIC();
 
         QMap<std::string, std::string> *getParameters();
@@ -24,16 +24,16 @@ class REF_CHARACTERISTIC : public Node
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;
-        void parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar,  QTextStream  &in);
 
         // Opt parameters
         QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
         QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;
-        TokenTyp parseOptPar(QTextStream &in);
+        TokenTyp parseOptPar(QTextStream  &in);
 
         // CHARACTERISTICS list
         QList<std::string> charList;
-        TokenTyp parseListChar(QTextStream &in);
+        TokenTyp parseListChar(QTextStream  &in);
 };
 
 #endif // REF_CHARACTERISTIC_H

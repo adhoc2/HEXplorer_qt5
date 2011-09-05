@@ -8,14 +8,14 @@
 class DEFAULT_VALUE : public Item
 {
     public:
-        DEFAULT_VALUE(QTextStream &in, Node *parentNode);
+        DEFAULT_VALUE(QTextStream  &in, Node *parentNode);
         ~DEFAULT_VALUE();
         QMap<std::string, std::string> getParameters();
         static Factory<Item,DEFAULT_VALUE> itemFactory;
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar, QTextStream  &in);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;

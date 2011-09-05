@@ -11,7 +11,7 @@ Factory<Node,REF_CHARACTERISTIC> REF_CHARACTERISTIC::nodeFactory;
 bool nodeLessThan( const Node *a, const Node *b );
 bool itemLessThan( const Item *a, const Item *b );
 
-REF_CHARACTERISTIC::REF_CHARACTERISTIC(QTextStream &in, Node *parentNode)
+REF_CHARACTERISTIC::REF_CHARACTERISTIC(QTextStream  &in, Node *parentNode)
     : Node(parentNode, parentNode->lex, parentNode->errorList)
 {
     //Set the line where the Node starts in ASAP file
@@ -78,7 +78,7 @@ std::string  REF_CHARACTERISTIC::pixmap()
     return ":/icones/CHAR.bmp";
 }
 
-TokenTyp REF_CHARACTERISTIC::parseListChar(QTextStream &in)
+TokenTyp REF_CHARACTERISTIC::parseListChar(QTextStream  &in)
 {
     TokenTyp token = lex->getNextToken(in);
 

@@ -3,7 +3,7 @@
 
 Factory<Node,IF_DATA> IF_DATA::nodeFactory;
 
-IF_DATA::IF_DATA(QTextStream &in, Node *parentNode)
+IF_DATA::IF_DATA(QTextStream  &in, Node *parentNode)
     : Node(parentNode, parentNode->lex, parentNode->errorList)
 {
     parse(in);
@@ -14,7 +14,7 @@ IF_DATA::~IF_DATA()
     delete[] name;
 }
 
-void IF_DATA::parse(QTextStream &in)
+void IF_DATA::parse(QTextStream  &in)
 {
 
     TokenTyp token = lex->getNextToken(in);

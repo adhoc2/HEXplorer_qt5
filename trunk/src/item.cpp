@@ -26,6 +26,7 @@ TokenTyp Item::nextToken(QTextStream &in)
     return token;
 }
 
+
 void Item::showError(QString str)
 {
     QString s;

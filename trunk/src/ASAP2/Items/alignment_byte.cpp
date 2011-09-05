@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,ALIGNMENT_BYTE> ALIGNMENT_BYTE::itemFactory;
 
-ALIGNMENT_BYTE::ALIGNMENT_BYTE(QTextStream &in, Node *parentNode)  : Item(parentNode)
+ALIGNMENT_BYTE::ALIGNMENT_BYTE(QTextStream  &in, Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -25,7 +25,7 @@ ALIGNMENT_BYTE::~ALIGNMENT_BYTE()
     }
 }
 
-void ALIGNMENT_BYTE::parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in)
+void ALIGNMENT_BYTE::parseFixPar(QList<TokenTyp> *typePar,  QTextStream  &in)
 {
     //Mandatory PARAMETERS
     TokenTyp token;

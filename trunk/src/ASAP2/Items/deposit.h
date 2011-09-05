@@ -8,14 +8,14 @@
 class DEPOSIT : public Item
 {
     public:
-        DEPOSIT(QTextStream &in, Node *parentNode);
+        DEPOSIT(QTextStream  &in, Node *parentNode);
         ~DEPOSIT();
         QMap<std::string, std::string> getParameters();
         static Factory<Item, DEPOSIT> itemFactory;
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar, QTextStream  &in);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;

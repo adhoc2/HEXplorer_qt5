@@ -8,14 +8,14 @@
 class ALIGNMENT_BYTE : public Item
 {
     public:
-        ALIGNMENT_BYTE(QTextStream &in, Node *parentNode);
+        ALIGNMENT_BYTE(QTextStream  &in, Node *parentNode);
         ~ALIGNMENT_BYTE();
         QMap<std::string, std::string> getParameters();
         static Factory<Item,ALIGNMENT_BYTE> itemFactory;
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar,  QTextStream  &in);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;
