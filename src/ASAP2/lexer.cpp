@@ -3,6 +3,7 @@
 #include <sstream>
 #include "qdebug.h"
 #include "omp.h"
+#include <QTime>
 
 /**********  Class Buffer *************/
 
@@ -21,7 +22,6 @@ void Buffer::read(QTextStream &in)
 {
         char c;
         in >> c;
-
 
         if (c != 0 && c < 128)
         {
@@ -65,14 +65,16 @@ void Buffer::read(QTextStream &in)
 char Buffer::getAndClear()
 {
     char c = value;
-    this->clear();
+    this->value = 0;
+    this->state = false;
+    //this->clear();
     return c;
 }
 
-char Buffer::check()
+char Buffer::getValue()
 {
-    char c = value;
-    return c;
+    //char c = value;
+    return this->value;
 }
 
 void Buffer::clear()
@@ -91,6 +93,7 @@ A2lLexer::A2lLexer(QObject *parent) : QObject(parent)
     index = 0;
     position = 0;
     previousLine = 0;
+    tamere = 0;
 }
 
 A2lLexer::~A2lLexer()
@@ -213,8 +216,10 @@ TokenTyp A2lLexer::getNextToken(QTextStream &in)
         }
         else
         {
-            in >> ch;
-            token = begin(in, ch);
+            //in >> ch;
+            //token = begin(in, ch);
+            buffer->read(in);
+            token = begin(in, buffer->getAndClear());
         }
     }
 
@@ -284,7 +289,9 @@ TokenTyp A2lLexer::begin(QTextStream &in, char ch)
     {        
         if (ch == '\n')
             line++;
-        in >> ch;
+        //in >> ch;
+        buffer->read(in);
+        ch = buffer->getAndClear();
     }
 
     index = in.pos() - 1;
@@ -296,7 +303,15 @@ TokenTyp A2lLexer::begin(QTextStream &in, char ch)
     }
     else
     {
-        if (ch == '/')
+        if(isLetter(ch) || ch == '_')
+        {
+            token = this->identifier(in, ch);
+        }
+        else if (isDigit(ch))
+        {
+            token = this->number(in, ch);
+        }
+        else if (ch == '/')
         {
             in >> ch;
             if (ch == '/')
@@ -329,14 +344,6 @@ TokenTyp A2lLexer::begin(QTextStream &in, char ch)
             //buffer->clear();
             token = this->number(in, ch);
         }
-        else if (isDigit(ch))
-        {
-            token = this->number(in, ch);
-        }
-        else if(isLetter(ch) || ch == '_')
-        {
-            token = this->identifier(in, ch);
-        }
         /*else if (this->isA2mlSym(ch))
         {
             token = new Token;
@@ -364,38 +371,38 @@ TokenTyp A2lLexer::commentM(QTextStream &in)
     while (!exit)
     {
         buffer->read(in);
-        if (buffer->check() == '*')
+        if (buffer->getValue() == '*')
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
-            while (buffer->check() == '*')
+            while (buffer->getValue() == '*')
             {
                 lexem += buffer->getAndClear();
                 buffer->read(in);
             }
 
-            if (buffer->check() == '/')
+            if (buffer->getValue() == '/')
             {
                 lexem += buffer->getAndClear();
                 exit = true;
             }
-            else if (buffer->check() == 0)
+            else if (buffer->getValue() == 0)
                 exit = true;
             else
             {
-                if (buffer->check() == '\n')
+                if (buffer->getValue() == '\n')
                     line++;
                 lexem +=  buffer->getAndClear();
             }
 
         }
-        else if (buffer->check() == 0)
+        else if (buffer->getValue() == 0)
         {
             exit = true;
         }
         else
         {
-            if (buffer->check() == '\n')
+            if (buffer->getValue() == '\n')
                 line++;
             lexem +=  buffer->getAndClear();
         }
@@ -412,7 +419,7 @@ TokenTyp A2lLexer::commentL(QTextStream &in)
     lexem = "//";
 
     buffer->read(in);
-    while (buffer->check() != '\n' && buffer->check() != '\r' && buffer->check() != 0)
+    while (buffer->getValue() != '\n' && buffer->getValue() != '\r' && buffer->getValue() != 0)
     {
         lexem += buffer->getAndClear();
         buffer->read(in);
@@ -427,7 +434,7 @@ TokenTyp A2lLexer::block(QTextStream &in, char &ch)
     lexem += ch;
 
     buffer->read(in);
-    while (isLetter(buffer->check()) || isDigit(buffer->check()) || buffer->check() == '_')
+    while (isLetter(buffer->getValue()) || isDigit(buffer->getValue()) || buffer->getValue() == '_')
     {
          lexem += buffer->getAndClear();
          buffer->read(in);
@@ -449,19 +456,18 @@ TokenTyp A2lLexer::identifier(QTextStream &in, char &ch)
     lexem += ch;
 
     buffer->read(in);
-
     bool exit = false;
     while (!exit)
     {
         token = getPartialString(in);
         if (token == Identifier)
         {
-            if (buffer->check() == '.')
+            if (buffer->getValue() == '.')
             {
                 lexem += buffer->getAndClear();
                 buffer->read(in);
             }
-            else if (isSeparator(buffer->check()))
+            else if (isSeparator(buffer->getValue()))
                 exit = true;
             else
             {
@@ -474,13 +480,17 @@ TokenTyp A2lLexer::identifier(QTextStream &in, char &ch)
             exit = true;
     }
 
-   if (token == Identifier)
+    //check if the identifier is a keyword
+    QTime timer;
+    timer.start();
+    if (token == Identifier)
     {
-
         TokenTyp tok = keywordsList.value(lexem.c_str());
         if (tok != 0)
             token = tok;
     }
+
+    tamere += timer.elapsed();
 
     return token;
 }
@@ -491,31 +501,31 @@ TokenTyp A2lLexer::number(QTextStream &in, char &ch)
     lexem += ch;
 
     buffer->read(in);
-    while(isDigit(buffer->check()))
+    while(isDigit(buffer->getValue()))
     {        
         lexem += buffer->getAndClear();
         buffer->read(in);
     }
 
-    if (buffer->check() == '.')
+    if (buffer->getValue() == '.')
     {
         lexem += buffer->getAndClear();
         buffer->read(in);
-        while(isDigit(buffer->check()))
+        while(isDigit(buffer->getValue()))
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
         }
 
-        if (buffer->check() == 'E' || buffer->check() == 'e')
+        if (buffer->getValue() == 'E' || buffer->getValue() == 'e')
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
-            if (buffer->check() == '+' || buffer->check() == '-')
+            if (buffer->getValue() == '+' || buffer->getValue() == '-')
             {
                 lexem += buffer->getAndClear();
                 buffer->read(in);
-                while(isDigit(buffer->check()))
+                while(isDigit(buffer->getValue()))
                 {
                     lexem += buffer->getAndClear();
                     buffer->read(in);
@@ -538,15 +548,15 @@ TokenTyp A2lLexer::number(QTextStream &in, char &ch)
         }
 
     }
-    else if(buffer->check() == 'E' || buffer->check() == 'e')
+    else if(buffer->getValue() == 'E' || buffer->getValue() == 'e')
     {
         lexem += buffer->getAndClear();
         buffer->read(in);
-        if (buffer->check() == '+' || buffer->check() == '-')
+        if (buffer->getValue() == '+' || buffer->getValue() == '-')
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
-            while(isDigit(buffer->check()))
+            while(isDigit(buffer->getValue()))
             {
                 lexem += buffer->getAndClear();
                 buffer->read(in);
@@ -560,7 +570,7 @@ TokenTyp A2lLexer::number(QTextStream &in, char &ch)
             return token;
         }
     }
-    else if (buffer->check() == 'x')
+    else if (buffer->getValue() == 'x')
     {
          token = hexadecimal(in);
          return token;
@@ -580,26 +590,26 @@ TokenTyp A2lLexer::string(QTextStream &in)
     buffer->read(in);
 
     // StringFormat
-    if (buffer->check() == '%')
+    if (buffer->getValue() == '%')
     {
         token = StringFormat;
         lexem += buffer->getAndClear();
         buffer->read(in);
-        while(isDigit(buffer->check()))
+        while(isDigit(buffer->getValue()))
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
         }
-        if (buffer->check() == '.')
+        if (buffer->getValue() == '.')
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
-            while(isDigit(buffer->check()))
+            while(isDigit(buffer->getValue()))
             {
                 lexem += buffer->getAndClear();
                 buffer->read(in);
             }
-            if (buffer->check() == '"')
+            if (buffer->getValue() == '"')
             {
                 lexem += buffer->getAndClear();
                 return token;
@@ -612,17 +622,17 @@ TokenTyp A2lLexer::string(QTextStream &in)
     bool exit = false;
     while (!exit)
     {        
-        while (buffer->check() != '"' && buffer->check() != '\\' && buffer->check() != '\n' && buffer->check() != 0 )
+        while (buffer->getValue() != '"' && buffer->getValue() != '\\' && buffer->getValue() != '\n' && buffer->getValue() != 0 )
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
         }
 
-        if (buffer->check() == '"')
+        if (buffer->getValue() == '"')
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
-            if (buffer->check() == '"')
+            if (buffer->getValue() == '"')
             {
                 lexem += buffer->getAndClear();
                 buffer->read(in);
@@ -631,7 +641,7 @@ TokenTyp A2lLexer::string(QTextStream &in)
                 exit = true;
 
         }
-        else if (buffer->check() == '\\')
+        else if (buffer->getValue() == '\\')
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
@@ -655,7 +665,7 @@ TokenTyp A2lLexer::hexadecimal(QTextStream &in)
     lexem = "0x";
 
     buffer->read(in);
-    while (isHexDigit(buffer->check()))
+    while (isHexDigit(buffer->getValue()))
     {
         lexem += buffer->getAndClear();
         buffer->read(in);
@@ -667,24 +677,28 @@ TokenTyp A2lLexer::getPartialString(QTextStream &in)
 {
     TokenTyp token = Identifier;
 
-    while (isDigit(buffer->check()) || isLetter(buffer->check()) || buffer->check() == '_')
+    char _check = buffer->getValue();
+    while (isDigit(_check) || isLetter(_check) || _check == '_')
     {
         lexem += buffer->getAndClear();
-        buffer->read(in);        
+        buffer->read(in);
+        _check = buffer->getValue();
     }
 
-    if (buffer->check() == '[')
+    if (_check == '[')
     {
         lexem += buffer->getAndClear();
         buffer->read(in);        
 
-        while (isDigit(buffer->check()) || isLetter(buffer->check()) || buffer->check() == '_')
+        _check = buffer->getValue();
+        while (isDigit(_check) || isLetter(_check) || _check == '_')
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
+            _check = buffer->getValue();
         }
 
-        if (buffer->check() == ']')
+        if (_check == ']')
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
@@ -692,8 +706,8 @@ TokenTyp A2lLexer::getPartialString(QTextStream &in)
         else
             token = myUnknown;
     }
-    else if (buffer->check() == '.') {}
-    else if (!isSeparator(buffer->check()))
+    else if (_check == '.') {}
+    else if (!isSeparator(_check))
     {
         lexem += buffer->getAndClear();
         token = myUnknown;
