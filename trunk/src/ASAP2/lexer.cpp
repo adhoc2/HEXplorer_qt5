@@ -2,7 +2,7 @@
 #include "a2lgrammar.h"
 #include <sstream>
 #include "qdebug.h"
-#include "omp.h"
+//#include "omp.h"
 #include <QTime>
 
 /**********  Class Buffer *************/
@@ -65,16 +65,14 @@ void Buffer::read(QTextStream &in)
 char Buffer::getAndClear()
 {
     char c = value;
-    this->value = 0;
-    this->state = false;
-    //this->clear();
+    clear();
     return c;
 }
 
 char Buffer::getValue()
 {
     //char c = value;
-    return this->value;
+    return value;
 }
 
 void Buffer::clear()
@@ -93,7 +91,6 @@ A2lLexer::A2lLexer(QObject *parent) : QObject(parent)
     index = 0;
     position = 0;
     previousLine = 0;
-    tamere = 0;
 }
 
 A2lLexer::~A2lLexer()
@@ -216,8 +213,8 @@ TokenTyp A2lLexer::getNextToken(QTextStream &in)
         }
         else
         {
-            //in >> ch;
-            //token = begin(in, ch);
+//            in >> ch;
+//            token = begin(in, ch);
             buffer->read(in);
             token = begin(in, buffer->getAndClear());
         }
@@ -481,16 +478,12 @@ TokenTyp A2lLexer::identifier(QTextStream &in, char &ch)
     }
 
     //check if the identifier is a keyword
-    QTime timer;
-    timer.start();
     if (token == Identifier)
     {
         TokenTyp tok = keywordsList.value(lexem.c_str());
         if (tok != 0)
             token = tok;
     }
-
-    tamere += timer.elapsed();
 
     return token;
 }
