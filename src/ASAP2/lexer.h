@@ -61,6 +61,7 @@ class A2lLexer : public QObject
         int index;
         std::string lexem;
         QHash<QString, TokenTyp> keywordsList;
+        QString keywords;
         TokenTyp begin(QTextStream &in, char ch);
         TokenTyp identifier(QTextStream &in, char &ch);
         TokenTyp string(QTextStream &in);
