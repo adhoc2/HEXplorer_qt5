@@ -143,8 +143,6 @@ void A2l::parseSTA2l()
     strcpy(nodeA2l->name, QFileInfo(fullA2lName).fileName().toLocal8Bit().data());
     a2lFile = nodeA2l;
 
-    qDebug() << lexer->tamere;
-
     // show error
     if (errorList->isEmpty())
     {
