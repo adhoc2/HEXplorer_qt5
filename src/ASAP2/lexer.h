@@ -53,8 +53,6 @@ class A2lLexer : public QObject
         void backward(QTextStream &in);
         A2lGrammar *grammar;
 
-        int tamere;
-
     private:        
         Buffer *buffer;
         int position;
