@@ -2,7 +2,6 @@
 #include "a2lgrammar.h"
 #include <sstream>
 #include "qdebug.h"
-//#include "omp.h"
 #include <QTime>
 
 /**********  Class Buffer *************/
