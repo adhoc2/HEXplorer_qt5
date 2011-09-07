@@ -29,7 +29,6 @@ class REF_CHARACTERISTIC : public Node
         // Opt parameters
         QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
         QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;
-        TokenTyp parseOptPar(QTextStream  &in);
 
         // CHARACTERISTICS list
         QList<std::string> charList;
