@@ -3,23 +3,23 @@
 
 Factory<Node, A2ML> A2ML::nodeFactory;
 
-A2ML::A2ML(QTextStream &in, Node *parentNode)
+A2ML::A2ML( Node *parentNode)
     : Node(parentNode, parentNode->lex, parentNode->errorList)
 {
-    this->parse(in);
+    this->parse();
 }
 
-void A2ML::parse(QTextStream &in)
+void A2ML::parse()
 {
 
     this->name = (char*)"A2ML";
     this->a2lLine = lex->getLine();
 
-    TokenTyp token = lex->getNextToken(in);
+    TokenTyp token = lex->getNextToken();
 
     while (lex->getLexem() != "A2ML")
     {
-        token = lex->getNextToken(in);
+        token = lex->getNextToken();
     }
 }
 

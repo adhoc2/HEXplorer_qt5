@@ -10,7 +10,7 @@
 class OUT_MEASUREMENT : public Node
 {
     public:
-        OUT_MEASUREMENT(QTextStream &in, Node *parentNode);
+        OUT_MEASUREMENT( Node *parentNode);
         ~OUT_MEASUREMENT();
 
         QMap<std::string, std::string> *getParameters();
@@ -34,9 +34,9 @@ class OUT_MEASUREMENT : public Node
         // CHARACTERISTICS list
         QList<std::string> charList;
 
-        TokenTyp parseListChar(QTextStream &in);
-        void parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in);
-        TokenTyp parseOptPar(QTextStream &in);
+        TokenTyp parseListChar();
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar();
 };
 
 #endif // OUT_MEASUREMENT_H

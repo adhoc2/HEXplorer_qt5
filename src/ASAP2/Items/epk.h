@@ -8,14 +8,14 @@
 class EPK : public Item
 {
     public:
-        EPK(QTextStream &in, Node *parentNode);
+        EPK(Node *parentNode);
         ~EPK();
         QMap<std::string, std::string> getParameters();
         static Factory<Item, EPK> itemFactory;
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;

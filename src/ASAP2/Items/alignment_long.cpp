@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,ALIGNMENT_LONG> ALIGNMENT_LONG::itemFactory;
 
-ALIGNMENT_LONG::ALIGNMENT_LONG(QTextStream &in, Node *parentNode)  : Item(parentNode)
+ALIGNMENT_LONG::ALIGNMENT_LONG(Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -13,7 +13,7 @@ ALIGNMENT_LONG::ALIGNMENT_LONG(QTextStream &in, Node *parentNode)  : Item(parent
     typePar = &gram->alignment_long.typePar;
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar ,in);
+    parseFixPar(typePar);
     name = (char*)"alignment_long";
 }
 
@@ -25,13 +25,13 @@ ALIGNMENT_LONG::~ALIGNMENT_LONG()
     }
 }
 
-void ALIGNMENT_LONG::parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in)
+void ALIGNMENT_LONG::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             char *c = new char[parentNode->lex->getLexem().length()+1];

@@ -10,7 +10,7 @@
 class LOC_MEASUREMENT : public Node
 {
     public:
-        LOC_MEASUREMENT(QTextStream &in, Node *parentNode);
+        LOC_MEASUREMENT( Node *parentNode);
         ~LOC_MEASUREMENT();
 
         QMap<std::string, std::string> *getParameters();
@@ -34,9 +34,9 @@ class LOC_MEASUREMENT : public Node
         // CHARACTERISTICS list
         QList<std::string> charList;
 
-        TokenTyp parseListChar(QTextStream &in);
-        void parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in);
-        TokenTyp parseOptPar(QTextStream &in);
+        TokenTyp parseListChar();
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar();
 };
 
 #endif // LOC_MEASUREMENT_H

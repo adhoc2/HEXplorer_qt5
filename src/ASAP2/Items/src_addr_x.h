@@ -8,14 +8,14 @@
 class SRC_ADDR_X : public Item
 {
     public:
-        SRC_ADDR_X(QTextStream &in, Node *parentNode);
+        SRC_ADDR_X( Node *parentNode);
         ~SRC_ADDR_X();
         QMap<std::string, std::string> getParameters();
         static Factory<Item,SRC_ADDR_X> itemFactory;
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;

@@ -10,7 +10,7 @@
 class MEMORY_SEGMENT : public Node
 {
     public:
-        MEMORY_SEGMENT(QTextStream &in, Node *parentNode);
+        MEMORY_SEGMENT( Node *parentNode);
         ~MEMORY_SEGMENT();
         QMap<std::string, std::string> *getParameters();
         static Factory<Node,MEMORY_SEGMENT> nodeFactory;
@@ -29,8 +29,8 @@ class MEMORY_SEGMENT : public Node
 
         //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
 
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
-        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar);
 };
 
 #endif // MEMORY_SEGMENT_H

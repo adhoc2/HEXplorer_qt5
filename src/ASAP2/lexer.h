@@ -25,6 +25,7 @@ class Buffer
 {
     public:
         Buffer();
+        void read(QTextStream *in);
         void read(QTextStream &in);
         char getAndClear();
         char getValue();
@@ -41,17 +42,17 @@ class A2lLexer : public QObject
     Q_OBJECT
 
     public:
-        A2lLexer(QObject *parent = 0);
+        A2lLexer(QTextStream &in, QObject *parent = 0);
         ~A2lLexer();
 
-        TokenTyp getNextToken(QTextStream &in);
+        TokenTyp getNextToken();
         std::string toString(TokenTyp type);
         std::string getLexem();
         int getLine();
-        int getIndex();
         void initialize();
-        void backward(QTextStream &in);
+        void backward();
         A2lGrammar *grammar;
+        QTextStream *in;
 
     private:        
         Buffer *buffer;
@@ -62,15 +63,15 @@ class A2lLexer : public QObject
         std::string lexem;
         QHash<QString, TokenTyp> keywordsList;
         QString keywords;
-        TokenTyp begin(QTextStream &in, char ch);
-        TokenTyp identifier(QTextStream &in, char &ch);
-        TokenTyp string(QTextStream &in);
-        TokenTyp commentL(QTextStream &in);
-        TokenTyp commentM(QTextStream &in);
-        TokenTyp number(QTextStream &in, char &ch);
-        TokenTyp hexadecimal(QTextStream &in);
-        TokenTyp block(QTextStream &in, char &ch);
-        TokenTyp getPartialString(QTextStream &in);
+        TokenTyp begin(char ch);
+        TokenTyp identifier(char &ch);
+        TokenTyp string();
+        TokenTyp commentL();
+        TokenTyp commentM();
+        TokenTyp number(char &ch);
+        TokenTyp hexadecimal();
+        TokenTyp block(char &ch);
+        TokenTyp getPartialString();
 
         bool isSeparator(char ch);
         bool isDigit(char ch);

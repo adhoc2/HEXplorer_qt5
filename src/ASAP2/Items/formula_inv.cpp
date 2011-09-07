@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,FORMULA_INV> FORMULA_INV::itemFactory;
 
-FORMULA_INV::FORMULA_INV(QTextStream &in, Node *parentNode)  : Item(parentNode)
+FORMULA_INV::FORMULA_INV( Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -13,7 +13,7 @@ FORMULA_INV::FORMULA_INV(QTextStream &in, Node *parentNode)  : Item(parentNode)
     typePar = &gram->formula_inv.typePar;
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar ,in);
+    parseFixPar(typePar);
     if (parameters.count() > 0)
         name = parameters.at(0);
     else
@@ -28,13 +28,13 @@ FORMULA_INV::~FORMULA_INV()
     }
 }
 
-void FORMULA_INV::parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in)
+void FORMULA_INV::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             char *c = new char[parentNode->lex->getLexem().length()+1];

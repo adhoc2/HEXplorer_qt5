@@ -11,7 +11,7 @@ Factory<Node,ANNOTATION_TEXT> ANNOTATION_TEXT::nodeFactory;
 bool nodeLessThan( const Node *a, const Node *b );
 bool itemLessThan( const Item *a, const Item *b );
 
-ANNOTATION_TEXT::ANNOTATION_TEXT(QTextStream &in, Node *parentNode )
+ANNOTATION_TEXT::ANNOTATION_TEXT( Node *parentNode )
     : Node(parentNode, parentNode->lex, parentNode->errorList)
 {
     //get grammar
@@ -28,12 +28,12 @@ ANNOTATION_TEXT::ANNOTATION_TEXT(QTextStream &in, Node *parentNode )
     //parseFixPar(typePar ,in);
     name = (char*)"ANNOTATION_TEXT";
 
-    TokenTyp token = parseListString(in);
+    TokenTyp token = parseListString();
 
     //End
     if (token == BlockEnd)
     {
-        token = nextToken(in);
+        token = nextToken();
         if (token == Keyword && lex->getLexem() == "ANNOTATION_TEXT")
         {
         }
@@ -59,18 +59,18 @@ ANNOTATION_TEXT::~ANNOTATION_TEXT()
     }
 }
 
-void ANNOTATION_TEXT::parseFixPar(QList<TokenTyp> *typePar, QTextStream &in)
+void ANNOTATION_TEXT::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
-    token = this->nextToken(in);
+    token = this->nextToken();
     if (token == String)
     {
         std::string str;
         while (token == String)
         {
             str += lex->getLexem();
-            token = this->nextToken(in);
+            token = this->nextToken();
         }
         //parameters.append(str);
         char *c = new char[str.length()+1];
@@ -86,20 +86,20 @@ void ANNOTATION_TEXT::parseFixPar(QList<TokenTyp> *typePar, QTextStream &in)
 
 }
 
-TokenTyp ANNOTATION_TEXT::parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStream &in)
+TokenTyp ANNOTATION_TEXT::parseOptPar(QMap<std::string, Occurence> *nameOptPar)
 {
 
     if (nameOptPar->isEmpty())
-        return nextToken(in);
+        return nextToken();
     else
     {
-        TokenTyp token = nextToken(in);
+        TokenTyp token = nextToken();
         while (token == BlockBegin || token == Keyword)
         {
             //Nodes
             if (token == BlockBegin)
             {
-                token = this->nextToken(in);
+                token = this->nextToken();
                 if (token == Keyword)
                 {
                     std::string lexem = lex->getLexem();
@@ -108,15 +108,15 @@ TokenTyp ANNOTATION_TEXT::parseOptPar(QMap<std::string, Occurence> *nameOptPar, 
                         if (this->occOptPar->value(lexem) == ZeroOrOne)
                         {
                             this->occOptPar->insert(lexem, Zero);
-                            Node  *instance = factoryOptNode->value(lexem)->createInstance(in, this);
+                            Node  *instance = factoryOptNode->value(lexem)->createInstance( this);
                             this->addChildNode(instance);
-                            token = nextToken(in);
+                            token = nextToken();
                         }
                         else if (this->occOptPar->value(lexem) == ZeroOrMore)
                         {
-                            Node  *instance = factoryOptNode->value(lexem)->createInstance(in, this);
+                            Node  *instance = factoryOptNode->value(lexem)->createInstance( this);
                             this->addChildNode(instance);
-                            token = nextToken(in);
+                            token = nextToken();
                         }
                         else
                         {
@@ -148,15 +148,15 @@ TokenTyp ANNOTATION_TEXT::parseOptPar(QMap<std::string, Occurence> *nameOptPar, 
                     if (this->occOptPar->value(lexem) == ZeroOrOne)
                     {
                         this->occOptPar->insert(lexem, Zero);
-                        Item  *instance = factoryOptItem->value(lexem)->createInstance(in, this);
+                        Item  *instance = factoryOptItem->value(lexem)->createInstance( this);
                         this->addOptItem(instance);
-                        token = nextToken(in);
+                        token = nextToken();
                     }
                     else if (this->occOptPar->value(lexem) == ZeroOrMore)
                     {
-                        Item  *instance = factoryOptItem->value(lexem)->createInstance(in, this);
+                        Item  *instance = factoryOptItem->value(lexem)->createInstance( this);
                         this->addOptItem(instance);
-                        token = nextToken(in);
+                        token = nextToken();
                     }
                     else
                     {
@@ -194,15 +194,15 @@ char* ANNOTATION_TEXT::getPar(std::string str)
 }
 
 // only for ANNOTATION_TEXT
-TokenTyp ANNOTATION_TEXT::parseListString(QTextStream &in)
+TokenTyp ANNOTATION_TEXT::parseListString()
 {
-    TokenTyp token = lex->getNextToken(in);
+    TokenTyp token = lex->getNextToken();
     QString str;
 
     while (token == String)
     {
         str.append(lex->getLexem().c_str());
-        token = lex->getNextToken(in);
+        token = lex->getNextToken();
     }
 
     char *c = new char[str.length() + 1];

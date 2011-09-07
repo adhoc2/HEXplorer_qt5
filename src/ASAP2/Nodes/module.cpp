@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Node,MODULE> MODULE::nodeFactory;
 
-MODULE::MODULE(QTextStream &in, Node *parentNode)
+MODULE::MODULE(Node *parentNode)
     : Node(parentNode, parentNode->lex, parentNode->errorList)
 {
     //get grammar
@@ -33,27 +33,27 @@ MODULE::MODULE(QTextStream &in, Node *parentNode)
     a2lLine = lex->getLine();
 
     //check if it is a chunk for multi_threading
-    TokenTyp token = lex->getNextToken(in);
+    TokenTyp token = lex->getNextToken();
     if (token == Identifier && lex->getLexem() == "CHUNKstart")
     {
         stopped = true;        
     }
     else
     {
-        lex->backward(in);
+        lex->backward();
     }
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar, in);
+    parseFixPar(typePar);
     name = parameters.at(0);
 
     //Parse optional PARAMETERS    
-    token = parseOptPar(occOptPar, in);
+    token = parseOptPar(occOptPar);
 
     //End parsing
     if (token == BlockEnd)
     {
-        token = nextToken(in);
+        token = nextToken();
         if (token == Keyword && lex->getLexem() == "MODULE")
         {
             //Sort the childNodes
@@ -73,7 +73,7 @@ MODULE::MODULE(QTextStream &in, Node *parentNode)
         foreach (Node *node, childNodes)
             node->sortChildrensName();
         stopped = true;
-        lex->backward(in);
+        lex->backward();
     }
     else
     {
@@ -97,14 +97,13 @@ MODULE::~MODULE()
     delete occOptPar;
 }
 
-void MODULE::parseFixPar(QList<TokenTyp> *typePar,
-                          QTextStream &in)
+void MODULE::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             //parameters.insert(namePar->at(i), lex->getLexem());
@@ -121,19 +120,19 @@ void MODULE::parseFixPar(QList<TokenTyp> *typePar,
     }
 }
 
-TokenTyp MODULE::parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStream &in)
+TokenTyp MODULE::parseOptPar(QMap<std::string, Occurence> *nameOptPar)
 {
     if (nameOptPar->isEmpty())
-        return nextToken(in);
+        return nextToken();
     else
     {
-        TokenTyp token = nextToken(in);
+        TokenTyp token = nextToken();
         while (token == BlockBegin || token == Keyword)
         {
             //Nodes
             if (token == BlockBegin)
             {
-                token = this->nextToken(in);
+                token = this->nextToken();
                 if (token == Keyword)
                 {
                     std::string lexem = lex->getLexem();
@@ -142,9 +141,9 @@ TokenTyp MODULE::parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStre
                         if (this->occOptPar->value(lexem) == ZeroOrOne)
                         {
                             this->occOptPar->insert(lexem, Zero);
-                            Node  *instance = factoryOptNode->value(lexem)->createInstance(in, this);
+                            Node  *instance = factoryOptNode->value(lexem)->createInstance(this);
                             this->addChildNode(instance);
-                            token = nextToken(in);
+                            token = nextToken();
                         }
                         else if (this->occOptPar->value(lexem) == ZeroOrMore)
                         {
@@ -159,7 +158,7 @@ TokenTyp MODULE::parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStre
                                     //Char->_pixmap = ":/icones/CHAR.bmp";
                                     Char->_pixmap = "";
                                 }
-                                instance = factoryOptNode->value(lexem)->createInstance(in, child("CHARACTERISTIC", false));
+                                instance = factoryOptNode->value(lexem)->createInstance(child("CHARACTERISTIC", false));
                                 child("CHARACTERISTIC", false)->addChildNode(instance);
                                 listChar.append(instance->name);
                             }
@@ -173,7 +172,7 @@ TokenTyp MODULE::parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStre
                                     //Axis->_pixmap = ":/icones/AXIS.bmp";
                                     Axis->_pixmap = "";
                                 }
-                                instance = factoryOptNode->value(lexem)->createInstance(in, child("AXIS_PTS", false));
+                                instance = factoryOptNode->value(lexem)->createInstance(child("AXIS_PTS", false));
                                 child("AXIS_PTS", false)->addChildNode(instance);
                                 listChar.append(instance->name);
                             }
@@ -187,7 +186,7 @@ TokenTyp MODULE::parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStre
                                     //Meas->_pixmap = ":/icones/MEAS.bmp";
                                     Meas->_pixmap = "";
                                 }
-                                instance = factoryOptNode->value(lexem)->createInstance(in, child("MEASUREMENT", false));
+                                instance = factoryOptNode->value(lexem)->createInstance(child("MEASUREMENT", false));
                                 child("MEASUREMENT", false)->addChildNode(instance);
                             }
                             else if (lexem == "FUNCTION")
@@ -200,7 +199,7 @@ TokenTyp MODULE::parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStre
                                     //Func->_pixmap = ":/icones/FUNCTION.bmp";
                                     Func->_pixmap = "";
                                 }
-                                instance = factoryOptNode->value(lexem)->createInstance(in, child("FUNCTION", false));
+                                instance = factoryOptNode->value(lexem)->createInstance(child("FUNCTION", false));
                                 child("FUNCTION", false)->addChildNode(instance);
                             }
                             else if (lexem == "COMPU_METHOD")
@@ -213,7 +212,7 @@ TokenTyp MODULE::parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStre
                                     //Comp_m->_pixmap = ":/icones/COMPU_METHOD.bmp";
                                     Comp_m->_pixmap = "";
                                 }
-                                instance = factoryOptNode->value(lexem)->createInstance(in, child("COMPU_METHOD", false));
+                                instance = factoryOptNode->value(lexem)->createInstance(child("COMPU_METHOD", false));
                                 child("COMPU_METHOD", false)->addChildNode(instance);
                             }
                             else if (lexem == "COMPU_VTAB")
@@ -226,7 +225,7 @@ TokenTyp MODULE::parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStre
                                     //Comp_v->_pixmap = ":/icones/COMPU_VTAB.bmp";
                                     Comp_v->_pixmap = "";
                                 }
-                                instance = factoryOptNode->value(lexem)->createInstance(in, child("COMPU_VTAB", false));
+                                instance = factoryOptNode->value(lexem)->createInstance(child("COMPU_VTAB", false));
                                 child("COMPU_VTAB", false)->addChildNode(instance);
                             }
                             else if (lexem == "RECORD_LAYOUT")
@@ -239,7 +238,7 @@ TokenTyp MODULE::parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStre
                                     //Rec->_pixmap = ":/icones/CONV.bmp";
                                     Rec->_pixmap = "";
                                 }
-                                instance = factoryOptNode->value(lexem)->createInstance(in, child("RECORD_LAYOUT", false));
+                                instance = factoryOptNode->value(lexem)->createInstance(child("RECORD_LAYOUT", false));
                                 child("RECORD_LAYOUT", false)->addChildNode(instance);
                             }
                             else if (lexem == "IF_DATA")
@@ -252,16 +251,16 @@ TokenTyp MODULE::parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStre
                                     //If_data->_pixmap = ":/icones/MOD_PAR.bmp";
                                     If_data->_pixmap = "";
                                 }
-                                instance = factoryOptNode->value(lexem)->createInstance(in, child("IF_DATA", false));
+                                instance = factoryOptNode->value(lexem)->createInstance(child("IF_DATA", false));
                                 child("IF_DATA", false)->addChildNode(instance);
                             }
                             else
                             {
-                                instance = factoryOptNode->value(lexem)->createInstance(in, this);
+                                instance = factoryOptNode->value(lexem)->createInstance(this);
                                 this->addChildNode(instance);
                             }
 
-                            token = nextToken(in);
+                            token = nextToken();
                         }
                         else
                         {
@@ -293,15 +292,15 @@ TokenTyp MODULE::parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStre
                     if (this->occOptPar->value(lexem) == ZeroOrOne)
                     {
                         this->occOptPar->insert(lexem, Zero);
-                        Item  *instance = factoryOptItem->value(lexem)->createInstance(in, this);
+                        Item  *instance = factoryOptItem->value(lexem)->createInstance(this);
                         this->addOptItem(instance);
-                        token = nextToken(in);
+                        token = nextToken();
                     }
                     else if (this->occOptPar->value(lexem) == ZeroOrMore)
                     {
-                        Item  *instance = factoryOptItem->value(lexem)->createInstance(in, this);
+                        Item  *instance = factoryOptItem->value(lexem)->createInstance(this);
                         this->addOptItem(instance);
-                        token = nextToken(in);
+                        token = nextToken();
                     }
                     else
                     {

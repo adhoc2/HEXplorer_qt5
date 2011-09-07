@@ -11,7 +11,7 @@ Factory<Node,REF_CHARACTERISTIC> REF_CHARACTERISTIC::nodeFactory;
 bool nodeLessThan( const Node *a, const Node *b );
 bool itemLessThan( const Item *a, const Item *b );
 
-REF_CHARACTERISTIC::REF_CHARACTERISTIC(QTextStream  &in, Node *parentNode)
+REF_CHARACTERISTIC::REF_CHARACTERISTIC(Node *parentNode)
     : Node(parentNode, parentNode->lex, parentNode->errorList)
 {
     //Set the line where the Node starts in ASAP file
@@ -24,12 +24,12 @@ REF_CHARACTERISTIC::REF_CHARACTERISTIC(QTextStream  &in, Node *parentNode)
     //Parse optional PARAMETERS
     //TokenTyp token = parseOptPar(in);
 
-    TokenTyp token = parseListChar(in);
+    TokenTyp token = parseListChar();
 
     //fianlize parsing
     if (token == BlockEnd)
     {
-        token = nextToken(in);
+        token = nextToken();
         if (token == Keyword && lex->getLexem() == "REF_CHARACTERISTIC")
         {
             //Sort the childNodes
@@ -78,14 +78,14 @@ std::string  REF_CHARACTERISTIC::pixmap()
     return ":/icones/CHAR.bmp";
 }
 
-TokenTyp REF_CHARACTERISTIC::parseListChar(QTextStream  &in)
+TokenTyp REF_CHARACTERISTIC::parseListChar()
 {
-    TokenTyp token = lex->getNextToken(in);
+    TokenTyp token = lex->getNextToken();
 
     while (token == Identifier)
     {
         charList.append(lex->getLexem());
-        token = lex->getNextToken(in);
+        token = lex->getNextToken();
     }
 
     return token;

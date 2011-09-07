@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,Byte_Order> Byte_Order::itemFactory;
 
-Byte_Order::Byte_Order(QTextStream &in, Node *parentNode)  : Item(parentNode)
+Byte_Order::Byte_Order( Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -13,7 +13,7 @@ Byte_Order::Byte_Order(QTextStream &in, Node *parentNode)  : Item(parentNode)
     typePar = &gram->byte_order.typePar;
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar ,in);
+    parseFixPar(typePar);
     name = (char*)"BYTE_ORDER";
 }
 
@@ -25,13 +25,13 @@ Byte_Order::~Byte_Order()
     }
 }
 
-void Byte_Order::parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in)
+void Byte_Order::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             char *c = new char[parentNode->lex->getLexem().length()+1];

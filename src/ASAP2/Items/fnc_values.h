@@ -8,14 +8,14 @@
 class FNC_VALUES : public Item
 {
     public:
-        FNC_VALUES(QTextStream &in, Node *parentNode);
+        FNC_VALUES(Node *parentNode);
         ~FNC_VALUES();
         QMap<std::string, std::string> getParameters();
         static Factory<Item,FNC_VALUES> itemFactory;
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;

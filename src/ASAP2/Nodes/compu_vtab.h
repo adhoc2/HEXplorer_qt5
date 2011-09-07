@@ -9,7 +9,7 @@
 class COMPU_VTAB : public Node
 {
     public:
-        COMPU_VTAB(QTextStream &in, Node *parentNode);
+        COMPU_VTAB(Node *parentNode);
         ~COMPU_VTAB();
         static Factory<Node, COMPU_VTAB> nodeFactory;
 
@@ -35,9 +35,9 @@ class COMPU_VTAB : public Node
 
         //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
 
-        void parsePairs(QTextStream &in);
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
-        TokenTyp parseOptPar(QTextStream &in);
+        void parsePairs();
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar();
 };
 
 #endif // COMPU_VTAB_H

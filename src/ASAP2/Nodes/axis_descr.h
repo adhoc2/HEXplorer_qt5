@@ -14,7 +14,7 @@
 class AXIS_DESCR : public Node
 {
     public:
-        AXIS_DESCR(QTextStream &in, Node *parentNode);
+        AXIS_DESCR(Node *parentNode);
         ~AXIS_DESCR();
         QMap<std::string, std::string> *getParameters();
         static Factory<Node, AXIS_DESCR> nodeFactory;
@@ -33,8 +33,8 @@ class AXIS_DESCR : public Node
 
         //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
 
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
-        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar);
 };
 
 #endif // CHARACTERISTIC_H

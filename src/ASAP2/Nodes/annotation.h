@@ -12,7 +12,7 @@
 class ANNOTATION : public Node
 {
     public:
-        ANNOTATION(QTextStream &in, Node *parentNode);
+        ANNOTATION( Node *parentNode);
         ~ANNOTATION();
         QMap<std::string, std::string> *getParameters();
         static Factory<Node, ANNOTATION> nodeFactory;
@@ -31,10 +31,10 @@ class ANNOTATION : public Node
 
         //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
 
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
-        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar);
 
-        void parse(QTextStream &in);
+        void parse();
     };
 
 #endif // VERSION_H

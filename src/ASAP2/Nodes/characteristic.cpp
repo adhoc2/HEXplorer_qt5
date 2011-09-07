@@ -12,7 +12,7 @@ Factory<Node,CHARACTERISTIC> CHARACTERISTIC::nodeFactory;
 bool nodeLessThan( const Node *a, const Node *b );
 bool itemLessThan( const Item *a, const Item *b );
 
-CHARACTERISTIC::CHARACTERISTIC(QTextStream &in, Node *parentNode)
+CHARACTERISTIC::CHARACTERISTIC( Node *parentNode)
     : Node(parentNode, parentNode->lex, parentNode->errorList)
 {
     // specific for this node Characteristic
@@ -29,19 +29,19 @@ CHARACTERISTIC::CHARACTERISTIC(QTextStream &in, Node *parentNode)
     a2lLine = lex->getLine();
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar, in);
+    parseFixPar(typePar);
     if (parameters.count() > 0)
         name = parameters.at(0);
     else
         name = (char*)"characteristic";
 
     //Parse optional PARAMETERS
-    TokenTyp token = parseOptPar(in);
+    TokenTyp token = parseOptPar();
 
     //fianlize parsing
     if (token == BlockEnd)
     {
-        token = nextToken(in);
+        token = nextToken();
         if (token == Keyword && lex->getLexem() == "CHARACTERISTIC")
         {
             //Sort the childNodes
@@ -71,13 +71,13 @@ CHARACTERISTIC::~CHARACTERISTIC()
     }
 }
 
-void CHARACTERISTIC::parseFixPar(QList<TokenTyp> *typePar, QTextStream &in)
+void CHARACTERISTIC::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             char *c = new char[lex->getLexem().length()+1];
@@ -99,7 +99,7 @@ void CHARACTERISTIC::parseFixPar(QList<TokenTyp> *typePar, QTextStream &in)
     }
 }
 
-TokenTyp CHARACTERISTIC::parseOptPar(QTextStream &in)
+TokenTyp CHARACTERISTIC::parseOptPar()
 {
     //opt parameters
     QMap<std::string, Occurence> nameOptPar;
@@ -113,16 +113,16 @@ TokenTyp CHARACTERISTIC::parseOptPar(QTextStream &in)
     nameOptPar.insert("AXIS_DESCR", ZeroOrMore);
 
     if (nameOptPar.isEmpty())
-        return nextToken(in);
+        return nextToken();
     else
     {
-        TokenTyp token = nextToken(in);
+        TokenTyp token = nextToken();
         while (token == BlockBegin || token == Keyword)
         {
             //Nodes
             if (token == BlockBegin)
             {
-                token = this->nextToken(in);
+                token = this->nextToken();
                 if (token == Keyword)
                 {
                     std::string lexem = lex->getLexem();
@@ -131,9 +131,9 @@ TokenTyp CHARACTERISTIC::parseOptPar(QTextStream &in)
                         if (nameOptPar.value(lexem) == ZeroOrOne)
                         {
                            nameOptPar.insert(lexem, Zero);
-                           Node  *instance = factoryOptNode->value(lexem)->createInstance(in, this);
+                           Node  *instance = factoryOptNode->value(lexem)->createInstance(this);
                            this->addChildNode(instance);
-                           token = nextToken(in);
+                           token = nextToken();
                         }
                         else if (nameOptPar.value(lexem) == ZeroOrMore)
                         {
@@ -147,15 +147,15 @@ TokenTyp CHARACTERISTIC::parseOptPar(QTextStream &in)
                                     addChildNode(node);
                                     node->_pixmap = "";
                                 }
-                                instance = factoryOptNode->value(lexem)->createInstance(in, child("AXIS_DESCR", false));
+                                instance = factoryOptNode->value(lexem)->createInstance( child("AXIS_DESCR", false));
                                 child("AXIS_DESCR", false)->addChildNode(instance);
                             }
                             else
                             {
-                                instance = factoryOptNode->value(lexem)->createInstance(in, this);
+                                instance = factoryOptNode->value(lexem)->createInstance( this);
                                 this->addChildNode(instance);
                             }
-                            token = nextToken(in);
+                            token = nextToken();
                         }
                         else
                         {
@@ -187,15 +187,15 @@ TokenTyp CHARACTERISTIC::parseOptPar(QTextStream &in)
                     if (nameOptPar.value(lexem) == ZeroOrOne)
                     {
                         nameOptPar.insert(lexem, Zero);
-                        Item  *instance = factoryOptItem->value(lexem)->createInstance(in, this);
+                        Item  *instance = factoryOptItem->value(lexem)->createInstance( this);
                         this->addOptItem(instance);
-                        token = nextToken(in);
+                        token = nextToken();
                     }
                     else if (nameOptPar.value(lexem) == ZeroOrMore)
                     {
-                        Item  *instance = factoryOptItem->value(lexem)->createInstance(in, this);
+                        Item  *instance = factoryOptItem->value(lexem)->createInstance( this);
                         this->addOptItem(instance);
-                        token = nextToken(in);
+                        token = nextToken();
                     }
                     else
                     {

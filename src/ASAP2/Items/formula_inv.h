@@ -8,7 +8,7 @@
 class FORMULA_INV : public Item
 {
     public:
-        FORMULA_INV(QTextStream &in, Node *parentNode);
+        FORMULA_INV(Node *parentNode);
         ~FORMULA_INV();
         QMap<std::string, std::string> getParameters();
         static Factory<Item,FORMULA_INV> itemFactory;
@@ -16,7 +16,7 @@ class FORMULA_INV : public Item
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;

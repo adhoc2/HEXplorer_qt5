@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item, ANNOTATION_LABEL> ANNOTATION_LABEL::itemFactory;
 
-ANNOTATION_LABEL::ANNOTATION_LABEL(QTextStream &in, Node *parentNode)  : Item(parentNode)
+ANNOTATION_LABEL::ANNOTATION_LABEL(Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -13,7 +13,7 @@ ANNOTATION_LABEL::ANNOTATION_LABEL(QTextStream &in, Node *parentNode)  : Item(pa
     typePar = &gram->annotation_label.typePar;
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar ,in);
+    parseFixPar(typePar);
     if (parameters.count() > 0)
         name = parameters.at(0);
     else
@@ -28,14 +28,13 @@ ANNOTATION_LABEL::~ANNOTATION_LABEL()
     }
 }
 
-void ANNOTATION_LABEL::parseFixPar(QList<TokenTyp> *typePar,
-                          QTextStream &in)
+void ANNOTATION_LABEL::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             char *c = new char[parentNode->lex->getLexem().length()+1];

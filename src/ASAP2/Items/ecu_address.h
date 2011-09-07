@@ -8,14 +8,14 @@
 class ECU_ADDRESS : public Item
 {
     public:
-        ECU_ADDRESS(QTextStream &in, Node *parentNode);
+        ECU_ADDRESS(Node *parentNode);
         ~ECU_ADDRESS();
         QMap<std::string, std::string> getParameters();
         static Factory<Item,ECU_ADDRESS> itemFactory;
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;

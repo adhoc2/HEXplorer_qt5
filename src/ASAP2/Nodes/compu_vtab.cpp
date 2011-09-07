@@ -9,7 +9,7 @@ Factory<Node,COMPU_VTAB> COMPU_VTAB::nodeFactory;
 bool nodeLessThan( const Node *a, const Node *b );
 bool itemLessThan( const Item *a, const Item *b );
 
-COMPU_VTAB::COMPU_VTAB(QTextStream &in, Node *parentNode)
+COMPU_VTAB::COMPU_VTAB(Node *parentNode)
     : Node(parentNode, parentNode->lex, parentNode->errorList)
 {
     //get grammar
@@ -23,22 +23,22 @@ COMPU_VTAB::COMPU_VTAB(QTextStream &in, Node *parentNode)
     a2lLine = lex->getLine();
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar ,in);
+    parseFixPar(typePar);
     if (parameters.count() > 0)
         name = parameters.at(0);
     else
         name = (char*)"compu_vtab";
 
     //special for compu_vtab
-    parsePairs(in);
+    parsePairs();
 
     //Parse optional PARAMETERS
-    TokenTyp token = parseOptPar(in);
+    TokenTyp token = parseOptPar();
 
     //fianlize parsing
     if (token == BlockEnd)
     {
-        token = nextToken(in);
+        token = nextToken();
         if (token == Keyword && lex->getLexem() == "COMPU_VTAB")
         {
             //Sort the childNodes
@@ -69,13 +69,13 @@ COMPU_VTAB::~COMPU_VTAB()
     }
 }
 
-void COMPU_VTAB::parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in)
+void COMPU_VTAB::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             //parameters.insert(namePar->at(i), lex->getLexem());
@@ -92,23 +92,23 @@ void COMPU_VTAB::parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in)
     }
 }
 
-TokenTyp COMPU_VTAB::parseOptPar(QTextStream &in)
+TokenTyp COMPU_VTAB::parseOptPar()
 {
     //opt parameters
     QMap<std::string, Occurence> nameOptPar;
     nameOptPar.insert("DEFAULT_VALUE", ZeroOrOne);
 
     if (nameOptPar.isEmpty())
-        return nextToken(in);
+        return nextToken();
     else
     {
-        TokenTyp token = nextToken(in);
+        TokenTyp token = nextToken();
         while (token == BlockBegin || token == Keyword)
         {
             //Nodes
             if (token == BlockBegin)
             {
-                token = this->nextToken(in);
+                token = this->nextToken();
                 if (token == Keyword)
                 {
                     std::string lexem = lex->getLexem();
@@ -117,15 +117,15 @@ TokenTyp COMPU_VTAB::parseOptPar(QTextStream &in)
                         if (nameOptPar.value(lexem) == ZeroOrOne)
                         {
                            nameOptPar.insert(lexem, Zero);
-                            Node  *instance = factoryOptNode->value(lexem)->createInstance(in, this);
+                            Node  *instance = factoryOptNode->value(lexem)->createInstance(this);
                             this->addChildNode(instance);
-                            token = nextToken(in);
+                            token = nextToken();
                         }
                         else if (nameOptPar.value(lexem) == ZeroOrMore)
                         {
-                            Node  *instance = factoryOptNode->value(lexem)->createInstance(in, this);
+                            Node  *instance = factoryOptNode->value(lexem)->createInstance( this);
                             this->addChildNode(instance);
-                            token = nextToken(in);
+                            token = nextToken();
                         }
                         else
                         {
@@ -157,15 +157,15 @@ TokenTyp COMPU_VTAB::parseOptPar(QTextStream &in)
                     if (nameOptPar.value(lexem) == ZeroOrOne)
                     {
                         nameOptPar.insert(lexem, Zero);
-                        Item  *instance = factoryOptItem->value(lexem)->createInstance(in, this);
+                        Item  *instance = factoryOptItem->value(lexem)->createInstance( this);
                         this->addOptItem(instance);
-                        token = nextToken(in);
+                        token = nextToken();
                     }
                     else if (nameOptPar.value(lexem) == ZeroOrMore)
                     {
-                        Item  *instance = factoryOptItem->value(lexem)->createInstance(in, this);
+                        Item  *instance = factoryOptItem->value(lexem)->createInstance( this);
                         this->addOptItem(instance);
-                        token = nextToken(in);
+                        token = nextToken();
                     }
                     else
                     {
@@ -208,7 +208,7 @@ std::string  COMPU_VTAB::pixmap()
     return ":/icones/CHAR.bmp";
 }
 
-void COMPU_VTAB::parsePairs(QTextStream &in)
+void COMPU_VTAB::parsePairs()
 {
     QString str = parameters.at(3);
     bool bl = false;
@@ -218,13 +218,13 @@ void COMPU_VTAB::parsePairs(QTextStream &in)
     int key = 0;
     for (int i = 0; i < count; i++)
     {
-        token = lex->getNextToken(in);
+        token = lex->getNextToken();
         if (token == Integer)
         {
            QString str = lex->getLexem().c_str();
            key = str.toInt(&bl,10);
            listKeyPairs.append(key);
-           token = lex->getNextToken(in);
+           token = lex->getNextToken();
            if (token == String)
            {
                QString value = lex->getLexem().c_str();

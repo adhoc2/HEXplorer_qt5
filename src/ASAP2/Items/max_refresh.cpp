@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,MAX_REFRESH> MAX_REFRESH::itemFactory;
 
-MAX_REFRESH::MAX_REFRESH(QTextStream &in, Node *parentNode)  : Item(parentNode)
+MAX_REFRESH::MAX_REFRESH( Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -13,7 +13,7 @@ MAX_REFRESH::MAX_REFRESH(QTextStream &in, Node *parentNode)  : Item(parentNode)
     typePar = &gram->max_refresh.typePar;
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar ,in);
+    parseFixPar(typePar);
     name = (char*)"MAX_REFRESH";
 }
 
@@ -25,13 +25,13 @@ MAX_REFRESH::~MAX_REFRESH()
     }
 }
 
-void MAX_REFRESH::parseFixPar(QList<TokenTyp> *typePar, QTextStream &in)
+void MAX_REFRESH::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             char *c = new char[parentNode->lex->getLexem().length()+1];

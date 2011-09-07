@@ -9,7 +9,7 @@ Factory<Node,MEASUREMENT> MEASUREMENT::nodeFactory;
 bool nodeLessThan( const Node *a, const Node *b );
 bool itemLessThan( const Item *a, const Item *b );
 
-MEASUREMENT::MEASUREMENT(QTextStream &in, Node *parentNode)
+MEASUREMENT::MEASUREMENT( Node *parentNode)
     : Node(parentNode, parentNode->lex, parentNode->errorList)
 {
     //get grammar
@@ -23,19 +23,19 @@ MEASUREMENT::MEASUREMENT(QTextStream &in, Node *parentNode)
     this->a2lLine = lex->getLine();
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar, in);
+    parseFixPar(typePar);
     if (parameters.count() > 0)
         name = parameters.at(0);
     else
         name = (char*)"measurement";
 
     //Parse optional PARAMETERS
-    TokenTyp token = parseOptPar(in);
+    TokenTyp token = parseOptPar();
 
     //End
     if (token == BlockEnd)
     {
-        token = nextToken(in);
+        token = nextToken();
         if (token == Keyword && lex->getLexem() == "MEASUREMENT")
         {
             //Sort the childNodes
@@ -66,14 +66,14 @@ MEASUREMENT::~MEASUREMENT()
     }
 }
 
-void MEASUREMENT::parseFixPar(QList<TokenTyp> *typePar, QTextStream &in)
+void MEASUREMENT::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     //parameters = new QMap<const char*, const char*>;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             //parameters.append(lex->getLexem());
@@ -96,7 +96,7 @@ void MEASUREMENT::parseFixPar(QList<TokenTyp> *typePar, QTextStream &in)
     }
 }
 
-TokenTyp MEASUREMENT::parseOptPar(QTextStream &in)
+TokenTyp MEASUREMENT::parseOptPar()
 {
     //opt Parameters
     QMap<std::string, Occurence> nameOptPar;
@@ -108,16 +108,16 @@ TokenTyp MEASUREMENT::parseOptPar(QTextStream &in)
     nameOptPar.insert("ARRAY_SIZE", ZeroOrOne);
 
     if (nameOptPar.isEmpty())
-        return nextToken(in);
+        return nextToken();
     else
     {
-        TokenTyp token = nextToken(in);
+        TokenTyp token = nextToken();
         while (token == BlockBegin || token == Keyword)
         {
             //Nodes
             if (token == BlockBegin)
             {
-                token = this->nextToken(in);
+                token = this->nextToken();
                 if (token == Keyword)
                 {
                     std::string lexem = lex->getLexem();
@@ -126,15 +126,15 @@ TokenTyp MEASUREMENT::parseOptPar(QTextStream &in)
                         if (nameOptPar.value(lexem) == ZeroOrOne)
                         {
                             nameOptPar.insert(lexem, Zero);
-                            Node  *instance = factoryOptNode->value(lexem)->createInstance(in, this);
+                            Node  *instance = factoryOptNode->value(lexem)->createInstance( this);
                             this->addChildNode(instance);
-                            token = nextToken(in);
+                            token = nextToken();
                         }
                         else if (nameOptPar.value(lexem) == ZeroOrMore)
                         {
-                            Node  *instance = factoryOptNode->value(lexem)->createInstance(in, this);
+                            Node  *instance = factoryOptNode->value(lexem)->createInstance( this);
                             this->addChildNode(instance);
-                            token = nextToken(in);
+                            token = nextToken();
                         }
                         else
                         {
@@ -166,15 +166,15 @@ TokenTyp MEASUREMENT::parseOptPar(QTextStream &in)
                     if (nameOptPar.value(lexem) == ZeroOrOne)
                     {
                         nameOptPar.insert(lexem, Zero);
-                        Item  *instance = factoryOptItem->value(lexem)->createInstance(in, this);
+                        Item  *instance = factoryOptItem->value(lexem)->createInstance( this);
                         this->addOptItem(instance);
-                        token = nextToken(in);
+                        token = nextToken();
                     }
                     else if (nameOptPar.value(lexem) == ZeroOrMore)
                     {
-                        Item  *instance = factoryOptItem->value(lexem)->createInstance(in, this);
+                        Item  *instance = factoryOptItem->value(lexem)->createInstance(this);
                         this->addOptItem(instance);
-                        token = nextToken(in);
+                        token = nextToken();
                     }
                     else
                     {

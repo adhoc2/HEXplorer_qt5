@@ -18,7 +18,7 @@ class Item
             QMap<std::string, std::string> map;
             return map;
         }
-        TokenTyp nextToken(QTextStream &in);
+        TokenTyp nextToken();
         std::string getName() const
         {
             std::string str = name;

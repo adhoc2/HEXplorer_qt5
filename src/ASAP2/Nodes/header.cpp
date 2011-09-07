@@ -17,7 +17,7 @@ bool itemLessThan( const Item *a, const Item *b )
    return a->getName() < b->getName();
 }
 
-HEADER::HEADER(QTextStream &in, Node *parentNode)
+HEADER::HEADER( Node *parentNode)
     : Node(parentNode, parentNode->lex, parentNode->errorList)
 {
     //get grammar
@@ -36,16 +36,16 @@ HEADER::HEADER(QTextStream &in, Node *parentNode)
     this->a2lLine = lex->getLine();
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar ,in);
+    parseFixPar(typePar);
     name = (char*)"HEADER";
 
     //Parse optional PARAMETERS
-    TokenTyp token = parseOptPar(occOptPar, in);
+    TokenTyp token = parseOptPar(occOptPar);
 
     //End
     if (token == BlockEnd)
     {
-        token = nextToken(in);
+        token = nextToken();
         if (token == Keyword && lex->getLexem() == "HEADER")
         {
             //Sort the childNodes
@@ -77,13 +77,13 @@ HEADER::~HEADER()
     delete occOptPar;
 }
 
-void HEADER::parseFixPar(QList<TokenTyp> *typePar, QTextStream &in)
+void HEADER::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             //parameters.insert(namePar->at(i), lex->getLexem());
@@ -100,20 +100,20 @@ void HEADER::parseFixPar(QList<TokenTyp> *typePar, QTextStream &in)
     }
 }
 
-TokenTyp HEADER::parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStream &in)
+TokenTyp HEADER::parseOptPar(QMap<std::string, Occurence> *nameOptPar)
 {
 
     if (nameOptPar->isEmpty())
-        return nextToken(in);
+        return nextToken();
     else
     {
-        TokenTyp token = nextToken(in);
+        TokenTyp token = nextToken();
         while (token == BlockBegin || token == Keyword)
         {
             //Nodes
             if (token == BlockBegin)
             {
-                token = this->nextToken(in);
+                token = this->nextToken();
                 if (token == Keyword)
                 {
                     std::string lexem = lex->getLexem();
@@ -122,15 +122,15 @@ TokenTyp HEADER::parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStre
                         if (this->occOptPar->value(lexem) == ZeroOrOne)
                         {
                             this->occOptPar->insert(lexem, Zero);
-                            Node  *instance = factoryOptNode->value(lexem)->createInstance(in, this);
+                            Node  *instance = factoryOptNode->value(lexem)->createInstance( this);
                             this->addChildNode(instance);
-                            token = nextToken(in);
+                            token = nextToken();
                         }
                         else if (this->occOptPar->value(lexem) == ZeroOrMore)
                         {
-                            Node  *instance = factoryOptNode->value(lexem)->createInstance(in, this);
+                            Node  *instance = factoryOptNode->value(lexem)->createInstance( this);
                             this->addChildNode(instance);
-                            token = nextToken(in);
+                            token = nextToken();
                         }
                         else
                         {
@@ -162,15 +162,15 @@ TokenTyp HEADER::parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStre
                     if (this->occOptPar->value(lexem) == ZeroOrOne)
                     {
                         this->occOptPar->insert(lexem, Zero);
-                        Item  *instance = factoryOptItem->value(lexem)->createInstance(in, this);
+                        Item  *instance = factoryOptItem->value(lexem)->createInstance( this);
                         this->addOptItem(instance);
-                        token = nextToken(in);
+                        token = nextToken();
                     }
                     else if (this->occOptPar->value(lexem) == ZeroOrMore)
                     {
-                        Item  *instance = factoryOptItem->value(lexem)->createInstance(in, this);
+                        Item  *instance = factoryOptItem->value(lexem)->createInstance( this);
                         this->addOptItem(instance);
-                        token = nextToken(in);
+                        token = nextToken();
                     }
                     else
                     {

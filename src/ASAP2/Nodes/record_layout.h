@@ -15,7 +15,7 @@
 class RECORD_LAYOUT : public Node
 {
     public:
-        RECORD_LAYOUT(QTextStream &in, Node *parentNode);
+        RECORD_LAYOUT( Node *parentNode);
         ~RECORD_LAYOUT();
 
         QMap<std::string, std::string> *getParameters();
@@ -35,8 +35,8 @@ class RECORD_LAYOUT : public Node
 
         //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
 
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
-        TokenTyp parseOptPar(QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar();
 };
 
 #endif // RECORD_LAYOUT_H

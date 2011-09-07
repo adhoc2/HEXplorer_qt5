@@ -10,7 +10,7 @@
 class FORMULA : public Node
 {
     public:
-        FORMULA(QTextStream &in, Node *parentNode);
+        FORMULA(Node *parentNode);
         ~FORMULA();
 
         QMap<std::string, std::string> *getParameters();
@@ -30,8 +30,8 @@ class FORMULA : public Node
 
         //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
 
-        void parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in);
-        TokenTyp parseOptPar(QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar();
 };
 
 #endif // FORMULA_H

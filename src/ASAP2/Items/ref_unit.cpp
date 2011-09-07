@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,REF_UNIT> REF_UNIT::itemFactory;
 
-REF_UNIT::REF_UNIT(QTextStream &in, Node *parentNode)  : Item(parentNode)
+REF_UNIT::REF_UNIT( Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -13,7 +13,7 @@ REF_UNIT::REF_UNIT(QTextStream &in, Node *parentNode)  : Item(parentNode)
     typePar = &gram->ref_unit.typePar;
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar ,in);
+    parseFixPar(typePar);
     if (parameters.count() > 0)
         name = parameters.at(0);
     else
@@ -28,13 +28,13 @@ REF_UNIT::~REF_UNIT()
     }
 }
 
-void REF_UNIT::parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in)
+void REF_UNIT::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             char *c = new char[parentNode->lex->getLexem().length()+1];

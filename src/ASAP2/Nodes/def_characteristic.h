@@ -10,7 +10,7 @@
 class DEF_CHARACTERISTIC : public Node
 {
     public:
-        DEF_CHARACTERISTIC(QTextStream  &in, Node *parentNode);
+        DEF_CHARACTERISTIC( Node *parentNode);
         ~DEF_CHARACTERISTIC();
 
         QMap<std::string, std::string> *getParameters();
@@ -34,9 +34,9 @@ class DEF_CHARACTERISTIC : public Node
         // CHARACTERISTICS list
         QList<std::string> charList;
 
-        TokenTyp parseListChar(QTextStream  &in);
-        void parseFixPar(QList<TokenTyp> *typePar,  QTextStream  &in);
-        TokenTyp parseOptPar(QTextStream  &in);
+        TokenTyp parseListChar();
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar();
 };
 
 #endif // DEF_CHARACTERISTIC_H

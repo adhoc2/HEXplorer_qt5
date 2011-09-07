@@ -15,7 +15,7 @@
 class MEASUREMENT : public Node
 {
     public:
-        MEASUREMENT(QTextStream &in, Node *parentNode);
+        MEASUREMENT( Node *parentNode);
         ~MEASUREMENT();
         QMap<std::string, std::string> *getParameters();
         static Factory<Node, MEASUREMENT> nodeFactory;
@@ -34,8 +34,8 @@ class MEASUREMENT : public Node
 
        // #pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
 
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
-        TokenTyp parseOptPar(QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar();
 };
 
 #endif // MEASUREMENT_H

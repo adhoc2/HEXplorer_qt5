@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,ALIGNMENT_FLOAT32_IEEE> ALIGNMENT_FLOAT32_IEEE::itemFactory;
 
-ALIGNMENT_FLOAT32_IEEE::ALIGNMENT_FLOAT32_IEEE(QTextStream  &in, Node *parentNode)  : Item(parentNode)
+ALIGNMENT_FLOAT32_IEEE::ALIGNMENT_FLOAT32_IEEE( Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -13,7 +13,7 @@ ALIGNMENT_FLOAT32_IEEE::ALIGNMENT_FLOAT32_IEEE(QTextStream  &in, Node *parentNod
     typePar = &gram->alignment_float32_ieee.typePar;
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar ,in);
+    parseFixPar(typePar);
     name = (char*)"alignment_float32_ieee";
 }
 
@@ -25,13 +25,13 @@ ALIGNMENT_FLOAT32_IEEE::~ALIGNMENT_FLOAT32_IEEE()
     }
 }
 
-void ALIGNMENT_FLOAT32_IEEE::parseFixPar(QList<TokenTyp> *typePar,  QTextStream  &in)
+void ALIGNMENT_FLOAT32_IEEE::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             char *c = new char[parentNode->lex->getLexem().length()+1];

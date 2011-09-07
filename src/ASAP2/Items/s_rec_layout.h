@@ -8,7 +8,7 @@
 class S_REC_LAYOUT : public Item
 {
     public:
-        S_REC_LAYOUT(QTextStream &in, Node *parentNode);
+        S_REC_LAYOUT( Node *parentNode);
         ~S_REC_LAYOUT();
         QMap<std::string, std::string> getParameters();
         static Factory<Item,S_REC_LAYOUT> itemFactory;
@@ -16,7 +16,7 @@ class S_REC_LAYOUT : public Item
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;

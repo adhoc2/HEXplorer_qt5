@@ -8,14 +8,14 @@
 class FUNCTION_VERSION : public Item
 {
     public:
-        FUNCTION_VERSION(QTextStream &in, Node *parentNode);
+        FUNCTION_VERSION( Node *parentNode);
         ~FUNCTION_VERSION();
         QMap<std::string, std::string> getParameters();
         static Factory<Item,FUNCTION_VERSION> itemFactory;
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;

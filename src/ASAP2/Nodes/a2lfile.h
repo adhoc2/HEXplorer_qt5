@@ -14,7 +14,7 @@ class A2lGrammar;
 class A2LFILE : public Node
 {
     public:
-        A2LFILE(QTextStream &in, Node *parentNode, A2lLexer *lexer,
+        A2LFILE(Node *parentNode, A2lLexer *lexer,
                 QStringList *errorList, QString fullFileName = "");       
         ~A2LFILE();
 
@@ -26,9 +26,9 @@ class A2LFILE : public Node
     private:
         PROJECT *project; //ASAP2 file must contain exactly one PROJECT
         QString fullA2lName;
-        void parser(QTextStream &in);
-        void getAsap2Version(QTextStream &in);
-        void getA2mlVersion(QTextStream &in);
+        void parser();
+        void getAsap2Version();
+        void getA2mlVersion();
 
         QMap<std::string, std::string> *optParameters;
 

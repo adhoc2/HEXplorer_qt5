@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,READ_ONLY> READ_ONLY::itemFactory;
 
-READ_ONLY::READ_ONLY(QTextStream &in, Node *parentNode)  : Item(parentNode)
+READ_ONLY::READ_ONLY( Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -26,13 +26,13 @@ READ_ONLY::~READ_ONLY()
     }
 }
 
-void READ_ONLY::parseFixPar(QList<TokenTyp> *typePar, QTextStream &in)
+void READ_ONLY::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             char *c = new char[parentNode->lex->getLexem().length()+1];

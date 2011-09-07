@@ -10,7 +10,7 @@
 class MEMORY_LAYOUT : public Node
 {
     public:
-        MEMORY_LAYOUT(QTextStream &in, Node *parentNode);
+        MEMORY_LAYOUT( Node *parentNode);
         ~MEMORY_LAYOUT();
         QMap<std::string, std::string> *getParameters();
         static Factory<Node,MEMORY_LAYOUT> nodeFactory;
@@ -29,8 +29,8 @@ class MEMORY_LAYOUT : public Node
 
         //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
 
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
-        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar);
 };
 
 #endif // MEMORY_LAYOUT_H

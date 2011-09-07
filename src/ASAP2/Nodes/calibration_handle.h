@@ -10,7 +10,7 @@
 class CALIBRATION_HANDLE : public Node
 {
     public:
-        CALIBRATION_HANDLE(QTextStream &in, Node *parentNode);
+        CALIBRATION_HANDLE( Node *parentNode);
         ~CALIBRATION_HANDLE();
         QMap<std::string, std::string> *getParameters();
         static Factory<Node, CALIBRATION_HANDLE> nodeFactory;
@@ -27,8 +27,8 @@ class CALIBRATION_HANDLE : public Node
         QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
         QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;
 
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
-        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar);
 
 };
 

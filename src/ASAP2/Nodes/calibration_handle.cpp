@@ -10,7 +10,7 @@ Factory<Node,CALIBRATION_HANDLE> CALIBRATION_HANDLE::nodeFactory;
 bool nodeLessThan( const Node *a, const Node *b );
 bool itemLessThan( const Item *a, const Item *b );
 
-CALIBRATION_HANDLE::CALIBRATION_HANDLE(QTextStream &in, Node *parentNode)
+CALIBRATION_HANDLE::CALIBRATION_HANDLE( Node *parentNode)
     : Node(parentNode, parentNode->lex, parentNode->errorList)
 {
     //get grammar
@@ -33,12 +33,12 @@ CALIBRATION_HANDLE::CALIBRATION_HANDLE(QTextStream &in, Node *parentNode)
 
 
     //Parse optional PARAMETERS (modified only for CALIBRATION_HANDLE)
-    TokenTyp token = parseOptPar(occOptPar, in);
+    TokenTyp token = parseOptPar(occOptPar);
 
     //End
     if (token == BlockEnd)
     {
-        token = nextToken(in);
+        token = nextToken();
         if (token == Keyword && lex->getLexem() == "CALIBRATION_HANDLE")
         {
             //Sort the childNodes
@@ -70,13 +70,13 @@ CALIBRATION_HANDLE::~CALIBRATION_HANDLE()
     delete occOptPar;
 }
 
-void CALIBRATION_HANDLE::parseFixPar(QList<TokenTyp> *typePar, QTextStream &in)
+void CALIBRATION_HANDLE::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             //parameters.insert(namePar->at(i), lex->getLexem());
@@ -93,10 +93,10 @@ void CALIBRATION_HANDLE::parseFixPar(QList<TokenTyp> *typePar, QTextStream &in)
     }
 }
 
-TokenTyp CALIBRATION_HANDLE::parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStream &in)
+TokenTyp CALIBRATION_HANDLE::parseOptPar(QMap<std::string, Occurence> *nameOptPar)
 {
     // read (Handles)* !!!!! Only for CALIBRATION_HANDLE
-    TokenTyp token = lex->getNextToken(in);
+    TokenTyp token = lex->getNextToken();
     while (token == Hex || token == Integer || token == Comment)
     {
         if (token != Comment)
@@ -108,12 +108,12 @@ TokenTyp CALIBRATION_HANDLE::parseOptPar(QMap<std::string, Occurence> *nameOptPa
         }
 
         // get next Token
-        token = lex->getNextToken(in);
+        token = lex->getNextToken();
     }
 
     // read optional parameters
     if (nameOptPar->isEmpty())
-        return nextToken(in);
+        return nextToken();
     else
     {
         //TokenTyp token = nextToken(in);
@@ -122,7 +122,7 @@ TokenTyp CALIBRATION_HANDLE::parseOptPar(QMap<std::string, Occurence> *nameOptPa
             //Nodes
             if (token == BlockBegin)
             {
-                token = this->nextToken(in);
+                token = this->nextToken();
                 if (token == Keyword)
                 {
                     std::string lexem = lex->getLexem();
@@ -131,15 +131,15 @@ TokenTyp CALIBRATION_HANDLE::parseOptPar(QMap<std::string, Occurence> *nameOptPa
                         if (this->occOptPar->value(lexem) == ZeroOrOne)
                         {
                             this->occOptPar->insert(lexem, Zero);
-                            Node  *instance = factoryOptNode->value(lexem)->createInstance(in, this);
+                            Node  *instance = factoryOptNode->value(lexem)->createInstance( this);
                             this->addChildNode(instance);
-                            token = nextToken(in);
+                            token = nextToken();
                         }
                         else if (this->occOptPar->value(lexem) == ZeroOrMore)
                         {
-                            Node  *instance = factoryOptNode->value(lexem)->createInstance(in, this);
+                            Node  *instance = factoryOptNode->value(lexem)->createInstance( this);
                             this->addChildNode(instance);
-                            token = nextToken(in);
+                            token = nextToken();
                         }
                         else
                         {
@@ -171,15 +171,15 @@ TokenTyp CALIBRATION_HANDLE::parseOptPar(QMap<std::string, Occurence> *nameOptPa
                     if (this->occOptPar->value(lexem) == ZeroOrOne)
                     {
                         this->occOptPar->insert(lexem, Zero);
-                        Item  *instance = factoryOptItem->value(lexem)->createInstance(in, this);
+                        Item  *instance = factoryOptItem->value(lexem)->createInstance( this);
                         this->addOptItem(instance);
-                        token = nextToken(in);
+                        token = nextToken();
                     }
                     else if (this->occOptPar->value(lexem) == ZeroOrMore)
                     {
-                        Item  *instance = factoryOptItem->value(lexem)->createInstance(in, this);
+                        Item  *instance = factoryOptItem->value(lexem)->createInstance( this);
                         this->addOptItem(instance);
-                        token = nextToken(in);
+                        token = nextToken();
                     }
                     else
                     {

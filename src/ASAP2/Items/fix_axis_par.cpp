@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,FIX_AXIS_PAR> FIX_AXIS_PAR::itemFactory;
 
-FIX_AXIS_PAR::FIX_AXIS_PAR(QTextStream &in, Node *parentNode)  : Item(parentNode)
+FIX_AXIS_PAR::FIX_AXIS_PAR( Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -13,7 +13,7 @@ FIX_AXIS_PAR::FIX_AXIS_PAR(QTextStream &in, Node *parentNode)  : Item(parentNode
     typePar = &gram->fix_axis_par.typePar;
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar ,in);
+    parseFixPar(typePar);
     name =(char*)"FIX_AXIS_PAR";
 }
 
@@ -25,13 +25,13 @@ FIX_AXIS_PAR::~FIX_AXIS_PAR()
     }
 }
 
-void FIX_AXIS_PAR::parseFixPar(QList<TokenTyp> *typePar, QTextStream &in)
+void FIX_AXIS_PAR::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             char *c = new char[parentNode->lex->getLexem().length()+1];
