@@ -18,10 +18,10 @@ bool Buffer::isFull()
     return state;
 }
 
-void Buffer::read(QTextStream &in)
+void Buffer::read(QTextStream *in)
 {
         char c;
-        in >> c;
+        *in >> c;
 
         if (c != 0 && c < 128)
         {
@@ -62,6 +62,28 @@ void Buffer::read(QTextStream &in)
 //    }
 }
 
+void Buffer::read(QTextStream &in)
+{
+        char c;
+        in >> c;
+
+        if (c != 0 && c < 128)
+        {
+            value = c;
+            state = true;
+        }
+        else if (c > 127)
+        {
+            value = '?';
+            state = true;
+        }
+        else
+        {
+            value = 0;
+            state = false;
+        }
+}
+
 char Buffer::getAndClear()
 {
     char c = value;
@@ -83,7 +105,7 @@ void Buffer::clear()
 
 /**********  Class Lexer *************/
 
-A2lLexer::A2lLexer(QObject *parent) : QObject(parent)
+A2lLexer::A2lLexer(QTextStream &in, QObject *parent) : QObject(parent)
 {
     grammar = new A2lGrammar();
     keywordsList = grammar->initKeywords();
@@ -91,6 +113,7 @@ A2lLexer::A2lLexer(QObject *parent) : QObject(parent)
     index = 0;
     position = 0;
     previousLine = 0;
+    this->in = &in;
 }
 
 A2lLexer::~A2lLexer()
@@ -191,7 +214,7 @@ std::string A2lLexer::toString(TokenTyp type)
     }
 }
 
-TokenTyp A2lLexer::getNextToken(QTextStream &in)
+TokenTyp A2lLexer::getNextToken()
 {
     lexem = "";
     TokenTyp token = myUnknown;
@@ -201,12 +224,12 @@ TokenTyp A2lLexer::getNextToken(QTextStream &in)
     //and process it if necessary
     if (buffer->isFull())
     {
-        token = begin(in, buffer->getAndClear());
+        token = begin(buffer->getAndClear());
     }
     //Else read next char
     else
     {
-        if (in.atEnd())
+        if (in->atEnd())
         {
             token = Eof;
             buffer->clear();
@@ -215,16 +238,16 @@ TokenTyp A2lLexer::getNextToken(QTextStream &in)
         {
 //            in >> ch;
 //            token = begin(in, ch);
-            buffer->read(in);
-            token = begin(in, buffer->getAndClear());
+            buffer->read(this->in);
+            token = begin(buffer->getAndClear());
         }
     }
 
     // emit return token for progressBar
-    if (in.pos() - position > 20000 || in.atEnd())
+    if (in->pos() - position > 20000 || in->atEnd())
     {
-        emit returnedToken(in.pos() - position + line - previousLine );
-        position = in.pos();
+        emit returnedToken(in->pos() - position + line - previousLine );
+        position = in->pos();
         previousLine = line;
     }
 
@@ -277,7 +300,7 @@ bool A2lLexer::isA2mlSym(char ch)
 
 }
 
-TokenTyp A2lLexer::begin(QTextStream &in, char ch)
+TokenTyp A2lLexer::begin(char ch)
 {
     TokenTyp token = myUnknown;
 
@@ -291,7 +314,7 @@ TokenTyp A2lLexer::begin(QTextStream &in, char ch)
         ch = buffer->getAndClear();
     }
 
-    index = in.pos() - 1;
+    index = in->pos() - 1;
     //if at end of file
     if (ch == 0)
     {
@@ -302,21 +325,21 @@ TokenTyp A2lLexer::begin(QTextStream &in, char ch)
     {
         if(isLetter(ch) || ch == '_')
         {
-            token = this->identifier(in, ch);
+            token = this->identifier(ch);
         }
         else if (isDigit(ch))
         {
-            token = this->number(in, ch);
+            token = this->number(ch);
         }
         else if (ch == '/')
         {
-            in >> ch;
+            *in >> ch;
             if (ch == '/')
-                token = commentL(in);
+                token = commentL();
             else if (ch == '*')
-                token = commentM(in);
+                token = commentM();
             else if (isLetter(ch))
-                token = block(in, ch);
+                token = block(ch);
             else
             {
                 token = myUnknown;
@@ -325,21 +348,21 @@ TokenTyp A2lLexer::begin(QTextStream &in, char ch)
         }
         else if (ch == '"')
         {
-            token = string(in);
+            token = string();
         }
         else if (ch == '-')
         {
             //token = Minus;
             //lexem = '-';
             //buffer->clear();
-            token = this->number(in, ch);
+            token = this->number(ch);
         }
         else if (ch == '+')
         {
             //token = Plus;
             //lexem = '+';
             //buffer->clear();
-            token = this->number(in, ch);
+            token = this->number(ch);
         }
         /*else if (this->isA2mlSym(ch))
         {
@@ -357,7 +380,7 @@ TokenTyp A2lLexer::begin(QTextStream &in, char ch)
      return token;
 }
 
-TokenTyp A2lLexer::commentM(QTextStream &in)
+TokenTyp A2lLexer::commentM()
 {
     TokenTyp token;
 
@@ -408,7 +431,7 @@ TokenTyp A2lLexer::commentM(QTextStream &in)
     return token;
 }
 
-TokenTyp A2lLexer::commentL(QTextStream &in)
+TokenTyp A2lLexer::commentL()
 {
     TokenTyp token;
 
@@ -424,7 +447,7 @@ TokenTyp A2lLexer::commentL(QTextStream &in)
     return token;
 }
 
-TokenTyp A2lLexer::block(QTextStream &in, char &ch)
+TokenTyp A2lLexer::block(char &ch)
 {
     TokenTyp token;
     lexem += '/';
@@ -447,7 +470,7 @@ TokenTyp A2lLexer::block(QTextStream &in, char &ch)
     return token;
 }
 
-TokenTyp A2lLexer::identifier(QTextStream &in, char &ch)
+TokenTyp A2lLexer::identifier(char &ch)
 {
     TokenTyp token = Identifier;
     lexem += ch;
@@ -456,7 +479,7 @@ TokenTyp A2lLexer::identifier(QTextStream &in, char &ch)
     bool exit = false;
     while (!exit)
     {
-        token = getPartialString(in);
+        token = getPartialString();
         if (token == Identifier)
         {
             if (buffer->getValue() == '.')
@@ -488,7 +511,7 @@ TokenTyp A2lLexer::identifier(QTextStream &in, char &ch)
     return token;
 }
 
-TokenTyp A2lLexer::number(QTextStream &in, char &ch)
+TokenTyp A2lLexer::number(char &ch)
 {
     TokenTyp token;
     lexem += ch;
@@ -565,7 +588,7 @@ TokenTyp A2lLexer::number(QTextStream &in, char &ch)
     }
     else if (buffer->getValue() == 'x')
     {
-         token = hexadecimal(in);
+         token = hexadecimal();
          return token;
     }
     else
@@ -575,7 +598,7 @@ TokenTyp A2lLexer::number(QTextStream &in, char &ch)
     }
 }
 
-TokenTyp A2lLexer::string(QTextStream &in)
+TokenTyp A2lLexer::string()
 {
     TokenTyp token;
     lexem = '"';
@@ -651,7 +674,7 @@ TokenTyp A2lLexer::string(QTextStream &in)
     return token;
 }
 
-TokenTyp A2lLexer::hexadecimal(QTextStream &in)
+TokenTyp A2lLexer::hexadecimal()
 {
     TokenTyp token;
     token = Hex;
@@ -666,7 +689,7 @@ TokenTyp A2lLexer::hexadecimal(QTextStream &in)
     return token;
 }
 
-TokenTyp A2lLexer::getPartialString(QTextStream &in)
+TokenTyp A2lLexer::getPartialString()
 {
     TokenTyp token = Identifier;
 
@@ -720,8 +743,8 @@ void A2lLexer::initialize()
     line = 1;
 }
 
-void A2lLexer::backward(QTextStream &in)
+void A2lLexer::backward()
 {
     int l = lexem.length() + 1;
-    in.seek(in.pos() - l);
+    in->seek(in->pos() - l);
 }

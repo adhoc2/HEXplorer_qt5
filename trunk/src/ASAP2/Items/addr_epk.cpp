@@ -6,7 +6,7 @@
 Factory<Item,ADDR_EPK> ADDR_EPK::itemFactory;
 
 
-ADDR_EPK::ADDR_EPK(QTextStream  &in, Node *parentNode) : Item(parentNode)
+ADDR_EPK::ADDR_EPK(Node *parentNode) : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -14,7 +14,7 @@ ADDR_EPK::ADDR_EPK(QTextStream  &in, Node *parentNode) : Item(parentNode)
     typePar = &gram->addr_epk.typePar;
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar ,in);
+    parseFixPar(typePar);
     name = (char*)"addr_epk";
 }
 
@@ -27,13 +27,13 @@ ADDR_EPK::~ADDR_EPK()
     }
 }
 
-void ADDR_EPK::parseFixPar(QList<TokenTyp> *typePar,  QTextStream  &in)
+void ADDR_EPK::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             char *c = new char[parentNode->lex->getLexem().length()+1];

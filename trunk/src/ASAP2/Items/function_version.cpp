@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,FUNCTION_VERSION> FUNCTION_VERSION::itemFactory;
 
-FUNCTION_VERSION::FUNCTION_VERSION(QTextStream &in, Node *parentNode)  : Item(parentNode)
+FUNCTION_VERSION::FUNCTION_VERSION( Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -13,7 +13,7 @@ FUNCTION_VERSION::FUNCTION_VERSION(QTextStream &in, Node *parentNode)  : Item(pa
     typePar = &gram->function_version.typePar;
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar ,in);
+    parseFixPar(typePar );
     name = (char*)"FUNCTION_VERSION";
 }
 
@@ -25,13 +25,13 @@ FUNCTION_VERSION::~FUNCTION_VERSION()
     }
 }
 
-void FUNCTION_VERSION::parseFixPar(QList<TokenTyp> *typePar, QTextStream &in)
+void FUNCTION_VERSION::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             char *c = new char[parentNode->lex->getLexem().length()+1];

@@ -14,7 +14,7 @@
 class COMPU_METHOD : public Node
 {
     public:
-        COMPU_METHOD(QTextStream &in, Node *parentNode);
+        COMPU_METHOD( Node *parentNode);
         ~COMPU_METHOD();
         static Factory<Node, COMPU_METHOD> nodeFactory;
 
@@ -34,8 +34,8 @@ class COMPU_METHOD : public Node
 
         //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
 
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
-        TokenTyp parseOptPar(QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar();
 };
 
 #endif // COMPU_METHOD_H

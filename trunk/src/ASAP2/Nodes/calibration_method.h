@@ -10,7 +10,7 @@
 class CALIBRATION_METHOD : public Node
 {
     public:
-        CALIBRATION_METHOD(QTextStream &in, Node *parentNode);
+        CALIBRATION_METHOD(Node *parentNode);
         ~CALIBRATION_METHOD();
         QMap<std::string, std::string> *getParameters();
         static Factory<Node, CALIBRATION_METHOD> nodeFactory;
@@ -29,8 +29,8 @@ class CALIBRATION_METHOD : public Node
 
         //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
 
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
-        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar);
 };
 
 #endif // CALIBRATION_METHOD_H

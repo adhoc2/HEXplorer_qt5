@@ -8,14 +8,14 @@
 class USER : public Item
 {
     public:
-        USER(QTextStream &in, Node *parentNode);
+        USER(Node *parentNode);
         ~USER();
         QMap<std::string, std::string> getParameters();
         static Factory<Item,USER> itemFactory;
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;

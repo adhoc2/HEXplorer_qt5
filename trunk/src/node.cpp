@@ -186,13 +186,13 @@ bool Node::isChild(Node *data, bool sorted)
 
 }
 
-TokenTyp Node::nextToken(QTextStream &in)
+TokenTyp Node::nextToken()
 {
-    TokenTyp token = lex->getNextToken(in);
+    TokenTyp token = lex->getNextToken();
 
     while (token == Comment)
     {
-        token = lex->getNextToken(in);
+        token = lex->getNextToken();
     }
 
     return token;

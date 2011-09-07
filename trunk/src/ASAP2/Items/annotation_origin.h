@@ -9,14 +9,14 @@
 class ANNOTATION_ORIGIN : public Item
 {
     public:
-        ANNOTATION_ORIGIN(QTextStream &in, Node *parentNode);
+        ANNOTATION_ORIGIN(Node *parentNode);
         ~ANNOTATION_ORIGIN();
         QMap<std::string, std::string> getParameters();
         static Factory<Item, ANNOTATION_ORIGIN> itemFactory;
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;

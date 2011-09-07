@@ -8,7 +8,7 @@
 class PROJECT_NO : public Item
 {
     public:
-        PROJECT_NO(QTextStream &in, Node *parentNode);
+        PROJECT_NO( Node *parentNode);
         ~PROJECT_NO();
         QMap<std::string, std::string> getParameters();
         static Factory<Item,PROJECT_NO> itemFactory;
@@ -16,7 +16,7 @@ class PROJECT_NO : public Item
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;

@@ -12,7 +12,7 @@
 class PROJECT : public Node
 {
     public:
-        PROJECT(QTextStream &in, Node *parentNode, A2lLexer *lexer);
+        PROJECT(Node *parentNode, A2lLexer *lexer);
         ~PROJECT();
         QMap<std::string, std::string> *getParameters();
         std::string pixmap();
@@ -30,8 +30,8 @@ class PROJECT : public Node
         QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
         QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;
 
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
-        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar);
 };
 
 #endif // BLOCKPROJECT_H

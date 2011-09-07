@@ -8,14 +8,14 @@
 class ALIGNMENT_LONG : public Item
 {
     public:
-        ALIGNMENT_LONG(QTextStream &in, Node *parentNode);
+        ALIGNMENT_LONG(Node *parentNode);
         ~ALIGNMENT_LONG();
         QMap<std::string, std::string> getParameters();
         static Factory<Item,ALIGNMENT_LONG> itemFactory;
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;

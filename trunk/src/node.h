@@ -56,7 +56,7 @@ class Node
         Node *child(QString str, bool bin);
         Node *getNode(QString str);
         Item *getItem(QString str);
-        TokenTyp nextToken(QTextStream &in);
+        TokenTyp nextToken();
 
         A2lLexer *lex;
         int a2lLine;

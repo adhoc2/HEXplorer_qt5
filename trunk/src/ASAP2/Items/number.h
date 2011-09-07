@@ -8,14 +8,14 @@
 class NUMBER : public Item
 {
     public:
-        NUMBER(QTextStream &in, Node *parentNode );
+        NUMBER(Node *parentNode );
         ~NUMBER();
         QMap<std::string, std::string> getParameters();
         static Factory<Item, NUMBER> itemFactory;
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;

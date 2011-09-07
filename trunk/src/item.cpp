@@ -14,13 +14,13 @@ Item::~Item()
 }
 
 
-TokenTyp Item::nextToken(QTextStream &in)
+TokenTyp Item::nextToken()
 {
-    TokenTyp token = parentNode->lex->getNextToken(in);
+    TokenTyp token = parentNode->lex->getNextToken();
 
     while (token == Comment)
     {
-        token = parentNode->lex->getNextToken(in);
+        token = parentNode->lex->getNextToken();
     }
 
     return token;

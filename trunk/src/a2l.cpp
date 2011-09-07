@@ -131,14 +131,14 @@ void A2l::parseSTA2l()
     progBarMaxValue = strr.length();
 
     //delete previous tree and create a new rootNode
-    A2lLexer *lexer = new A2lLexer();
+    A2lLexer *lexer = new A2lLexer(in);
     connect(lexer, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)),
             Qt::DirectConnection);
     lexer->initialize();
     QStringList *errorList = new QStringList();
 
     //create an ASAP2 file Node to start parsing
-    A2LFILE *nodeA2l = new A2LFILE(in, 0, lexer, errorList, fullA2lName);
+    A2LFILE *nodeA2l = new A2LFILE(0, lexer, errorList, fullA2lName);
     nodeA2l->name = new char[(QFileInfo(fullA2lName).fileName()).toLocal8Bit().count() + 1];
     strcpy(nodeA2l->name, QFileInfo(fullA2lName).fileName().toLocal8Bit().data());
     a2lFile = nodeA2l;
@@ -227,15 +227,16 @@ bool A2l::parseOpenMPA2l()
                     t_ref1 = omp_get_wtime();
 
                     // create a new lexer
-                    A2lLexer *lexer1 = new A2lLexer();
+                    QTextStream out1(&str1);
+                    A2lLexer *lexer1 = new A2lLexer(out1);
                     connect(lexer1, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)),
                             Qt::DirectConnection);
                     lexer1->initialize();
                     QStringList *errorList1 = new QStringList();
-                    QTextStream out1(&str1);
+
 
                     // start parsing the file
-                    nodeA2l1 = new A2LFILE(out1, 0, lexer1, errorList1, fullA2lName);
+                    nodeA2l1 = new A2LFILE(0, lexer1, errorList1, fullA2lName);
 
                     // change the name
                     nodeA2l1->name = new char[(QFileInfo(fullA2lName).fileName()).toLocal8Bit().count() + 1];
@@ -252,15 +253,16 @@ bool A2l::parseOpenMPA2l()
                     t_ref2 = omp_get_wtime();
 
                     // create a new lexer
-                    A2lLexer *lexer2 = new A2lLexer();
+                    QTextStream out2(&str2);
+                    A2lLexer *lexer2 = new A2lLexer(out2);
                     connect(lexer2, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)),
                             Qt::DirectConnection);
                     lexer2->initialize();
                     QStringList *errorList2 = new QStringList();
-                    QTextStream out2(&str2);
+
 
                     // start parsing the file
-                    nodeA2l2 = new A2LFILE(out2, 0, lexer2, errorList2);
+                    nodeA2l2 = new A2LFILE(0, lexer2, errorList2);
 
                     // stop timer
                     t_final2 = omp_get_wtime();

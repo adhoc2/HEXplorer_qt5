@@ -9,7 +9,7 @@
 class ANNOTATION_TEXT : public Node
 {
     public:
-        ANNOTATION_TEXT(QTextStream &in, Node *parentNode);
+        ANNOTATION_TEXT( Node *parentNode);
         ~ANNOTATION_TEXT();
         QMap<std::string, std::string> *getParameters();
         static Factory<Node, ANNOTATION_TEXT> nodeFactory;
@@ -26,11 +26,11 @@ class ANNOTATION_TEXT : public Node
         QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
         QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;
 
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
-        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar);
 
         // only for ANNOTATION_TEXT
-        TokenTyp parseListString(QTextStream &in);
+        TokenTyp parseListString();
 };
 
 #endif // ANNOTATION_TEXT_H

@@ -11,7 +11,7 @@ Factory<Node,SUB_FUNCTION> SUB_FUNCTION::nodeFactory;
 bool nodeLessThan( const Node *a, const Node *b );
 bool itemLessThan( const Item *a, const Item *b );
 
-SUB_FUNCTION::SUB_FUNCTION(QTextStream &in, Node *parentNode)
+SUB_FUNCTION::SUB_FUNCTION( Node *parentNode)
     : Node(parentNode, parentNode->lex, parentNode->errorList)
 {
     //get grammar
@@ -27,12 +27,12 @@ SUB_FUNCTION::SUB_FUNCTION(QTextStream &in, Node *parentNode)
     name = (char*)"SUB_FUNCTION";
 
     //Parse list Identifiers
-    TokenTyp token = parseListChar(in);
+    TokenTyp token = parseListChar();
 
     //fianlize parsing
     if (token == BlockEnd)
     {
-        token = nextToken(in);
+        token = nextToken();
         if (token == Keyword && lex->getLexem() == "SUB_FUNCTION")
         {
             //Sort the childNodes
@@ -81,14 +81,14 @@ std::string  SUB_FUNCTION::pixmap()
     return ":/icones/CHAR.bmp";
 }
 
-TokenTyp SUB_FUNCTION::parseListChar(QTextStream &in)
+TokenTyp SUB_FUNCTION::parseListChar()
 {
-    TokenTyp token = lex->getNextToken(in);
+    TokenTyp token = lex->getNextToken();
 
     while (token == Identifier)
     {
         charList.append(lex->getLexem());
-        token = lex->getNextToken(in);
+        token = lex->getNextToken();
     }
 
     return token;

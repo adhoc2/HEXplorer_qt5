@@ -10,7 +10,7 @@
 class SUB_FUNCTION : public Node
 {
     public:
-        SUB_FUNCTION(QTextStream &in, Node *parentNode);
+        SUB_FUNCTION( Node *parentNode);
         ~SUB_FUNCTION();
 
         QMap<std::string, std::string> *getParameters();
@@ -34,9 +34,9 @@ class SUB_FUNCTION : public Node
         // CHARACTERISTICS list
         QList<std::string> charList;
 
-        TokenTyp parseListChar(QTextStream &in);
-        void parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in);
-        TokenTyp parseOptPar(QTextStream &in);
+        TokenTyp parseListChar();
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar();
 };
 
 #endif // SUB_FUNCTION_H

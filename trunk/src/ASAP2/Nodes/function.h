@@ -14,7 +14,7 @@
 class FUNCTION : public Node
 {
     public:
-        FUNCTION(QTextStream &in, Node *parentNode);
+        FUNCTION( Node *parentNode);
         ~FUNCTION();
         static Factory<Node, FUNCTION> nodeFactory;
 
@@ -34,8 +34,8 @@ class FUNCTION : public Node
 
         //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
 
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
-        TokenTyp parseOptPar(QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar();
 };
 
 #endif // FUNCTION_H

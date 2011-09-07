@@ -20,7 +20,7 @@
 class MODULE : public Node
 {
     public:
-        MODULE(QTextStream &in, Node *parentNode);
+        MODULE( Node *parentNode);
         ~MODULE();
         QMap<std::string, std::string> *getParameters();
         static Factory<Node, MODULE> nodeFactory;
@@ -40,8 +40,8 @@ class MODULE : public Node
 
       //  #pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
 
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
-        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar);
 };
 
 #endif // MODULE_H

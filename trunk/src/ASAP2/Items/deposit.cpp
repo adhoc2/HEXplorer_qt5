@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,DEPOSIT> DEPOSIT::itemFactory;
 
-DEPOSIT::DEPOSIT(QTextStream  &in, Node *parentNode)  : Item(parentNode)
+DEPOSIT::DEPOSIT( Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -13,7 +13,7 @@ DEPOSIT::DEPOSIT(QTextStream  &in, Node *parentNode)  : Item(parentNode)
     typePar = &gram->deposit.typePar;
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar ,in);
+    parseFixPar(typePar);
     if (parameters.count() > 0)
         name = parameters.at(0);
     else
@@ -28,13 +28,13 @@ DEPOSIT::~DEPOSIT()
     }
 }
 
-void DEPOSIT::parseFixPar(QList<TokenTyp> *typePar, QTextStream  &in)
+void DEPOSIT::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             char *c = new char[parentNode->lex->getLexem().length()+1];

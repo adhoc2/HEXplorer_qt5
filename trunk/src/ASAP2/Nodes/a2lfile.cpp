@@ -7,7 +7,7 @@
 bool nodeLessThan( const Node *a, const Node *b );
 bool itemLessThan( const Item *a, const Item *b );
 
-A2LFILE::A2LFILE(QTextStream &in, Node *parentNode, A2lLexer *lexer, QStringList *errorList, QString fullFileName)
+A2LFILE::A2LFILE(Node *parentNode, A2lLexer *lexer, QStringList *errorList, QString fullFileName)
     : Node(parentNode, lexer, errorList)
 {
     //initialize
@@ -16,7 +16,7 @@ A2LFILE::A2LFILE(QTextStream &in, Node *parentNode, A2lLexer *lexer, QStringList
     fullA2lName = fullFileName;
 
     //call the parser
-    parser(in);
+    parser();
 }
 
 A2LFILE::~A2LFILE()
@@ -27,16 +27,16 @@ A2LFILE::~A2LFILE()
     delete lex;
 }
 
-void A2LFILE::parser(QTextStream &in)
+void A2LFILE::parser()
 {
-    TokenTyp token = nextToken(in);
+    TokenTyp token = nextToken();
 
     while (token == Keyword)
     {
         if (lex->getLexem() == "ASAP2_VERSION")
-            getAsap2Version(in);
+            getAsap2Version();
         else if (lex->getLexem() == "A2ML_VERSION")
-            getA2mlVersion(in);
+            getA2mlVersion();
         else
         {
             QString s1(lex->toString(token).c_str());
@@ -47,20 +47,20 @@ void A2LFILE::parser(QTextStream &in)
                                     "find token : " + s1 + " (" + s2 + ")");
             return;
         }
-        token = nextToken(in);
+        token = nextToken();
     }
 
     if (token == BlockBegin)
     {
-        TokenTyp token1 = nextToken(in);
+        TokenTyp token1 = nextToken();
 
         if (token1 == Keyword && lex->getLexem() == "PROJECT")
         {
-            PROJECT *child = new PROJECT(in, this, lex);
+            PROJECT *child = new PROJECT(this, lex);
             addChildNode(child);
             project = child;
 
-            token = nextToken(in);
+            token = nextToken();
         }
         else
         {
@@ -82,7 +82,7 @@ void A2LFILE::parser(QTextStream &in)
     }
 }
 
-void A2LFILE::getAsap2Version(QTextStream &in)
+void A2LFILE::getAsap2Version()
 {        
     if (optParameters->contains("ASAP2_VERSION"))
     {
@@ -91,12 +91,12 @@ void A2LFILE::getAsap2Version(QTextStream &in)
     }
 
     std::string str;
-    TokenTyp token1 = nextToken(in);
+    TokenTyp token1 = nextToken();
 
     if (token1 == Integer)
     {
         str += lex->getLexem();
-        TokenTyp token2 =nextToken(in);
+        TokenTyp token2 =nextToken();
         if (token2 == Integer)
         {
             str += " ";
@@ -115,7 +115,7 @@ void A2LFILE::getAsap2Version(QTextStream &in)
     }
 }
 
-void A2LFILE::getA2mlVersion(QTextStream &in)
+void A2LFILE::getA2mlVersion()
 {
     if (this->optParameters->contains("A2ML_VERSION"))
     {
@@ -124,12 +124,12 @@ void A2LFILE::getA2mlVersion(QTextStream &in)
     }
 
     std::string str;
-    TokenTyp token1 = nextToken(in);
+    TokenTyp token1 = nextToken();
 
     if (token1 == Integer)
     {
         str += lex->getLexem();
-        TokenTyp token2 = nextToken(in);
+        TokenTyp token2 = nextToken();
         if (token2 == Integer)
         {
             str += " ";

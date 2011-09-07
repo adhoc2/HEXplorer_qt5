@@ -8,14 +8,14 @@
 class ADDR_EPK : public Item
 {
     public:
-        ADDR_EPK(QTextStream  &in, Node *parentNode);
+        ADDR_EPK(Node *parentNode);
         ~ADDR_EPK();
         QMap<std::string, std::string> getParameters();
         static Factory<Item, ADDR_EPK> itemFactory;
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream  &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;

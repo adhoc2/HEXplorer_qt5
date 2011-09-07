@@ -8,7 +8,7 @@
 class STATUS_STRING_REF : public Item
 {
     public:
-        STATUS_STRING_REF(QTextStream &in, Node *parentNode);
+        STATUS_STRING_REF( Node *parentNode);
         ~STATUS_STRING_REF();
         QMap<std::string, std::string> getParameters();
         static Factory<Item, STATUS_STRING_REF> itemFactory;
@@ -16,7 +16,7 @@ class STATUS_STRING_REF : public Item
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;

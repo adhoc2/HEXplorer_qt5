@@ -14,7 +14,7 @@
 class MOD_COMMON : public Node
 {
     public:
-        MOD_COMMON(QTextStream &in, Node *parentNode);
+        MOD_COMMON( Node *parentNode);
         ~MOD_COMMON();
         QMap<std::string, std::string> *getParameters();
         char* fixPar(int n);
@@ -34,8 +34,8 @@ class MOD_COMMON : public Node
 
         //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
 
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
-        TokenTyp parseOptPar(QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar();
 };
 
 #endif // MOD_COMMON_H

@@ -8,11 +8,11 @@
 class A2ML : public Node
 {
     public:
-        A2ML(QTextStream &in, Node *parentNode);
+        A2ML(Node *parentNode);
         static Factory<Node, A2ML> nodeFactory;       
 
     private:
-        void parse(QTextStream &in);
+        void parse();
 };
 
 #endif // BLOCKA2ML_H

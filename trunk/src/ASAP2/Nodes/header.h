@@ -11,7 +11,7 @@
 class HEADER : public Node
 {
     public:
-        HEADER(QTextStream &in, Node *parentNode);
+        HEADER(Node *parentNode);
         ~HEADER();
         QMap<std::string, std::string> *getParameters();
         static Factory<Node,HEADER> nodeFactory;
@@ -30,8 +30,8 @@ class HEADER : public Node
 
         //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
 
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
-        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
+        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar);
 };
 
 #endif // HEADER_H

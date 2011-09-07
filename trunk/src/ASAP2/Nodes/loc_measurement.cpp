@@ -11,7 +11,7 @@ Factory<Node,LOC_MEASUREMENT> LOC_MEASUREMENT::nodeFactory;
 bool nodeLessThan( const Node *a, const Node *b );
 bool itemLessThan( const Item *a, const Item *b );
 
-LOC_MEASUREMENT::LOC_MEASUREMENT(QTextStream &in, Node *parentNode)
+LOC_MEASUREMENT::LOC_MEASUREMENT( Node *parentNode)
     : Node(parentNode, parentNode->lex, parentNode->errorList)
 {
     //Set the line where the Node starts in ASAP file
@@ -24,12 +24,12 @@ LOC_MEASUREMENT::LOC_MEASUREMENT(QTextStream &in, Node *parentNode)
     //Parse optional PARAMETERS
     //TokenTyp token = parseOptPar(in);
 
-    TokenTyp token = parseListChar(in);
+    TokenTyp token = parseListChar();
 
     //fianlize parsing
     if (token == BlockEnd)
     {
-        token = nextToken(in);
+        token = nextToken();
         if (token == Keyword && lex->getLexem() == "LOC_MEASUREMENT")
         {
             //Sort the childNodes
@@ -78,14 +78,14 @@ std::string  LOC_MEASUREMENT::pixmap()
     return ":/icones/CHAR.bmp";
 }
 
-TokenTyp LOC_MEASUREMENT::parseListChar(QTextStream &in)
+TokenTyp LOC_MEASUREMENT::parseListChar()
 {
-    TokenTyp token = lex->getNextToken(in);
+    TokenTyp token = lex->getNextToken();
 
     while (token == Identifier)
     {
         charList.append(lex->getLexem());
-        token = lex->getNextToken(in);
+        token = lex->getNextToken();
     }
 
     return token;

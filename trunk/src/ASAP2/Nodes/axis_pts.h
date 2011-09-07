@@ -15,7 +15,7 @@
 class AXIS_PTS : public Node
 {
     public:
-        AXIS_PTS(QTextStream &in, Node *parentNode);
+        AXIS_PTS(Node *parentNode);
         ~AXIS_PTS();
         QMap<std::string, std::string> *getParameters();
         static Factory<Node, AXIS_PTS> nodeFactory;
@@ -31,13 +31,13 @@ class AXIS_PTS : public Node
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
 
         // Opt parameters
         QMap<std::string, Occurence> *occOptPar;
         QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
         QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;
-        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar, QTextStream &in);
+        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar);
 };
 
 #endif // AXIS_PTS_H

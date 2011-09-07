@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,FNC_VALUES> FNC_VALUES::itemFactory;
 
-FNC_VALUES::FNC_VALUES(QTextStream &in, Node *parentNode)  : Item(parentNode)
+FNC_VALUES::FNC_VALUES( Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -13,7 +13,7 @@ FNC_VALUES::FNC_VALUES(QTextStream &in, Node *parentNode)  : Item(parentNode)
     typePar = &gram->fnc_values.typePar;
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar ,in);
+    parseFixPar(typePar);
     name = (char*)"FNC_VALUES";
 }
 
@@ -25,13 +25,13 @@ FNC_VALUES::~FNC_VALUES()
     }
 }
 
-void FNC_VALUES::parseFixPar(QList<TokenTyp> *typePar, QTextStream &in)
+void FNC_VALUES::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             char *c = new char[parentNode->lex->getLexem().length()+1];

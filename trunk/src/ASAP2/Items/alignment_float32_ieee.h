@@ -8,14 +8,14 @@
 class ALIGNMENT_FLOAT32_IEEE : public Item
 {
     public:
-        ALIGNMENT_FLOAT32_IEEE(QTextStream  &in, Node *parentNode);
+        ALIGNMENT_FLOAT32_IEEE(Node *parentNode);
         ~ALIGNMENT_FLOAT32_IEEE();
         QMap<std::string, std::string> getParameters();
         static Factory<Item,ALIGNMENT_FLOAT32_IEEE> itemFactory;
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream  &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;

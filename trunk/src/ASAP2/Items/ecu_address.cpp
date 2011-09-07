@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,ECU_ADDRESS> ECU_ADDRESS::itemFactory;
 
-ECU_ADDRESS::ECU_ADDRESS(QTextStream &in, Node *parentNode) : Item(parentNode)
+ECU_ADDRESS::ECU_ADDRESS(Node *parentNode) : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -13,7 +13,7 @@ ECU_ADDRESS::ECU_ADDRESS(QTextStream &in, Node *parentNode) : Item(parentNode)
     typePar = &gram->ecu_address.typePar;
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar ,in);
+    parseFixPar(typePar);
     name = (char*)"ecu_address";
 }
 
@@ -26,13 +26,13 @@ ECU_ADDRESS::~ECU_ADDRESS()
     }
 }
 
-void ECU_ADDRESS::parseFixPar(QList<TokenTyp> *typePar, QTextStream &in)
+void ECU_ADDRESS::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             char *c = new char[parentNode->lex->getLexem().length()+1];

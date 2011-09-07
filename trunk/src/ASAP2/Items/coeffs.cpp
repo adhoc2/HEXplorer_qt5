@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,COEFFS> COEFFS::itemFactory;
 
-COEFFS::COEFFS(QTextStream &in, Node *parentNode)  : Item(parentNode)
+COEFFS::COEFFS( Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -13,7 +13,7 @@ COEFFS::COEFFS(QTextStream &in, Node *parentNode)  : Item(parentNode)
     typePar = &gram->coeffs.typePar;
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar ,in);
+    parseFixPar(typePar);
     name = (char*)"COEFFS";
 }
 
@@ -25,13 +25,13 @@ COEFFS::~COEFFS()
     }
 }
 
-void COEFFS::parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in)
+void COEFFS::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             char *c = new char[parentNode->lex->getLexem().length()+1];

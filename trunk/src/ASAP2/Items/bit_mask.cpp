@@ -5,7 +5,7 @@
 //initialise static variables
 Factory<Item,BIT_MASK> BIT_MASK::itemFactory;
 
-BIT_MASK::BIT_MASK(QTextStream &in, Node *parentNode) : Item(parentNode)
+BIT_MASK::BIT_MASK( Node *parentNode) : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
@@ -13,7 +13,7 @@ BIT_MASK::BIT_MASK(QTextStream &in, Node *parentNode) : Item(parentNode)
     typePar = &gram->bit_mask.typePar;
 
     //Parse Mandatory PARAMETERS
-    parseFixPar(typePar ,in);
+    parseFixPar(typePar);
     if (parameters.count() > 0)
         name = parameters.at(0);
     else
@@ -29,13 +29,13 @@ BIT_MASK::~BIT_MASK()
     }
 }
 
-void BIT_MASK::parseFixPar(QList<TokenTyp> *typePar, QTextStream &in)
+void BIT_MASK::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
-        token = this->nextToken(in);
+        token = this->nextToken();
         if (token == typePar->at(i))
         {
             char *c = new char[parentNode->lex->getLexem().length()+1];

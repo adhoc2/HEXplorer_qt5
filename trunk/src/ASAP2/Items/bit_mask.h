@@ -8,7 +8,7 @@
 class BIT_MASK : public Item
 {
     public:
-        BIT_MASK(QTextStream &in, Node *parentNode);
+        BIT_MASK(Node *parentNode);
         ~BIT_MASK();
         QMap<std::string, std::string> getParameters();
         static Factory<Item, BIT_MASK> itemFactory;
@@ -16,7 +16,7 @@ class BIT_MASK : public Item
         char* getPar(std::string str);
 
     private:
-        void parseFixPar(QList<TokenTyp> *typePar,  QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;

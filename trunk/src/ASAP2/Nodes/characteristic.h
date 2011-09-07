@@ -18,7 +18,7 @@
 class CHARACTERISTIC : public Node
 {
     public:
-        CHARACTERISTIC(QTextStream &in, Node *parentNode);
+        CHARACTERISTIC( Node *parentNode);
         ~CHARACTERISTIC();
 
         QMap<std::string, std::string> *getParameters();
@@ -36,12 +36,12 @@ class CHARACTERISTIC : public Node
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;
-        void parseFixPar(QList<TokenTyp> *typePar, QTextStream &in);
+        void parseFixPar(QList<TokenTyp> *typePar);
 
         // Opt parameters
         QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
         QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;        
-        TokenTyp parseOptPar(QTextStream &in);
+        TokenTyp parseOptPar();
 };
 
 #endif // CHARACTERISTIC_H

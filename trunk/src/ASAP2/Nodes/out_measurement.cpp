@@ -11,7 +11,7 @@ Factory<Node,OUT_MEASUREMENT> OUT_MEASUREMENT::nodeFactory;
 bool nodeLessThan( const Node *a, const Node *b );
 bool itemLessThan( const Item *a, const Item *b );
 
-OUT_MEASUREMENT::OUT_MEASUREMENT(QTextStream &in, Node *parentNode)
+OUT_MEASUREMENT::OUT_MEASUREMENT( Node *parentNode)
     : Node(parentNode, parentNode->lex, parentNode->errorList)
 {
     //get grammar
@@ -27,12 +27,12 @@ OUT_MEASUREMENT::OUT_MEASUREMENT(QTextStream &in, Node *parentNode)
     name = (char*)"OUT_MEASUREMENT";
 
     //Parse list Identifiers
-    TokenTyp token = parseListChar(in);
+    TokenTyp token = parseListChar();
 
     //fianlize parsing
     if (token == BlockEnd)
     {
-        token = nextToken(in);
+        token = nextToken();
         if (token == Keyword && lex->getLexem() == "OUT_MEASUREMENT")
         {
             //Sort the childNodes
@@ -81,14 +81,14 @@ std::string  OUT_MEASUREMENT::pixmap()
     return ":/icones/CHAR.bmp";
 }
 
-TokenTyp OUT_MEASUREMENT::parseListChar(QTextStream &in)
+TokenTyp OUT_MEASUREMENT::parseListChar()
 {
-    TokenTyp token = lex->getNextToken(in);
+    TokenTyp token = lex->getNextToken();
 
     while (token == Identifier)
     {
         charList.append(lex->getLexem());
-        token = lex->getNextToken(in);
+        token = lex->getNextToken();
     }
 
     return token;
