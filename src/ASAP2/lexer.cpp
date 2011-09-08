@@ -190,6 +190,9 @@ std::string A2lLexer::toString(TokenTyp type)
         case Indexorder:
             return "Indexorder";
             break;
+        case IndexMode:
+            return "Indexmode";
+            break;
         case ConversionType:
             return "ConversionType";
             break;
