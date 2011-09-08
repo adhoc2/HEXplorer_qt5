@@ -93,7 +93,7 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
         << "BIT_MASK" << "ADDR_EPK" << "EPK" << "CUSTOMER_NO" << "USER" << "PHONE_NO" << "ECU"
         << "CPU_TYPE" << "MEMORY_SEGMENT" << "CALIBRATION_METHOD" << "CALIBRATION_HANDLE"
         << "CALIBRATION_HANDLE_TEXT" << "FUNCTION" << "MOD_COMMON" << "COMPU_METHOD" << "COMPU_VTAB"
-        << "RECORD_LAYOUT" << "MEMORY_LAYOUT" << "S_REC_LAYOUT" << "SRC_ADDR_X" << "SRC_ADDR_Y"
+        << "MEMORY_LAYOUT" << "S_REC_LAYOUT" << "SRC_ADDR_X" << "SRC_ADDR_Y"
         << "/begin" << "/end" << "DEPOSIT" << "NUMBER" << "READ_ONLY" << "FIX_AXIS_PAR"
         << "COEFFS" << "COEFFS_LINEAR" << "COMPU_TAB_REF" << "FORMULA" << "FORMULA_INV" << "REF_UNIT"
         << "STATUS_STRING_REF" << "DEFAULT_VALUE" << "DEF_CHARACTERISTIC" <<"OUT_MEASUREMENT"
