@@ -243,7 +243,7 @@ TokenTyp A2lLexer::getNextToken()
     }
 
     // emit return token for progressBar
-    if (in->pos() - position > 20000 || in->atEnd())
+    if (in->pos() - position > 40000 || in->atEnd())
     {
         emit returnedToken(in->pos() - position + line - previousLine );
         position = in->pos();
