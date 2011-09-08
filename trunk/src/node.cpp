@@ -136,6 +136,16 @@ Node *Node::getNode(QString str)
     return node;
 }
 
+Node *Node::getNode(int num)
+{
+    if (num >0 && num < childCount() )
+    {
+        return childNodes.at(num);
+    }
+    else
+        return 0;
+}
+
 int Node::childCount() const
 {
     return childNodes.count();

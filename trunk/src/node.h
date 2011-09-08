@@ -55,6 +55,7 @@ class Node
         Node *child(int row);
         Node *child(QString str, bool bin);
         Node *getNode(QString str);
+        Node *getNode(int num);
         Item *getItem(QString str);
         TokenTyp nextToken();
 

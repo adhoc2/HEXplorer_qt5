@@ -171,7 +171,7 @@ bool A2l::parseOpenMPA2l()
 
 //    //create a stream into the file
 //    QTextStream in(&file);
-//    QString str = in.readAll();
+//    QString strr = in.readAll();
 //    file.close();
 
     //create a stream into the file (Merci Oscar...)
@@ -184,10 +184,10 @@ bool A2l::parseOpenMPA2l()
     fseek(fid, 0, SEEK_END);
     long size = ftell(fid);
     rewind(fid);
-    char* buffer = (char*)malloc(size*sizeof(char));
+    char* buffer = (char*)malloc((size)*sizeof(char));
     fread(buffer, sizeof(char), size, fid);
     fclose(fid);
-    QString str(buffer);
+    QString str = QString::fromAscii(buffer, size);
 
     qDebug() << "\n1- read " << time.elapsed();
     time.restart();

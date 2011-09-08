@@ -601,466 +601,156 @@ void HexFile::readAllData()
             QStringList list1 = module->listChar.mid(0, middle);
             QStringList list2 = module->listChar.mid(middle, length - middle);
 
-            if (omp_get_num_procs() < 3)
+
+            // read datas
+            QList<Data*> listData1;
+            QList<Data*> listData2;
+
+            omp_set_num_threads(2);
+            #pragma omp parallel
             {
-                // read datas
-                QList<Data*> listData1;
-                QList<Data*> listData2;
-                omp_set_num_threads(2);
-                #pragma omp parallel
+                #pragma omp sections
                 {
-                   #pragma omp sections
+                    #pragma omp section
                     {
-                       #pragma omp section
+                        int i = 0;
+                        foreach (QString str, list1)
                         {
-                            foreach (QString str, list1)
+                            bool found = false;
+
+                            // search into CHARACTERISTIC
+                            if (nodeChar)
                             {
-                                bool found = false;
-                                // search into CHARACTERISTIC
-                                if (nodeChar)
+                                Node *label = nodeChar->getNode(str);
+                                if (label)
                                 {
-                                    Node *label = nodeChar->getNode(str);
-                                    if (label)
+                                    found = true;
+                                    CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
+                                    QString add = charac->getPar("Adress");
+                                    bool bl = isValidAddress(add);
+
+                                    if(bl)
                                     {
-                                        found = true;
-                                        CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
-                                        QString add = charac->getPar("Adress");
-                                        bool bl = isValidAddress(add);
+                                        Data *data = new Data(charac, a2lProject, this);
+                                        if (phys)
+                                            data->hex2phys();
+                                        listData1.append(data);
+                                    }
+                                    else
+                                    {
 
-                                        if(bl)
-                                        {
-                                            Data *data = new Data(charac, a2lProject, this);
-                                            if (phys)
-                                                data->hex2phys();
-                                            listData1.append(data);
-                                        }
-                                        else
-                                        {
-
-                                        }
                                     }
                                 }
-
-                                // search into AXIS_PTS
-                                if (nodeAxis && !found)
-                                {
-                                    Node *label2 = nodeAxis->getNode(str);
-                                    if (label2)
-                                    {
-                                        found = true;
-                                        AXIS_PTS *axis = (AXIS_PTS*)label2;
-                                        QString add = axis->getPar("Adress");
-
-                                        bool bl = isValidAddress(add);
-                                        if (bl)
-                                        {
-                                            Data *data = new Data(axis, a2lProject, this);
-                                            if (phys)
-                                                data->hex2phys();
-                                            listData1.append(data);
-                                        }
-                                        else
-                                        {
-
-                                        }
-                                    }
-                                }
-
-                                // display not found
-                                if (!found)
-                                {
-
-                                }
-
-                                // increment valueProgBar
-                                incrementValueProgBar(1);
-
                             }
+
+                            // search into AXIS_PTS
+                            if (nodeAxis && !found)
+                            {
+                                Node *label2 = nodeAxis->getNode(str);
+                                if (label2)
+                                {
+                                    found = true;
+                                    AXIS_PTS *axis = (AXIS_PTS*)label2;
+                                    QString add = axis->getPar("Adress");
+
+                                    bool bl = isValidAddress(add);
+                                    if (bl)
+                                    {
+                                        Data *data = new Data(axis, a2lProject, this);
+                                        if (phys)
+                                            data->hex2phys();
+                                        listData1.append(data);
+                                    }
+                                    else
+                                    {
+
+                                    }
+                                }
+                            }
+
+                            // increment valueProgBar
+                            if (i % 6 == 1)
+                                incrementValueProgBar(6);
+
+                            i++;
+
                         }
-                       #pragma omp section
-                         {
-                            foreach (QString str, list2)
+                    }
+                    #pragma omp section
+                    {
+                        int i = 0;
+                        foreach (QString str, list2)
+                        {
+
+                            bool found = false;
+                            // search into CHARACTERISTIC
+                            if (nodeChar)
                             {
-                                bool found = false;
-                                // search into CHARACTERISTIC
-                                if (nodeChar)
+                                Node *label = nodeChar->getNode(str);
+                                if (label)
                                 {
-                                    Node *label = nodeChar->getNode(str);
-                                    if (label)
+                                    found = true;
+                                    CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
+                                    QString add = charac->getPar("Adress");
+                                    bool bl = isValidAddress(add);
+
+                                    if(bl)
                                     {
-                                        found = true;
-                                        CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
-                                        QString add = charac->getPar("Adress");
-                                        bool bl = isValidAddress(add);
+                                        Data *data = new Data(charac, a2lProject, this);
+                                        if (phys)
+                                            data->hex2phys();
+                                        listData2.append(data);
+                                    }
+                                    else
+                                    {
 
-                                        if(bl)
-                                        {
-                                            Data *data = new Data(charac, a2lProject, this);
-                                            if (phys)
-                                                data->hex2phys();
-                                            listData2.append(data);
-                                        }
-                                        else
-                                        {
-
-                                        }
                                     }
                                 }
-
-                                // search into AXIS_PTS
-                                if (nodeAxis && !found)
-                                {
-                                    Node *label2 = nodeAxis->getNode(str);
-                                    if (label2)
-                                    {
-                                        found = true;
-                                        AXIS_PTS *axis = (AXIS_PTS*)label2;
-                                        QString add = axis->getPar("Adress");
-
-                                        bool bl = isValidAddress(add);
-                                        if (bl)
-                                        {
-                                            Data *data = new Data(axis, a2lProject, this);
-                                            if (phys)
-                                                data->hex2phys();
-                                            listData2.append(data);
-                                        }
-                                        else
-                                        {
-
-                                        }
-                                    }
-                                }
-
-                                // display not found
-                                if (!found)
-                                {
-
-                                }
-
-                                // increment valueProgBar
-                                incrementValueProgBar(1);
-
                             }
+
+                            // search into AXIS_PTS
+                            if (nodeAxis && !found)
+                            {
+                                Node *label2 = nodeAxis->getNode(str);
+                                if (label2)
+                                {
+                                    found = true;
+                                    AXIS_PTS *axis = (AXIS_PTS*)label2;
+                                    QString add = axis->getPar("Adress");
+
+                                    bool bl = isValidAddress(add);
+                                    if (bl)
+                                    {
+                                        Data *data = new Data(axis, a2lProject, this);
+                                        if (phys)
+                                            data->hex2phys();
+                                        listData2.append(data);
+                                    }
+                                    else
+                                    {
+
+                                    }
+                                }
+                            }
+
+
+                            // increment valueProgBar
+                            if (i % 6 == 1)
+                                incrementValueProgBar(6);
+
+                            i++;
                         }
                     }
                 }
-                listData.append(listData1);
-                listData.append(listData2);
-
-                //qDebug() << "2 cores : " << listData.count();
             }
-            else
-            {
-                // find middle list1
-                int length1 = list1.count();
-                int middle1 = 0;
-                if (length1 % 2 == 0)
-                    middle1 = length1 / 2;
-                else
-                    middle1 = (int)(length1/2);
 
-                // find middle list2
-                int length2 = list2.count();
-                int middle2 = 0;
-                if (length2 % 2 == 0)
-                    middle2 = length2 / 2;
-                else
-                    middle2 = (int)(length2/2);
+            listData.append(listData1);
+            listData.append(listData2);
 
-                QStringList list11 = list1.mid(0, middle1);
-                QStringList list12 = list1.mid(middle1,length1 - middle1);
-                QStringList list21 = list2.mid(0, middle2);
-                QStringList list22 = list2.mid(middle2,length2 - middle2);
-
-
-                // read datas
-                QList<Data*> listData1;
-                QList<Data*> listData2;
-                QList<Data*> listData3;
-                QList<Data*> listData4;
-                omp_set_num_threads(4);
-                #pragma omp parallel
-                {
-                   #pragma omp sections
-                    {
-                       #pragma omp section
-                        {
-                            foreach (QString str, list11)
-                            {
-                                bool found = false;
-                                // search into CHARACTERISTIC
-                                if (nodeChar)
-                                {
-                                    Node *label = nodeChar->getNode(str);
-                                    if (label)
-                                    {
-                                        found = true;
-                                        CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
-                                        QString add = charac->getPar("Adress");
-                                        bool bl = isValidAddress(add);
-
-                                        if(bl)
-                                        {
-                                            Data *data = new Data(charac, a2lProject, this);
-                                            if (phys)
-                                                data->hex2phys();
-                                            listData1.append(data);
-                                        }
-                                        else
-                                        {
-
-                                        }
-                                    }
-                                }
-
-                                // search into AXIS_PTS
-                                if (nodeAxis && !found)
-                                {
-                                    Node *label2 = nodeAxis->getNode(str);
-                                    if (label2)
-                                    {
-                                        found = true;
-                                        AXIS_PTS *axis = (AXIS_PTS*)label2;
-                                        QString add = axis->getPar("Adress");
-
-                                        bool bl = isValidAddress(add);
-                                        if (bl)
-                                        {
-                                            Data *data = new Data(axis, a2lProject, this);
-                                            if (phys)
-                                                data->hex2phys();
-                                            listData1.append(data);
-                                        }
-                                        else
-                                        {
-
-                                        }
-                                    }
-                                }
-
-                                // display not found
-                                if (!found)
-                                {
-
-                                }
-
-                                // increment valueProgBar
-                                incrementValueProgBar(1);
-
-                            }
-                        }
-                       #pragma omp section
-                         {
-                            foreach (QString str, list12)
-                            {
-                                bool found = false;
-                                // search into CHARACTERISTIC
-                                if (nodeChar)
-                                {
-                                    Node *label = nodeChar->getNode(str);
-                                    if (label)
-                                    {
-                                        found = true;
-                                        CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
-                                        QString add = charac->getPar("Adress");
-                                        bool bl = isValidAddress(add);
-
-                                        if(bl)
-                                        {
-                                            Data *data = new Data(charac, a2lProject, this);
-                                            if (phys)
-                                                data->hex2phys();
-                                            listData2.append(data);
-                                        }
-                                        else
-                                        {
-
-                                        }
-                                    }
-                                }
-
-                                // search into AXIS_PTS
-                                if (nodeAxis && !found)
-                                {
-                                    Node *label2 = nodeAxis->getNode(str);
-                                    if (label2)
-                                    {
-                                        found = true;
-                                        AXIS_PTS *axis = (AXIS_PTS*)label2;
-                                        QString add = axis->getPar("Adress");
-
-                                        bool bl = isValidAddress(add);
-                                        if (bl)
-                                        {
-                                            Data *data = new Data(axis, a2lProject, this);
-                                            if (phys)
-                                                data->hex2phys();
-                                            listData2.append(data);
-                                        }
-                                        else
-                                        {
-
-                                        }
-                                    }
-                                }
-
-                                // display not found
-                                if (!found)
-                                {
-
-                                }
-
-                                // increment valueProgBar
-                                incrementValueProgBar(1);
-
-                            }
-                        }
-                       #pragma omp section
-                         {
-                             foreach (QString str, list21)
-                             {
-                                 bool found = false;
-                                 // search into CHARACTERISTIC
-                                 if (nodeChar)
-                                 {
-                                     Node *label = nodeChar->getNode(str);
-                                     if (label)
-                                     {
-                                         found = true;
-                                         CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
-                                         QString add = charac->getPar("Adress");
-                                         bool bl = isValidAddress(add);
-
-                                         if(bl)
-                                         {
-                                             Data *data = new Data(charac, a2lProject, this);
-                                             if (phys)
-                                                 data->hex2phys();
-                                             listData3.append(data);
-                                         }
-                                         else
-                                         {
-
-                                         }
-                                     }
-                                 }
-
-                                 // search into AXIS_PTS
-                                 if (nodeAxis && !found)
-                                 {
-                                     Node *label2 = nodeAxis->getNode(str);
-                                     if (label2)
-                                     {
-                                         found = true;
-                                         AXIS_PTS *axis = (AXIS_PTS*)label2;
-                                         QString add = axis->getPar("Adress");
-
-                                         bool bl = isValidAddress(add);
-                                         if (bl)
-                                         {
-                                             Data *data = new Data(axis, a2lProject, this);
-                                             if (phys)
-                                                 data->hex2phys();
-                                             listData3.append(data);
-                                         }
-                                         else
-                                         {
-
-                                         }
-                                     }
-                                 }
-
-                                 // display not found
-                                 if (!found)
-                                 {
-
-                                 }
-
-                                 // increment valueProgBar
-                                 incrementValueProgBar(1);
-
-                             }
- }
-                       #pragma omp section
-                         {
-                             foreach (QString str, list22)
-                             {
-                                 bool found = false;
-                                 // search into CHARACTERISTIC
-                                 if (nodeChar)
-                                 {
-                                     Node *label = nodeChar->getNode(str);
-                                     if (label)
-                                     {
-                                         found = true;
-                                         CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
-                                         QString add = charac->getPar("Adress");
-                                         bool bl = isValidAddress(add);
-
-                                         if(bl)
-                                         {
-                                             Data *data = new Data(charac, a2lProject, this);
-                                             if (phys)
-                                                 data->hex2phys();
-                                             listData4.append(data);
-                                         }
-                                         else
-                                         {
-
-                                         }
-                                     }
-                                 }
-
-                                 // search into AXIS_PTS
-                                 if (nodeAxis && !found)
-                                 {
-                                     Node *label2 = nodeAxis->getNode(str);
-                                     if (label2)
-                                     {
-                                         found = true;
-                                         AXIS_PTS *axis = (AXIS_PTS*)label2;
-                                         QString add = axis->getPar("Adress");
-
-                                         bool bl = isValidAddress(add);
-                                         if (bl)
-                                         {
-                                             Data *data = new Data(axis, a2lProject, this);
-                                             if (phys)
-                                                 data->hex2phys();
-                                             listData4.append(data);
-                                         }
-                                         else
-                                         {
-
-                                         }
-                                     }
-                                 }
-
-                                 // display not found
-                                 if (!found)
-                                 {
-
-                                 }
-
-                                 // increment valueProgBar
-                                 incrementValueProgBar(1);
-
-                             }
-                         }
-                    }
-                }
-                listData.append(listData1);
-                listData.append(listData2);
-                listData.append(listData3);
-                listData.append(listData4);
-
-                //qDebug() << "4 cores : " << listData.count();
-
-            }
         }
         else
         {
+            int i = 0;
             foreach (QString str, module->listChar)
             {
                 bool found = false;
@@ -1122,7 +812,10 @@ void HexFile::readAllData()
                 }
 
                 // increment valueProgBar
-                incrementValueProgBar(1);
+                if (i % 6 == 1)
+                    incrementValueProgBar(6);
+
+                i++;
             }
         }
     }
