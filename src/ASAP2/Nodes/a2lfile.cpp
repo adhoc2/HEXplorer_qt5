@@ -2,6 +2,7 @@
 #include "workproject.h"
 #include <QMessageBox>
 #include "a2lgrammar.h"
+#include "qdebug.h"
 
 // Functions (Predicate)
 bool nodeLessThan( const Node *a, const Node *b );
@@ -41,8 +42,9 @@ void A2LFILE::parser()
         {
             QString s1(lex->toString(token).c_str());
             QString s2(lex->getLexem().c_str());
+            QString s3 = QString::number(lex->getLine());
 
-            showError("ASAP2 parser : wrong ASAP2 file format at line ???\n"
+            showError("ASAP2 parser : wrong ASAP2 file format at line " + s3 + "\n"
                                     "expected token : Keyword (ASAP2_VERSION or A2ML_VERSION)\n"
                                     "find token : " + s1 + " (" + s2 + ")");
             return;
