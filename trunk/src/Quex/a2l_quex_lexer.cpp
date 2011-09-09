@@ -2416,6 +2416,7 @@ _18578:
         case 0x44:    
 
 
+
         case 0x45:    
         case 0x46:    
         case 0x47:    
@@ -25989,6 +25990,7 @@ _18902:
         case 0x71:    
         case 0x72:    
         case 0x73:    
+
         case 0x74:    
         case 0x75:    
         case 0x76:    
@@ -72956,6 +72958,7 @@ _20432:
 
 #   line 177 "a2l_quex_lexer.qx"
  self_send1(QUEX_TKN_PRGTYPE , Lexeme); RETURN; 
+
 
 
 #   line 32767 "a2l_quex_lexer.cpp"

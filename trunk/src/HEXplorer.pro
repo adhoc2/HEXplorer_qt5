@@ -59,7 +59,7 @@ equals( QMAKE_CXX, cl) {
 
 
         QMAKE_CXXFLAGS_RELEASE -= -O2
-        QMAKE_CXXFLAGS_RELEASE += -Ox -openmp -DQUEX_OPTION_ASSERTS_DISABLED
+        QMAKE_CXXFLAGS_RELEASE += -Osiy -Gs -openmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
 }
 
@@ -228,7 +228,13 @@ HEADERS += a2l.h \
     dialogdatadimension.h \
     charmodel.h \
     freezetablewidget.h \
-    sptablemodelHex.h
+    sptablemodelHex.h \
+    Quex/a2l_quex_lexer-token \
+    Quex/a2l_quex_lexer-configuration \
+    Quex/a2l_quex_lexer_old.qx \
+    Quex/a2l_quex_lexer.qx \
+    Quex/a2l_quex_lexer \
+    Quex/a2l_quex_lexer-token_ids
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -375,7 +381,21 @@ SOURCES += a2l.cpp \
     charmodel.cpp \
     freezetablewidget.cpp \
     sptablemodelHex.cpp \
-    a2l_quex_lexer.cpp
+    Quex/a2l_quex_lexer.cpp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

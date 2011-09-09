@@ -47,7 +47,7 @@ PROJECT::PROJECT(Node *parentNode, A2lLexer *lexer)
             this->showError("expected token : BlockEnd PROJECT\nfind token : " + s);
         }
     }
-    else if (token == Eof && lex->getLexem() == "CHUNKend")
+    else if ((token == Eof || token == Identifier) && lex->getLexem() == "CHUNKend")
     {
         qSort(this->childNodes.begin(), this->childNodes.end(), nodeLessThan);
         stopped = true;
