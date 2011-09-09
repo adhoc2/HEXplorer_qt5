@@ -2,7 +2,6 @@
 #include <QMessageBox>
 #include <sstream>
 #include "a2lgrammar.h"
-#include <qdebug.h>
 
 using namespace std;
 
@@ -33,8 +32,6 @@ PROJECT::PROJECT(Node *parentNode, A2lLexer *lexer)
 
     //Parse optional PARAMETERS
     TokenTyp token = parseOptPar(occOptPar);
-    qDebug() << lexer->toString(token).c_str();
-    qDebug() << lexer->getLexem().c_str();
 
     //End
     if (token == BlockEnd)
