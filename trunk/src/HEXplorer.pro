@@ -15,11 +15,11 @@ RC_FILE = myappicon.rc
 equals( QMAKE_CXX, cl) {
 
     # --- LIBS Path --- #
-    QUEX = .\LIBS\Quex
     QSCINTILLA_ROOT = .\LIBS\QScintilla-gpl-2.5.1
     WINHOARD_ROOT = .\LIBS\hoard-38\src
     QWT_ROOT = .\LIBS\qwt-6.0.1
     QWT3D_ROOT = .\LIBS\qwtplot3d
+
     # ----------------- #
 
     message("*** Compiler used : windows compiler $$QMAKE_CXX ***")
@@ -27,12 +27,13 @@ equals( QMAKE_CXX, cl) {
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
     INCLUDEPATH += . .\ASAP2 \
      .\DataContainers \
-     $${QUEX}  \
+     .\Quex  \
      $${QSCINTILLA_ROOT}\Qt4 \
      $${WINHOARD_ROOT}\src \
      $${QWT_ROOT}\src \
      $${QWT3D_ROOT}\include \
-#     $${MATLAB_ROOT}\include
+
+    # ---- debug ----- #
 
     CONFIG( debug, debug|release ) {
         DEFINES += MY_DEBUG
@@ -47,19 +48,20 @@ equals( QMAKE_CXX, cl) {
         QMAKE_CXXFLAGS_DEBUG += -openmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
     else {
+
+    # ---- release ---- #
+
         UI_DIR = release/.ui
         MOC_DIR = release/.moc
         OBJECTS_DIR = release/.obj
         LIBS += -l$${WINHOARD_ROOT}\winhoard \
-    -l$${QSCINTILLA_ROOT}\Qt4\lib\qscintilla2 \
-    -l$${QWT3D_ROOT}\lib\qwtplot3d \
-    -l$${QWT_ROOT}\lib\qwt \
-#    -l$${MATLAB_ROOT}\lib\win32\microsoft\libmat \
-#    -l$${MATLAB_ROOT}\lib\win32\microsoft\libmx
-
+        -l$${QSCINTILLA_ROOT}\Qt4\lib\qscintilla2 \
+        -l$${QWT3D_ROOT}\lib\qwtplot3d \
+        -l$${QWT_ROOT}\lib\qwt \
 
         QMAKE_CXXFLAGS_RELEASE -= -O2
         QMAKE_CXXFLAGS_RELEASE += -Osiy -Gs -openmp -DQUEX_OPTION_ASSERTS_DISABLED
+        #QMAKE_CXXFLAGS_RELEASE += -Ox -openmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
 }
 
@@ -382,6 +384,8 @@ SOURCES += a2l.cpp \
     freezetablewidget.cpp \
     sptablemodelHex.cpp \
     Quex/a2l_quex_lexer.cpp
+
+
 
 
 
