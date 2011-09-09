@@ -1,7 +1,7 @@
 #------------ GENERAL settings --------------#
 TEMPLATE = app
 DEPENDPATH += .
-INCLUDEPATH += . "C:\Programme\quex\quex-0.59.7"
+INCLUDEPATH += .
 QT       += core gui opengl network script xml xmlpatterns
 contains(QT_CONFIG, scripttools): QT += scripttools
 RESOURCES += icones.qrc
@@ -25,7 +25,8 @@ equals( QMAKE_CXX, cl) {
     message("*** Compiler used : windows compiler $$QMAKE_CXX ***")
     CONFIG += embed_manifest_exe qaxcontainer
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
-    INCLUDEPATH += . .\ASAP2 \
+    INCLUDEPATH += . "C:\Programme\quex\quex-0.59.7" \
+     .\ASAP2 \
      .\DataContainers \
      .\Quex  \
      $${QSCINTILLA_ROOT}\Qt4 \
@@ -78,7 +79,7 @@ equals( QMAKE_CXX, cl) {
     # ----------------- #
 
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
-    INCLUDEPATH += . ./ASAP2 ./DataContainers $${QWT_ROOT}/src $${QWT3D_ROOT}/include $${QSCINTILLA_ROOT}/Qt4
+    INCLUDEPATH += . ./ASAP2 ./Quex ./DataContainers $${QWT_ROOT}/src $${QWT3D_ROOT}/include $${QSCINTILLA_ROOT}/Qt4 /Applications/quex/quex-0.59.7"
 
     UI_DIR = .ui
     MOC_DIR = .moc
@@ -89,12 +90,12 @@ equals( QMAKE_CXX, cl) {
     -L$${QWT_ROOT}/lib
 
     CONFIG( debug, debug|release ) {
-    LIBS += -lqwtplot3dd -lqwtd -lgomp -lqscintilla2d
-    QMAKE_CXXFLAGS_DEBUG += -fopenmp
+        LIBS += -lqwtplot3dd -lqwtd -lgomp -lqscintilla2d
+        QMAKE_CXXFLAGS_DEBUG += -fopenmp
     }
     else {
-    LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
-    QMAKE_CXXFLAGS_RELEASE += -O3 -fopenmp
+        LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
+        QMAKE_CXXFLAGS_RELEASE += -O3 -fopenmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
 }
 

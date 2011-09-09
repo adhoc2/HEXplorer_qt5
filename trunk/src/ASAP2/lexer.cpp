@@ -774,7 +774,7 @@ A2lQuexLexer::A2lQuexLexer(std::istringstream &in, QObject *parent) : A2lLexer()
 A2lQuexLexer::~A2lQuexLexer()
 {
     delete qlex;
-    delete token_p;
+    //delete token_p;
 }
 
 TokenTyp A2lQuexLexer::getNextToken()
