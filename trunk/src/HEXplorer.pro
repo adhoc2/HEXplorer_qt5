@@ -1,7 +1,7 @@
 #------------ GENERAL settings --------------#
 TEMPLATE = app
 DEPENDPATH += .
-INCLUDEPATH += .
+INCLUDEPATH += . "C:\Programme\quex\quex-0.59.7"
 QT       += core gui opengl network script xml xmlpatterns
 contains(QT_CONFIG, scripttools): QT += scripttools
 RESOURCES += icones.qrc
@@ -15,6 +15,7 @@ RC_FILE = myappicon.rc
 equals( QMAKE_CXX, cl) {
 
     # --- LIBS Path --- #
+    QUEX = .\LIBS\Quex
     QSCINTILLA_ROOT = .\LIBS\QScintilla-gpl-2.5.1
     WINHOARD_ROOT = .\LIBS\hoard-38\src
     QWT_ROOT = .\LIBS\qwt-6.0.1
@@ -26,6 +27,7 @@ equals( QMAKE_CXX, cl) {
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
     INCLUDEPATH += . .\ASAP2 \
      .\DataContainers \
+     $${QUEX}  \
      $${QSCINTILLA_ROOT}\Qt4 \
      $${WINHOARD_ROOT}\src \
      $${QWT_ROOT}\src \
@@ -42,7 +44,7 @@ equals( QMAKE_CXX, cl) {
         -l$${QWT3D_ROOT}\lib\qwtplot3dd \
         -l$${QWT_ROOT}\lib\qwtd        
 
-        QMAKE_CXXFLAGS_DEBUG += -openmp
+        QMAKE_CXXFLAGS_DEBUG += -openmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
     else {
         UI_DIR = release/.ui
@@ -57,7 +59,7 @@ equals( QMAKE_CXX, cl) {
 
 
         QMAKE_CXXFLAGS_RELEASE -= -O2
-        QMAKE_CXXFLAGS_RELEASE += -Ox -openmp
+        QMAKE_CXXFLAGS_RELEASE += -Ox -openmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
 }
 
@@ -372,4 +374,12 @@ SOURCES += a2l.cpp \
     dialogdatadimension.cpp \
     charmodel.cpp \
     freezetablewidget.cpp \
-    sptablemodelHex.cpp
+    sptablemodelHex.cpp \
+    a2l_quex_lexer.cpp
+
+
+
+
+
+
+

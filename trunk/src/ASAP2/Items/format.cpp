@@ -38,6 +38,12 @@ void FORMAT::parseFixPar(QList<TokenTyp> *typePar)
             strcpy(c, parentNode->lex->getLexem().c_str());
             parameters.append(c);
         }
+        else if (token == String && typePar->at(i) == StringFormat)
+        {
+            char *c = new char[parentNode->lex->getLexem().length()+1];
+            strcpy(c, parentNode->lex->getLexem().c_str());
+            parameters.append(c);
+        }
         else
         {
             QString t(this->parentNode->lex->toString(typePar->at(i)).c_str());

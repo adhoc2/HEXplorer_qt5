@@ -85,7 +85,7 @@ void CALIBRATION_METHOD::parseFixPar(QList<TokenTyp> *typePar)
             char *c = new char[lex->getLexem().length()+1];
             strcpy(c, lex->getLexem().c_str());
             parameters.append(c);
-        }
+        }        
         else
         {
             QString t(lex->toString(typePar->at(i)).c_str());

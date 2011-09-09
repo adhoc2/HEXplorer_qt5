@@ -5,6 +5,7 @@
 #include <QString>
 #include <QTextStream>
 #include <QHash>
+#include "a2l_quex_lexer"
 
 class A2lGrammar;
 
@@ -43,14 +44,15 @@ class A2lLexer : public QObject
 
     public:
         A2lLexer(QTextStream &in, QObject *parent = 0);
+        A2lLexer(QObject *parent = 0);
         ~A2lLexer();
 
-        TokenTyp getNextToken();
-        std::string toString(TokenTyp type);
-        std::string getLexem();
-        int getLine();
-        void initialize();
-        void backward();
+        virtual TokenTyp getNextToken();
+        virtual std::string toString(TokenTyp type);
+        virtual std::string getLexem();
+        virtual int getLine();
+        virtual void initialize();
+        virtual void backward(int i = 0);
         A2lGrammar *grammar;
         QTextStream *in;
 
@@ -82,6 +84,37 @@ class A2lLexer : public QObject
 
     signals:
         void returnedToken(int );
+};
+
+#include <sstream>
+
+class A2lQuexLexer : public A2lLexer
+{
+     Q_OBJECT
+
+    public:
+        A2lQuexLexer(std::istringstream &in, QObject *parent = 0);
+        ~A2lQuexLexer();
+
+        TokenTyp getNextToken();
+        std::string toString(TokenTyp type);
+        std::string getLexem();
+        int getLine();
+        int getIndex();
+        void initialize();
+        void backward(int i = 0);
+
+    private:
+        quex::a2l_quex_lexer  *qlex;
+        quex::Token *token_p;
+        int position;
+        int line;
+        int index;
+        int previousLine;
+        std::string lexem;
+        QHash<QString, TokenTyp> keywordsList;
+        TokenTyp myToken(quex::Token* token_p);
+
 };
 
 #endif // A2LLEXER_H

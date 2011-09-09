@@ -2,6 +2,7 @@
 #include <QMessageBox>
 #include <sstream>
 #include "a2lgrammar.h"
+#include <qdebug.h>
 
 using namespace std;
 
@@ -32,6 +33,8 @@ PROJECT::PROJECT(Node *parentNode, A2lLexer *lexer)
 
     //Parse optional PARAMETERS
     TokenTyp token = parseOptPar(occOptPar);
+    qDebug() << lexer->toString(token).c_str();
+    qDebug() << lexer->getLexem().c_str();
 
     //End
     if (token == BlockEnd)
@@ -47,11 +50,12 @@ PROJECT::PROJECT(Node *parentNode, A2lLexer *lexer)
             this->showError("expected token : BlockEnd PROJECT\nfind token : " + s);
         }
     }
-    else if (token == Identifier && lex->getLexem() == "CHUNKend")
+    else if (token == Eof && lex->getLexem() == "CHUNKend")
     {
         qSort(this->childNodes.begin(), this->childNodes.end(), nodeLessThan);
         stopped = true;
-        lexer->in->seek(lexer->in->pos() - 8);
+        //lexer->in->seek(lexer->in->pos() - 8);
+        lexer->backward(8);
     }
     else
     {

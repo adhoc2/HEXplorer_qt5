@@ -115,6 +115,11 @@ A2lLexer::A2lLexer(QTextStream &in, QObject *parent) : QObject(parent)
     this->in = &in;
 }
 
+A2lLexer::A2lLexer(QObject *parent) : QObject(parent)
+{
+        buffer = new Buffer();
+}
+
 A2lLexer::~A2lLexer()
 {
     delete grammar;
@@ -745,8 +750,262 @@ void A2lLexer::initialize()
     line = 1;
 }
 
-void A2lLexer::backward()
+void A2lLexer::backward(int i)
 {
     int l = lexem.length() + 1;
     in->seek(in->pos() - l);
+}
+
+/**********  Class Quex Lexer *************/
+
+A2lQuexLexer::A2lQuexLexer(std::istringstream &in, QObject *parent) : A2lLexer()
+{
+    grammar = new A2lGrammar();
+    keywordsList = grammar->initKeywords();
+    index = 0;
+    position = 0;
+    previousLine = 0;
+
+    //std::istringstream* in = new std::istringstream(strr);
+    qlex = new quex::a2l_quex_lexer(&in);
+    token_p = qlex->token_p();
+}
+
+A2lQuexLexer::~A2lQuexLexer()
+{
+    delete qlex;
+    delete token_p;
+}
+
+TokenTyp A2lQuexLexer::getNextToken()
+{
+    qlex->receive(&token_p);
+
+    int pos = qlex->tell();
+    if ((pos - position) > 40000)
+    {
+        emit returnedToken(pos - position + getLine() - previousLine);
+        position = pos;
+        previousLine = getLine();
+    }
+
+    return myToken(token_p);
+}
+
+std::string A2lQuexLexer::getLexem()
+{
+    return token_p->pretty_char_text();
+}
+
+std::string A2lQuexLexer::toString(TokenTyp type)
+{
+    switch (type)
+    {
+        case myUnknown:
+            return "Unknown";
+            break;
+        case Identifier:
+            return "Identifier";
+            break;
+        case String:
+            return "String";
+            break;
+        case Hex:
+            return "Hex";
+            break;
+        case Integer:
+            return "Integer";
+            break;
+        case Comment:
+            return "Comment";
+            break;
+        case Float:
+            return "Float";
+            break;
+        case Plus:
+            return "+";
+            break;
+        case Minus:
+            return "-";
+            break;
+        case Mode:
+            return "Mode";
+            break;
+        case BlockBegin:
+            return "BlockBegin";
+            break;
+        case BlockEnd:
+            return "BlockEnd";
+            break;
+        case Eof:
+            return "Eof";
+            break;
+        case StringFormat:
+            return "StringFormat";
+            break;
+        case Keyword:
+            return "Keyword";
+            break;
+        case DataType:
+            return "DataType";
+            break;
+        case Datasize:
+            return "Datasize";
+            break;
+        case Addrtype:
+            return "Addrtype";
+            break;
+        case Byteorder:
+            return "Byteorder";
+            break;
+        case Indexorder:
+            return "Indexorder";
+            break;
+        case IndexMode:
+            return "Indexmode";
+            break;
+        case ConversionType:
+            return "ConversionType";
+            break;
+        case Type:
+            return "Type";
+            break;
+        case Attribute:
+            return "Attribute";
+            break;
+        case PrgType:
+            return "PrgType";
+            break;
+        case MemoryType:
+            return "MemoryType";
+            break;
+        case MemAttribute:
+            return "MemAttribute";
+            break;
+
+        default:
+            return "Unknown";
+    }
+}
+
+int A2lQuexLexer::getLine()
+{
+    return token_p->line_number();
+}
+
+void A2lQuexLexer::initialize()
+{
+    line = 1;
+}
+
+void A2lQuexLexer::backward(int i)
+{
+    qlex->seek_backward(i);
+}
+
+TokenTyp A2lQuexLexer::myToken(quex::Token *token_p)
+{
+    TokenTyp token = myUnknown;
+
+    switch (token_p->type_id())
+    {
+    case  QUEX_TKN_MODE :
+        return Mode;
+        break;
+
+    case QUEX_TKN_ADDRTYPE :
+        return Addrtype;
+        break;
+
+    case QUEX_TKN_ATTRIBUTE :
+        return Attribute;
+        break;
+
+    case QUEX_TKN_BLOCKBEGIN :
+        return BlockBegin;
+        break;
+
+    case QUEX_TKN_BLOCKEND :
+        return BlockEnd;
+        break;
+
+    case QUEX_TKN_BYTEORDER :
+        return Byteorder;
+        break;
+
+    case QUEX_TKN_COMMENT :
+        return Comment;
+        break;
+
+    case  QUEX_TKN_CONVERSIONTYPE :
+        return ConversionType;
+        break;
+
+    case  QUEX_TKN_DATASIZE   :
+        return Datasize;
+        break;
+
+    case QUEX_TKN_DATATYPE :
+        return DataType;
+        break;
+
+    case  QUEX_TKN_FLOAT :
+        return Float;
+        break;
+
+    case  QUEX_TKN_HEX :
+        return Hex;
+        break;
+
+    case  QUEX_TKN_IDENTIFIER :
+        return Identifier;
+        break;
+
+    case  QUEX_TKN_INDEXMODE :
+        return IndexMode;
+        break;
+
+    case QUEX_TKN_INDEXORDER  :
+        return Indexorder;
+        break;
+
+    case QUEX_TKN_INTEGER :
+        return Integer;
+        break;
+
+    case QUEX_TKN_KEYWORD :
+        return Keyword;
+        break;
+
+    case QUEX_TKN_MEMATTRIBUTE :
+        return MemAttribute;
+        break;
+
+    case QUEX_TKN_MEMORYTYPE :
+        return MemoryType;
+        break;
+
+    case QUEX_TKN_PRGTYPE  :
+        return PrgType;
+        break;
+
+    case QUEX_TKN_STRING :
+        return String;
+        break;
+
+    case QUEX_TKN_STRINGFORMAT :
+        return StringFormat;
+        break;
+
+    case QUEX_TKN_TERMINATION :
+        return Eof;
+        break;
+
+    case  QUEX_TKN_TYPE :
+        return Type;
+        break;
+
+    }
+
+    return token;
 }

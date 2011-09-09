@@ -36,12 +36,14 @@ MODULE::MODULE(Node *parentNode)
     TokenTyp token = lex->getNextToken();
     if (token == Identifier && lex->getLexem() == "CHUNKstart")
     {
-        stopped = true;        
+        stopped = true;
     }
     else
     {
-        lex->backward();
+        QString str = lex->getLexem().c_str();
+        lex->backward(str.length());
     }
+    //TokenTyp token;
 
     //Parse Mandatory PARAMETERS
     parseFixPar(typePar);

@@ -124,16 +124,17 @@ void A2l::parseSTA2l()
     char* buffer = (char*)malloc(size*sizeof(char));
     fread(buffer, sizeof(char), size, fid);
     fclose(fid);
-    QString strr(buffer);
-    QTextStream in(&strr, QIODevice::ReadOnly);
+    QString strr = QString::fromAscii(buffer, size);
+    //QTextStream in(&strr, QIODevice::ReadOnly);
+    std::istringstream in(strr.toStdString());
 
     // set the maximum for the progressbar
-    progBarMaxValue = strr.length();
+    progBarMaxValue = size;
 
     //delete previous tree and create a new rootNode
-    A2lLexer *lexer = new A2lLexer(in);
-    connect(lexer, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)),
-            Qt::DirectConnection);
+    //A2lLexer *lexer = new A2lLexer(in);
+    A2lQuexLexer *lexer = new A2lQuexLexer(in);
+    connect(lexer, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)), Qt::DirectConnection);
     lexer->initialize();
     QStringList *errorList = new QStringList();
 
@@ -227,8 +228,10 @@ bool A2l::parseOpenMPA2l()
                     t_ref1 = omp_get_wtime();
 
                     // create a new lexer
-                    QTextStream out1(&str1);
-                    A2lLexer *lexer1 = new A2lLexer(out1);
+                    //QTextStream out1(&str1);
+                    //A2lLexer *lexer1 = new A2lLexer(out1);
+                    std::istringstream out1(str1.toStdString());
+                    A2lQuexLexer *lexer1 = new A2lQuexLexer(out1);
                     connect(lexer1, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)),
                             Qt::DirectConnection);
                     lexer1->initialize();
@@ -253,8 +256,10 @@ bool A2l::parseOpenMPA2l()
                     t_ref2 = omp_get_wtime();
 
                     // create a new lexer
-                    QTextStream out2(&str2);
-                    A2lLexer *lexer2 = new A2lLexer(out2);
+                    //QTextStream out2(&str2);
+                    //A2lLexer *lexer2 = new A2lLexer(out2);
+                    std::istringstream out2(str2.toStdString());
+                    A2lQuexLexer *lexer2 = new A2lQuexLexer(out2);
                     connect(lexer2, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)),
                             Qt::DirectConnection);
                     lexer2->initialize();
