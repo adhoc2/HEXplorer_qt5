@@ -59,8 +59,9 @@ equals( QMAKE_CXX, cl) {
         -l$${QWT3D_ROOT}\lib\qwtplot3d \
         -l$${QWT_ROOT}\lib\qwt \
 
+        QMAKE_CXXFLAGS_RELEASE -= -O2
         # only for file a2l_quex_lexer.cpp because microsoft compiler cannot compile with -Ox !!
-        QMAKE_CXXFLAGS_RELEASE += -Osiy -Gs -openmp -DQUEX_OPTION_ASSERTS_DISABLED     
+        QMAKE_CXXFLAGS_RELEASE += -Osiy -Gs -openmp -DQUEX_OPTION_ASSERTS_DISABLED
         #QMAKE_CXXFLAGS_RELEASE += -Ox -openmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
 }
@@ -389,6 +390,10 @@ SOURCES += a2l.cpp \
     freezetablewidget.cpp \
     sptablemodelHex.cpp \
     Quex/a2l_quex_lexer.cpp
+
+
+
+
 
 
 
