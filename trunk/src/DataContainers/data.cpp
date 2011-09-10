@@ -88,22 +88,23 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
 
     //Type
     type = node->getPar("Type");
-    if (type.toLower() == "value")
+
+    if (type.compare("VALUE") == 0)
     {
         size = 3;
     }
-    else if (type.toLower() == "curve")
+    else if (type.compare("CURVE") == 0)
     {
         axisDescrX = (AXIS_DESCR*)node->getNode("AXIS_DESCR")->child(0);
         size = 4;
     }
-    else if (type.toLower() == "map")
+    else if (type.compare("MAP") == 0)
     {
         axisDescrX = (AXIS_DESCR*)node->getNode("AXIS_DESCR")->child(0);
         axisDescrY = (AXIS_DESCR*)node->getNode("AXIS_DESCR")->child(1);
         size = 4;
     }
-    else if (type.toLower() == "val_blk")
+    else if (type.compare("VAL_BLK") == 0)
     {
         bool bl;
         NUMBER *item =  (NUMBER*)node->getItem("NUMBER");
@@ -121,7 +122,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
 
         size = 4;
     }
-    else if (type.toLower() == "ascii")
+    else if (type.compare("ASCII") == 0)
     {
         bool bl;
         NUMBER *item = (NUMBER*)node->getItem("NUMBER");
@@ -144,7 +145,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
     if (axisDescrX)
     {
         QString typeAxisX = axisDescrX->getPar("Attribute");
-        if (typeAxisX == "COM_AXIS")
+        if (typeAxisX.compare("COM_AXIS") == 0)
         {
             //do not compare X axis
             //isAxisXComparable = false;
@@ -195,7 +196,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
                 }
             }
         }
-        else if (typeAxisX == "FIX_AXIS")
+        else if (typeAxisX.compare("FIX_AXIS") == 0)
         {
             //do not compare X axis
             isAxisXComparable = false;
@@ -258,7 +259,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
     if (axisDescrY)
     {
         QString typeAxisY = axisDescrY->getPar("Attribute");
-        if (typeAxisY == "COM_AXIS")
+        if (typeAxisY.compare("COM_AXIS") == 0)
         {
             //do not compare Y axis
             //isAxisYComparable = false;
@@ -310,7 +311,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             }
 
         }
-        else if (typeAxisY == "FIX_AXIS")
+        else if (typeAxisY.compare("FIX_AXIS") == 0)
         {
             //do not compare Y axis
             isAxisYComparable = false;
@@ -379,17 +380,17 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
     {
         QString type = item->name;
 
-        if (type == "SRC_ADDR_X")
+        if (type.compare("SRC_ADDR_X") == 0)
         {
             std::string datatype = ((SRC_ADDR_X*)item)->getPar("Datatype");
             offset += hexParent->getNumByte(datatype);
         }
-        else if (type == "SRC_ADDR_Y")
+        else if (type.compare("SRC_ADDR_Y") == 0)
         {
             std::string datatype = ((SRC_ADDR_Y*)item)->getPar("Datatype");
             offset += hexParent->getNumByte(datatype);
         }
-        else if (type == "NO_AXIS_PTS_X")
+        else if (type.compare("NO_AXIS_PTS_X") == 0)
         {
             std::string datatype = ((NO_AXIS_PTS_X*)item)->getPar("Datatype");
             int nbyte = hexParent->getNumByte(datatype);
@@ -406,7 +407,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
 
             xOrgSize = nPtsX;
         }
-        else if (type == "NO_AXIS_PTS_Y")
+        else if (type.compare("NO_AXIS_PTS_Y") == 0)
         {
             std::string datatype = ((NO_AXIS_PTS_Y*)item)->getPar("Datatype");
             int nbyte = hexParent->getNumByte(datatype);
@@ -423,7 +424,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
 
             yOrgSize = nPtsY;
         }
-        else if (type == "AXIS_PTS_X")
+        else if (type.compare("AXIS_PTS_X") == 0)
         {
             datatypeX = ((AXIS_PTS_X*)item)->getPar("Datatype");
             int Xnbyte = hexParent->getNumByte(datatypeX);
@@ -431,7 +432,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             listX = hexParent->getHexValues(node->getPar("Adress"), offset, Xnbyte, nPtsX);
             offset +=  nPtsX * Xnbyte;
         }
-        else if (type == "AXIS_PTS_Y")
+        else if (type.compare("AXIS_PTS_Y") == 0)
         {
             datatypeY = ((AXIS_PTS_Y*)item)->getPar("Datatype");
             int Ynbyte = hexParent->getNumByte(datatypeY);
@@ -439,14 +440,14 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             listY = hexParent->getHexValues(node->getPar("Adress"), offset, Ynbyte, nPtsY);
             offset +=  nPtsY * Ynbyte;
         }
-        else if (type == "FNC_VALUES")
+        else if (type.compare("FNC_VALUES") == 0)
         {
             //dataType
             datatypeZ = ((FNC_VALUES*)item)->getPar("Datatype");
 
             //column or row Dir
             QString zDir = ((FNC_VALUES*)item)->getPar("IndexMode");
-            if (zDir == "COLUMN_DIR")
+            if (zDir.compare("COLUMN_DIR") == 0)
             {
                 isSortedByRow = 0;
             }
@@ -1123,9 +1124,9 @@ QString Data::getName()
 
 QString Data::getComment()
 {
-    QString type = typeid(*label).name();
+    //QString type = typeid(*label).name();
 
-    if (type.endsWith("CHARACTERISTIC"))
+    if (type.compare("CHARACTERISTIC") == 0)
         return ((CHARACTERISTIC*)label)->getPar("LongIdentifier");
     else
         return ((AXIS_PTS*)label)->getPar("LongIdentifier");
@@ -1133,7 +1134,7 @@ QString Data::getComment()
 
 QString Data::getSubset()
 {
-    if (type != "AXIS_PTS")
+    if (type.compare("AXIS_PTS") == 0)
         return ((CHARACTERISTIC*)label)->getSubsetName();
     else
         return ((AXIS_PTS*)label)->getSubsetName();
@@ -1141,9 +1142,9 @@ QString Data::getSubset()
 
 QString Data::getUnit()
 {
-    QString type = typeid(*label).name();
+    //QString type = typeid(*label).name();
 
-    if (type.endsWith("CHARACTERISTIC"))
+    if (type.compare("CHARACTERISTIC") == 0)
     {
         QString compu_method = ((CHARACTERISTIC*)label)->getPar("Conversion");
 
@@ -1151,7 +1152,7 @@ QString Data::getUnit()
         COMPU_METHOD *cmp = (COMPU_METHOD*)node->getNode("COMPU_METHOD/" + compu_method);
         return cmp->getPar("Unit");
     }
-    else if (type.endsWith("AXIS_PTS"))
+    else if (type.compare("AXIS_PTS") == 0)
     {
         QString compu_method = ((AXIS_PTS*)label)->getPar("Conversion");
         Node * node = label->getParentNode()->getParentNode();
