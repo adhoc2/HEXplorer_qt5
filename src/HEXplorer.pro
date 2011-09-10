@@ -71,7 +71,7 @@ equals( QMAKE_CXX, cl) {
 #------------  g++ Gnu compiler --------------#
 #---------------------------------------------#
 
-!equals( QMAKE_CXX, cl) {
+equals( QMAKE_CXX, g++) {
 
     # --- LIBS Path --- #
     QSCINTILLA_ROOT = ../LIBS/QScintilla-gpl-2.5.1
@@ -80,7 +80,7 @@ equals( QMAKE_CXX, cl) {
     # ----------------- #
 
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
-    INCLUDEPATH += . ./ASAP2 ./Quex ./DataContainers $${QWT_ROOT}/src $${QWT3D_ROOT}/include $${QSCINTILLA_ROOT}/Qt4 /Applications/quex/quex-0.59.7"
+    INCLUDEPATH += . ./ASAP2 ./Quex ./DataContainers $${QWT_ROOT}/src $${QWT3D_ROOT}/include $${QSCINTILLA_ROOT}/Qt4 /Applications/quex/quex-0.59.7
 
     UI_DIR = ui
     MOC_DIR = moc
