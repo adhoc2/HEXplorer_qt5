@@ -8,9 +8,9 @@ RESOURCES += icones.qrc
 RC_FILE = myappicon.rc
 
 
-#-----------------------------------------#
-#------------ MSVC compiler --------------#
-#-----------------------------------------#
+#-------------------------------------------------#
+#------------ cl microsoft compiler --------------#
+#-------------------------------------------------#
 
 equals( QMAKE_CXX, cl) {
 
@@ -25,7 +25,7 @@ equals( QMAKE_CXX, cl) {
     message("*** Compiler used : windows compiler $$QMAKE_CXX ***")
     CONFIG += embed_manifest_exe qaxcontainer
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
-    INCLUDEPATH += . "C:\Programme\quex\quex-0.59.7" \
+    INCLUDEPATH += . "C:\Program Files\quex\quex-0.59.7" \
      .\ASAP2 \
      .\DataContainers \
      .\Quex  \
@@ -38,9 +38,9 @@ equals( QMAKE_CXX, cl) {
 
     CONFIG( debug, debug|release ) {
         DEFINES += MY_DEBUG
-        UI_DIR = ui
-        MOC_DIR = moc
-        OBJECTS_DIR = obj
+        UI_DIR = release\ui
+        MOC_DIR = release\moc
+        OBJECTS_DIR = release\obj
         LIBS += -l$${WINHOARD_ROOT}\winhoard \
         -l$${QSCINTILLA_ROOT}\Qt4\lib\qscintilla2d \
         -l$${QWT3D_ROOT}\lib\qwtplot3dd \
@@ -52,9 +52,9 @@ equals( QMAKE_CXX, cl) {
 
     # ---- release ---- #
 
-        UI_DIR = ui
-        MOC_DIR = moc
-        OBJECTS_DIR = obj
+        UI_DIR = debug\ui
+        MOC_DIR = debug\moc
+        OBJECTS_DIR = debug\obj
         LIBS += -l$${WINHOARD_ROOT}\winhoard \
         -l$${QSCINTILLA_ROOT}\Qt4\lib\qscintilla2 \
         -l$${QWT3D_ROOT}\lib\qwtplot3d \
@@ -66,9 +66,10 @@ equals( QMAKE_CXX, cl) {
     }
 }
 
-#-----------------------------------------#
-#------------  GCC compiler --------------#
-#-----------------------------------------#
+
+#---------------------------------------------#
+#------------  g++ Gnu compiler --------------#
+#---------------------------------------------#
 
 !equals( QMAKE_CXX, cl) {
 
@@ -90,6 +91,7 @@ equals( QMAKE_CXX, cl) {
     -L$${QWT_ROOT}/lib
 
     CONFIG( debug, debug|release ) {
+        DEFINES += MY_DEBUG
         LIBS += -lqwtplot3dd -lqwtd -lgomp -lqscintilla2d
         QMAKE_CXXFLAGS_DEBUG += -fopenmp
     }
@@ -385,6 +387,8 @@ SOURCES += a2l.cpp \
     freezetablewidget.cpp \
     sptablemodelHex.cpp \
     Quex/a2l_quex_lexer.cpp
+
+
 
 
 
