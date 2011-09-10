@@ -1,4 +1,5 @@
-#------------ GENERAL settings --------------#
+#---------------- GENERAL settings ---------------#
+
 TEMPLATE = app
 DEPENDPATH += .
 INCLUDEPATH += .
@@ -14,15 +15,13 @@ RC_FILE = myappicon.rc
 
 equals( QMAKE_CXX, cl) {
 
-    # --- LIBS Path --- #
+    # --- common config --- #
+
     QSCINTILLA_ROOT = ..\LIBS\QScintilla-gpl-2.5.1
     WINHOARD_ROOT = ..\LIBS\hoard-38\src
     QWT_ROOT = ..\LIBS\qwt-6.0.1
     QWT3D_ROOT = ..\LIBS\qwtplot3d
 
-    # ----------------- #
-
-    message("*** Compiler used : windows compiler $$QMAKE_CXX ***")
     CONFIG += embed_manifest_exe qaxcontainer
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
     INCLUDEPATH += . "C:\Program Files\quex\quex-0.59.7" \
@@ -60,8 +59,8 @@ equals( QMAKE_CXX, cl) {
         -l$${QWT3D_ROOT}\lib\qwtplot3d \
         -l$${QWT_ROOT}\lib\qwt \
 
-        QMAKE_CXXFLAGS_RELEASE -= -O2
-        QMAKE_CXXFLAGS_RELEASE += -Osiy -Gs -openmp -DQUEX_OPTION_ASSERTS_DISABLED
+        # only for file a2l_quex_lexer.cpp because microsoft compiler cannot compile with -Ox !!
+        QMAKE_CXXFLAGS_RELEASE += -Osiy -Gs -openmp -DQUEX_OPTION_ASSERTS_DISABLED     
         #QMAKE_CXXFLAGS_RELEASE += -Ox -openmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
 }
@@ -73,29 +72,32 @@ equals( QMAKE_CXX, cl) {
 
 equals( QMAKE_CXX, g++) {
 
-    # --- LIBS Path --- #
+    # --- common config --- #
+
     QSCINTILLA_ROOT = ../LIBS/QScintilla-gpl-2.5.1
     QWT_ROOT = ../LIBS/qwt-6.0.1
     QWT3D_ROOT = ../LIBS/qwtplot3d
-    # ----------------- #
-
-    DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
-    INCLUDEPATH += . ./ASAP2 ./Quex ./DataContainers $${QWT_ROOT}/src $${QWT3D_ROOT}/include $${QSCINTILLA_ROOT}/Qt4 /Applications/quex/quex-0.59.7
 
     UI_DIR = ui
     MOC_DIR = moc
     OBJECTS_DIR = obj
-
+    DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
+    INCLUDEPATH += . ./ASAP2 ./Quex ./DataContainers $${QWT_ROOT}/src $${QWT3D_ROOT}/include $${QSCINTILLA_ROOT}/Qt4 /Applications/quex/quex-0.59.7
     LIBS += -L$${QSCINTILLA_ROOT}/Qt4/lib \
     -L$${QWT3D_ROOT}/lib \
     -L$${QWT_ROOT}/lib
 
+    # --- debug config --- #
+
     CONFIG( debug, debug|release ) {
         DEFINES += MY_DEBUG
-        LIBS += -lqwtplot3dd -lqwtd -lgomp -lqscintilla2d
+        LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
         QMAKE_CXXFLAGS_DEBUG += -fopenmp
     }
     else {
+
+    # --- debug config --- #
+
         LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
         QMAKE_CXXFLAGS_RELEASE += -O3 -fopenmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
