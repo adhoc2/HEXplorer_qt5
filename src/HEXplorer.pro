@@ -15,10 +15,10 @@ RC_FILE = myappicon.rc
 equals( QMAKE_CXX, cl) {
 
     # --- LIBS Path --- #
-    QSCINTILLA_ROOT = .\LIBS\QScintilla-gpl-2.5.1
-    WINHOARD_ROOT = .\LIBS\hoard-38\src
-    QWT_ROOT = .\LIBS\qwt-6.0.1
-    QWT3D_ROOT = .\LIBS\qwtplot3d
+    QSCINTILLA_ROOT = ..\LIBS\QScintilla-gpl-2.5.1
+    WINHOARD_ROOT = ..\LIBS\hoard-38\src
+    QWT_ROOT = ..\LIBS\qwt-6.0.1
+    QWT3D_ROOT = ..\LIBS\qwtplot3d
 
     # ----------------- #
 
@@ -38,9 +38,9 @@ equals( QMAKE_CXX, cl) {
 
     CONFIG( debug, debug|release ) {
         DEFINES += MY_DEBUG
-        UI_DIR = debug/.ui
-        MOC_DIR = debug/.moc
-        OBJECTS_DIR = debug/.obj
+        UI_DIR = ui
+        MOC_DIR = moc
+        OBJECTS_DIR = obj
         LIBS += -l$${WINHOARD_ROOT}\winhoard \
         -l$${QSCINTILLA_ROOT}\Qt4\lib\qscintilla2d \
         -l$${QWT3D_ROOT}\lib\qwtplot3dd \
@@ -52,9 +52,9 @@ equals( QMAKE_CXX, cl) {
 
     # ---- release ---- #
 
-        UI_DIR = release/.ui
-        MOC_DIR = release/.moc
-        OBJECTS_DIR = release/.obj
+        UI_DIR = ui
+        MOC_DIR = moc
+        OBJECTS_DIR = obj
         LIBS += -l$${WINHOARD_ROOT}\winhoard \
         -l$${QSCINTILLA_ROOT}\Qt4\lib\qscintilla2 \
         -l$${QWT3D_ROOT}\lib\qwtplot3d \
@@ -67,7 +67,7 @@ equals( QMAKE_CXX, cl) {
 }
 
 #-----------------------------------------#
-#------------  GCC compiler ------------#
+#------------  GCC compiler --------------#
 #-----------------------------------------#
 
 !equals( QMAKE_CXX, cl) {
@@ -81,9 +81,9 @@ equals( QMAKE_CXX, cl) {
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
     INCLUDEPATH += . ./ASAP2 ./Quex ./DataContainers $${QWT_ROOT}/src $${QWT3D_ROOT}/include $${QSCINTILLA_ROOT}/Qt4 /Applications/quex/quex-0.59.7"
 
-    UI_DIR = .ui
-    MOC_DIR = .moc
-    OBJECTS_DIR = .obj
+    UI_DIR = ui
+    MOC_DIR = moc
+    OBJECTS_DIR = obj
 
     LIBS += -L$${QSCINTILLA_ROOT}/Qt4/lib \
     -L$${QWT3D_ROOT}/lib \
