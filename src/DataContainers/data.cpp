@@ -1882,7 +1882,8 @@ QStringList Data::hex2phys(QStringList list, QString axis)
 double Data::hex2dec(QString hex, std::string type,  int base)
 {
     bool bl;
-    unsigned int uval = hex.mid(0,8).toUInt(&bl, base);
+    //unsigned int uval = hex.mid(0,8).toUInt(&bl, base);
+    unsigned int uval = hex.toUInt(&bl, base);
 
     if (bl)
     {
