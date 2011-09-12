@@ -86,9 +86,8 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
     int nPtsY = 1;
 
 
-    //Type
+    //initialize the display number of rows of the CHARACTERISTIC
     type = node->getPar("Type");
-
     if (type.compare("VALUE") == 0)
     {
         size = 3;
@@ -141,15 +140,38 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
         size = 3;
     }
 
-    //read AXIS_X
+    //In case of group axis : read AXIS_X if axisX is a COM_AXIS or a FIX_AXIS
     if (axisDescrX)
     {
+        //Xaxis PRECISION
+        FORMAT *format = (FORMAT*)axisDescrX->getItem("FORMAT");
+        if (format)
+        {
+            QString f = format->getPar("FormatString");
+            QStringList list = f.split(QRegExp("\\D+"));
+            if (list.count() < 3)
+                precisionX = 0;
+            else
+                precisionX = list.at(2).toInt();
+        }
+        else
+        {
+            QString compu = axisDescrX->getPar("Conversion");
+            COMPU_METHOD *cmp = (COMPU_METHOD*)pro->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu);
+            if (cmp)
+            {
+                QString f = cmp->getPar("Format");
+                QStringList list = f.split(QRegExp("\\D+"));
+                if (list.count() < 3)
+                    precisionX = 0;
+                else
+                    precisionX = list.at(2).toInt();
+            }
+        }
+
         QString typeAxisX = axisDescrX->getPar("Attribute");
         if (typeAxisX.compare("COM_AXIS") == 0)
         {
-            //do not compare X axis
-            //isAxisXComparable = false;
-
             //AXIS_PTS
             AXIS_PTS_REF *axisPtsRef = (AXIS_PTS_REF*)axisDescrX->getItem("AXIS_PTS_REF");
             QString nameAxisX = axisPtsRef->getPar("AxisPoints");
@@ -188,10 +210,18 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
                 }
                 else if (type == "AXIS_PTS_X")
                 {
+                    //read the necessary parameters before reading values into HexFile
                     datatypeX = ((AXIS_PTS_X*)item)->getPar("Datatype");
                     int Xnbyte = hexParent->getNumByte(datatypeX);
-                    addressX = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
-                    listX = hexParent->getHexValues(axisPtsX->getPar("Adress"), offset, Xnbyte, nPtsX);
+                    addressX = QString(axisPtsX->getPar("Adress")).toUInt(&bl, 16) + offset;
+
+                    //read values into HexFile
+                    QList<double> decX = hexParent->getDecValues(addressX, Xnbyte, nPtsX, datatypeX);
+
+                    //convert the dec values into phys values
+                    listX = dec2Phys(decX, "x");
+
+                    //increment offset of the axisX length
                     offset +=  nPtsX * Xnbyte;
                 }
             }
@@ -226,43 +256,40 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
 
             addressX = 0;
         }
+    }
 
-        //Xaxis PRECISION
-        FORMAT *format = (FORMAT*)axisDescrX->getItem("FORMAT");
+    //In case of group axis :read AXIS_Y if axisY is a COM_AXIS or a FIX_AXIS
+    if (axisDescrY)
+    {
+        //Yaxis PRECISION
+        FORMAT *format = (FORMAT*)axisDescrY->getItem("FORMAT");
         if (format)
         {
             QString f = format->getPar("FormatString");
             QStringList list = f.split(QRegExp("\\D+"));
             if (list.count() < 3)
-                precisionX = 0;
+                precisionY = 0;
             else
-                precisionX = list.at(2).toInt();
+                precisionY = list.at(2).toInt();
         }
         else
         {
-            QString compu = axisDescrX->getPar("Conversion");
+            QString compu = axisDescrY->getPar("Conversion");
             COMPU_METHOD *cmp = (COMPU_METHOD*)pro->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu);
             if (cmp)
             {
                 QString f = cmp->getPar("Format");
                 QStringList list = f.split(QRegExp("\\D+"));
                 if (list.count() < 3)
-                    precisionX = 0;
+                    precisionY = 0;
                 else
-                    precisionX = list.at(2).toInt();
+                    precisionY = list.at(2).toInt();
             }
         }
 
-    }
-
-    //read AXIS_Y
-    if (axisDescrY)
-    {
         QString typeAxisY = axisDescrY->getPar("Attribute");
         if (typeAxisY.compare("COM_AXIS") == 0)
         {
-            //do not compare Y axis
-            //isAxisYComparable = false;
 
             //AXIS_PTS
             AXIS_PTS_REF *axisPtsRef = (AXIS_PTS_REF*)axisDescrY->getItem("AXIS_PTS_REF");
@@ -302,10 +329,18 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
                 }
                 else if (type == "AXIS_PTS_X")
                 {
+                    //read the necessary parameters before reading values into HexFile
                     datatypeY = ((AXIS_PTS_X*)item)->getPar("Datatype");
                     int Ynbyte = hexParent->getNumByte(datatypeY);
-                    addressY = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
-                    listY = hexParent->getHexValues(axisPtsY->getPar("Adress"), offset, Ynbyte, nPtsY);
+                    addressY = QString(axisPtsY->getPar("Adress")).toUInt(&bl, 16) + offset;
+
+                    //read values into HexFile
+                    QList<double> decY = hexParent->getDecValues(addressY, Ynbyte, nPtsY, datatypeY);
+
+                    //convert the dec values into phys values
+                    listY = dec2Phys(decY, "y");
+
+                    //increment offset of the axisX length
                     offset +=  nPtsY * Ynbyte;
                 }
             }
@@ -342,36 +377,37 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             addressY = 0;
         }
 
-        //Yaxis PRECISION
-        FORMAT *format = (FORMAT*)axisDescrY->getItem("FORMAT");
-        if (format)
-        {
-            QString f = format->getPar("FormatString");
-            QStringList list = f.split(QRegExp("\\D+"));
-            if (list.count() < 3)
-                precisionY = 0;
-            else
-                precisionY = list.at(2).toInt();
-        }
-        else
-        {
-            QString compu = axisDescrY->getPar("Conversion");
-            COMPU_METHOD *cmp = (COMPU_METHOD*)pro->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu);
-            if (cmp)
-            {
-                QString f = cmp->getPar("Format");
-                QStringList list = f.split(QRegExp("\\D+"));
-                if (list.count() < 3)
-                    precisionY = 0;
-                else
-                    precisionY = list.at(2).toInt();
-            }
-        }
     }
 
     //RECORD_LAYOUT
     QString deposit = node->getPar("Deposit");
     record_layout = (RECORD_LAYOUT*)project->getNode("MODULE/" + moduleName + "/RECORD_LAYOUT/" + deposit);
+
+    //Zaxis PRECISION
+    FORMAT *format = (FORMAT*)node->getItem("FORMAT");
+    if (format)
+    {
+        QString f = format->getPar("FormatString");
+        QStringList list = f.split(QRegExp("\\D+"));
+        if (list.count() < 3)
+            precisionZ = 0;
+        else
+            precisionZ = list.at(2).toInt();
+    }
+    else
+    {
+        QString compu = node->getPar("Conversion");
+        COMPU_METHOD *cmp = (COMPU_METHOD*)pro->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu);
+        if (cmp)
+        {
+            QString f = cmp->getPar("Format");
+            QStringList list = f.split(QRegExp("\\D+"));
+            if (list.count() < 3)
+                precisionZ = 0;
+            else
+                precisionZ = list.at(2).toInt();
+        }
+    }
 
     //read each element of Z_RECORD_LAYOUT
     bool bl;
@@ -425,19 +461,35 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             yOrgSize = nPtsY;
         }
         else if (type.compare("AXIS_PTS_X") == 0)
-        {
+        {            
+            //read the necessary parameters before reading values into HexFile
             datatypeX = ((AXIS_PTS_X*)item)->getPar("Datatype");
             int Xnbyte = hexParent->getNumByte(datatypeX);
             addressX = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
-            listX = hexParent->getHexValues(node->getPar("Adress"), offset, Xnbyte, nPtsX);
+
+            //read values into HexFile
+            QList<double> decX = hexParent->getDecValues(addressX, Xnbyte, nPtsX, datatypeX);
+
+            //convert the dec values into phys values
+            listX = dec2Phys(decX, "x");
+
+            //increment offset of the axisX length
             offset +=  nPtsX * Xnbyte;
         }
         else if (type.compare("AXIS_PTS_Y") == 0)
-        {
+        {            
+            //read the necessary parameters before reading values into HexFile
             datatypeY = ((AXIS_PTS_Y*)item)->getPar("Datatype");
             int Ynbyte = hexParent->getNumByte(datatypeY);
             addressY = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
-            listY = hexParent->getHexValues(node->getPar("Adress"), offset, Ynbyte, nPtsY);
+
+            //read values into HexFile
+            QList<double> decY = hexParent->getDecValues(addressY, Ynbyte, nPtsY, datatypeY);
+
+            //convert the dec values into phys values
+            listY = dec2Phys(decY, "y");
+
+            //increment offset of the axisX length
             offset +=  nPtsY * Ynbyte;
         }
         else if (type.compare("FNC_VALUES") == 0)
@@ -460,38 +512,16 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             int Znbyte = hexParent->getNumByte(datatypeZ);
             bool bl;
             addressZ = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
-            listZ = hexParent->getHexValues(node->getPar("Adress"), offset, Znbyte, nPtsX * nPtsY);
+            QList<double> decZ = hexParent->getDecValues(addressZ, Znbyte, nPtsX * nPtsY, datatypeZ);
+
+            //dec2phys
+            listZ = dec2Phys(decZ, "z");
+
         }
     }
 
     //define number of rows of data to display
     size += nPtsY;
-
-    //Zaxis PRECISION
-    FORMAT *format = (FORMAT*)node->getItem("FORMAT");
-    if (format)
-    {
-        QString f = format->getPar("FormatString");
-        QStringList list = f.split(QRegExp("\\D+"));
-        if (list.count() < 3)
-            precisionZ = 0;
-        else
-            precisionZ = list.at(2).toInt();
-    }
-    else
-    {
-        QString compu = node->getPar("Conversion");
-        COMPU_METHOD *cmp = (COMPU_METHOD*)pro->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu);
-        if (cmp)
-        {
-            QString f = cmp->getPar("Format");
-            QStringList list = f.split(QRegExp("\\D+"));
-            if (list.count() < 3)
-                precisionZ = 0;
-            else
-                precisionZ = list.at(2).toInt();
-        }
-    }
 }
 
 Data::Data(CHARACTERISTIC *node, PROJECT *pro, Csv *csv, bool modif) : Node(node->name), QObject()
@@ -1142,17 +1172,16 @@ QString Data::getSubset()
 
 QString Data::getUnit()
 {
-    //QString type = typeid(*label).name();
+    QString type = typeid(*label).name();
 
-    if (type.compare("CHARACTERISTIC") == 0)
+    if (type.endsWith("CHARACTERISTIC"))
     {
         QString compu_method = ((CHARACTERISTIC*)label)->getPar("Conversion");
-
-        Node * node = label->getParentNode()->getParentNode();
+        Node *node = label->getParentNode()->getParentNode();
         COMPU_METHOD *cmp = (COMPU_METHOD*)node->getNode("COMPU_METHOD/" + compu_method);
         return cmp->getPar("Unit");
     }
-    else if (type.compare("AXIS_PTS") == 0)
+    else if (type.endsWith("AXIS_PTS"))
     {
         QString compu_method = ((AXIS_PTS*)label)->getPar("Conversion");
         Node * node = label->getParentNode()->getParentNode();
@@ -1265,6 +1294,7 @@ void Data::hex2phys()
     {
         //hex2dec
         QList<double> decX = hex2dec(listX, datatypeX, 16);
+
         //dec2phys
         if (axisDescrX)
         {
@@ -1328,6 +1358,7 @@ void Data::hex2phys()
     {
         //hex2dec
         QList<double> decY = hex2dec(listY, datatypeY, 16);
+
         //dec2phys
         if (axisDescrY)
         {
@@ -1415,6 +1446,7 @@ void Data::hex2phys()
     {
         //hex2dec
         QList<double> decZ = hex2dec(listZ, datatypeZ, 16);
+
         //dec2phys
         QString type = typeid(*label).name();
         QString compu_method;
@@ -1993,7 +2025,7 @@ QList<double> Data::hex2dec(QStringList listHex, std::string type,  int base)
         float f;
         for (int n = 0; n < listHex.count(); n++)
         {
-			sscanf(listHex.at(n).toLocal8Bit().data(), "%x", (int*) &f);
+            sscanf(listHex.at(n).toLocal8Bit().data(), "%x", (int*) &f);
             listDec.append(f);
         }
         return listDec;
@@ -2837,6 +2869,192 @@ QString Data::dec2hex(double dec, std::string type, int base)
     }
 
     return qHex;
+}
+
+QStringList Data::dec2Phys(QList<double> decValues, QString axis)
+{   
+    QStringList list;
+
+    if (axis == "x" && axisDescrX)
+    {
+        QString compu_method = axisDescrX->getPar("Conversion");
+        COMPU_METHOD *cmp = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu_method);
+        QString convType = cmp->getPar("ConversionType");
+
+        bool bl;
+        double dec;
+        if (convType.toLower() == "rat_func")
+        {
+            COEFFS *item = (COEFFS*)cmp->getItem("COEFFS");
+            double a = ((QString)item->getPar("float1")).toDouble(&bl);
+            double b = ((QString)item->getPar("float2")).toDouble(&bl);
+            double c = ((QString)item->getPar("float3")).toDouble(&bl);
+            double d = ((QString)item->getPar("float4")).toDouble(&bl);
+            double e = ((QString)item->getPar("float5")).toDouble(&bl);
+            double f = ((QString)item->getPar("float6")).toDouble(&bl);
+
+            for (int i = 0; i < decValues.count(); i++)
+            {
+                dec = decValues.at(i);
+                QString phys;
+                if (dec * d - a == 0)
+                {
+                    phys = QString::number((c - dec * f) / (dec * e - b),'f', precisionX);
+                }
+                else
+                {
+                    phys = QString::number(((b - dec * e) + sqrt(pow((dec * e - b), 2) - 4 * (dec * d - a) * (dec * f - c))) / (2 * (dec * d - a)),'f', precisionX);
+                }
+
+                double dbl = phys.toDouble();
+                if (dbl == 0)
+                {
+                    list.append(QString::number(0,'f', precisionX));
+                }
+                else
+                {
+                    list.append(phys);
+                }
+            }
+        }
+        else if (convType.toLower() == "tab_verb")
+        {
+            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+            QString compuTabRef = item->getPar("ConversionTable");
+            compuTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+
+            for (int i = 0; i < decValues.count(); i++)
+            {
+                dec = decValues.at(i);
+                list.append(compuTabAxisX->getValue(dec));
+            }
+        }
+
+    }
+    else if (axis == "y" && axisDescrY)
+    {
+        QString compu_method = axisDescrY->getPar("Conversion");
+        COMPU_METHOD *cmp = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu_method);
+        QString convType = cmp->getPar("ConversionType");
+
+        bool bl;
+        double dec;
+        if (convType.toLower() == "rat_func")
+        {
+            COEFFS *item = (COEFFS*)cmp->getItem("COEFFS");
+            double a = ((QString)item->getPar("float1")).toDouble(&bl);
+            double b = ((QString)item->getPar("float2")).toDouble(&bl);
+            double c = ((QString)item->getPar("float3")).toDouble(&bl);
+            double d = ((QString)item->getPar("float4")).toDouble(&bl);
+            double e = ((QString)item->getPar("float5")).toDouble(&bl);
+            double f = ((QString)item->getPar("float6")).toDouble(&bl);
+
+            for (int i = 0; i < decValues.count(); i++)
+            {
+                dec = decValues.at(i);
+                QString phys;
+                if (dec * d - a == 0)
+                {
+                    phys = QString::number((c - dec * f) / (dec * e - b),'f', precisionY);
+                }
+                else
+                {
+                    phys = QString::number(((b - dec * e) + sqrt(pow((dec * e - b), 2) - 4 * (dec * d - a) * (dec * f - c))) / (2 * (dec * d - a)),'f', precisionY);
+                }
+
+                double dbl = phys.toDouble();
+                if (dbl == 0)
+                {
+                    list.append(QString::number(0,'f', precisionY));
+                }
+                else
+                {
+                    list.append(phys);
+                }
+            }
+        }
+        else if (convType.toLower() == "tab_verb")
+        {
+            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+            QString compuTabRef = item->getPar("ConversionTable");
+            compuTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+
+            for (int i = 0; i < decValues.count(); i++)
+            {
+                dec = decValues.at(i);
+                list.append(compuTabAxisY->getValue(dec));
+            }
+        }
+    }
+    else
+    {
+        QString compu_method;
+        if (type.endsWith("CHARACTERISTIC"))
+        {
+            compu_method = ((CHARACTERISTIC*)label)->getPar("Conversion");
+        }
+        else
+        {
+            compu_method = ((AXIS_PTS*)label)->getPar("Conversion");
+        }
+
+        COMPU_METHOD *cmpZ = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu_method);
+        QString convType = cmpZ->getPar("ConversionType");
+
+        bool bl;
+        double dec;
+        if (convType.toLower() == "rat_func")
+        {
+            COEFFS *item = (COEFFS*)cmpZ->getItem("COEFFS");
+            double a = ((QString)item->getPar("float1")).toDouble(&bl);
+            double b = ((QString)item->getPar("float2")).toDouble(&bl);
+            double c = ((QString)item->getPar("float3")).toDouble(&bl);
+            double d = ((QString)item->getPar("float4")).toDouble(&bl);
+            double e = ((QString)item->getPar("float5")).toDouble(&bl);
+            double f = ((QString)item->getPar("float6")).toDouble(&bl);
+
+            for (int i = 0; i < decValues.count(); i++)
+            {
+                dec = decValues.at(i);
+                QString phys;
+                if (dec * d - a == 0)
+                {
+                    phys = QString::number((c - dec * f) / (dec * e - b),'f', precisionZ);
+                }
+                else
+                {
+                    phys = QString::number(((b - dec * e) + sqrt(pow((dec * e - b), 2) - 4 * (dec * d - a) * (dec * f - c))) / (2 * (dec * d - a)),'f', precisionZ);
+                }
+
+                double dbl = phys.toDouble();
+                if (dbl == 0)
+                {
+                    list.append(QString::number(0,'f', precisionZ));
+                }
+                else
+                {
+                    list.append(phys);
+                }
+            }
+        }
+        else if (convType.toLower() == "tab_verb")
+        {
+            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmpZ->getItem("COMPU_TAB_REF");
+            QString compuTabRef = item->getPar("ConversionTable");
+            compuTabAxisZ = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+
+            for (int i = 0; i < decValues.count(); i++)
+            {
+                dec = decValues.at(i);
+                list.append(compuTabAxisZ->getValue((int)dec));
+            }
+
+        }
+    }
+
+
+
+    return list;
 }
 
 // --- get VALUES --- //

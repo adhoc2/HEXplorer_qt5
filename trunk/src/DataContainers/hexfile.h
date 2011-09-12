@@ -48,6 +48,7 @@ class HexFile : public QObject, public DataContainer
         QStringList writeHex();
         QString getHexValue(QString address, int offset, int nByte);
         QStringList getHexValues(QString address, int offset, int nByte, int size);
+        QList<double> getDecValues(double address, int nByte, int size, std::string type);
         QString fullName();
         QList<int> checkFmtcMonotony(bool *bl);
         std::string pixmap();

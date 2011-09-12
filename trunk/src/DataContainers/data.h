@@ -162,6 +162,8 @@ class Data : public QObject, public Node
         QStringList dec2hex(QList<double> listdec, std::string type,  int base);
         QString dec2hex(double dec, std::string type,  int base);
 
+        QStringList dec2Phys(QList<double> listdec, QString axis);
+
 
         bool modifiable;
         bool sizeChanged;

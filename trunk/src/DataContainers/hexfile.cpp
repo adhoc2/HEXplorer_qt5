@@ -26,6 +26,9 @@
 #include "data.h"
 #include "graphverify.h"
 #include "formcompare.h"
+#include "stdint.h"
+
+#define CAST2(val, type) *(type*)&val
 
 // ______________ class MemBlock _________________//
 
@@ -632,8 +635,8 @@ void HexFile::readAllData()
                                     if(bl)
                                     {
                                         Data *data = new Data(charac, a2lProject, this);
-                                        if (phys)
-                                            data->hex2phys();
+//                                        if (phys)
+//                                            data->hex2phys();
                                         listData1.append(data);
                                     }
                                     else
@@ -697,8 +700,8 @@ void HexFile::readAllData()
                                     if(bl)
                                     {
                                         Data *data = new Data(charac, a2lProject, this);
-                                        if (phys)
-                                            data->hex2phys();
+//                                        if (phys)
+//                                            data->hex2phys();
                                         listData2.append(data);
                                     }
                                     else
@@ -769,8 +772,8 @@ void HexFile::readAllData()
                         if(bl)
                         {
                             Data *data = new Data(charac, a2lProject, this);
-                            if (phys)
-                                data->hex2phys();
+//                            if (phys)
+//                                data->hex2phys();
                             listData.append(data);
                         }
                         else
@@ -964,6 +967,204 @@ QStringList HexFile::getHexValues(QString address, int offset, int nByte, int co
     }
 
     return hexList;
+}
+
+QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::string type)
+{
+    //find block and line
+    //bool bl;
+    //unsigned int IAddr =address.toUInt(&bl, 16);
+    int block = 0;
+    while (block < blockList.count())
+    {
+        if ((blockList[block]->start <= IAddr) && (IAddr <= blockList[block]->end))
+        {
+            break;
+        }
+        block++;
+    }
+    int line = IAddr - blockList[block]->start;
+
+    QList<double> decList;
+    if (byteOrder.toLower() == "msb_last")
+    {
+        if(type == "SBYTE")
+        {
+            if (line + nByte*count < blockList[block]->length)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    decList.append(CAST2(blockList[block]->data[line + nByte*i], int8_t));
+                }
+            }
+            else
+            {
+                char *buffer = new char[nByte*count];
+                int size = blockList[block]->length - line;
+                for (int i = 0; i < size; i++)
+                    buffer[i] = blockList[block]->data[line + i];
+                for (int j = 0; j < nByte*count - size; j++)
+                    buffer[size + j] = blockList[block + 1]->data[j];
+
+                for (int i = 0; i < count; i++)
+                {
+                    decList.append(CAST2(buffer[nByte*i], int8_t));
+                }
+            }
+        }
+        if(type == "UBYTE")
+        {
+            if (line + nByte*count < blockList[block]->length)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    decList.append(CAST2(blockList[block]->data[line + nByte*i], uint8_t));
+                }
+            }
+            else
+            {
+                char *buffer = new char[nByte*count];
+                int size = blockList[block]->length - line;
+                for (int i = 0; i < size; i++)
+                    buffer[i] = blockList[block]->data[line + i];
+                for (int j = 0; j < nByte*count - size; j++)
+                    buffer[size + j] = blockList[block + 1]->data[j];
+
+                for (int i = 0; i < count; i++)
+                {
+                    decList.append(CAST2(buffer[nByte*i], uint8_t));
+                }
+            }
+        }
+        else if(type == "SWORD")
+        {
+            if (line + nByte*count < blockList[block]->length)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    decList.append(CAST2(blockList[block]->data[line + nByte*i], int16_t));
+                }
+            }
+            else
+            {
+                char *buffer = new char[nByte*count];
+                int size = blockList[block]->length - line;
+                for (int i = 0; i < size; i++)
+                    buffer[i] = blockList[block]->data[line + i];
+                for (int j = 0; j < nByte*count - size; j++)
+                    buffer[size + j] = blockList[block + 1]->data[j];
+
+                for (int i = 0; i < count; i++)
+                {
+                    decList.append(CAST2(buffer[nByte*i], int16_t));
+                }
+            }
+
+        }
+        else if(type == "UWORD")
+        {
+            if (line + nByte*count < blockList[block]->length)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    decList.append(CAST2(blockList[block]->data[line + nByte*i], uint16_t));
+                }
+            }
+            else
+            {
+                char *buffer = new char[nByte*count];
+                int size = blockList[block]->length - line;
+                for (int i = 0; i < size; i++)
+                    buffer[i] = blockList[block]->data[line + i];
+                for (int j = 0; j < nByte*count - size; j++)
+                    buffer[size + j] = blockList[block + 1]->data[j];
+
+                for (int i = 0; i < count; i++)
+                {
+                    decList.append(CAST2(buffer[nByte*i], uint16_t));
+                }
+            }
+
+        }
+        else if(type == "SLONG")
+        {
+            if (line + nByte*count < blockList[block]->length)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    decList.append(CAST2(blockList[block]->data[line + nByte*i], int32_t));
+                }
+            }
+            else
+            {
+                char *buffer = new char[nByte*count];
+                int size = blockList[block]->length - line;
+                for (int i = 0; i < size; i++)
+                    buffer[i] = blockList[block]->data[line + i];
+                for (int j = 0; j < nByte*count - size; j++)
+                    buffer[size + j] = blockList[block + 1]->data[j];
+
+                for (int i = 0; i < count; i++)
+                {
+                    decList.append(CAST2(buffer[nByte*i], int32_t));
+                }
+            }
+        }
+        else if(type == "ULONG")
+        {
+            if (line + nByte*count < blockList[block]->length)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    decList.append(CAST2(blockList[block]->data[line + nByte*i], int32_t));
+                }
+            }
+            else
+            {
+                char *buffer = new char[nByte*count];
+                int size = blockList[block]->length - line;
+                for (int i = 0; i < size; i++)
+                    buffer[i] = blockList[block]->data[line + i];
+                for (int j = 0; j < nByte*count - size; j++)
+                    buffer[size + j] = blockList[block + 1]->data[j];
+
+                for (int i = 0; i < count; i++)
+                {
+                    decList.append(CAST2(buffer[nByte*i], int32_t));
+                }
+            }
+        }
+        else if(type == "FLOAT32_IEEE")
+        {
+            if (line + nByte*count < blockList[block]->length)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    decList.append(CAST2(blockList[block]->data[line + nByte*i], double));
+                }
+            }
+            else
+            {
+                char *buffer = new char[nByte*count];
+                int size = blockList[block]->length - line;
+                for (int i = 0; i < size; i++)
+                    buffer[i] = blockList[block]->data[line + i];
+                for (int j = 0; j < nByte*count - size; j++)
+                    buffer[size + j] = blockList[block + 1]->data[j];
+
+                for (int i = 0; i < count; i++)
+                {
+                    decList.append(CAST2(buffer[nByte*i], double));
+                }
+            }
+        }
+    }
+    else
+    {
+
+    }
+
+    return decList;
 }
 
 bool HexFile::isValidAddress(QString address)
