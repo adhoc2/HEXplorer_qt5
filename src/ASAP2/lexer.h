@@ -59,7 +59,6 @@ class A2lLexer : public QObject
     private:        
         Buffer *buffer;
         int position;
-        int previousLine;
         int line;
         int index;
         std::string lexem;
