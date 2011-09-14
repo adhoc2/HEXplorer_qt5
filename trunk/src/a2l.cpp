@@ -112,21 +112,30 @@ void A2l::parseSTA2l()
 //    file.close();
 
     //create a stream into the file (Merci Oscar...)
-    FILE* fid = fopen(fullA2lName.toStdString().c_str(),"r");
+    FILE* fid = fopen(fullA2lName.toStdString().c_str(),"rb");
     if (!fid)
     {
         this->outputList.append("Cannot read file " + this->fullA2lName);
         return;
     }
+
+    // obtain file size:
     fseek(fid, 0, SEEK_END);
     long size = ftell(fid);
     rewind(fid);
-    char* buffer = (char*)malloc(size*sizeof(char));
+
+    // allocate memory to contain the whole file:
+    char* buffer = (char*)malloc((size)*sizeof(char));
+
+    // copy the file into the buffer:
     fread(buffer, sizeof(char), size, fid);
     fclose(fid);
-    //QString strr = QString::fromAscii(buffer, size);
-    //QTextStream in(&strr, QIODevice::ReadOnly);
+
+    //save the buffer into a stringstream qluex
     std::istringstream in(buffer);
+
+    //free memory from the char* buffer
+    delete buffer;
 
     // set the maximum for the progressbar
     progBarMaxValue = size;
@@ -176,19 +185,30 @@ bool A2l::parseOpenMPA2l()
 //    file.close();
 
     //create a stream into the file (Merci Oscar...)
-    FILE* fid = fopen(fullA2lName.toStdString().c_str(),"r");
+    FILE* fid = fopen(fullA2lName.toStdString().c_str(),"rb");
     if (!fid)
     {
         this->outputList.append("Cannot read file " + this->fullA2lName);
         return false;
     }
+
+    // obtain file size:
     fseek(fid, 0, SEEK_END);
     long size = ftell(fid);
     rewind(fid);
+
+    // allocate memory to contain the whole file:
     char* buffer = (char*)malloc((size)*sizeof(char));
+
+    // copy the file into the buffer:
     fread(buffer, sizeof(char), size, fid);
     fclose(fid);
+
+    //save the buffer into a QString for splitting
     QString str = QString::fromAscii(buffer, size);
+
+    //free memory from the char* buffer
+    delete buffer;
 
     qDebug() << "\n1- read " << time.elapsed();
     time.restart();
@@ -319,7 +339,7 @@ bool A2l::parseOpenMPA2l()
 
 
     //delete nodeA2l2; MEMORY LEAK !!!
-    //cannot be deleted because of the lexer and grammar
+    //cannot be deleted because of the lexer and grammar    
 
     return true;
 }

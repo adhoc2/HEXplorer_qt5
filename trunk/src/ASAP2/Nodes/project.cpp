@@ -2,6 +2,7 @@
 #include <QMessageBox>
 #include <sstream>
 #include "a2lgrammar.h"
+#include <qdebug.h>
 
 using namespace std;
 

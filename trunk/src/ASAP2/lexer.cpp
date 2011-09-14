@@ -111,7 +111,6 @@ A2lLexer::A2lLexer(QTextStream &in, QObject *parent) : QObject(parent)
     buffer = new Buffer();
     index = 0;
     position = 0;
-    previousLine = 0;
     this->in = &in;
 }
 
@@ -253,9 +252,8 @@ TokenTyp A2lLexer::getNextToken()
     // emit return token for progressBar
     if (in->pos() - position > 40000 || in->atEnd())
     {
-        emit returnedToken(in->pos() - position + line - previousLine );
+        emit returnedToken(in->pos() - position);
         position = in->pos();
-        previousLine = line;
     }
 
     return token;

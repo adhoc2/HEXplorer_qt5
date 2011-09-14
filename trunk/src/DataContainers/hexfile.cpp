@@ -983,6 +983,7 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
     }
     int line = IAddr - blockList[block]->start;
 
+
     QList<double> decList;
     if (byteOrder.toLower() == "msb_last")
     {
@@ -997,7 +998,7 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
             }
             else
             {
-                char buffer[nByte*count];
+                char* buffer = new char[nByte*count];
                 int size = blockList[block]->length - line;
                 for (int i = 0; i < size; i++)
                     buffer[i] = blockList[block]->data[line + i];
@@ -1008,9 +1009,11 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                 {
                     decList.append(CAST2(buffer[nByte*i], int8_t));
                 }
+
+                delete buffer;
             }
         }
-        if(type == "UBYTE")
+        else if(type == "UBYTE")
         {
             if (line + nByte*count < blockList[block]->length)
             {
@@ -1021,7 +1024,7 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
             }
             else
             {
-                char buffer[nByte*count];
+                char* buffer = new char[nByte*count];
                 int size = blockList[block]->length - line;
                 for (int i = 0; i < size; i++)
                     buffer[i] = blockList[block]->data[line + i];
@@ -1032,6 +1035,8 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                 {
                     decList.append(CAST2(buffer[nByte*i], uint8_t));
                 }
+
+                delete buffer;
             }
         }
         else if(type == "SWORD")
@@ -1045,7 +1050,7 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
             }
             else
             {
-                char buffer[nByte*count];
+                char* buffer = new char[nByte*count];
                 int size = blockList[block]->length - line;
                 for (int i = 0; i < size; i++)
                     buffer[i] = blockList[block]->data[line + i];
@@ -1056,6 +1061,8 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                 {
                     decList.append(CAST2(buffer[nByte*i], int16_t));
                 }
+
+                delete buffer;
             }
 
         }
@@ -1070,7 +1077,7 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
             }
             else
             {
-                char buffer[nByte*count];
+                char* buffer = new char[nByte*count];
                 int size = blockList[block]->length - line;
                 for (int i = 0; i < size; i++)
                     buffer[i] = blockList[block]->data[line + i];
@@ -1081,6 +1088,8 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                 {
                     decList.append(CAST2(buffer[nByte*i], uint16_t));
                 }
+
+                delete buffer;
             }
 
         }
@@ -1095,7 +1104,7 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
             }
             else
             {
-                char buffer[nByte*count];
+                char* buffer = new char[nByte*count];
                 int size = blockList[block]->length - line;
                 for (int i = 0; i < size; i++)
                     buffer[i] = blockList[block]->data[line + i];
@@ -1106,6 +1115,8 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                 {
                     decList.append(CAST2(buffer[nByte*i], int32_t));
                 }
+
+                delete buffer;
             }
         }
         else if(type == "ULONG")
@@ -1119,7 +1130,7 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
             }
             else
             {
-                char buffer[nByte*count];
+                char* buffer = new char[nByte*count];
                 int size = blockList[block]->length - line;
                 for (int i = 0; i < size; i++)
                     buffer[i] = blockList[block]->data[line + i];
@@ -1130,6 +1141,8 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                 {
                     decList.append(CAST2(buffer[nByte*i], int32_t));
                 }
+
+                delete buffer;
             }
         }
         else if(type == "FLOAT32_IEEE")
@@ -1138,12 +1151,12 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
             {
                 for (int i = 0; i < count; i++)
                 {
-                    decList.append(CAST2(blockList[block]->data[line + nByte*i], float_t));
+                    decList.append(CAST2(blockList[block]->data[line + nByte*i], float));
                 }
             }
             else
             {
-                char buffer[nByte*count];
+                char* buffer = new char[nByte*count];
                 int size = blockList[block]->length - line;
                 for (int i = 0; i < size; i++)
                     buffer[i] = blockList[block]->data[line + i];
@@ -1152,8 +1165,10 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
 
                 for (int i = 0; i < count; i++)
                 {
-                    decList.append(CAST2(buffer[nByte*i], float_t));
+                    decList.append(CAST2(buffer[nByte*i], float));
                 }
+
+                delete buffer;
             }
         }
     }
@@ -1163,7 +1178,7 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
         {
             if (line + nByte*count < blockList[block]->length)
             {
-                char mem[nByte];
+                char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
@@ -1172,17 +1187,19 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                     }
                     decList.append(CAST2(mem[0], int8_t));
                 }
+
+                delete mem;
             }
             else
             {
-                char buffer[nByte * count];
+                char* buffer = new char[nByte*count];
                 int size = blockList[block]->length - line;
                 for (int i = 0; i < size; i++)
                     buffer[i] = blockList[block]->data[line + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
-                char mem[nByte];
+                char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
@@ -1191,13 +1208,16 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                     }
                     decList.append(CAST2(mem[0], int8_t));
                 }
+
+                delete mem;
+                delete buffer;
             }
         }
-        if(type == "UBYTE")
+        else if(type == "UBYTE")
         {
             if (line + nByte*count < blockList[block]->length)
             {
-                char mem[nByte];
+                char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
@@ -1206,17 +1226,19 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                     }
                     decList.append(CAST2(mem[0], uint8_t));
                 }
+
+                delete mem;
             }
             else
             {
-                char buffer[nByte * count];
+                char* buffer = new char[nByte*count];
                 int size = blockList[block]->length - line;
                 for (int i = 0; i < size; i++)
                     buffer[i] = blockList[block]->data[line + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
-                char mem[nByte];
+                char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
@@ -1225,13 +1247,16 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                     }
                     decList.append(CAST2(mem[0], uint8_t));
                 }
+
+                delete mem;
+                delete buffer;
             }
         }
         else if(type == "SWORD")
         {
             if (line + nByte*count < blockList[block]->length)
             {
-                char mem[nByte];
+                char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
@@ -1240,17 +1265,19 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                     }
                     decList.append(CAST2(mem[0], int16_t));
                 }
+
+                delete mem;
             }
             else
             {
-                char buffer[nByte * count];
+                char* buffer = new char[nByte*count];
                 int size = blockList[block]->length - line;
                 for (int i = 0; i < size; i++)
                     buffer[i] = blockList[block]->data[line + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
-                char mem[nByte];
+                char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
@@ -1259,13 +1286,16 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                     }
                     decList.append(CAST2(mem[0], int16_t));
                 }
+
+                delete mem;
+                delete buffer;
             }
         }
         else if(type == "UWORD")
         {
             if (line + nByte*count < blockList[block]->length)
             {
-                char mem[nByte];
+                char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
@@ -1274,17 +1304,19 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                     }
                     decList.append(CAST2(mem[0], uint16_t));
                 }
+
+                delete mem;
             }
             else
             {
-                char buffer[nByte * count];
+                char* buffer = new char[nByte*count];
                 int size = blockList[block]->length - line;
                 for (int i = 0; i < size; i++)
                     buffer[i] = blockList[block]->data[line + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
-                char mem[nByte];
+                char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
@@ -1293,13 +1325,16 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                     }
                     decList.append(CAST2(mem[0], uint16_t));
                 }
+
+                delete mem;
+                delete buffer;
             }
         }
         else if(type == "SLONG")
         {
             if (line + nByte*count < blockList[block]->length)
             {
-                char mem[nByte];
+                char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
@@ -1308,17 +1343,19 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                     }
                     decList.append(CAST2(mem[0], int32_t));
                 }
+
+                delete mem;
             }
             else
             {
-                char buffer[nByte * count];
+                char* buffer = new char[nByte*count];
                 int size = blockList[block]->length - line;
                 for (int i = 0; i < size; i++)
                     buffer[i] = blockList[block]->data[line + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
-                char mem[nByte];
+                char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
@@ -1327,13 +1364,16 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                     }
                     decList.append(CAST2(mem[0], int32_t));
                 }
+
+                delete mem;
+                delete buffer;
             }
         }
         else if(type == "ULONG")
         {
             if (line + nByte*count < blockList[block]->length)
             {
-                char mem[nByte];
+                char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
@@ -1342,17 +1382,19 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                     }
                     decList.append(CAST2(mem[0], uint32_t));
                 }
+
+                delete mem;
             }
             else
             {
-                char buffer[nByte * count];
+                char* buffer = new char[nByte*count];
                 int size = blockList[block]->length - line;
                 for (int i = 0; i < size; i++)
                     buffer[i] = blockList[block]->data[line + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
-                char mem[nByte];
+                char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
@@ -1361,40 +1403,48 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                     }
                     decList.append(CAST2(mem[0], uint32_t));
                 }
+
+                delete mem;
+                delete buffer;
             }
         }
         else if(type == "FLOAT32_IEEE")
         {
             if (line + nByte*count < blockList[block]->length)
             {
-                char mem[nByte];
+                char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
                     {
                         mem[j] = blockList[block]->data[line + (nByte * (i + 1) - j - 1)];
                     }
-                    decList.append(CAST2(mem[0], float_t));
+                    decList.append(CAST2(mem[0], float));
                 }
+
+                delete mem;
             }
             else
             {
-                char buffer[nByte * count];
+                char* buffer = new char[nByte*count];
                 int size = blockList[block]->length - line;
                 for (int i = 0; i < size; i++)
                     buffer[i] = blockList[block]->data[line + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
-                char mem[nByte];
+                char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
                     {
                         mem[j] = buffer[nByte * (i + 1) - j - 1];
                     }
-                    decList.append(CAST2(mem[0], float_t));
+                    decList.append(CAST2(mem[0], float));
                 }
+
+                delete mem;
+                delete buffer;
             }
         }
 
