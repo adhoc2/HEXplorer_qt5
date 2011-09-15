@@ -102,15 +102,16 @@ void CHARACTERISTIC::parseFixPar(QList<TokenTyp> *typePar)
 TokenTyp CHARACTERISTIC::parseOptPar()
 {
     //opt parameters
-    QMap<std::string, Occurence> nameOptPar;
-    nameOptPar.insert("FORMAT", ZeroOrOne);
-    nameOptPar.insert("IF_DATA", ZeroOrMore);
-    nameOptPar.insert("EXTENDED_LIMITS", ZeroOrOne);
-    nameOptPar.insert("MAX_REFRESH", ZeroOrOne);
-    nameOptPar.insert("NUMBER", ZeroOrOne);
-    nameOptPar.insert("READ_ONLY", ZeroOrOne);
-    nameOptPar.insert("ANNOTATION", ZeroOrMore);
-    nameOptPar.insert("AXIS_DESCR", ZeroOrMore);
+//    QMap<std::string, Occurence> nameOptPar;
+     QHash<QString, Occurence> nameOptPar;
+     nameOptPar.insert("FORMAT", ZeroOrOne);
+     nameOptPar.insert("IF_DATA", ZeroOrMore);
+     nameOptPar.insert("EXTENDED_LIMITS", ZeroOrOne);
+     nameOptPar.insert("MAX_REFRESH", ZeroOrOne);
+     nameOptPar.insert("NUMBER", ZeroOrOne);
+     nameOptPar.insert("READ_ONLY", ZeroOrOne);
+     nameOptPar.insert("ANNOTATION", ZeroOrMore);
+     nameOptPar.insert("AXIS_DESCR", ZeroOrMore);
 
     if (nameOptPar.isEmpty())
         return nextToken();
@@ -126,16 +127,16 @@ TokenTyp CHARACTERISTIC::parseOptPar()
                 if (token == Keyword)
                 {
                     std::string lexem = lex->getLexem();
-                    if (nameOptPar.contains(lexem))
+                    if (nameOptPar.contains(lexem.c_str()))
                     {
-                        if (nameOptPar.value(lexem) == ZeroOrOne)
+                        if (nameOptPar.value(lexem.c_str()) == ZeroOrOne)
                         {
-                           nameOptPar.insert(lexem, Zero);
+                           nameOptPar.insert(lexem.c_str(), Zero);
                            Node  *instance = factoryOptNode->value(lexem)->createInstance(this);
                            this->addChildNode(instance);
                            token = nextToken();
                         }
-                        else if (nameOptPar.value(lexem) == ZeroOrMore)
+                        else if (nameOptPar.value(lexem.c_str()) == ZeroOrMore)
                         {
                             Node *instance = 0;
                             if (lexem == "AXIS_DESCR")
@@ -182,16 +183,16 @@ TokenTyp CHARACTERISTIC::parseOptPar()
             else if (token == Keyword)
             {
                 std::string lexem = lex->getLexem();
-                if (nameOptPar.contains(lexem))
+                if (nameOptPar.contains(lexem.c_str()))
                 {
-                    if (nameOptPar.value(lexem) == ZeroOrOne)
+                    if (nameOptPar.value(lexem.c_str()) == ZeroOrOne)
                     {
-                        nameOptPar.insert(lexem, Zero);
+                        nameOptPar.insert(lexem.c_str(), Zero);
                         Item  *instance = factoryOptItem->value(lexem)->createInstance( this);
                         this->addOptItem(instance);
                         token = nextToken();
                     }
-                    else if (nameOptPar.value(lexem) == ZeroOrMore)
+                    else if (nameOptPar.value(lexem.c_str()) == ZeroOrMore)
                     {
                         Item  *instance = factoryOptItem->value(lexem)->createInstance( this);
                         this->addOptItem(instance);

@@ -213,7 +213,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
                     //read the necessary parameters before reading values into HexFile
                     datatypeX = ((AXIS_PTS_X*)item)->getPar("Datatype");
                     int Xnbyte = hexParent->getNumByte(datatypeX);
-                    addressX = QString(axisPtsX->getPar("Adress")).toUInt(&bl, 16) + offset;
+                    addressX = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
 
                     //read values into HexFile
                     QList<double> decX = hexParent->getDecValues(addressX, Xnbyte, nPtsX, datatypeX);
@@ -332,7 +332,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
                     //read the necessary parameters before reading values into HexFile
                     datatypeY = ((AXIS_PTS_X*)item)->getPar("Datatype");
                     int Ynbyte = hexParent->getNumByte(datatypeY);
-                    addressY = QString(axisPtsY->getPar("Adress")).toUInt(&bl, 16) + offset;
+                    addressY = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
 
                     //read values into HexFile
                     QList<double> decY = hexParent->getDecValues(addressY, Ynbyte, nPtsY, datatypeY);
