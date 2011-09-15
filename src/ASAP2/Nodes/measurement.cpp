@@ -99,7 +99,8 @@ void MEASUREMENT::parseFixPar(QList<TokenTyp> *typePar)
 TokenTyp MEASUREMENT::parseOptPar()
 {
     //opt Parameters
-    QMap<std::string, Occurence> nameOptPar;
+    //QMap<std::string, Occurence> nameOptPar;
+    QHash<QString, Occurence> nameOptPar;
     nameOptPar.insert("FORMAT", ZeroOrOne);
     nameOptPar.insert("ECU_ADDRESS", ZeroOrOne);
     nameOptPar.insert("BIT_MASK", ZeroOrOne);
@@ -121,16 +122,16 @@ TokenTyp MEASUREMENT::parseOptPar()
                 if (token == Keyword)
                 {
                     std::string lexem = lex->getLexem();
-                    if (nameOptPar.contains(lexem))
+                    if (nameOptPar.contains(lexem.c_str()))
                     {
-                        if (nameOptPar.value(lexem) == ZeroOrOne)
+                        if (nameOptPar.value(lexem.c_str()) == ZeroOrOne)
                         {
-                            nameOptPar.insert(lexem, Zero);
+                            nameOptPar.insert(lexem.c_str(), Zero);
                             Node  *instance = factoryOptNode->value(lexem)->createInstance( this);
                             this->addChildNode(instance);
                             token = nextToken();
                         }
-                        else if (nameOptPar.value(lexem) == ZeroOrMore)
+                        else if (nameOptPar.value(lexem.c_str()) == ZeroOrMore)
                         {
                             Node  *instance = factoryOptNode->value(lexem)->createInstance( this);
                             this->addChildNode(instance);
@@ -161,18 +162,18 @@ TokenTyp MEASUREMENT::parseOptPar()
             else if (token == Keyword)
             {
                 std::string lexem = lex->getLexem();
-                if (nameOptPar.contains(lexem))
+                if (nameOptPar.contains(lexem.c_str()))
                 {
-                    if (nameOptPar.value(lexem) == ZeroOrOne)
+                    if (nameOptPar.value(lexem.c_str()) == ZeroOrOne)
                     {
-                        nameOptPar.insert(lexem, Zero);
+                        nameOptPar.insert(lexem.c_str(), Zero);
                         Item  *instance = factoryOptItem->value(lexem)->createInstance( this);
                         this->addOptItem(instance);
                         token = nextToken();
                     }
-                    else if (nameOptPar.value(lexem) == ZeroOrMore)
+                    else if (nameOptPar.value(lexem.c_str()) == ZeroOrMore)
                     {
-                        Item  *instance = factoryOptItem->value(lexem)->createInstance(this);
+                        Item  *instance = factoryOptItem->value(lexem.c_str())->createInstance(this);
                         this->addOptItem(instance);
                         token = nextToken();
                     }

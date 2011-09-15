@@ -34,10 +34,10 @@ class AXIS_PTS : public Node
         void parseFixPar(QList<TokenTyp> *typePar);
 
         // Opt parameters
-        QMap<std::string, Occurence> *occOptPar;
+        QHash<QString, Occurence> *occOptPar;
         QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
         QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;
-        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar);
+        TokenTyp parseOptPar(QHash<QString, Occurence> *nameOptPar);
 };
 
 #endif // AXIS_PTS_H

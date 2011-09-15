@@ -25,7 +25,7 @@ AXIS_PTS::AXIS_PTS( Node *parentNode)
     factoryOptItem = &gram->axis_pts.factoryOptItem;
 
     //opt Parameters
-    occOptPar = new QMap<std::string, Occurence>;
+    occOptPar = new QHash<QString, Occurence>;
     occOptPar->insert("FORMAT", ZeroOrOne);
     occOptPar->insert("IF_DATA", ZeroOrMore);
     occOptPar->insert("EXTENDED_LIMITS", ZeroOrOne);
@@ -109,7 +109,7 @@ void AXIS_PTS::parseFixPar(QList<TokenTyp> *typePar)
     }
 }
 
-TokenTyp AXIS_PTS::parseOptPar(QMap<std::string, Occurence> *nameOptPar)
+TokenTyp AXIS_PTS::parseOptPar(QHash<QString, Occurence> *nameOptPar)
 {
 
     if (nameOptPar->isEmpty())
@@ -128,16 +128,16 @@ TokenTyp AXIS_PTS::parseOptPar(QMap<std::string, Occurence> *nameOptPar)
                     std::string lexem = lex->getLexem();
                     if (factoryOptNode->contains(lexem))
                     {
-                        if (this->occOptPar->value(lexem) == ZeroOrOne)
+                        if (this->occOptPar->value(lexem.c_str()) == ZeroOrOne)
                         {
-                            this->occOptPar->insert(lexem, Zero);
-                            Node  *instance = factoryOptNode->value(lexem)->createInstance( this);
+                            this->occOptPar->insert(lexem.c_str(), Zero);
+                            Node  *instance = factoryOptNode->value(lexem.c_str())->createInstance( this);
                             this->addChildNode(instance);
                             token = nextToken();
                         }
-                        else if (this->occOptPar->value(lexem) == ZeroOrMore)
+                        else if (this->occOptPar->value(lexem.c_str()) == ZeroOrMore)
                         {
-                            Node  *instance = factoryOptNode->value(lexem)->createInstance( this);
+                            Node  *instance = factoryOptNode->value(lexem.c_str())->createInstance( this);
                             this->addChildNode(instance);
                             token = nextToken();
                         }
@@ -166,18 +166,18 @@ TokenTyp AXIS_PTS::parseOptPar(QMap<std::string, Occurence> *nameOptPar)
             else if (token == Keyword)
             {
                 std::string lexem = lex->getLexem();
-                if (factoryOptItem->contains(lexem))
+                if (factoryOptItem->contains(lexem.c_str()))
                 {
-                    if (this->occOptPar->value(lexem) == ZeroOrOne)
+                    if (this->occOptPar->value(lexem.c_str()) == ZeroOrOne)
                     {
-                        this->occOptPar->insert(lexem, Zero);
-                        Item  *instance = factoryOptItem->value(lexem)->createInstance( this);
+                        this->occOptPar->insert(lexem.c_str(), Zero);
+                        Item  *instance = factoryOptItem->value(lexem.c_str())->createInstance( this);
                         this->addOptItem(instance);
                         token = nextToken();
                     }
-                    else if (this->occOptPar->value(lexem) == ZeroOrMore)
+                    else if (this->occOptPar->value(lexem.c_str()) == ZeroOrMore)
                     {
-                        Item  *instance = factoryOptItem->value(lexem)->createInstance( this);
+                        Item  *instance = factoryOptItem->value(lexem.c_str())->createInstance( this);
                         this->addOptItem(instance);
                         token = nextToken();
                     }
