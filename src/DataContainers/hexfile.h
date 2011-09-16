@@ -77,7 +77,7 @@ class HexFile : public QObject, public DataContainer
         QString byteOrder;
         QMap<std::string,int> nByte;
 
-        static char asciiToByte[256*256];
+        static int asciiToByte[256*256];
 
         // methods
         void incrementValueProgBar(int n);        

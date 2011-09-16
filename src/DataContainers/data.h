@@ -145,8 +145,8 @@ class Data : public QObject, public Node
         CdfxFile *getCdfxParent();
 
     private:
-        QStringList checkExtendedLimits(QStringList list);
-        QString checkExtendedLimits(QString str);
+
+        QString checkExtendedLimitsZ(QString str);
         QString getNPtsXDatatype();
         QString getNPtsYDatatype();
         QList<double> getXtoDouble();
