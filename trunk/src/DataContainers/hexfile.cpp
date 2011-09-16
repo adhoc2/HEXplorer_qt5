@@ -46,7 +46,7 @@ MemBlock::~MemBlock()
 
 // _______________ class HexFile Ctor/Dtor___________________//
 
-char HexFile::asciiToByte[256*256];
+int HexFile::asciiToByte[256*256];
 
 HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QString module, QObject *parent)
     : QObject(parent) , DataContainer(parentWP, module)
@@ -60,13 +60,17 @@ HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QString module,
     valueProgBar = 0;
     omp_init_lock(&lock);
 
-    for(int i=0; i<16; i++) {
+    for(int i = 0; i < 16; i++)
+    {
         uchar ii = (i<10)?i+48:i+55;
-        for(int j=0; j<16; j++) {
+        for(int j = 0; j < 16; j++)
+        {
             uchar jj = (j<10)?j+48:j+55;
-            asciiToByte[ii*256 + jj] = i*j;
+            asciiToByte[ii*256 + jj] = j*16+i;
         }
     }
+
+    qDebug() << asciiToByte[17990];
 
     //get the byte_order   
     MOD_COMMON *modCommon = (MOD_COMMON*)a2lProject->getNode("MODULE/" + getModuleName() + "/MOD_COMMON");
@@ -203,7 +207,7 @@ bool HexFile::parseFile()
 #ifdef MY_DEBUG
      myDebug = 1;
 #endif
-     if (omp_get_num_procs() > 1 && !myDebug)
+     if (omp_get_num_procs() > 10 && !myDebug)
      {
          //divide file into 2 distinct parts for parallel sections
          int _mid = listStartMemBlock.size() / 2;
@@ -478,12 +482,12 @@ bool HexFile::parseFile()
                                 bool bl;
                                 actBlock->data[dataCnt] = str.toUShort(&bl, 16);
 
-                                //actBlock->data[dataCnt] = asciiToByte[(short)str.toStdString().c_str()];
-
+//                                actBlock->data[dataCnt] = asciiToByte[*(short*)str.toStdString().c_str()];
+//
 //                                if (cnt < 10) {
 //                                    qDebug() << str.toStdString().c_str() << "//"
-//                                             << (quint16)str.toStdString().c_str() << "//"
-//                                             << asciiToByte[(quint16)str.toStdString().c_str()] << "//"
+//                                             << *(uint16_t*)str.toStdString().c_str() << "//"
+//                                             << asciiToByte[*(uint16_t*)str.toStdString().c_str()] << "//"
 //                                             << actBlock->data[dataCnt];
 //                                }
 

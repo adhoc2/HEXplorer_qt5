@@ -2226,7 +2226,7 @@ void Data::phys2hex()
 
             for (int i = 0; i < listZ.count(); i++)
             {
-                phys = checkExtendedLimits(listZ[i]).toDouble();
+                phys = checkExtendedLimitsZ(listZ[i]).toDouble();
                 double dec = (a * pow(phys, 2) + b * phys + c) / (d * pow(phys, 2) + e * phys + f);
                 decZ.append(dec);
             }
@@ -2423,7 +2423,7 @@ QString Data::phys2hex(QString phys, QString axis)
             double e = ((QString)item->getPar("float5")).toDouble(&bl);
             double f = ((QString)item->getPar("float6")).toDouble(&bl);
 
-            double val = checkExtendedLimits(phys).toDouble();
+            double val = checkExtendedLimitsZ(phys).toDouble();
             dec = (a * pow(val, 2) + b * val + c) / (d * pow(val, 2) + e * val + f);
         }
         else if (convType.toLower() == "tab_verb")
@@ -2627,7 +2627,7 @@ QStringList Data::phys2hex(QStringList list, QString axis)
 
             foreach (QString phys, list)
             {
-                double val = checkExtendedLimits(phys).toDouble();
+                double val = checkExtendedLimitsZ(phys).toDouble();
                 listDec.append((a * pow(val, 2) + b * val + c) / (d * pow(val, 2) + e * val + f));
             }
         }
@@ -4501,91 +4501,7 @@ void Data::setZ(int i, QString str)
     }
     else
     {
-        //check WEAK BOUNDS
-        //WEAK BOUNDS
-        bool bl;
-        QString strLowerWB, strUpperWB;
-        if (type == "CHARACTERISTIC")
-        {
-            strLowerWB = ((CHARACTERISTIC*)label)->getPar("LowerLimit");
-            strUpperWB = ((CHARACTERISTIC*)label)->getPar("UpperLimit");
-        }
-        else
-        {
-            strLowerWB = ((AXIS_PTS*)label)->getPar("LowerLimit");
-            strUpperWB = ((AXIS_PTS*)label)->getPar("UpperLimit");
-        }
-
-        double dblLowerWB = strLowerWB.toDouble();
-        double dblUpperWB = strUpperWB.toDouble();
-
-        //EXTENDED_LIMITS
-        EXTENDED_LIMITS *extL = (EXTENDED_LIMITS*)label->getItem("EXTENDED_LIMITS");
-        QString strLowerExtLim, strUpperExtLim;
-        if (extL)
-        {
-            strLowerExtLim = ((QString)extL->getPar("LowerLimit"));
-            strUpperExtLim = ((QString)extL->getPar("UpperLimit"));
-
-            double dblLowerExtLim = strLowerExtLim.toDouble();
-            double dblUpperExtLim = strUpperExtLim.toDouble();
-
-            //CHECK LIMITS (weak/extended)
-            double dbl = str.toDouble(&bl);
-            if (dbl > dblUpperWB)
-            {
-                if (showWeakBoundsExceeded)
-                {
-                    DialogExceedWB *diag = new DialogExceedWB( &showWeakBoundsExceeded ,0);
-                    int ret = diag->exec();
-
-                    if (ret == QDialog::Accepted)
-                    {
-                        allowExceedWeakBounds = true;
-                    }
-                    else
-                    {
-                        allowExceedWeakBounds = false;
-                    }
-                }
-
-                if (allowExceedWeakBounds && (dbl > dblUpperWB))
-                {
-                    if (dbl > dblUpperExtLim)
-                        str = strUpperExtLim;
-                }
-                else if (!allowExceedWeakBounds && (dbl > dblUpperWB))
-                    str = strUpperWB;
-
-            }
-            else if(dbl < dblLowerWB)
-            {
-                if (showWeakBoundsExceeded)
-                {
-                    DialogExceedWB *diag = new DialogExceedWB( &showWeakBoundsExceeded ,0);
-                    int ret = diag->exec();
-
-                    if (ret == QDialog::Accepted)
-                    {
-                        allowExceedWeakBounds = true;
-                    }
-                    else
-                    {
-                        allowExceedWeakBounds = false;
-                    }
-                }
-
-                if (allowExceedWeakBounds && (dbl < dblLowerWB))
-                {
-                    if (dbl < dblLowerExtLim)
-                        str = strLowerExtLim;
-                }
-                else if (!allowExceedWeakBounds && (dbl < dblLowerWB))
-                    str = strLowerWB;
-            }
-        }
-
-        //PHYS -> HEX -> PHYS        
+        //PHYS -> HEX -> PHYS
         QString hex = phys2hex(str, "z");
         QString phys = hex2phys(hex, "z");
 
@@ -4637,97 +4553,8 @@ void Data::setZ(QStringList list)
     }
     else
     {
-        //WEAK BOUNDS
-        bool bl;
-        QString lower, upper;
-        if (type == "CHARACTERISTIC")
-        {
-            lower = ((CHARACTERISTIC*)label)->getPar("LowerLimit");
-            upper = ((CHARACTERISTIC*)label)->getPar("UpperLimit");
-        }
-        else
-        {
-            lower = ((AXIS_PTS*)label)->getPar("LowerLimit");
-            upper = ((AXIS_PTS*)label)->getPar("UpperLimit");
-        }
-
-        double lowerLimit = lower.toDouble();
-        double upperLimit = upper.toDouble();
-
-
-        //EXTENDED_LIMITS
-        EXTENDED_LIMITS *extL = (EXTENDED_LIMITS*)label->getItem("EXTENDED_LIMITS");
-        double upperL = 0;
-        double lowerL = 0;
-        if (extL)
-        {
-            upperL = QString(extL->getPar("UpperLimit")).toDouble();
-            lowerL = QString(extL->getPar("LowerLimit")).toDouble();
-        }
-
-        //CHECK LIMITS (weak/extended)
-        QStringList limitList;
-        foreach(QString str, list)
-        {
-            double dbl = str.toDouble(&bl);
-            if (dbl > upperLimit)
-            {
-                if (showWeakBoundsExceeded)
-                {
-                    DialogExceedWB *diag = new DialogExceedWB( &showWeakBoundsExceeded ,0);
-                    int ret = diag->exec();
-
-                    if (ret == QDialog::Accepted)
-                    {
-                        allowExceedWeakBounds = true;
-                    }
-                    else
-                    {
-                        allowExceedWeakBounds = false;
-                    }
-                }
-
-                if (allowExceedWeakBounds && (dbl > upperLimit))
-                {
-                    if (dbl > upperL)
-                        str = QString::number(upperL, 'f');
-                }
-                else if (!allowExceedWeakBounds && (dbl > upperLimit))
-                    str = QString::number(upperLimit, 'f');
-
-            }
-            else if(dbl < lowerLimit)
-            {
-                if (showWeakBoundsExceeded)
-                {
-                    DialogExceedWB *diag = new DialogExceedWB( &showWeakBoundsExceeded ,0);
-                    int ret = diag->exec();
-
-                    if (ret == QDialog::Accepted)
-                    {
-                        allowExceedWeakBounds = true;
-                    }
-                    else
-                    {
-                        allowExceedWeakBounds = false;
-                    }
-                }
-
-                if (allowExceedWeakBounds && (dbl < lowerLimit))
-                {
-                    if (dbl < lowerL)
-                        str = QString::number(lowerL, 'f');
-                }
-                else if (!allowExceedWeakBounds && (dbl < lowerLimit))
-                    str = QString::number(lowerLimit, 'f');
-            }
-
-            limitList.append(str);
-        }
-
-
         //PHYS -> HEX -> PHYS
-        QStringList hexList = phys2hex(limitList, "z");
+        QStringList hexList = phys2hex(list, "z");
         QStringList physList = hex2phys(hexList, "z");
 
         //PHYS <> OLD
@@ -5020,8 +4847,25 @@ void Data::copyAllFrom(Data *dataSrc)
     }
 }
 
-QString Data::checkExtendedLimits(QString str)
+QString Data::checkExtendedLimitsZ(QString str)
 {
+    //WEAK BOUNDS
+    bool bl;
+    QString strLowerWB, strUpperWB;
+    if (type == "CHARACTERISTIC")
+    {
+        strLowerWB = ((CHARACTERISTIC*)label)->getPar("LowerLimit");
+        strUpperWB = ((CHARACTERISTIC*)label)->getPar("UpperLimit");
+    }
+    else
+    {
+        strLowerWB = ((AXIS_PTS*)label)->getPar("LowerLimit");
+        strUpperWB = ((AXIS_PTS*)label)->getPar("UpperLimit");
+    }
+
+    double dblLowerWB = strLowerWB.toDouble();
+    double dblUpperWB = strUpperWB.toDouble();
+
     //EXTENDED_LIMITS
     EXTENDED_LIMITS *extL = (EXTENDED_LIMITS*)label->getItem("EXTENDED_LIMITS");
     QString strLowerExtLim, strUpperExtLim;
@@ -5034,53 +4878,75 @@ QString Data::checkExtendedLimits(QString str)
         double dblUpperExtLim = strUpperExtLim.toDouble();
 
         //CHECK LIMITS (weak/extended)
-        bool bl;
         double dbl = str.toDouble(&bl);
-        if (dbl > dblUpperExtLim)
-                str = strUpperExtLim;
+        if (dbl > dblUpperWB)
+        {
+            if (showWeakBoundsExceeded)
+            {
+                DialogExceedWB *diag = new DialogExceedWB( &showWeakBoundsExceeded ,0);
+                int ret = diag->exec();
 
-        if (dbl < dblLowerExtLim)
-            str = strLowerExtLim;
+                if (ret == QDialog::Accepted)
+                {
+                    allowExceedWeakBounds = true;
+                }
+                else
+                {
+                    allowExceedWeakBounds = false;
+                }
+            }
 
-        return str;
+            if (allowExceedWeakBounds && (dbl > dblUpperWB))
+            {
+                if (dbl > dblUpperExtLim)
+                    str = strUpperExtLim;
+            }
+            else if (!allowExceedWeakBounds && (dbl > dblUpperWB))
+                str = strUpperWB;
+
+        }
+        else if(dbl < dblLowerWB)
+        {
+            if (showWeakBoundsExceeded)
+            {
+                DialogExceedWB *diag = new DialogExceedWB( &showWeakBoundsExceeded ,0);
+                int ret = diag->exec();
+
+                if (ret == QDialog::Accepted)
+                {
+                    allowExceedWeakBounds = true;
+                }
+                else
+                {
+                    allowExceedWeakBounds = false;
+                }
+            }
+
+            if (allowExceedWeakBounds && (dbl < dblLowerWB))
+            {
+                if (dbl < dblLowerExtLim)
+                    str = strLowerExtLim;
+            }
+            else if (!allowExceedWeakBounds && (dbl < dblLowerWB))
+                str = strLowerWB;
+        }
     }
     else
     {
-        return str;
+        //CHECK LIMITS (weak/extended)
+        double dbl = str.toDouble(&bl);
+        if (dbl > dblUpperWB)
+        {
+            str = strUpperWB;
+        }
+        else if (dbl < dblLowerWB)
+        {
+            str = strLowerWB;
+        }
+
     }
 
-
-}
-
-QStringList Data::checkExtendedLimits(QStringList list)
-{
-
-    //EXTENDED_LIMITS
-    EXTENDED_LIMITS *extL = (EXTENDED_LIMITS*)label->getItem("EXTENDED_LIMITS");
-    double upperL = 0;
-    double lowerL = 0;
-    if (extL)
-    {
-        upperL = QString(extL->getPar("UpperLimit")).toDouble();
-        lowerL = QString(extL->getPar("LowerLimit")).toDouble();
-    }
-
-    //CHECK LIMITS (weak/extended)
-    QStringList limitList;
-    foreach(QString str, list)
-    {
-         bool bl;
-         double dbl = str.toDouble(&bl);
-         if (dbl > upperL)
-            str = QString::number(upperL, 'f');
-
-         if (dbl < lowerL)
-            str = QString::number(lowerL, 'f');
-
-        limitList.append(str);
-    }
-
-    return limitList;
+    return str;
 
 }
 
