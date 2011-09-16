@@ -42,7 +42,9 @@ void DialogEditAsText::on_buttonBox_accepted()
         }
         else
         {
-             myData->setZ(i, "0");
+            myData->setZ(i, "0");
         }
     }
+
+
 }

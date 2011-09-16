@@ -46,6 +46,8 @@ MemBlock::~MemBlock()
 
 // _______________ class HexFile Ctor/Dtor___________________//
 
+char HexFile::asciiToByte[256*256];
+
 HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QString module, QObject *parent)
     : QObject(parent) , DataContainer(parentWP, module)
 {
@@ -57,6 +59,14 @@ HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QString module,
     maxValueProgbar = 0;
     valueProgBar = 0;
     omp_init_lock(&lock);
+
+    for(int i=0; i<16; i++) {
+        uchar ii = (i<10)?i+48:i+55;
+        for(int j=0; j<16; j++) {
+            uchar jj = (j<10)?j+48:j+55;
+            asciiToByte[ii*256 + jj] = i*j;
+        }
+    }
 
     //get the byte_order   
     MOD_COMMON *modCommon = (MOD_COMMON*)a2lProject->getNode("MODULE/" + getModuleName() + "/MOD_COMMON");
@@ -143,15 +153,18 @@ bool HexFile::read()
 
 bool HexFile::parseFile()
 {
+    QTime timer;
+    timer.start();
+
     // open file
      QFile file(fullHexName);
      if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
          return false;
 
      // stream,read the file and save the strings into a QStringList
+     QList<int> listStartMemBlock;
      QTextStream in(&file);
      QStringList lines;
-     QList<int> listStartMemBlock;
      int i = 0;
      while (!in.atEnd())
      {
@@ -159,7 +172,7 @@ bool HexFile::parseFile()
         bool ok;
         if (str.startsWith(":") || (str.startsWith(26)))
         {
-            lines << str;            
+            lines << str;
             int type = str.mid(7,2).toInt(&ok, 16);
             if (type == 4)
             {
@@ -174,7 +187,11 @@ bool HexFile::parseFile()
 
         i++;
      }
-     fileLinesNum = lines.count();     
+     fileLinesNum = lines.count();
+
+     qDebug() << " ---- HEXfile ---- ";
+     qDebug() << "1- read file : " << timer.elapsed();
+     timer.restart();
 
      //get the length for the progressBar
      A2LFILE *a2l = (A2LFILE*)this->getParentNode();
@@ -184,7 +201,7 @@ bool HexFile::parseFile()
 
      bool myDebug = 0;
 #ifdef MY_DEBUG
- myDebug = 1;
+     myDebug = 1;
 #endif
      if (omp_get_num_procs() > 1 && !myDebug)
      {
@@ -409,7 +426,7 @@ bool HexFile::parseFile()
      }
      else
      {
-         // parse the file
+         // initialize variables
          int dataCnt = 0;
          int lineLength = 0;
          bool firstLineOfBlock = false;
@@ -418,15 +435,17 @@ bool HexFile::parseFile()
          MemBlock *actBlock = 0;
          int cnt = 0;
          int previous = 0;
+
+         // parse the file
+         // for every line of the file :
          while (cnt < lines.count())
          {
-             incrementValueProgBar(cnt - previous);
-             previous = cnt;
-
+             // get the type and the length of the record
              bool ok;
              type = lines.at(cnt).mid(7,2).toInt(&ok, 16);
              reclen = lines.at(cnt).mid(1,2);
 
+             // according to the type of the record, do :
              switch (type)
              {
                 case 0: //Data Record
@@ -434,18 +453,20 @@ bool HexFile::parseFile()
                         //create a new memory block
                         if (firstLineOfBlock)
                         {
+                            // create a new memory block
                             actBlock = new MemBlock();
+
+                            // get the length, start, offset of the block
                             actBlock->offset = lines.at(cnt - 1).mid(9, 4);
                             actBlock->start = (actBlock->offset + lines.at(cnt).mid(3, 4)).toUInt(&ok, 16);
                             int end = (actBlock->offset + "FFFF").toUInt(&ok, 16);
-                            actBlock->lineLength = reclen.toInt(&ok, 16);
-
+                            actBlock->lineLength = reclen.toInt(&ok, 16);                            
                             actBlock->data = new unsigned char [(end - actBlock->start + 1)];
+
                             firstLineOfBlock = false;
                         }
 
-                        //read all the lines of the memory block
-                        //unsigned int addr = (actBlock->offset + lines.at(cnt).mid(3, 4)).toUInt(&ok, 16);
+                        //read all the lines of the memory block                      
                         while (type == 0)
                         {
                             lineLength = lines.at(cnt).mid(1,2).toInt(&ok, 16);
@@ -457,8 +478,14 @@ bool HexFile::parseFile()
                                 bool bl;
                                 actBlock->data[dataCnt] = str.toUShort(&bl, 16);
 
-                                //actBlock->addrList.append(addr);
-                                //actBlock->hexList.append(str);
+                                //actBlock->data[dataCnt] = asciiToByte[(short)str.toStdString().c_str()];
+
+//                                if (cnt < 10) {
+//                                    qDebug() << str.toStdString().c_str() << "//"
+//                                             << (quint16)str.toStdString().c_str() << "//"
+//                                             << asciiToByte[(quint16)str.toStdString().c_str()] << "//"
+//                                             << actBlock->data[dataCnt];
+//                                }
 
                                 dataCnt++;
                             }
@@ -502,13 +529,43 @@ bool HexFile::parseFile()
                 default:
                     break;
              }
+
+             // increment progressbar
+             incrementValueProgBar(cnt - previous);
+             previous = cnt;
          }
+
          incrementValueProgBar(cnt - previous);
      }
+
+     qDebug() << "2- parse file : " << timer.elapsed();
 
     return true;
 
  }
+
+bool HexFile::parseFileFast()
+{
+    // open file in ascii format
+    FILE *fid = fopen(fullHexName.toStdString().c_str(), "r");
+    if (fid == NULL)
+    {
+        return false;
+    }
+
+    // get the length of the file
+    int cur_pos = ftell(fid);
+    fseek(fid, 0, SEEK_END);
+    int file_length = ftell(fid);
+    rewind(fid);
+
+    while (ftell(fid) < file_length)
+    {
+
+    }
+
+    return true;
+}
 
 bool HexFile::isA2lCombined()
 {
@@ -573,6 +630,9 @@ bool HexFile::isA2lCombined()
 
 void HexFile::readAllData()
 {
+    QTime timer;
+    timer.start();
+
     bool phys = true;
 
     //empty the list
@@ -635,8 +695,6 @@ void HexFile::readAllData()
                                     if(bl)
                                     {
                                         Data *data = new Data(charac, a2lProject, this);
-//                                        if (phys)
-//                                            data->hex2phys();
                                         listData1.append(data);
                                     }
                                     else
@@ -655,12 +713,12 @@ void HexFile::readAllData()
                                     found = true;
                                     AXIS_PTS *axis = (AXIS_PTS*)label2;
                                     QString add = axis->getPar("Adress");
-
                                     bool bl = isValidAddress(add);
+
                                     if (bl)
                                     {
                                         Data *data = new Data(axis, a2lProject, this);
-                                        if (phys)
+                                        if (data)
                                             data->hex2phys();
                                         listData1.append(data);
                                     }
@@ -700,8 +758,6 @@ void HexFile::readAllData()
                                     if(bl)
                                     {
                                         Data *data = new Data(charac, a2lProject, this);
-//                                        if (phys)
-//                                            data->hex2phys();
                                         listData2.append(data);
                                     }
                                     else
@@ -720,12 +776,12 @@ void HexFile::readAllData()
                                     found = true;
                                     AXIS_PTS *axis = (AXIS_PTS*)label2;
                                     QString add = axis->getPar("Adress");
-
                                     bool bl = isValidAddress(add);
+
                                     if (bl)
                                     {
                                         Data *data = new Data(axis, a2lProject, this);
-                                        if (phys)
+                                        if (data)
                                             data->hex2phys();
                                         listData2.append(data);
                                     }
@@ -772,8 +828,6 @@ void HexFile::readAllData()
                         if(bl)
                         {
                             Data *data = new Data(charac, a2lProject, this);
-//                            if (phys)
-//                                data->hex2phys();
                             listData.append(data);
                         }
                         else
@@ -797,7 +851,7 @@ void HexFile::readAllData()
                         if (bl)
                         {
                             Data *data = new Data(axis, a2lProject, this);
-                            if (phys)
+                            if (data)
                                 data->hex2phys();
                             listData.append(data);
                         }
@@ -822,6 +876,8 @@ void HexFile::readAllData()
             }
         }
     }
+
+    qDebug() << "3- readAllData " << timer.elapsed();
 }
 
 // ________________ read Hex values___________________ //
@@ -1707,6 +1763,12 @@ void HexFile::hex2MemBlock(Data *data)
             int nbyteZ = data->getZ(0).count() / 2;
             setValues(data->getAddressZ(), data->getZ(), nbyteZ);
         }
+        else if (type.toLower() == "ascii")
+        {
+            //axisZ
+            int nbyteZ = data->getZ(0).count() / 2;
+            setValues(data->getAddressZ(), data->getZ(), nbyteZ);
+        }
     }
     else
     {
@@ -2080,7 +2142,7 @@ QList<int> HexFile::checkFmtcMonotony(bool *bl)
 void HexFile::attach(QObject *o)
 {
     //check owner for validity
-    if(o==0)
+    if(o == 0)
         return;
 
     //check for duplicates
@@ -2095,12 +2157,13 @@ void HexFile::attach(QObject *o)
 void HexFile::detach(QObject *o)
 {
     //remove it
-    //owners.removeAll(o);
     owners.removeOne(o);
 
     //remove self after last one
-    if(owners.size()==0)
+    if(owners.size() == 0)
+    {
         delete this;
+    }
 }
 
 std::string HexFile::pixmap()

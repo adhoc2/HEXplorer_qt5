@@ -77,9 +77,12 @@ class HexFile : public QObject, public DataContainer
         QString byteOrder;
         QMap<std::string,int> nByte;
 
+        static char asciiToByte[256*256];
+
         // methods
         void incrementValueProgBar(int n);        
         bool parseFile();
+        bool parseFileFast();
         void readAllData();
         bool isA2lCombined();
         void hex2MemBlock(Data* data);
@@ -87,7 +90,7 @@ class HexFile : public QObject, public DataContainer
         QStringList block2list();
         void setValue(unsigned int IAddr, QString hex, int nByte);
         void setValues(unsigned int IAddr, QStringList hexList, int nByte);
-        QString checksum(QString str);
+        QString checksum(QString str);       
 
     signals:
         //void lineParsed(int,int);

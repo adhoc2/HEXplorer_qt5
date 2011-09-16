@@ -22,9 +22,6 @@ void WorkProject::attach(QObject *o)
     //check owner for validity
     if(o==0)return;
 
-    //check for duplicates
-    if(owners.contains(o))return;
-
     //register
     owners.append(o);
     connect(o,SIGNAL(destroyed(QObject*)),this,SLOT(detach(QObject*)));
@@ -34,11 +31,13 @@ void WorkProject::attach(QObject *o)
 void WorkProject::detach(QObject *o)
 {
     //remove it
-    owners.removeAll(o);
+    owners.removeOne(o);
 
     //remove self after last one
     if(owners.size()==0)
+    {
         delete this;
+    }
 }
 
 QMap<QString, HexFile*> WorkProject::hexFiles()
