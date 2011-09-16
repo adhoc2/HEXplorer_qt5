@@ -212,7 +212,8 @@ bool A2l::parseOpenMPA2l()
     //free memory from the char* buffer
     delete buffer;
 
-    qDebug() << "\n1- read " << time.elapsed();
+    qDebug() << "\n ---- A2Lfile ---- ";
+    qDebug() << "1- read " << time.elapsed();
     time.restart();
 
     //trunk a2lfile into 2 parts for multi-threading
