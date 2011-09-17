@@ -207,7 +207,7 @@ bool HexFile::parseFile()
 #ifdef MY_DEBUG
      myDebug = 1;
 #endif
-     if (omp_get_num_procs() > 10 && !myDebug)
+     if (omp_get_num_procs() > 1 && !myDebug)
      {
          //divide file into 2 distinct parts for parallel sections
          int _mid = listStartMemBlock.size() / 2;
@@ -481,16 +481,6 @@ bool HexFile::parseFile()
                                 QString str = lines.at(cnt).mid(9 + 2 * i, 2);
                                 bool bl;
                                 actBlock->data[dataCnt] = str.toUShort(&bl, 16);
-
-//                                actBlock->data[dataCnt] = asciiToByte[*(short*)str.toStdString().c_str()];
-//
-//                                if (cnt < 10) {
-//                                    qDebug() << str.toStdString().c_str() << "//"
-//                                             << *(uint16_t*)str.toStdString().c_str() << "//"
-//                                             << asciiToByte[*(uint16_t*)str.toStdString().c_str()] << "//"
-//                                             << actBlock->data[dataCnt];
-//                                }
-
                                 dataCnt++;
                             }
 
@@ -551,20 +541,43 @@ bool HexFile::parseFile()
 bool HexFile::parseFileFast()
 {
     // open file in ascii format
-    FILE *fid = fopen(fullHexName.toStdString().c_str(), "r");
+    FILE *fid = fopen(fullHexName.toStdString().c_str(), "rb");
     if (fid == NULL)
     {
         return false;
     }
 
     // get the length of the file
-    int cur_pos = ftell(fid);
     fseek(fid, 0, SEEK_END);
     int file_length = ftell(fid);
     rewind(fid);
+    char *buffer = new char[file_length * sizeof(char)];
+    fread(buffer, sizeof(char), file_length, fid);
+    fclose(fid);
 
-    while (ftell(fid) < file_length)
+    int i = 0;
+    while (i < file_length)
     {
+        if (buffer[i] == 58)
+        {
+            i += 9;
+            int recType = asciiToByte[*(uint16_t*)buffer[i]];
+
+            if (recType == 4)
+            {
+                i += 2;
+                QString ulba;
+            }
+            else if (recType == 1)
+            {
+
+            }
+            else
+                return false;
+
+        }
+        else
+            return false;
 
     }
 
