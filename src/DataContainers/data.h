@@ -146,7 +146,10 @@ class Data : public QObject, public Node
 
     private:
 
-        QString checkExtendedLimitsZ(QString str);
+        QString checkLimitsX(QString str);
+        QString checkLimitsY(QString str);
+        QString checkLimitsZ(QString str);
+        QString checkWeakBoundsZ(QString str);
         QString getNPtsXDatatype();
         QString getNPtsYDatatype();
         QList<double> getXtoDouble();
