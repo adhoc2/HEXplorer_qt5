@@ -953,6 +953,19 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, HexFile *hexFile, bool modif) : Node(no
     QString deposit = node->getPar("Deposit");
     record_layout = (RECORD_LAYOUT*)project->getNode("MODULE/" + moduleName + "/RECORD_LAYOUT/" + deposit);
 
+    //Zaxis PRECISION
+    QString compu = node->getPar("Conversion");
+    COMPU_METHOD *cmp = (COMPU_METHOD*)pro->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu);
+    if (cmp)
+    {
+        QString f = cmp->getPar("Format");
+        QStringList list = f.split(QRegExp("\\D+"));
+        if (list.count() < 3)
+            precisionZ = 0;
+        else
+            precisionZ = list.at(2).toInt();
+    }
+
     //read each element of X_RECORD_LAYOUT
     bool bl;
     int offset = 0;
@@ -986,7 +999,13 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, HexFile *hexFile, bool modif) : Node(no
             datatypeZ = ((AXIS_PTS_X*)item)->getPar("Datatype");
             int Znbyte = hexParent->getNumByte(datatypeZ);
             addressZ = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
-            listZ = hexParent->getHexValues(node->getPar("Adress"), offset, Znbyte, nPts);
+
+            //listZ = hexParent->getHexValues(node->getPar("Adress"), offset, Znbyte, nPts);
+            QList<double> decZ = hexParent->getDecValues(addressZ, Znbyte, nPts, datatypeZ);
+
+            //dec2phys
+            listZ = dec2Phys(decZ, "z");
+
             offset +=  nPts * Znbyte;
         }
     }
@@ -996,19 +1015,6 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, HexFile *hexFile, bool modif) : Node(no
     for (int i = 0; i < nPts; i++)
     {
         listX.append(str.setNum(i));
-    }
-
-    //Zaxis PRECISION
-    QString compu = node->getPar("Conversion");
-    COMPU_METHOD *cmp = (COMPU_METHOD*)pro->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu);
-    if (cmp)
-    {
-        QString f = cmp->getPar("Format");
-        QStringList list = f.split(QRegExp("\\D+"));
-        if (list.count() < 3)
-            precisionZ = 0;
-        else
-            precisionZ = list.at(2).toInt();
     }
 
     size = 5;
@@ -2072,7 +2078,8 @@ void Data::phys2hex()
 
                 for (int i = 0; i < listX.count(); i++)
                 {
-                    phys = listX.at(i).toDouble();
+                    //phys = listX.at(i).toDouble();
+                    phys = checkLimitsX(listX[i]).toDouble();
                     double dec = (a * pow(phys, 2) + b * phys + c) / (d * pow(phys, 2) + e * phys + f);
                     decX.append(dec);
                 }
@@ -2146,7 +2153,8 @@ void Data::phys2hex()
 
                 for (int i = 0; i < listY.count(); i++)
                 {
-                    phys = listY.at(i).toDouble();
+                    //phys = listY.at(i).toDouble();
+                    phys = checkLimitsY(listY[i]).toDouble();
                     double dec = (a * pow(phys, 2) + b * phys + c) / (d * pow(phys, 2) + e * phys + f);
                     decY.append(dec);
                 }
@@ -2226,7 +2234,7 @@ void Data::phys2hex()
 
             for (int i = 0; i < listZ.count(); i++)
             {
-                phys = checkExtendedLimitsZ(listZ[i]).toDouble();
+                phys = checkLimitsZ(listZ[i]).toDouble();
                 double dec = (a * pow(phys, 2) + b * phys + c) / (d * pow(phys, 2) + e * phys + f);
                 decZ.append(dec);
             }
@@ -2297,7 +2305,8 @@ QString Data::phys2hex(QString phys, QString axis)
             double e = ((QString)item->getPar("float5")).toDouble(&bl);
             double f = ((QString)item->getPar("float6")).toDouble(&bl);
 
-            double val = phys.toDouble();
+            double val = checkLimitsX(phys).toDouble();
+
             dec = (a * pow(val, 2) + b * val + c) / (d * pow(val, 2) + e * val + f);
         }
         else if (convType.toLower() == "tab_verb")
@@ -2356,7 +2365,7 @@ QString Data::phys2hex(QString phys, QString axis)
             double e = ((QString)item->getPar("float5")).toDouble(&bl);
             double f = ((QString)item->getPar("float6")).toDouble(&bl);
 
-            double val = phys.toDouble();
+            double val = checkLimitsY(phys).toDouble();
             dec = (a * pow(val, 2) + b * val + c) / (d * pow(val, 2) + e * val + f);
         }
         else if (convType.toLower() == "tab_verb")
@@ -2423,7 +2432,7 @@ QString Data::phys2hex(QString phys, QString axis)
             double e = ((QString)item->getPar("float5")).toDouble(&bl);
             double f = ((QString)item->getPar("float6")).toDouble(&bl);
 
-            double val = checkExtendedLimitsZ(phys).toDouble();
+            double val = checkLimitsZ(phys).toDouble();
             dec = (a * pow(val, 2) + b * val + c) / (d * pow(val, 2) + e * val + f);
         }
         else if (convType.toLower() == "tab_verb")
@@ -2489,7 +2498,7 @@ QStringList Data::phys2hex(QStringList list, QString axis)
 
             foreach (QString phys, list)
             {
-                double val = phys.toDouble();
+                double val = checkLimitsX(phys).toDouble();
                 listDec.append((a * pow(val, 2) + b * val + c) / (d * pow(val, 2) + e * val + f));
             }
         }
@@ -2554,7 +2563,7 @@ QStringList Data::phys2hex(QStringList list, QString axis)
 
             foreach (QString phys, list)
             {
-                double val = phys.toDouble();
+                double val = checkLimitsY(phys).toDouble();
                 listDec.append((a * pow(val, 2) + b * val + c) / (d * pow(val, 2) + e * val + f));
             }
         }
@@ -2627,7 +2636,7 @@ QStringList Data::phys2hex(QStringList list, QString axis)
 
             foreach (QString phys, list)
             {
-                double val = checkExtendedLimitsZ(phys).toDouble();
+                double val = checkLimitsZ(phys).toDouble();
                 listDec.append((a * pow(val, 2) + b * val + c) / (d * pow(val, 2) + e * val + f));
             }
         }
@@ -4501,6 +4510,9 @@ void Data::setZ(int i, QString str)
     }
     else
     {
+        //check weak bounds
+        str = checkWeakBoundsZ(str);
+
         //PHYS -> HEX -> PHYS
         QString hex = phys2hex(str, "z");
         QString phys = hex2phys(hex, "z");
@@ -4553,8 +4565,15 @@ void Data::setZ(QStringList list)
     }
     else
     {
+        //check weak bounds
+        QStringList listLim;
+        foreach (QString str, list)
+        {
+            listLim.append(checkWeakBoundsZ(str));
+        }
+
         //PHYS -> HEX -> PHYS
-        QStringList hexList = phys2hex(list, "z");
+        QStringList hexList = phys2hex(listLim, "z");
         QStringList physList = hex2phys(hexList, "z");
 
         //PHYS <> OLD
@@ -4847,7 +4866,7 @@ void Data::copyAllFrom(Data *dataSrc)
     }
 }
 
-QString Data::checkExtendedLimitsZ(QString str)
+QString Data::checkWeakBoundsZ(QString str)
 {
     //WEAK BOUNDS
     bool bl;
@@ -4948,6 +4967,145 @@ QString Data::checkExtendedLimitsZ(QString str)
 
     return str;
 
+}
+
+QString Data::checkLimitsX(QString str)
+{
+
+    //EXTENDED_LIMITS
+    EXTENDED_LIMITS *extL = (EXTENDED_LIMITS*)axisDescrX->getItem("EXTENDED_LIMITS");
+    QString strUpperExtLim, strLowerExtLim;
+    if (extL)
+    {
+        strUpperExtLim = ((QString)extL->getPar("UpperLimit"));
+        strLowerExtLim = ((QString)extL->getPar("LowerLimit"));
+        double dblUpperExtLim = strUpperExtLim.toDouble();
+        double dblLowerExtLim = strLowerExtLim.toDouble();
+
+        //CHECK LIMITS
+        double dbl = str.toDouble();
+        if (dbl > dblUpperExtLim)
+            str = strUpperExtLim;
+
+        if (dbl < dblLowerExtLim)
+            str = strLowerExtLim;
+    }
+    else //WEAK BOUNDS
+    {
+        QString strLowerWB = axisDescrX->getPar("LowerLimit");
+        double dblLowerWB = strLowerWB.toDouble();
+        QString strUpperWB = axisDescrX->getPar("UpperLimit");
+        double dblUpperWB = strUpperWB.toDouble();
+
+        //CHECK LIMITS (weak/extended)
+        double dbl = str.toDouble();
+        if (dbl > dblUpperWB)
+            str = dblUpperWB;
+
+        if (dbl < dblLowerWB)
+            str = dblLowerWB;
+
+    }
+
+    return str;
+}
+
+QString Data::checkLimitsY(QString str)
+{
+    //EXTENDED_LIMITS
+    EXTENDED_LIMITS *extL = (EXTENDED_LIMITS*)axisDescrY->getItem("EXTENDED_LIMITS");
+    QString strUpperExtLim, strLowerExtLim;
+    if (extL)
+    {
+        strUpperExtLim = ((QString)extL->getPar("UpperLimit"));
+        strLowerExtLim = ((QString)extL->getPar("LowerLimit"));
+        double dblUpperExtLim = strUpperExtLim.toDouble();
+        double dblLowerExtLim = strLowerExtLim.toDouble();
+
+        //CHECK LIMITS
+        double dbl = str.toDouble();
+        if (dbl > dblUpperExtLim)
+            str = strUpperExtLim;
+
+        if (dbl < dblLowerExtLim)
+            str = strLowerExtLim;
+    }
+    else //WEAK BOUNDS
+    {
+        QString strLowerWB = axisDescrY->getPar("LowerLimit");
+        double dblLowerWB = strLowerWB.toDouble();
+        QString strUpperWB = axisDescrY->getPar("UpperLimit");
+        double dblUpperWB = strUpperWB.toDouble();
+
+        //CHECK LIMITS (weak/extended)
+        double dbl = str.toDouble();
+        if (dbl > dblUpperWB)
+            str = dblUpperWB;
+
+        if (dbl < dblLowerWB)
+            str = dblLowerWB;
+
+    }
+
+    return str;
+
+}
+
+QString Data::checkLimitsZ(QString str)
+{
+    //WEAK BOUNDS
+    bool bl;
+    QString strLowerWB, strUpperWB;
+    if (type == "CHARACTERISTIC")
+    {
+        strLowerWB = ((CHARACTERISTIC*)label)->getPar("LowerLimit");
+        strUpperWB = ((CHARACTERISTIC*)label)->getPar("UpperLimit");
+    }
+    else
+    {
+        strLowerWB = ((AXIS_PTS*)label)->getPar("LowerLimit");
+        strUpperWB = ((AXIS_PTS*)label)->getPar("UpperLimit");
+    }
+
+    double dblLowerWB = strLowerWB.toDouble();
+    double dblUpperWB = strUpperWB.toDouble();
+
+    //EXTENDED_LIMITS
+    EXTENDED_LIMITS *extL = (EXTENDED_LIMITS*)label->getItem("EXTENDED_LIMITS");
+    QString strLowerExtLim, strUpperExtLim;
+    if (extL) //CHECK that str is inside EXTENDED LIMITS
+    {
+        strLowerExtLim = ((QString)extL->getPar("LowerLimit"));
+        strUpperExtLim = ((QString)extL->getPar("UpperLimit"));
+
+        double dblLowerExtLim = strLowerExtLim.toDouble();
+        double dblUpperExtLim = strUpperExtLim.toDouble();
+
+
+        double dbl = str.toDouble(&bl);
+
+        if (dbl > dblUpperExtLim)
+            str = strUpperExtLim;
+
+        if (dbl < dblLowerExtLim)
+            str = strLowerExtLim;
+
+    }
+    else //CHECK that str is inside WEAK LIMITS
+    {
+        double dbl = str.toDouble(&bl);
+        if (dbl > dblUpperWB)
+        {
+            str = strUpperWB;
+        }
+        else if (dbl < dblLowerWB)
+        {
+            str = strLowerWB;
+        }
+
+    }
+
+    return str;
 }
 
 // --- reset VALUES ---  //

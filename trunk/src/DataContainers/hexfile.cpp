@@ -538,7 +538,7 @@ bool HexFile::parseFile()
 
  }
 
-bool HexFile::parseFileFast()
+bool HexFile::parseFileFast() // to be done...
 {
     // open file in ascii format
     FILE *fid = fopen(fullHexName.toStdString().c_str(), "rb");
@@ -735,8 +735,6 @@ void HexFile::readAllData()
                                     if (bl)
                                     {
                                         Data *data = new Data(axis, a2lProject, this);
-                                        if (data)
-                                            data->hex2phys();
                                         listData1.append(data);
                                     }
                                     else
@@ -798,8 +796,6 @@ void HexFile::readAllData()
                                     if (bl)
                                     {
                                         Data *data = new Data(axis, a2lProject, this);
-                                        if (data)
-                                            data->hex2phys();
                                         listData2.append(data);
                                     }
                                     else
@@ -868,8 +864,6 @@ void HexFile::readAllData()
                         if (bl)
                         {
                             Data *data = new Data(axis, a2lProject, this);
-                            if (data)
-                                data->hex2phys();
                             listData.append(data);
                         }
                         else
