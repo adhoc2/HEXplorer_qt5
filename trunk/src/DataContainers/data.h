@@ -164,9 +164,7 @@ class Data : public QObject, public Node
         double hex2dec(QString hex, std::string type,  int base);
         QStringList dec2hex(QList<double> listdec, std::string type,  int base);
         QString dec2hex(double dec, std::string type,  int base);
-
         QStringList dec2Phys(QList<double> listdec, QString axis);
-
 
         bool modifiable;
         bool sizeChanged;
@@ -184,6 +182,7 @@ class Data : public QObject, public Node
         QMap<int, QStringList> yListVal;
         QMap<int, QStringList> zListVal;
         RECORD_LAYOUT *record_layout;
+        COMPU_METHOD *compu_methodZ;
         AXIS_DESCR *axisDescrX;
         AXIS_DESCR *axisDescrY;
         std::string datatypeX;

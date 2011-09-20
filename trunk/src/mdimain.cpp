@@ -2440,7 +2440,7 @@ void MDImain::compare_A2lFile()
 
         //new subsets
         text.append("\n");
-        text.append(QString::number(newSubsets.count()) + " missing subsets into " + str2 + " : \n");
+        text.append(QString::number(newSubsets.count()) + " new subsets into " + str2 + " : \n");
         foreach (QString str, newSubsets)
         {
             text.append("\t" + str + "\n");
