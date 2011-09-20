@@ -27,6 +27,7 @@
 #include "graphverify.h"
 #include "formcompare.h"
 #include "stdint.h"
+#include "stdio.h"
 
 #define CAST2(val, type) *(type*)&val
 
@@ -69,8 +70,6 @@ HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QString module,
             asciiToByte[ii*256 + jj] = j*16+i;
         }
     }
-
-    qDebug() << asciiToByte[17990];
 
     //get the byte_order   
     MOD_COMMON *modCommon = (MOD_COMMON*)a2lProject->getNode("MODULE/" + getModuleName() + "/MOD_COMMON");
@@ -160,429 +159,176 @@ bool HexFile::parseFile()
     QTime timer;
     timer.start();
 
-    // open file
-     QFile file(fullHexName);
-     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-         return false;
-
-     // stream,read the file and save the strings into a QStringList
-     QList<int> listStartMemBlock;
-     QTextStream in(&file);
-     QStringList lines;
-     int i = 0;
-     while (!in.atEnd())
-     {
-        QString str = in.readLine();
-        bool ok;
-        if (str.startsWith(":") || (str.startsWith(26)))
-        {
-            lines << str;
-            int type = str.mid(7,2).toInt(&ok, 16);
-            if (type == 4)
-            {
-                listStartMemBlock.append(i);
-            }
-        }
-        else
-        {
-            QMessageBox::critical(0, "HEXplorer :: HexFile", "wrong Hex file format.");
-            return false;
-        }
-
-        i++;
-     }
-     fileLinesNum = lines.count();
-
-     qDebug() << " ---- HEXfile ---- ";
-     qDebug() << "1- read file : " << timer.elapsed();
-     timer.restart();
-
-     //get the length for the progressBar
-     A2LFILE *a2l = (A2LFILE*)this->getParentNode();
-     MODULE *module = (MODULE*)a2l->getProject()->getNode("MODULE/" + getModuleName());
-     int length = module->listChar.count();
-     maxValueProgbar = fileLinesNum + length;
-
-     bool myDebug = 0;
-#ifdef MY_DEBUG
-     myDebug = 1;
-#endif
-     if (omp_get_num_procs() > 1 && !myDebug)
-     {
-         //divide file into 2 distinct parts for parallel sections
-         int _mid = listStartMemBlock.size() / 2;
-         int _midLine = listStartMemBlock.at(_mid);
-         QStringList lines1 = lines.mid(0, _midLine);
-         lines1.append(":00000001FF");
-         QStringList lines2 = lines.mid(_midLine, fileLinesNum - _midLine);
-
-         // parse the file into 2 threads
-         omp_set_num_threads(2);
-         QList<MemBlock*> blockList1;
-         QList<MemBlock*> blockList2;
-         #pragma omp parallel
-         {
-            #pragma omp sections
-             {
-                #pragma omp section
-                 {
-                     // parse the file
-                     int dataCnt = 0;
-                     int lineLength = 0;
-                     bool firstLineOfBlock = false;
-                     int type = 0;
-                     QString reclen = "";
-                     MemBlock *actBlock = 0;
-                     int cnt = 0;
-                     int previous = 0;
-                     while (cnt < lines1.count())
-                     {
-                         incrementValueProgBar(cnt - previous);
-                         previous = cnt;
-
-                         bool ok;
-                         type = lines1.at(cnt).mid(7,2).toInt(&ok, 16);
-                         reclen = lines1.at(cnt).mid(1,2);
-
-                         switch (type)
-                         {
-                            case 0: //Data Record
-                                {
-                                    //create a new memory block
-                                    if (firstLineOfBlock)
-                                    {
-                                        actBlock = new MemBlock();
-                                        actBlock->offset = lines1.at(cnt - 1).mid(9, 4);
-                                        actBlock->start = (actBlock->offset + lines1.at(cnt).mid(3, 4)).toUInt(&ok, 16);
-                                        int end = (actBlock->offset + "FFFF").toUInt(&ok, 16);
-                                        actBlock->lineLength = reclen.toInt(&ok, 16);
-
-                                        actBlock->data = new unsigned char [(end - actBlock->start + 1)];
-                                        firstLineOfBlock = false;
-                                    }
-
-                                    //read all the lines1 of the memory block
-                                    //unsigned int addr = (actBlock->offset + lines1.at(cnt).mid(3, 4)).toUInt(&ok, 16);
-                                    while (type == 0)
-                                    {
-                                        lineLength = lines1.at(cnt).mid(1,2).toInt(&ok, 16);
-                                        dataCnt = (actBlock->offset + lines1.at(cnt).mid(3, 4)).toUInt(&ok, 16) - actBlock->start;
-
-                                        for (int i = 0; i < lineLength; i++)
-                                        {
-                                            QString str = lines1.at(cnt).mid(9 + 2 * i, 2);
-                                            bool bl;
-                                            actBlock->data[dataCnt] = str.toUShort(&bl, 16);
-
-                                            //actBlock->addrList.append(addr);
-                                            //actBlock->hexList.append(str);
-
-                                            dataCnt++;
-                                        }
-
-                                        cnt++;
-                                        type = lines1.at(cnt).mid(7, 2).toInt(&ok, 16);
-                                        reclen = lines1.at(cnt).mid(1, 2);
-                                    }
-
-                                    //set blockend
-                                    actBlock->end = actBlock->start + dataCnt - 1;
-                                    actBlock->length = actBlock->end - actBlock->start + 1;
-
-                                    //add block to the list of block
-                                    blockList1.append(actBlock);
-                                }
-
-                                break;
-
-                            case 1: //End of File
-                                cnt = lines1.count();
-                                break;
-
-                            case 2: //Extended segment address record
-                                cnt++;
-                                break;
-
-                            case 3: //Start Segment address record
-                                cnt++;
-                                break;
-
-                            case 4: // Extended Linear Address Record
-                                firstLineOfBlock = true;
-                                cnt++;
-                                break;
-
-                            case 5: // Start Linear Address record
-                                cnt++;
-                                break;
-
-                            default:
-                                break;
-                         }
-                     }
-                     incrementValueProgBar(cnt - previous);
-                 }
-
-                #pragma omp section
-                 {
-                     // parse the file
-                     int dataCnt = 0;
-                     int lineLength = 0;
-                     bool firstLineOfBlock = false;
-                     int type = 0;
-                     QString reclen = "";
-                     MemBlock *actBlock = 0;
-                     int cnt = 0;
-                     int previous = 0;
-                     while (cnt < lines2.count())
-                     {
-                         incrementValueProgBar(cnt - previous);
-                         previous = cnt;
-
-                         bool ok;
-                         type = lines2.at(cnt).mid(7,2).toInt(&ok, 16);
-                         reclen = lines2.at(cnt).mid(1,2);
-
-                         switch (type)
-                         {
-                            case 0: //Data Record
-                                {
-                                    //create a new memory block
-                                    if (firstLineOfBlock)
-                                    {
-                                        actBlock = new MemBlock();
-                                        actBlock->offset = lines2.at(cnt - 1).mid(9, 4);
-                                        actBlock->start = (actBlock->offset + lines2.at(cnt).mid(3, 4)).toUInt(&ok, 16);
-                                        int end = (actBlock->offset + "FFFF").toUInt(&ok, 16);
-                                        actBlock->lineLength = reclen.toInt(&ok, 16);
-
-                                        actBlock->data = new unsigned char [(end - actBlock->start + 1)];
-                                        firstLineOfBlock = false;
-                                    }
-
-                                    //read all the lines2 of the memory block
-                                    //unsigned int addr = (actBlock->offset + lines2.at(cnt).mid(3, 4)).toUInt(&ok, 16);
-                                    while (type == 0)
-                                    {
-                                        lineLength = lines2.at(cnt).mid(1,2).toInt(&ok, 16);
-                                        dataCnt = (actBlock->offset + lines2.at(cnt).mid(3, 4)).toUInt(&ok, 16) - actBlock->start;
-
-                                        for (int i = 0; i < lineLength; i++)
-                                        {
-                                            QString str = lines2.at(cnt).mid(9 + 2 * i, 2);
-                                            bool bl;
-                                            actBlock->data[dataCnt] = str.toUShort(&bl, 16);
-
-                                            //actBlock->addrList.append(addr);
-                                            //actBlock->hexList.append(str);
-
-                                            dataCnt++;
-                                        }
-
-                                        cnt++;
-                                        type = lines2.at(cnt).mid(7, 2).toInt(&ok, 16);
-                                        reclen = lines2.at(cnt).mid(1, 2);
-                                    }
-
-                                    //set blockend
-                                    actBlock->end = actBlock->start + dataCnt - 1;
-                                    actBlock->length = actBlock->end - actBlock->start + 1;
-
-                                    //add block to the list of block
-                                    blockList2.append(actBlock);
-                                }
-
-                                break;
-
-                            case 1: //End of File
-                                cnt = lines2.count();
-                                break;
-
-                            case 2: //Extended segment address record
-                                cnt++;
-                                break;
-
-                            case 3: //Start Segment address record
-                                cnt++;
-                                break;
-
-                            case 4: // Extended Linear Address Record
-                                firstLineOfBlock = true;
-                                cnt++;
-                                break;
-
-                            case 5: // Start Linear Address record
-                                cnt++;
-                                break;
-
-                            default:
-                                break;
-                         }
-                     }
-                     incrementValueProgBar(cnt - previous);
-                 }
-            }
-        }
-
-         // merge the blockList
-         blockList.append(blockList1);
-         blockList.append(blockList2);
-     }
-     else
-     {
-         // initialize variables
-         int dataCnt = 0;
-         int lineLength = 0;
-         bool firstLineOfBlock = false;
-         int type = 0;
-         QString reclen = "";
-         MemBlock *actBlock = 0;
-         int cnt = 0;
-         int previous = 0;
-
-         // parse the file
-         // for every line of the file :
-         while (cnt < lines.count())
-         {
-             // get the type and the length of the record
-             bool ok;
-             type = lines.at(cnt).mid(7,2).toInt(&ok, 16);
-             reclen = lines.at(cnt).mid(1,2);
-
-             // according to the type of the record, do :
-             switch (type)
-             {
-                case 0: //Data Record
-                    {
-                        //create a new memory block
-                        if (firstLineOfBlock)
-                        {
-                            // create a new memory block
-                            actBlock = new MemBlock();
-
-                            // get the length, start, offset of the block
-                            actBlock->offset = lines.at(cnt - 1).mid(9, 4);
-                            actBlock->start = (actBlock->offset + lines.at(cnt).mid(3, 4)).toUInt(&ok, 16);
-                            int end = (actBlock->offset + "FFFF").toUInt(&ok, 16);
-                            actBlock->lineLength = reclen.toInt(&ok, 16);                            
-                            actBlock->data = new unsigned char [(end - actBlock->start + 1)];
-
-                            firstLineOfBlock = false;
-                        }
-
-                        //read all the lines of the memory block                      
-                        while (type == 0)
-                        {
-                            lineLength = lines.at(cnt).mid(1,2).toInt(&ok, 16);
-                            dataCnt = (actBlock->offset + lines.at(cnt).mid(3, 4)).toUInt(&ok, 16) - actBlock->start;
-
-                            for (int i = 0; i < lineLength; i++)
-                            {
-                                QString str = lines.at(cnt).mid(9 + 2 * i, 2);
-                                bool bl;
-                                actBlock->data[dataCnt] = str.toUShort(&bl, 16);
-                                dataCnt++;
-                            }
-
-                            cnt++;
-                            type = lines.at(cnt).mid(7, 2).toInt(&ok, 16);
-                            reclen = lines.at(cnt).mid(1, 2);
-                        }
-
-                        //set blockend
-                        actBlock->end = actBlock->start + dataCnt - 1;
-                        actBlock->length = actBlock->end - actBlock->start + 1;
-
-                        //add block to the list of block
-                        blockList.append(actBlock);
-                    }
-
-                    break;
-
-                case 1: //End of File
-                    cnt = lines.count();
-                    break;
-
-                case 2: //Extended segment address record
-                    cnt++;
-                    break;
-
-                case 3: //Start Segment address record
-                    cnt++;
-                    break;
-
-                case 4: // Extended Linear Address Record
-                    firstLineOfBlock = true;
-                    cnt++;
-                    break;
-
-                case 5: // Start Linear Address record
-                    cnt++;
-                    break;
-
-                default:
-                    break;
-             }
-
-             // increment progressbar
-             incrementValueProgBar(cnt - previous);
-             previous = cnt;
-         }
-
-         incrementValueProgBar(cnt - previous);
-     }
-
-     qDebug() << "2- parse file : " << timer.elapsed();
-
-    return true;
-
- }
-
-bool HexFile::parseFileFast() // to be done...
-{
-    // open file in ascii format
+    // open file in binary format
     FILE *fid = fopen(fullHexName.toStdString().c_str(), "rb");
     if (fid == NULL)
     {
         return false;
     }
 
-    // get the length of the file
+    // save the file into a buffer
     fseek(fid, 0, SEEK_END);
-    int file_length = ftell(fid);
+    int size = ftell(fid);
     rewind(fid);
-    char *buffer = new char[file_length * sizeof(char)];
-    fread(buffer, sizeof(char), file_length, fid);
+    char *buffer = new char[size * sizeof(char)];
+    fread(buffer, sizeof(char), size, fid);
     fclose(fid);
 
-    int i = 0;
-    while (i < file_length)
+    qDebug() << " ---- HEXfile ---- ";
+    qDebug() << "1- read file : " << timer.elapsed();
+    timer.restart();
+
+    //save the buffer into a QStringList
+    QString strBuffer = QString::fromAscii(buffer, size);
+    QTextStream in;
+    in.setString(&strBuffer);
+    QStringList lines;
+    while (!in.atEnd())
     {
-        if (buffer[i] == 58)
+        QString str = in.readLine();
+
+        if (str.startsWith(":"))
         {
-            i += 9;
-            int recType = asciiToByte[*(uint16_t*)buffer[i]];
-
-            if (recType == 4)
-            {
-                i += 2;
-                QString ulba;
-            }
-            else if (recType == 1)
-            {
-
-            }
-            else
-                return false;
-
+            lines << str;
+        }
+        else if (str.startsWith(26))
+        {
+            // ignore line
+            // some A2L files end with "SUB"...
         }
         else
+        {
+            QMessageBox::critical(0, "HEXplorer :: HexFile", "wrong Hex file format.");
             return false;
-
+        }
     }
+    fileLinesNum = lines.count();
+
+    //get the length for the progressBar
+    A2LFILE *a2l = (A2LFILE*)this->getParentNode();
+    MODULE *module = (MODULE*)a2l->getProject()->getNode("MODULE/" + getModuleName());
+    int length = module->listChar.count();
+    maxValueProgbar = fileLinesNum + length;
+
+    // initialize variables
+    int dataCnt = 0;
+    int lineLength = 0;
+    bool firstLineOfBlock = false;
+    int type = 0;
+    MemBlock *actBlock = 0;
+    int cnt = 0;
+    int previous = 0;
+
+    // parse each line
+    while (cnt < lines.count())
+    {
+        // get the first line to be processed
+        QByteArray barray = lines.at(cnt).toLocal8Bit();
+        char* _line = barray.data();
+
+        // get the type and the length of the record
+        bool ok;
+        type = asciiToByte[*(ushort*)(_line + 7)];
+
+        // according to the type of the record, do :
+        switch (type)
+        {
+        case 0: //Data Record
+        {
+            //finish MemBlock definition
+            if (firstLineOfBlock)
+            {
+                // get the length, start, offset of the block
+                actBlock->start = (actBlock->offset + QByteArray(_line + 3, 4)).toUInt(&ok, 16);
+                int end = (actBlock->offset + "FFFF").toUInt(&ok, 16);
+                actBlock->lineLength = asciiToByte[*(ushort*)(_line + 1)];
+                actBlock->data = new unsigned char [(end - actBlock->start + 1)];
+
+                firstLineOfBlock = false;
+            }
+
+            //read all the lines of the memory block
+            while (type == 0)
+            {
+                lineLength = asciiToByte[*(ushort*)(_line + 1)];
+                dataCnt = (actBlock->offset + QByteArray(_line + 3, 4)).toUInt(&ok, 16) - actBlock->start;
+
+                // save the ascii characters into a byte array
+                for (int i = 0; i < lineLength; i++)
+                {
+                    actBlock->data[dataCnt] = asciiToByte[*(ushort*)(_line + 9 + 2*i)];
+                    dataCnt++;
+                }
+
+                // get the type and length of next line
+                cnt++;
+                barray = lines.at(cnt).toLocal8Bit();
+                _line = barray.data();
+                type = asciiToByte[*(ushort*)(_line + 7)];
+
+            }
+
+            //set blockend
+            actBlock->end = actBlock->start + dataCnt - 1;
+            actBlock->length = actBlock->end - actBlock->start + 1;
+
+            //add block to the list of block
+            blockList.append(actBlock);
+        }
+
+            break;
+
+        case 1: //End of File
+            //cnt++;
+            cnt = lines.count();
+            break;
+
+        case 2: //Extended segment address record
+            cnt++;
+            break;
+
+        case 3: //Start Segment address record
+            cnt++;
+            break;
+
+        case 4: // Extended Linear Address Record
+        {
+            // create a new memory block
+            actBlock = new MemBlock();
+
+            // get the length, start, offset of the block
+            actBlock->offset = QByteArray(_line + 9, 4);
+
+            // set the flag to firstLineOfBlock to finish MemBlock definition
+            firstLineOfBlock = true;
+
+            cnt++;
+        }
+
+            break;
+
+        case 5: // Start Linear Address record
+            cnt++;
+            break;
+
+        default:
+            break;
+        }
+
+        // increment progressbar
+        incrementValueProgBar(cnt - previous);
+        previous = cnt;
+    }
+    incrementValueProgBar(cnt - previous);
+
+    qDebug() << "2- parse file : " << timer.elapsed();
+
+    // free memory from buffer
+    delete buffer;
 
     return true;
-}
+
+ }
 
 bool HexFile::isA2lCombined()
 {
@@ -1049,7 +795,6 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
         block++;
     }
     int line = IAddr - blockList[block]->start;
-
 
     QList<double> decList;
     if (byteOrder.toLower() == "msb_last")
