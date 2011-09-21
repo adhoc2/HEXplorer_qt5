@@ -1,5 +1,5 @@
 //      -*- C++ -*-
-//     cd D:\C++\Projects\HEXplorer_repo\LIBS\Quex
+//     cd D:\C++\Projects\HEXplorer_repo\src\Quex
 //     quex -i a2l_quex_lexer.qx -o a2l_quex_lexer > toto.txt
 
 header
@@ -16,7 +16,7 @@ define
    D_FLOAT 			[\+\-]?{D_UINTEGER}\.{D_UINTEGER}?
    D_BLOCK_BEGIN 		\/begin
    D_BLOCK_END 			\/end
-   D_STRING			"\""(\\"\""|[^"]|"\"""\"")*"\""
+   D_STRING			\"(\\\"|\"\"|\\'|\\[^"'\\]|[^\\"])*\"
    D_COMMENT			(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)
 
 }
