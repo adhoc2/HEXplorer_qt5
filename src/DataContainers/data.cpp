@@ -437,7 +437,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             int nbyte = hexParent->getNumByte(datatype);
             QString val = hexParent->getHexValue(node->getPar("Adress"), offset, nbyte);
             bool bl;
-            nPtsX = val.toInt(&bl,16);            
+            nPtsX = val.toInt(&bl,16);
             offset += nbyte;
 
             //check if nPts < nPtsmax
@@ -466,7 +466,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             yOrgSize = nPtsY;
         }
         else if (type.compare("AXIS_PTS_X") == 0)
-        {            
+        {
             //read the necessary parameters before reading values into HexFile
             datatypeX = ((AXIS_PTS_X*)item)->getPar("Datatype");
             int Xnbyte = hexParent->getNumByte(datatypeX);
@@ -482,7 +482,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             offset +=  nPtsX * Xnbyte;
         }
         else if (type.compare("AXIS_PTS_Y") == 0)
-        {            
+        {
             //read the necessary parameters before reading values into HexFile
             datatypeY = ((AXIS_PTS_Y*)item)->getPar("Datatype");
             int Ynbyte = hexParent->getNumByte(datatypeY);
@@ -978,7 +978,7 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, HexFile *hexFile, bool modif) : Node(no
     QString compu_method = ((AXIS_PTS*)label)->getPar("Conversion");
     compu_methodZ = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu_method);
 
-    //read each element of X_RECORD_LAYOUT
+    //read each element of Z_RECORD_LAYOUT
     bool bl;
     int offset = 0;
     int nPts = 1;
@@ -2192,7 +2192,8 @@ QStringList Data::dec2Phys(QList<double> decValues, QString axis)
             double e = ((QString)item->getPar("float5")).toDouble();
             double f = ((QString)item->getPar("float6")).toDouble();
 
-            for (int i = 0; i < decValues.count(); i++)
+            int cnt = decValues.count();
+            for (int i = 0; i < cnt; i++)
             {
                 double dbl = 0;
                 double dec = decValues.at(i);
@@ -2201,19 +2202,23 @@ QStringList Data::dec2Phys(QList<double> decValues, QString axis)
                     dbl = (c - dec * f) / (dec * e - b);
                 }
                 else
-                {                   
+                {
                     dbl = ((b - dec * e) + sqrt(pow((dec * e - b), 2) - 4 * (dec * d - a) * (dec * f - c))) / (2 * (dec * d - a));
                 }
 
                 if (dbl == 0)
                 {
                     list.append(QString::number(0,'f', precisionZ));
+//                    char dest[30];
+//                    snprintf_s( dest, _countof(dest), 10, "%f", dbl);
+//                    list.append(dest);
                 }
                 else
                 {
                     list.append(QString::number(dbl,'f', precisionZ));
                 }
             }
+
         }
         else if (convType.toLower() == "tab_verb")
         {

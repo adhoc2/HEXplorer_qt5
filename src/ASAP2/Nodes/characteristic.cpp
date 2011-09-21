@@ -77,6 +77,8 @@ void CHARACTERISTIC::parseFixPar(QList<TokenTyp> *typePar)
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
+        int line = lex->getLine();
+
         token = this->nextToken();
         if (token == typePar->at(i))
         {
