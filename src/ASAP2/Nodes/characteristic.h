@@ -25,6 +25,7 @@ class CHARACTERISTIC : public Node
         static Factory<Node,CHARACTERISTIC> nodeFactory;
         std::string pixmap();
         char* getPar(std::string str);
+        char* getPar(int i);
         QString getSubsetName();
         void setSubset(FUNCTION *fun);
 

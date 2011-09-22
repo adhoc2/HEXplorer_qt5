@@ -237,6 +237,11 @@ char* CHARACTERISTIC::getPar(std::string str)
     return parameters.at(i);
 }
 
+char* CHARACTERISTIC::getPar(int i)
+{
+    return parameters.at(i);
+}
+
 std::string CHARACTERISTIC::pixmap()
 {
     return ":/icones/CHAR.bmp";

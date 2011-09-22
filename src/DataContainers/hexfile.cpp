@@ -128,6 +128,10 @@ HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QString module,
             nByte.insert("FLOAT32_IEEE", 4);
         }
     }
+
+    compu_method = a2lProject->getNode("MODULE/" + module + "/COMPU_METHOD");
+    record_layout = a2lProject->getNode("MODULE/" + module + "/RECORD_LAYOUT");
+    compu_vatb = a2lProject->getNode("MODULE/" + module + "/COMPU_VTAB");
 }
 
 HexFile::~HexFile()
@@ -1288,7 +1292,7 @@ bool HexFile::isValidAddress(QString address)
 
 int HexFile::getNumByte(std::string str)
 {
-    return nByte.value(str);
+    return nByte.value(str.c_str());
 }
 
 // _______________ save Hex values __________________ //
