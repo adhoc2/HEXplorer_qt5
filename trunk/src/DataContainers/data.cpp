@@ -180,7 +180,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
 
             //axisPts RECORD_LAYOUT
             QString deposit = axisPtsX->getPar("Deposit");
-            RECORD_LAYOUT *record_layout = (RECORD_LAYOUT*)project->getNode("MODULE/" + moduleName + "/RECORD_LAYOUT/" + deposit);
+            RECORD_LAYOUT *record_layout = (RECORD_LAYOUT*)hexFile->record_layout->getNode(deposit);
 
             //read each element of X_RECORD_LAYOUT
             bool bl;
@@ -299,7 +299,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
 
             //axisPts RECORD_LAYOUT
             QString deposit = axisPtsY->getPar("Deposit");
-            RECORD_LAYOUT *record_layout = (RECORD_LAYOUT*)project->getNode("MODULE/" + moduleName + "/RECORD_LAYOUT/" + deposit);
+            RECORD_LAYOUT *record_layout = (RECORD_LAYOUT*)hexFile->record_layout->getNode(deposit);
 
             //read each element of X_RECORD_LAYOUT
             bool bl;
@@ -382,37 +382,41 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
 
     //RECORD_LAYOUT
     QString deposit = node->getPar("Deposit");
-    record_layout = (RECORD_LAYOUT*)project->getNode("MODULE/" + moduleName + "/RECORD_LAYOUT/" + deposit);
+    record_layout = (RECORD_LAYOUT*)hexFile->record_layout->getNode(deposit);
 
     //Zaxis PRECISION
     FORMAT *format = (FORMAT*)node->getItem("FORMAT");
     if (format)
     {
         QString f = format->getPar("FormatString");
-        QStringList list = f.split(QRegExp("\\D+"));
-        if (list.count() < 3)
-            precisionZ = 0;
-        else
-            precisionZ = list.at(2).toInt();
+        QRegExp rx("%\\d*.(\\d*)");
+        rx.indexIn(f);
+        QStringList list = rx.capturedTexts();
+        if (!list.at(1).isEmpty())
+        {
+            precisionZ = list.at(1).toInt();
+        }
     }
     else
     {
         QString compu = node->getPar("Conversion");
-        COMPU_METHOD *cmp = (COMPU_METHOD*)pro->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu);
+        COMPU_METHOD *cmp = (COMPU_METHOD*)hexFile->compu_method->getNode(compu);
         if (cmp)
         {
             QString f = cmp->getPar("Format");
-            QStringList list = f.split(QRegExp("\\D+"));
-            if (list.count() < 3)
-                precisionZ = 0;
-            else
-                precisionZ = list.at(2).toInt();
+            QRegExp rx("%\\d*.(\\d*)");
+            rx.indexIn(f);
+            QStringList list = rx.capturedTexts();
+            if (!list.at(1).isEmpty())
+            {
+                precisionZ = list.at(1).toInt();
+            }
         }
     }
 
     //compu_methodZ
     QString compu_method = ((CHARACTERISTIC*)label)->getPar("Conversion");
-    compu_methodZ = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu_method);
+    compu_methodZ = (COMPU_METHOD*)hexFile->compu_method->getNode(compu_method);
 
     //read each element of Z_RECORD_LAYOUT
     bool bl;
@@ -421,7 +425,32 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
     {
         QString type = item->name;
 
-        if (type.compare("SRC_ADDR_X") == 0)
+        if (type.compare("FNC_VALUES") == 0)
+        {
+            //dataType
+            datatypeZ = ((FNC_VALUES*)item)->getPar("Datatype");
+
+            //column or row Dir
+            QString zDir = ((FNC_VALUES*)item)->getPar("IndexMode");
+            if (zDir.compare("COLUMN_DIR") == 0)
+            {
+                isSortedByRow = 0;
+            }
+            else
+            {
+                    isSortedByRow = 1;
+            }
+
+            //get the hex data from hexFile
+            int Znbyte = hexParent->getNumByte(datatypeZ);
+            bool bl;
+            addressZ = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
+            QList<double> decZ = hexParent->getDecValues(addressZ, Znbyte, nPtsX * nPtsY, datatypeZ);
+
+            //dec2phys
+            listZ = dec2Phys(decZ, "z");
+        }
+        else if (type.compare("SRC_ADDR_X") == 0)
         {
             std::string datatype = ((SRC_ADDR_X*)item)->getPar("Datatype");
             offset += hexParent->getNumByte(datatype);
@@ -435,9 +464,11 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
         {
             std::string datatype = ((NO_AXIS_PTS_X*)item)->getPar("Datatype");
             int nbyte = hexParent->getNumByte(datatype);
-            QString val = hexParent->getHexValue(node->getPar("Adress"), offset, nbyte);
-            bool bl;
-            nPtsX = val.toInt(&bl,16);
+//            QString val = hexParent->getHexValue(node->getPar("Adress"), offset, nbyte);
+//            bool bl;
+//            nPtsX = val.toInt(&bl,16);
+            double address = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
+            nPtsX = hexParent->getDecValues(address, nbyte, 1, datatype).at(0);
             offset += nbyte;
 
             //check if nPts < nPtsmax
@@ -452,9 +483,12 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
         {
             std::string datatype = ((NO_AXIS_PTS_Y*)item)->getPar("Datatype");
             int nbyte = hexParent->getNumByte(datatype);
-            QString val = hexParent->getHexValue(node->getPar("Adress"), offset, nbyte);
-            bool bl;
-            nPtsY = val.toInt(&bl,16);
+//            QString val = hexParent->getHexValue(node->getPar("Adress"), offset, nbyte);
+//            bool bl;
+//            nPtsY = val.toInt(&bl,16);
+
+            double address = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
+            nPtsY = hexParent->getDecValues(address, nbyte, 1, datatype).at(0);
             offset += nbyte;
 
             //check if nPts < nPtsmax
@@ -497,32 +531,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             //increment offset of the axisX length
             offset +=  nPtsY * Ynbyte;
         }
-        else if (type.compare("FNC_VALUES") == 0)
-        {
-            //dataType
-            datatypeZ = ((FNC_VALUES*)item)->getPar("Datatype");
 
-            //column or row Dir
-            QString zDir = ((FNC_VALUES*)item)->getPar("IndexMode");
-            if (zDir.compare("COLUMN_DIR") == 0)
-            {
-                isSortedByRow = 0;
-            }
-            else
-            {
-                    isSortedByRow = 1;
-            }
-
-            //get the hex data from hexFile
-            int Znbyte = hexParent->getNumByte(datatypeZ);
-            bool bl;
-            addressZ = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
-            QList<double> decZ = hexParent->getDecValues(addressZ, Znbyte, nPtsX * nPtsY, datatypeZ);
-
-            //dec2phys
-            listZ = dec2Phys(decZ, "z");
-
-        }
     }
 
     //define number of rows of data to display
@@ -959,14 +968,16 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, HexFile *hexFile, bool modif) : Node(no
 
     // RECORD_LAYOUT
     QString deposit = node->getPar("Deposit");
-    record_layout = (RECORD_LAYOUT*)project->getNode("MODULE/" + moduleName + "/RECORD_LAYOUT/" + deposit);
+    RECORD_LAYOUT *record_layout = (RECORD_LAYOUT*)hexFile->record_layout->getNode(deposit);
+
+    //compu_methodZ
+    QString compu = ((AXIS_PTS*)label)->getPar("Conversion");
+    compu_methodZ = (COMPU_METHOD*)hexFile->compu_method->getNode(compu);
 
     //Zaxis PRECISION
-    QString compu = node->getPar("Conversion");
-    COMPU_METHOD *cmp = (COMPU_METHOD*)pro->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu);
-    if (cmp)
+    if (compu_methodZ)
     {
-        QString f = cmp->getPar("Format");
+        QString f = compu_methodZ->getPar("Format");
         QStringList list = f.split(QRegExp("\\D+"));
         if (list.count() < 3)
             precisionZ = 0;
@@ -974,9 +985,6 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, HexFile *hexFile, bool modif) : Node(no
             precisionZ = list.at(2).toInt();
     }
 
-    //compu_methodZ
-    QString compu_method = ((AXIS_PTS*)label)->getPar("Conversion");
-    compu_methodZ = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu_method);
 
     //read each element of Z_RECORD_LAYOUT
     bool bl;
@@ -2209,22 +2217,18 @@ QStringList Data::dec2Phys(QList<double> decValues, QString axis)
                 if (dbl == 0)
                 {
                     list.append(QString::number(0,'f', precisionZ));
-//                    char dest[30];
-//                    snprintf_s( dest, _countof(dest), 10, "%f", dbl);
-//                    list.append(dest);
                 }
                 else
                 {
                     list.append(QString::number(dbl,'f', precisionZ));
                 }
             }
-
         }
         else if (convType.toLower() == "tab_verb")
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)compu_methodZ->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisZ = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+            compuTabAxisZ = (COMPU_VTAB*)hexParent->compu_vatb->getNode(compuTabRef);
 
             for (int i = 0; i < decValues.count(); i++)
             {

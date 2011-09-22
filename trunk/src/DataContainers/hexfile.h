@@ -35,9 +35,13 @@ class HexFile : public QObject, public DataContainer
         HexFile(QString fullHexFileName, WorkProject *parentWP, QString module, QObject *parent = 0);
         ~HexFile();
 
+        Node* record_layout;
+        Node* compu_method;
+        Node* compu_vatb;
+
         // methods
         void attach(QObject*o);
-        int getNumByte(std::string str);        
+        int getNumByte(std::string str);
         void exportSubsetList2Csv(QStringList subsetList);        
         void exportSubsetList2Cdf(QStringList subsetList);        
         bool isValidAddress(QString address);
@@ -75,7 +79,8 @@ class HexFile : public QObject, public DataContainer
         QList<QObject*> owners;
         QString fullHexName;
         QString byteOrder;
-        QMap<std::string,int> nByte;
+        QHash<QString,int> nByte;
+
 
         static int asciiToByte[256*256];
 
