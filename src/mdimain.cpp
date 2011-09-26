@@ -1099,7 +1099,7 @@ void MDImain::addHexFile2Project()
                 //create a pointer on the WorkProject
                 WorkProject *wp = projectList->value(fullA2lName);
 
-                if (wp)  //to prevent any chrash of the aplication
+                if (wp)  //to prevent any crash of the aplication
                 {
                     // if no MOD_COMMON in ASAP file
                     if (wp->a2lFile->getProject()->getNode("MODULE") == NULL)

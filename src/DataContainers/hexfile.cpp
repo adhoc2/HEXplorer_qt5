@@ -129,9 +129,30 @@ HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QString module,
         }
     }
 
+    //save the node to fasten HexFile import (see Data class constructor)
     compu_method = a2lProject->getNode("MODULE/" + module + "/COMPU_METHOD");
     record_layout = a2lProject->getNode("MODULE/" + module + "/RECORD_LAYOUT");
     compu_vatb = a2lProject->getNode("MODULE/" + module + "/COMPU_VTAB");
+
+    //get the memory_block used to store datas
+    MOD_PAR *modePar = (MOD_PAR*)a2lProject->getNode("MODULE/" + getModuleName() + "/MOD_PAR");
+    foreach (Node* node, modePar->childNodes)
+    {
+        QString type = typeid(*node).name();
+        if (type.endsWith("MEMORY_SEGMENT"))
+        {
+            MEMORY_SEGMENT* mem_seg = (MEMORY_SEGMENT*)node;
+            QString _prgType = mem_seg->getPar("PrgType");
+            if (_prgType == "DATA")
+            {
+                bool bl;
+                listMemSegData.append(QString(mem_seg->getPar("Address")).toUInt(&bl, 16));
+                listMemSegData.append(QString(mem_seg->getPar("Address")).toUInt(&bl, 16) +
+                                      (QString(mem_seg->getPar("Size")).toUInt(&bl, 16)));
+            }
+        }
+    }
+
 }
 
 HexFile::~HexFile()
@@ -338,57 +359,54 @@ bool HexFile::isA2lCombined()
 {
     //get the address of Bosch number in A2l
     MOD_PAR *modePar = (MOD_PAR*)a2lProject->getNode("MODULE/" + getModuleName() + "/MOD_PAR");
-
     if (modePar)
     {
         ADDR_EPK *addr_epk = (ADDR_EPK*)modePar->getItem("addr_epk");
         if (addr_epk)
         {
+            //get EPK address
             QString address = addr_epk->getPar("Address");
-            if (isValidAddress(address))
+            QStringList hexVal = getHexValues(address, 0, 1, 90);
+
+            //get EPK value into HexFile
+            QString str = "";
+            double c;
+            for (int i = 0; i < hexVal.count(); i++)
             {
-                QStringList hexVal = getHexValues(address, 0, 1, 90);
+                QString val = hexVal.at(i);
+                bool bl;
+                c = val.toUInt(&bl,16);
+                if (32 <= c && c < 127)
+                    str.append((unsigned char)c);
+            }
 
-                QString str = "";
-                double c;
-                for (int i = 0; i < hexVal.count(); i++)
+            //compare EPK from A2L with EPK from HexFile
+            EPK *epk = (EPK*)modePar->getItem("epk");
+            if (epk)
+            {
+                QString str1 = epk->getPar("Identifier");
+                str1.remove('\"');
+                if (str == str1)
+                    return true;
+                else
                 {
-                    QString val = hexVal.at(i);
-                    bool bl;
-                    c = val.toUInt(&bl,16);
-                    if (32 <= c && c < 127)
-                        str.append((unsigned char)c);
-                }
-
-                EPK *epk = (EPK*)modePar->getItem("epk");
-                if (epk)
-                {
-                    QString str1 = epk->getPar("Identifier");
-                    str1.remove('\"');
-                    if (str == str1)
+                    int r = QMessageBox::question(0,
+                                                  "HEXplorer::question",
+                                                  "The a2l and hex version does not seem to be compatible.\n"
+                                                  "A2l EEPROM Identifier : " + str1 + "\n"
+                                                  "Hex EEPROM Identifier : " + str + "\n\n"
+                                                  "Are you sure you want to proceed ?",
+                                                  QMessageBox::Yes, QMessageBox::No);
+                    if (r == QMessageBox::Yes)
                         return true;
                     else
-                    {
-                        int r = QMessageBox::question(0,
-                                                      "HEXplorer::question",
-                                                      "The a2l and hex version does not seem to be compatible.\n"
-                                                      "A2l EEPROM Identifier : " + str1 + "\n"
-                                                      "Hex EEPROM Identifier : " + str + "\n\n"
-                                                      "Are you sure you want to proceed ?",
-                                                       QMessageBox::Yes, QMessageBox::No);
-                        if (r == QMessageBox::Yes)
-                            return true;
-                        else
-                            return false;
-                    }
+                        return false;
                 }
-                else
-                    return true;
             }
             else
                 return true;
         }
-        else
+        else //EDC7: no addr_epk available into HexFile
             return true;
     }
     else
@@ -436,6 +454,10 @@ void HexFile::readAllData()
             QList<Data*> listData1;
             QList<Data*> listData2;
 
+            // not valid address Data
+            QStringList listNotValid1;
+            QStringList listNotValid2;
+
             omp_set_num_threads(2);
             #pragma omp parallel
             {
@@ -456,18 +478,18 @@ void HexFile::readAllData()
                                 {
                                     found = true;
                                     CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
-                                    QString add = charac->getPar("Adress");
-                                    bool bl = isValidAddress(add);
+//                                    QString add = charac->getPar("Adress");
+//                                    bool bl = isValidAddress(add);
 
-                                    if(bl)
-                                    {
+//                                    if(bl)
+//                                    {
                                         Data *data = new Data(charac, a2lProject, this);
                                         listData1.append(data);
-                                    }
-                                    else
-                                    {
-
-                                    }
+//                                    }
+//                                    else
+//                                    {
+//                                        listNotValid1.append(str + " : " + add);
+//                                    }
                                 }
                             }
 
@@ -479,18 +501,18 @@ void HexFile::readAllData()
                                 {
                                     found = true;
                                     AXIS_PTS *axis = (AXIS_PTS*)label2;
-                                    QString add = axis->getPar("Adress");
-                                    bool bl = isValidAddress(add);
+//                                    QString add = axis->getPar("Adress");
+//                                    bool bl = isValidAddress(add);
 
-                                    if (bl)
-                                    {
+//                                    if (bl)
+//                                    {
                                         Data *data = new Data(axis, a2lProject, this);
                                         listData1.append(data);
-                                    }
-                                    else
-                                    {
-
-                                    }
+//                                    }
+//                                    else
+//                                    {
+//                                        listNotValid1.append(str + " : " + add);
+//                                    }
                                 }
                             }
 
@@ -517,18 +539,18 @@ void HexFile::readAllData()
                                 {
                                     found = true;
                                     CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
-                                    QString add = charac->getPar("Adress");
-                                    bool bl = isValidAddress(add);
+//                                    QString add = charac->getPar("Adress");
+//                                    bool bl = isValidAddress(add);
 
-                                    if(bl)
-                                    {
+//                                    if(bl)
+//                                    {
                                         Data *data = new Data(charac, a2lProject, this);
                                         listData2.append(data);
-                                    }
-                                    else
-                                    {
-
-                                    }
+//                                    }
+//                                    else
+//                                    {
+//                                        listNotValid2.append(str + " : " + add);
+//                                    }
                                 }
                             }
 
@@ -540,18 +562,18 @@ void HexFile::readAllData()
                                 {
                                     found = true;
                                     AXIS_PTS *axis = (AXIS_PTS*)label2;
-                                    QString add = axis->getPar("Adress");
-                                    bool bl = isValidAddress(add);
+//                                    QString add = axis->getPar("Adress");
+//                                    bool bl = isValidAddress(add);
 
-                                    if (bl)
-                                    {
+//                                    if (bl)
+//                                    {
                                         Data *data = new Data(axis, a2lProject, this);
                                         listData2.append(data);
-                                    }
-                                    else
-                                    {
-
-                                    }
+//                                    }
+//                                    else
+//                                    {
+//                                        listNotValid2.append(str + " : " + add);
+//                                    }
                                 }
                             }
 
@@ -568,6 +590,9 @@ void HexFile::readAllData()
 
             listData.append(listData1);
             listData.append(listData2);
+
+            listNotValidData.append(listNotValid1);
+            listNotValidData.append(listNotValid2);
 
         }
         else
@@ -608,18 +633,18 @@ void HexFile::readAllData()
                     {
                         found = true;
                         AXIS_PTS *axis = (AXIS_PTS*)label2;
-                        QString add = axis->getPar("Adress");
+                        //QString add = axis->getPar("Adress");
 
-                        bool bl = isValidAddress(add);
-                        if (bl)
-                        {
+                        //bool bl = isValidAddress(add);
+                        //if (bl)
+                        //{
                             Data *data = new Data(axis, a2lProject, this);
                             listData.append(data);
-                        }
-                        else
-                        {
+                        //}
+                        //else
+                        //{
 
-                        }
+                        //}
                     }
                 }
 
@@ -645,10 +670,8 @@ void HexFile::readAllData()
 
 QString HexFile::getHexValue(QString address, int offset,  int nByte)
 {
-    QTime time;
-    time.start();
 
-    //find block and line
+    //find block and index of the desired address
     bool bl;
     unsigned int IAddr =address.toUInt(&bl, 16) + offset;
     int block = 0;
@@ -660,24 +683,32 @@ QString HexFile::getHexValue(QString address, int offset,  int nByte)
         }
         block++;
     }
-    int line = IAddr - blockList[block]->start;
+
+    //if address is outside the Hex file address range => exit
+    if (block >= blockList.count())
+        return "00";
+
+    //get index of the address into block
+    int index = IAddr - blockList[block]->start;
 
     //read the byte in QList
     QList<unsigned char> tab;
-    if (line + nByte < blockList[block]->length)
+    if (index + nByte < blockList[block]->length)
     {
         for (int i = 0; i < nByte; i++)
-            tab.append( blockList[block]->data[line + i]);
+            tab.append( blockList[block]->data[index + i]);
     }
-    else
+    else if (block < blockList.count() - 1)
     {
-        int size = blockList[block]->length - line;
+        int size = blockList[block]->length - index;
         int i = 0;
         for (i = 0; i < size; i++)
-            tab.append(blockList[block]->data[line + i]);
+            tab.append(blockList[block]->data[index + i]);
         for (int j = 0; j < nByte - size; j++)
             tab.append(blockList[block + 1]->data[j]);
     }
+    else
+        return "00";
 
     //MSB_FIRST or MSB_LAST
     QString str = "ZZ";
@@ -713,6 +744,9 @@ QString HexFile::getHexValue(QString address, int offset,  int nByte)
 
 QStringList HexFile::getHexValues(QString address, int offset, int nByte, int count)
 {
+    //variable to be returned
+    QStringList hexList;
+
     //find block and line
     bool bl;
     unsigned int IAddr =address.toUInt(&bl, 16) + offset;
@@ -725,6 +759,15 @@ QStringList HexFile::getHexValues(QString address, int offset, int nByte, int co
         }
         block++;
     }
+
+    //if address is outside the Hex file address range => exit
+    if (block >= blockList.count())
+    {
+        hexList.append("00");
+        return hexList;
+    }
+
+    //get index of the address into block
     int line = IAddr - blockList[block]->start;
 
     //read the byte in QList
@@ -743,8 +786,7 @@ QStringList HexFile::getHexValues(QString address, int offset, int nByte, int co
             tab.append(blockList[block + 1]->data[j]);
     }
 
-    //MSB_FIRST or MSB_LAST
-    QStringList hexList;
+    //MSB_FIRST or MSB_LAST    
     if (byteOrder.toLower() == "msb_first")
     {
         QString hex;
@@ -788,6 +830,9 @@ QStringList HexFile::getHexValues(QString address, int offset, int nByte, int co
 
 QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::string type)
 {
+    //variable to be returned
+    QList<double> decList;
+
     //find block and line
     int block = 0;
     while (block < blockList.count())
@@ -798,26 +843,35 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
         }
         block++;
     }
-    int line = IAddr - blockList[block]->start;
 
-    QList<double> decList;
+    //if address is outside the Hex file address range => exit
+    if (block >= blockList.count())
+    {
+        decList.append(0);
+        return decList;
+    }
+
+    //get index of the address into block
+    int index = IAddr - blockList[block]->start;
+
+
     if (byteOrder.toLower() == "msb_last")
     {
         if(type == "SBYTE")
         {
-            if (line + nByte*count < blockList[block]->length)
+            if (index + nByte*count < blockList[block]->length)
             {
                 for (int i = 0; i < count; i++)
                 {
-                    decList.append(CAST2(blockList[block]->data[line + nByte*i], int8_t));
+                    decList.append(CAST2(blockList[block]->data[index + nByte*i], int8_t));
                 }
             }
-            else
+            else if (block < blockList.count() - 1)
             {
                 char* buffer = new char[nByte*count];
-                int size = blockList[block]->length - line;
+                int size = blockList[block]->length - index;
                 for (int i = 0; i < size; i++)
-                    buffer[i] = blockList[block]->data[line + i];
+                    buffer[i] = blockList[block]->data[index + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
@@ -831,19 +885,19 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
         }
         else if(type == "UBYTE")
         {
-            if (line + nByte*count < blockList[block]->length)
+            if (index + nByte*count < blockList[block]->length)
             {
                 for (int i = 0; i < count; i++)
                 {
-                    decList.append(CAST2(blockList[block]->data[line + nByte*i], uint8_t));
+                    decList.append(CAST2(blockList[block]->data[index + nByte*i], uint8_t));
                 }
             }
-            else
+            else if (block < blockList.count() - 1)
             {
                 char* buffer = new char[nByte*count];
-                int size = blockList[block]->length - line;
+                int size = blockList[block]->length - index;
                 for (int i = 0; i < size; i++)
-                    buffer[i] = blockList[block]->data[line + i];
+                    buffer[i] = blockList[block]->data[index + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
@@ -857,19 +911,19 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
         }
         else if(type == "SWORD")
         {
-            if (line + nByte*count < blockList[block]->length)
+            if (index + nByte*count < blockList[block]->length)
             {
                 for (int i = 0; i < count; i++)
                 {
-                    decList.append(CAST2(blockList[block]->data[line + nByte*i], int16_t));
+                    decList.append(CAST2(blockList[block]->data[index + nByte*i], int16_t));
                 }
             }
-            else
+            else if (block < blockList.count() - 1)
             {
                 char* buffer = new char[nByte*count];
-                int size = blockList[block]->length - line;
+                int size = blockList[block]->length - index;
                 for (int i = 0; i < size; i++)
-                    buffer[i] = blockList[block]->data[line + i];
+                    buffer[i] = blockList[block]->data[index + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
@@ -884,19 +938,19 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
         }
         else if(type == "UWORD")
         {
-            if (line + nByte*count < blockList[block]->length)
+            if (index + nByte*count < blockList[block]->length)
             {
                 for (int i = 0; i < count; i++)
                 {
-                    decList.append(CAST2(blockList[block]->data[line + nByte*i], uint16_t));
+                    decList.append(CAST2(blockList[block]->data[index + nByte*i], uint16_t));
                 }
             }
-            else
+            else if (block < blockList.count() - 1)
             {
                 char* buffer = new char[nByte*count];
-                int size = blockList[block]->length - line;
+                int size = blockList[block]->length - index;
                 for (int i = 0; i < size; i++)
-                    buffer[i] = blockList[block]->data[line + i];
+                    buffer[i] = blockList[block]->data[index + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
@@ -911,19 +965,19 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
         }
         else if(type == "SLONG")
         {
-            if (line + nByte*count < blockList[block]->length)
+            if (index + nByte*count < blockList[block]->length)
             {
                 for (int i = 0; i < count; i++)
                 {
-                    decList.append(CAST2(blockList[block]->data[line + nByte*i], int32_t));
+                    decList.append(CAST2(blockList[block]->data[index + nByte*i], int32_t));
                 }
             }
-            else
+            else if (block < blockList.count() - 1)
             {
                 char* buffer = new char[nByte*count];
-                int size = blockList[block]->length - line;
+                int size = blockList[block]->length - index;
                 for (int i = 0; i < size; i++)
-                    buffer[i] = blockList[block]->data[line + i];
+                    buffer[i] = blockList[block]->data[index + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
@@ -937,19 +991,19 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
         }
         else if(type == "ULONG")
         {
-            if (line + nByte*count < blockList[block]->length)
+            if (index + nByte*count < blockList[block]->length)
             {
                 for (int i = 0; i < count; i++)
                 {
-                    decList.append(CAST2(blockList[block]->data[line + nByte*i], int32_t));
+                    decList.append(CAST2(blockList[block]->data[index + nByte*i], int32_t));
                 }
             }
-            else
+            else if (block < blockList.count() - 1)
             {
                 char* buffer = new char[nByte*count];
-                int size = blockList[block]->length - line;
+                int size = blockList[block]->length - index;
                 for (int i = 0; i < size; i++)
-                    buffer[i] = blockList[block]->data[line + i];
+                    buffer[i] = blockList[block]->data[index + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
@@ -963,19 +1017,19 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
         }
         else if(type == "FLOAT32_IEEE")
         {
-            if (line + nByte*count < blockList[block]->length)
+            if (index + nByte*count < blockList[block]->length)
             {
                 for (int i = 0; i < count; i++)
                 {
-                    decList.append(CAST2(blockList[block]->data[line + nByte*i], float));
+                    decList.append(CAST2(blockList[block]->data[index + nByte*i], float));
                 }
             }
-            else
+            else if (block < blockList.count() - 1)
             {
                 char* buffer = new char[nByte*count];
-                int size = blockList[block]->length - line;
+                int size = blockList[block]->length - index;
                 for (int i = 0; i < size; i++)
-                    buffer[i] = blockList[block]->data[line + i];
+                    buffer[i] = blockList[block]->data[index + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
@@ -992,26 +1046,26 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
     {
         if(type == "SBYTE")
         {
-            if (line + nByte*count < blockList[block]->length)
+            if (index + nByte*count < blockList[block]->length)
             {
                 char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
                     {
-                        mem[j] = blockList[block]->data[line + (nByte * (i + 1) - j - 1)];
+                        mem[j] = blockList[block]->data[index + (nByte * (i + 1) - j - 1)];
                     }
                     decList.append(CAST2(mem[0], int8_t));
                 }
 
                 delete mem;
             }
-            else
+            else if (block < blockList.count() - 1)
             {
                 char* buffer = new char[nByte*count];
-                int size = blockList[block]->length - line;
+                int size = blockList[block]->length - index;
                 for (int i = 0; i < size; i++)
-                    buffer[i] = blockList[block]->data[line + i];
+                    buffer[i] = blockList[block]->data[index + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
@@ -1031,26 +1085,26 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
         }
         else if(type == "UBYTE")
         {
-            if (line + nByte*count < blockList[block]->length)
+            if (index + nByte*count < blockList[block]->length)
             {
                 char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
                     {
-                        mem[j] = blockList[block]->data[line + (nByte * (i + 1) - j - 1)];
+                        mem[j] = blockList[block]->data[index + (nByte * (i + 1) - j - 1)];
                     }
                     decList.append(CAST2(mem[0], uint8_t));
                 }
 
                 delete mem;
             }
-            else
+            else if (block < blockList.count() - 1)
             {
                 char* buffer = new char[nByte*count];
-                int size = blockList[block]->length - line;
+                int size = blockList[block]->length - index;
                 for (int i = 0; i < size; i++)
-                    buffer[i] = blockList[block]->data[line + i];
+                    buffer[i] = blockList[block]->data[index + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
@@ -1070,28 +1124,31 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
         }
         else if(type == "SWORD")
         {
-            if (line + nByte*count < blockList[block]->length)
+            if (index + nByte*count < blockList[block]->length)
             {
                 char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
                     {
-                        mem[j] = blockList[block]->data[line + (nByte * (i + 1) - j - 1)];
+                        mem[j] = blockList[block]->data[index + (nByte * (i + 1) - j - 1)];
                     }
                     decList.append(CAST2(mem[0], int16_t));
                 }
 
                 delete mem;
             }
-            else
-            {
+            else if (block < blockList.count() - 1)
+            {                
                 char* buffer = new char[nByte*count];
-                int size = blockList[block]->length - line;
+                int size = blockList[block]->length - index;
                 for (int i = 0; i < size; i++)
-                    buffer[i] = blockList[block]->data[line + i];
+                    buffer[i] = blockList[block]->data[index + i];
                 for (int j = 0; j < nByte*count - size; j++)
+                {
+                    //qDebug() << blockList.length() << " : " << block;
                     buffer[size + j] = blockList[block + 1]->data[j];
+                }
 
                 char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
@@ -1109,26 +1166,26 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
         }
         else if(type == "UWORD")
         {
-            if (line + nByte*count < blockList[block]->length)
+            if (index + nByte*count < blockList[block]->length)
             {
                 char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
                     {
-                        mem[j] = blockList[block]->data[line + (nByte * (i + 1) - j - 1)];
+                        mem[j] = blockList[block]->data[index + (nByte * (i + 1) - j - 1)];
                     }
                     decList.append(CAST2(mem[0], uint16_t));
                 }
 
                 delete mem;
             }
-            else
+            else if (block < blockList.count() - 1)
             {
                 char* buffer = new char[nByte*count];
-                int size = blockList[block]->length - line;
+                int size = blockList[block]->length - index;
                 for (int i = 0; i < size; i++)
-                    buffer[i] = blockList[block]->data[line + i];
+                    buffer[i] = blockList[block]->data[index + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
@@ -1148,26 +1205,26 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
         }
         else if(type == "SLONG")
         {
-            if (line + nByte*count < blockList[block]->length)
+            if (index + nByte*count < blockList[block]->length)
             {
                 char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
                     {
-                        mem[j] = blockList[block]->data[line + (nByte * (i + 1) - j - 1)];
+                        mem[j] = blockList[block]->data[index + (nByte * (i + 1) - j - 1)];
                     }
                     decList.append(CAST2(mem[0], int32_t));
                 }
 
                 delete mem;
             }
-            else
+            else if (block < blockList.count() - 1)
             {
                 char* buffer = new char[nByte*count];
-                int size = blockList[block]->length - line;
+                int size = blockList[block]->length - index;
                 for (int i = 0; i < size; i++)
-                    buffer[i] = blockList[block]->data[line + i];
+                    buffer[i] = blockList[block]->data[index + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
@@ -1187,26 +1244,26 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
         }
         else if(type == "ULONG")
         {
-            if (line + nByte*count < blockList[block]->length)
+            if (index + nByte*count < blockList[block]->length)
             {
                 char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
                     {
-                        mem[j] = blockList[block]->data[line + (nByte * (i + 1) - j - 1)];
+                        mem[j] = blockList[block]->data[index + (nByte * (i + 1) - j - 1)];
                     }
                     decList.append(CAST2(mem[0], uint32_t));
                 }
 
                 delete mem;
             }
-            else
+            else if (block < blockList.count() - 1)
             {
                 char* buffer = new char[nByte*count];
-                int size = blockList[block]->length - line;
+                int size = blockList[block]->length - index;
                 for (int i = 0; i < size; i++)
-                    buffer[i] = blockList[block]->data[line + i];
+                    buffer[i] = blockList[block]->data[index + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
@@ -1226,26 +1283,26 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
         }
         else if(type == "FLOAT32_IEEE")
         {
-            if (line + nByte*count < blockList[block]->length)
+            if (index + nByte*count < blockList[block]->length)
             {
                 char* mem = new char[nByte];
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = 0; j < nByte; j++)
                     {
-                        mem[j] = blockList[block]->data[line + (nByte * (i + 1) - j - 1)];
+                        mem[j] = blockList[block]->data[index + (nByte * (i + 1) - j - 1)];
                     }
                     decList.append(CAST2(mem[0], float));
                 }
 
                 delete mem;
             }
-            else
+            else if (block < blockList.count() - 1)
             {
                 char* buffer = new char[nByte*count];
-                int size = blockList[block]->length - line;
+                int size = blockList[block]->length - index;
                 for (int i = 0; i < size; i++)
-                    buffer[i] = blockList[block]->data[line + i];
+                    buffer[i] = blockList[block]->data[index + i];
                 for (int j = 0; j < nByte*count - size; j++)
                     buffer[size + j] = blockList[block + 1]->data[j];
 
@@ -1271,23 +1328,33 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
 
 bool HexFile::isValidAddress(QString address)
 {
+
     bool bl;
     unsigned int IAddr =address.toUInt(&bl, 16);
 
-    int block = 0;
-    while (block < blockList.count())
+//    int block = 0;
+//    while (block < blockList.count())
+//    {
+//        if ((blockList[block]->start <= IAddr) && (IAddr <= blockList[block]->end))
+//        {
+//            break;
+//        }
+//        block++;
+//    }
+
+//    if (block >=  blockList.count())
+//        return false;
+//    else
+//        return true;
+
+    int length = listMemSegData.count();
+    for (int i = 0; i < length - 1; i+=2)
     {
-        if ((blockList[block]->start <= IAddr) && (IAddr <= blockList[block]->end))
-        {
-            break;
-        }
-        block++;
+        if (listMemSegData.at(i) <= IAddr && IAddr < listMemSegData.at(i + 1) )
+            return true;
     }
 
-    if (block >=  blockList.count())
-        return false;
-    else
-        return true;
+    return false;
 }
 
 int HexFile::getNumByte(std::string str)
