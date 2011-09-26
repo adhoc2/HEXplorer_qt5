@@ -83,8 +83,8 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
     precisionY = 0;
     precisionZ = 0;
     isSortedByRow = 0;
-    int nPtsX = 1;
-    int nPtsY = 1;
+    uint nPtsX = 1;
+    uint nPtsY = 1;
 
 
     //initialize the display number of rows of the CHARACTERISTIC
@@ -225,7 +225,9 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
                     //increment offset of the axisX length
                     offset +=  nPtsX * Xnbyte;
                 }
+
             }
+
         }
         else if (typeAxisX.compare("FIX_AXIS") == 0)
         {
@@ -562,8 +564,8 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, Csv *csv, bool modif) : Node(node
     precisionX = 0;
     precisionY = 0;
     precisionZ = 0;
-    int nPtsX = 1;
-    int nPtsY = 1;
+    uint nPtsX = 1;
+    uint nPtsY = 1;
     isSortedByRow = 0;
 
     //Type
@@ -759,8 +761,8 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, CdfxFile *cdfx, bool modif) : Nod
     precisionX = 0;
     precisionY = 0;
     precisionZ = 0;
-    int nPtsX = 1;
-    int nPtsY = 1;
+    uint nPtsX = 1;
+    uint nPtsY = 1;
     isSortedByRow = 0;
 
     //Type

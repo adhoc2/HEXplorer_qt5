@@ -12,6 +12,7 @@ class AXIS_PTS;
 class MODULE;
 class Data;
 class PROJECT;
+class MEMORY_SEGMENT;
 
 class MemBlock
 {
@@ -35,9 +36,11 @@ class HexFile : public QObject, public DataContainer
         HexFile(QString fullHexFileName, WorkProject *parentWP, QString module, QObject *parent = 0);
         ~HexFile();
 
+        // members
         Node* record_layout;
         Node* compu_method;
         Node* compu_vatb;
+        QStringList listNotValidData;
 
         // methods
         void attach(QObject*o);
@@ -80,6 +83,7 @@ class HexFile : public QObject, public DataContainer
         QString fullHexName;
         QString byteOrder;
         QHash<QString,int> nByte;
+        QList<uint> listMemSegData;
 
 
         static int asciiToByte[256*256];
