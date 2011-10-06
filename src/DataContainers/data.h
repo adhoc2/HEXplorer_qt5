@@ -127,6 +127,7 @@ class Data : public QObject, public Node
         void undoValZ(int row, int col);
         bool checkAxisZMonotony();
         COMPU_VTAB *getCompuTabAxisZ();
+        QString getOutputQuantityZ();
 
         bool isSizeChanged();
         void extendSize(int newDimX, int newDimY);

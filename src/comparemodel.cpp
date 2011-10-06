@@ -99,12 +99,14 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
             if (bdata1)
             {
                 if (row - sum == 0 && column == 0)
-                    return (listDat1->at(ind)->getName() + " " + listDat1->at(ind)->getUnit());
+                    return (listDat1->at(ind)->getName());
                 else if (row - sum == 1 && column == 0)
                     return listDat1->at(ind)->getComment();
                 else if (row - sum  == 0 && column == 1)
                     return listDat1->at(ind)->getSubset();
                 else if (row - sum == 0 && column == 2)
+                    return listDat1->at(ind)->getUnit();
+                else if (row - sum == 0 && column == 3)
                     return listDat1->at(ind)->getMaxDim();
 
                 if (listDat1->at(ind)->xCount() == 0) //Value
@@ -156,6 +158,8 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
                 if (row - sum  == 0 && column == 1)
                    return listDat2->at(ind)->getSubset();
                 else if (row - sum == 0 && column == 2)
+                    return listDat2->at(ind)->getUnit();
+                else if (row - sum == 0 && column == 3)
                     return listDat2->at(ind)->getMaxDim();
 
                 if (listDat2->at(ind)->xCount() == 0) //Value
@@ -217,6 +221,10 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
                     return listDat1->at(ind)->getComment();
                 else if (row - sum  == 0 && column == 1)
                     return listDat1->at(ind)->getSubset();
+                else if (row - sum == 0 && column == 2)
+                    return listDat1->at(ind)->getUnit();
+                else if (row - sum == 0 && column == 3)
+                    return listDat1->at(ind)->getMaxDim();
 
                 if (listDat1->at(ind)->xCount() == 0) //Value
                 {
@@ -254,6 +262,10 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
             {
                 if (row - sum  == 0 && column == 1)
                    return listDat2->at(ind)->getSubset();
+                else if (row - sum == 0 && column == 2)
+                    return listDat2->at(ind)->getUnit();
+                else if (row - sum == 0 && column == 3)
+                    return listDat2->at(ind)->getMaxDim();
 
                 if (listDat2->at(ind)->xCount() == 0) //Value
                 {
@@ -299,6 +311,10 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
                     return listDat1->at(ind)->getComment();
                 else if (row - sum  == 0 && column == 1)
                     return listDat1->at(ind)->getSubset();
+                else if (row - sum == 0 && column == 2)
+                    return listDat1->at(ind)->getUnit();
+                else if (row - sum == 0 && column == 3)
+                    return listDat1->at(ind)->getMaxDim();
 
                 if (listDat1->at(ind)->xCount() == 0) //Value
                 {
@@ -336,6 +352,10 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
             {
                 if (row - sum  == 0 && column == 1)
                    return listDat2->at(ind)->getSubset();
+                else if (row - sum == 0 && column == 2)
+                    return listDat2->at(ind)->getUnit();
+                else if (row - sum == 0 && column == 3)
+                    return listDat2->at(ind)->getMaxDim();
 
                 if (listDat2->at(ind)->xCount() == 0) //Value
                 {
@@ -623,7 +643,7 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
 
                 if (bdata1)
                 {
-                    if (row - sum == 0 && column == 2)
+                    if (row - sum == 0 && column == 3)
                     {
                         if (listDat1->at(ind)->getMaxDim() != "")
                         {
@@ -670,7 +690,7 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
                 }
                 else
                 {
-                    if (row - sum == 0 && column == 2)
+                    if (row - sum == 0 && column == 3)
                     {
                         if (listDat2->at(ind)->getMaxDim() != "")
                         {
