@@ -96,13 +96,15 @@ QVariant SpTableModel::data(const QModelIndex &index, int role) const
     case Qt::DisplayRole :
         {
             if (row - sum == 0 && column == 0)
-                return (listDataModel->at(ind)->getName() + " " + listDataModel->at(ind)->getUnit());
+                return (listDataModel->at(ind)->getName());
             else if (row - sum == 1 && column == 0)
                 return listDataModel->at(ind)->getComment();
             else if (row - sum  == 0 && column == 1)
                 return listDataModel->at(ind)->getSubset();
-            else if (row - sum == 0 && column == 2)
+            else if (row - sum == 0 && column == 3)
                 return listDataModel->at(ind)->getMaxDim();
+            else if (row - sum == 0 && column == 2)
+                  return listDataModel->at(ind)->getUnit();
 
             if (listDataModel->at(ind)->xCount() == 0) //Value
             {
@@ -158,11 +160,15 @@ QVariant SpTableModel::data(const QModelIndex &index, int role) const
     case Qt::EditRole:
         {
             if (row - sum == 0 && column == 0)
-                return (listDataModel->at(ind)->getName() + " " + listDataModel->at(ind)->getUnit());
+                return (listDataModel->at(ind)->getName());
             else if (row - sum == 1 && column == 0)
                 return listDataModel->at(ind)->getComment();
             else if (row - sum  == 0 && column == 1)
                 return listDataModel->at(ind)->getSubset();
+            else if (row - sum == 0 && column == 2)
+                  return listDataModel->at(ind)->getUnit();
+            else if (row - sum == 0 && column == 3)
+                return listDataModel->at(ind)->getMaxDim();
 
             if (listDataModel->at(ind)->xCount() == 0) //Value
             {
@@ -206,6 +212,10 @@ QVariant SpTableModel::data(const QModelIndex &index, int role) const
                 return listDataModel->at(ind)->getComment();
             else if (row - sum  == 0 && column == 1)
                 return listDataModel->at(ind)->getSubset();
+            else if (row - sum == 0 && column == 2)
+                  return listDataModel->at(ind)->getUnit();
+            else if (row - sum == 0 && column == 3)
+                return listDataModel->at(ind)->getMaxDim();
 
             if (listDataModel->at(ind)->xCount() == 0) //Value
             {
@@ -291,7 +301,7 @@ QVariant SpTableModel::data(const QModelIndex &index, int role) const
             QColor mybleu = QColor::fromHsv(200, 110, 255);
             QColor myvert = QColor::fromHsv(120, 110, 255);
 
-            if (row - sum == 0 && column == 2)
+            if (row - sum == 0 && column == 3)
             {
                 if (listDataModel->at(ind)->getMaxDim() != "")
                 {

@@ -1254,6 +1254,15 @@ QString Data::getInputQuantityY()
     return str;
 }
 
+QString Data::getOutputQuantityZ()
+{
+    QString str = "Z : ";
+
+    str.append(getUnit());
+
+    return str;
+}
+
 QString Data::getMaxDim()
 {
     bool display = false;
