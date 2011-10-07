@@ -1328,31 +1328,37 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
 
 bool HexFile::isValidAddress(QString address)
 {
-
+    int length = listMemSegData.count();
     bool bl;
     unsigned int IAddr =address.toUInt(&bl, 16);
 
-//    int block = 0;
-//    while (block < blockList.count())
-//    {
-//        if ((blockList[block]->start <= IAddr) && (IAddr <= blockList[block]->end))
-//        {
-//            break;
-//        }
-//        block++;
-//    }
-
-//    if (block >=  blockList.count())
-//        return false;
-//    else
-//        return true;
-
-    int length = listMemSegData.count();
-    for (int i = 0; i < length - 1; i+=2)
+    if (length == 0)
     {
-        if (listMemSegData.at(i) <= IAddr && IAddr < listMemSegData.at(i + 1) )
+        int block = 0;
+        while (block < blockList.count())
+        {
+            if ((blockList[block]->start <= IAddr) && (IAddr <= blockList[block]->end))
+            {
+                break;
+            }
+            block++;
+        }
+
+        if (block >=  blockList.count())
+            return false;
+        else
             return true;
+
     }
+    else
+    {
+        for (int i = 0; i < length - 1; i+=2)
+        {
+            if (listMemSegData.at(i) <= IAddr && IAddr < listMemSegData.at(i + 1) )
+                return true;
+        }
+    }
+
 
     return false;
 }
