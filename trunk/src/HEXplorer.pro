@@ -391,6 +391,10 @@ SOURCES += a2l.cpp \
     sptablemodelHex.cpp \
     Quex/a2l_quex_lexer.cpp
 
+OTHER_FILES += \
+    GNU_license.txt
+
+
 
 
 
