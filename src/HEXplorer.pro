@@ -78,12 +78,14 @@ equals( QMAKE_CXX, g++) {
     QSCINTILLA_ROOT = ../LIBS/QScintilla-gpl-2.5.1
     QWT_ROOT = ../LIBS/qwt-6.0.1
     QWT3D_ROOT = ../LIBS/qwtplot3d
+    QUEX_ROOT = /opt/quex/quex-0.59.7
+    #QUEX_ROOT = /Applications/quex/quex-0.59.7
 
     UI_DIR = ui
     MOC_DIR = moc
     OBJECTS_DIR = obj
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
-    INCLUDEPATH += . ./ASAP2 ./Quex ./DataContainers $${QWT_ROOT}/src $${QWT3D_ROOT}/include $${QSCINTILLA_ROOT}/Qt4 /Applications/quex/quex-0.59.7
+    INCLUDEPATH += . ./ASAP2 ./Quex ./DataContainers $${QWT_ROOT}/src $${QWT3D_ROOT}/include $${QSCINTILLA_ROOT}/Qt4 $${QUEX_ROOT}
     LIBS += -L$${QSCINTILLA_ROOT}/Qt4/lib \
     -L$${QWT3D_ROOT}/lib \
     -L$${QWT_ROOT}/lib
