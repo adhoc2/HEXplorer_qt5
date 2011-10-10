@@ -35,6 +35,7 @@
 #include <QDomDocument>
 #include <QHeaderView>
 #include <QApplication>
+#include <typeinfo>
 
 bool comp(Data *a, Data *b)
 {

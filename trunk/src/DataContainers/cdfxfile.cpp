@@ -27,6 +27,7 @@
 #include <QDir>
 #include <QtXmlPatterns>
 #include <QHeaderView>
+#include <typeinfo>
 
 #include "data.h"
 #include "lexer.h"

@@ -24,7 +24,7 @@
 #endif
 
 #define QUEX_SETTING_VERSION           "0.59.7"
-#define QUEX_SETTING_BUILD_DATE        "Wed Sep 21 17:42:51 2011"
+#define QUEX_SETTING_BUILD_DATE        "Mon Oct 10 13:57:28 2011"
 #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 
 #ifndef    __QUEX_OPTION_PLAIN_C
