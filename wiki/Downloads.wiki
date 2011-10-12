@@ -6,6 +6,7 @@ HEXplorer is packaged for the following systems below, so if you use one of them
 = Source =
 You need to download the following sources :
    * [http://www.riverbankcomputing.co.uk/software/qscintilla/download QScintilla]
+   * [http://quex.sourceforge.net/ Quex]
    * [http://qwt.sourceforge.net/ Qwt]
    * [http://qwtplot3d.sourceforge.net/ Qwtplot3D]
    * [http://www.hoard.org/ Winhoard] (only for windows)
