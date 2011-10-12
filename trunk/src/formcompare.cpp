@@ -1493,8 +1493,9 @@ void FormCompare::on_copy_clicked()
         {
             source = QString(csv1->name);
         }
-        else
+        else if (cdfx1)
             source = QString(cdfx1->name);
+
 
         if (hex2)
         {
@@ -1504,7 +1505,7 @@ void FormCompare::on_copy_clicked()
         {
             target = QString(csv2->name);
         }
-        else
+        else if (cdfx2)
             source = QString(cdfx2->name);
 
 
@@ -1521,7 +1522,6 @@ void FormCompare::on_copy_clicked()
     }
     else
     {
-
 
         QString source;
         QString target;
@@ -1559,7 +1559,7 @@ void FormCompare::on_copy_clicked()
     //define SOURCE / TARGET
     if (ui->lineEdit->text().isEmpty() || ui->lineEdit_2->text().isEmpty())
     {
-        QMessageBox::information(mainWidget,"HEXplorer::quicklook","please choose first a dataset in the project list");
+        QMessageBox::information(mainWidget,"HEXplorer::quicklook","source and target Hex files must be defined.");
         return;
     }
 
