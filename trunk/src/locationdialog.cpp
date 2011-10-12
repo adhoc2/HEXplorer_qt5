@@ -55,7 +55,7 @@ LocationDialog::LocationDialog(QWidget *parent)
     scopeComboBox->addItem(tr("System"));
 
     organizationComboBox = new QComboBox;
-    organizationComboBox->addItem("Ch.Hoël");
+    organizationComboBox->addItem("Ch.Hoel");
     organizationComboBox->setEditable(true);
 
     applicationComboBox = new QComboBox;

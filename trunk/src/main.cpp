@@ -1,5 +1,5 @@
 // HEXplorer is an Asap and HEX file editor
-// Copyright (C) 2011  <Christophe Hoël>
+// Copyright (C) 2011  <Christophe Hoel>
 //
 // This file is part of HEXplorer.
 //
@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setOrganizationName("Ch.Hoël");
     app.setApplicationName("HEXplorer");
-    app.setApplicationVersion("0.6.5");
+    app.setApplicationVersion("0.6.6");
 
     MDImain w;
     w.show();

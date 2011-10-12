@@ -1,5 +1,5 @@
 // HEXplorer is an Asap and HEX file editor
-// Copyright (C) 2011  <Christophe Hoël>
+// Copyright (C) 2011  <Christophe Hoel>
 //
 // This file is part of HEXplorer.
 //
@@ -41,7 +41,7 @@ MainWindow::MainWindow()
 
     QSettings *settings = new QSettings(QSettings::NativeFormat,
                                         QSettings::UserScope,
-                                        "Ch.Hoël",
+                                        "Ch.Hoel",
                                         "HEXplorer");
     setSettingsObject(settings);
     fallbacksAct->setEnabled(true);
