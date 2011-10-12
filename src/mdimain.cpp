@@ -1,5 +1,5 @@
 // HEXplorer is an Asap and HEX file editor
-// Copyright (C) 2011  <Christophe Hoël>
+// Copyright (C) 2011  <Christophe Hoel>
 //
 // This file is part of HEXplorer.
 //
@@ -865,7 +865,7 @@ void MDImain::on_actionSettings_triggered()
 
 void MDImain::on_actionAbout_triggered()
 {
-    QString text = "Christophe Hoël"
+    QString text = "Christophe Hoel"
                    "\n\n"
                    "special thanks to :\n"
                    "Oscar, Niklaus, Jimi, Zack, Eric, Oneyed Jack, lofofora\n"
