@@ -1,5 +1,5 @@
 <HEXplorer application="HEXplorer">
-    <revision version="0.4.18">//ivcharb07/pc$imf/USER/Hoel/HEXplorer/update_HEXplorer.exe</revision>
+    <revision version="0.4.18">http://code.google.com/p/hexplorer/downloads/update_HEXplorer.exe</revision>
     <details>revision 0.4.18 (16/05/2011) :
     - bug fix when reading Csv file when values are outside extended_limits
     - bug fix into combobox delegate for source curve
