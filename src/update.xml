@@ -1,0 +1,67 @@
+<HEXplorer application="HEXplorer">
+    <revision version="0.4.18">//ivcharb07/pc$imf/USER/Hoel/HEXplorer/update_HEXplorer.exe</revision>
+    <details>revision 0.4.18 (16/05/2011) :
+    - bug fix when reading Csv file when values are outside extended_limits
+    - bug fix into combobox delegate for source curve
+    
+revision 0.4.17 (20/04/2011) :
+    - paste correction from excel
+    
+revision 0.4.16 (15/04/2011) :
+    - correct bug when copy csv and resetView
+    
+revision 0.4.15 (12/04/2011) :
+    - correct display color when change z value into map in formCompare
+    - copy/paste after ctrl-A into label corrected
+
+revision 0.4.14 (05/04/2011) :
+    - improve copy/paste
+    - resize more columns at once
+    - edit and change directly in hex values
+        
+revision 0.4.13 (01/04/2011) :
+    - output log window resizeable
+    - paste from excel quicker
+    - remove quote from compu_vtab (easier when copy/paste into Excel)
+    - export not found label list at compare
+    - currentItem/SelecedItem after resetView()
+    - correct bug when right click into measModel
+    - edit characteristic list into view
+    - choose label into subset (example : /C101/Inj*map)
+    
+revision 0.4.11 (29/03/2011) :
+    - do not display label as changed when set at original size
+    
+revision 0.4.10 (25/03/2011) :
+    - release after new re-compilation to correct problem by "verify"
+
+revision 0.4.9 (24/03/2011) :
+    - improve search labels with description
+    - add / remove breakpoint menu activation
+    - compare / copy csv values when axis not defined
+    
+revision 0.4.8 (16/03/2011) :
+    - use of Qt 4.7.2 new release
+    
+revision 0.4.7 (15/03/2011) :
+    - possibility to add/remove breakpoints
+    
+revision 0.4.6 (09/03/2011) :
+    - progress bar save as Hex file
+    - bug fix : Hex, Cdf and csv owners list when attach and detach
+    
+revision 0.4.5 (09/03/2011) :
+    - display max label size when size is smaller than max size into ASAP file
+    - add ASAP file name into Csv export as comment
+    - save the csv or cdfxpath when export subset
+    - display different constant value bold
+
+revision 0.4.4 (01/03/2011) :
+    - item MAX_REFRESH added into ASAP file parser
+    - correct bug when import Csv values (destructor called twice)
+    - progressBar importing/exporting Csv
+    
+revision 0.4.3 (25/02/2011) :
+    - bugs and error corection
+    </details>    
+</HEXplorer>
