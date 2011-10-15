@@ -244,7 +244,8 @@ HEADERS += a2l.h \
     Quex/a2l_quex_lexer_old.qx \
     Quex/a2l_quex_lexer.qx \
     Quex/a2l_quex_lexer \
-    Quex/a2l_quex_lexer-token_ids
+    Quex/a2l_quex_lexer-token_ids \
+    dialoghttpupdate.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -391,10 +392,15 @@ SOURCES += a2l.cpp \
     charmodel.cpp \
     freezetablewidget.cpp \
     sptablemodelHex.cpp \
-    Quex/a2l_quex_lexer.cpp
+    Quex/a2l_quex_lexer.cpp \
+    dialoghttpupdate.cpp
 
 OTHER_FILES += \
-    GNU_license.txt
+    GNU_license.txt \
+    update.xml
+
+
+
 
 
 
