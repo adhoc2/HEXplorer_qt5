@@ -68,6 +68,7 @@
     #include "windows.h"
 #endif
 #include "freezetablewidget.h"
+#include "dialoghttpupdate.h"
 //#include "ciao.h"
 
 #include "qdebug.h"
@@ -150,6 +151,7 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
 
     // check for updates
     connect(this, SIGNAL(check()), this, SLOT(initCheckUpdates()), Qt::QueuedConnection);
+    //connect(this, SIGNAL(check()), this, SLOT(initCheckHttpUpdates()), Qt::QueuedConnection);
     emit check();
 
     // check for message
@@ -3827,6 +3829,16 @@ void MDImain::initCheckUpdates()
 //   }
 
    registerVersion();
+}
+
+void MDImain::initCheckHttpUpdates()
+{
+   //remove the old zip file used for previous Update
+   QFile::remove(qApp->applicationDirPath() + "/update_HEXplorer.exe");
+
+   QUrl url("http://hexplorer.googlecode.com/svn/trunk/src/update.xml");
+   DialogHttpUpdate updater(url, this);
+
 }
 
 //void MDImain::say_Ciao()
