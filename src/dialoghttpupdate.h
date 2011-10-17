@@ -5,6 +5,7 @@
 #include <QtNetwork>
 class MDImain;
 class DialogHttpUpdate;
+class QNetworkAccessManager;
 
 
 class HttpUpdater : public QObject
@@ -28,7 +29,7 @@ public:
     int binId;
     QUrl binUrl;
     QString pathBin;
-    QString updateFilePath;
+    QString updateReleaseName;
     QString updateDetails;
 
 
