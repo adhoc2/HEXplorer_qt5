@@ -1,7 +1,67 @@
 <HEXplorer application="HEXplorer">
-    <revision version="0.6.7">http://hexplorer.googlecode.com/files/install_HEXplorer_0_6_5.exe</revision>
-    <details>revision 0.6.7 (xx/xx/2011) :
-    - HTTP updater
+    <revision version="0.6.7">//ivcharb07/pc$imf/USER/Hoel/HEXplorer/update_HEXplorer.exe</revision>
+    <details>revision 0.6.7 (12/10/2011) :
+    - HTTP auto update check
+
+revision 0.6.6 (12/10/2011) :
+    - bug correction when no target Hex file defined to copy
+
+revision 0.6.5 (06/10/2011) :
+    - bug correction when reading Hex for DCU datsaset
+
+revision 0.6.4 (06/10/2011) :
+    - bug correction when importing DCU a2l (IF_DATA block)
+    - CHARACTERISTIC unit out of the name
+
+revision 0.6.3 (27/09/2011) :
+    - bug correction when mismatch A2L / Hex version
+
+revision 0.6.2 (22/09/2011) :
+    - Hex file import optimization
+
+revision 0.6.1 (21/09/2011) :
+    - bug fix when parsing String into A2L file (changes into Quex Regular expression)
+
+revision 0.6.0 (20/09/2011) :
+    - correction into a2l compare ("new subsets"...)
+    - speed improvement into import hex file
+
+revision 0.5.4 (19/09/2011) :
+    - bug fix (axis_pts from CSV with values higher than extended_limits)
+
+revision 0.5.3 (16/09/2011) :
+    - bug fix (modify ASCII data)
+    - bug fix (reference counting when close project)
+
+revision 0.5.2 (15/09/2011) :
+    - bug fix (change group Map and save hex file)
+
+revision 0.5.1 (14/09/2011) :
+    - bug fix
+    - read HEX file improvements
+
+revision 0.5.0 (09/09/2011) :
+    - use Qt 4.7.4
+    - speed improvements (Quex lexical analyser,...)
+    - bug fixes
+
+revision 0.4.23 (12/08/2011) :
+    - use Qwtplot 6.0.1
+    - set disable bits when display labels as bit
+
+revision 0.4.22 (19/07/2011) :
+    - bug fix  A2L compare
+
+revision 0.4.21 (19/07/2011) :
+    - bug fix when copy cdfx file into hex file
+
+revision 0.4.20 (18/07/2011) :
+    - compare A2L files
+    - cosmetics...
+
+revision 0.4.19 (24/05/2011) :
+    - upgrade to Qt 4.7.3
+    - legend into graph for verify corrected
 
 revision 0.4.18 (16/05/2011) :
     - bug fix when reading Csv file when values are outside extended_limits
