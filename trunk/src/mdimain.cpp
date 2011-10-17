@@ -150,8 +150,8 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
     connect(ui->tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(removeTab(int)));
 
     // check for updates
-    connect(this, SIGNAL(check()), this, SLOT(initCheckUpdates()), Qt::QueuedConnection);
-    //connect(this, SIGNAL(check()), this, SLOT(initCheckHttpUpdates()), Qt::QueuedConnection);
+    //connect(this, SIGNAL(check()), this, SLOT(initCheckUpdates()), Qt::QueuedConnection);
+    connect(this, SIGNAL(check()), this, SLOT(initCheckHttpUpdates()), Qt::QueuedConnection);
     emit check();
 
     // check for message
