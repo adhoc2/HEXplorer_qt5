@@ -35,28 +35,28 @@ DialogHttpUpdate::DialogHttpUpdate(const QUrl& cfgUrl, bool display, QWidget *md
 
     //Save Proxy settings with QSettings
     QSettings settings;
-    if (!settings.contains("behindProxy"))
-        settings.setValue("behindProxy", false);
-    if (!settings.contains("HostName"))
-        settings.setValue("HostName", "");
-    if (!settings.contains("Port"))
-        settings.setValue("Port", "");
-    if (!settings.contains("User"))
-        settings.setValue("User", "");
-    if (!settings.contains("User"))
-        settings.setValue("User", "");
+    if (!settings.contains("Proxy/behindProxy"))
+        settings.setValue("Proxy/behindProxy", false);
+    if (!settings.contains("Proxy/HostName"))
+        settings.setValue("Proxy/HostName", "");
+    if (!settings.contains("Proxy/Port"))
+        settings.setValue("Proxy/Port", "");
+    if (!settings.contains("Proxy/User"))
+        settings.setValue("Proxy/User", "");
+    if (!settings.contains("Proxy/User"))
+        settings.setValue("Proxy/User", "");
 
      //QNetworkManager
     d = new HttpUpdater(mdiMain, display, this);
 
     //configure proxy
-    bool bl = settings.value("behindProxy").toBool();
+    bool bl = settings.value("Proxy/behindProxy").toBool();
     if (bl)
     {
         QNetworkProxy proxy;
         proxy.setType(QNetworkProxy::HttpCachingProxy);
-        proxy.setHostName(settings.value("HostName").toString());
-        proxy.setPort(settings.value("Port").toInt());
+        proxy.setHostName(settings.value("Proxy/HostName").toString());
+        proxy.setPort(settings.value("Proxy/Port").toInt());
         d->manager.setProxy(proxy);
     }
 
@@ -152,15 +152,15 @@ void HttpUpdater::launchInstaller()
 void HttpUpdater::authenticationRequired(QNetworkReply *reply, QAuthenticator *auth)
 {
     QSettings settings;
-    auth->setUser(settings.value("User").toString());
-    auth->setPassword(settings.value("Password").toString());
+    auth->setUser(settings.value("Proxy/User").toString());
+    auth->setPassword(settings.value("Proxy/Password").toString());
 }
 
 void HttpUpdater::proxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *auth)
 {
     QSettings settings;
-    auth->setUser(settings.value("User").toString());
-    auth->setPassword(settings.value("Password").toString());
+    auth->setUser(settings.value("Proxy/User").toString());
+    auth->setPassword(settings.value("Proxy/Password").toString());
 }
 
 void HttpUpdater::getXmlFinished(QNetworkReply *reply)
