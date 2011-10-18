@@ -78,8 +78,8 @@ equals( QMAKE_CXX, g++) {
     QSCINTILLA_ROOT = ../LIBS/QScintilla-gpl-2.5.1
     QWT_ROOT = ../LIBS/qwt-6.0.1
     QWT3D_ROOT = ../LIBS/qwtplot3d
-    QUEX_ROOT = /opt/quex/quex-0.59.7
-    #QUEX_ROOT = /Applications/quex/quex-0.59.7
+    #QUEX_ROOT = /opt/quex/quex-0.59.7
+    QUEX_ROOT = /Applications/quex/quex-0.59.7
 
     UI_DIR = ui
     MOC_DIR = moc
