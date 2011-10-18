@@ -150,13 +150,8 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
     connect(ui->tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(removeTab(int)));
 
     // check for updates
-    //connect(this, SIGNAL(check()), this, SLOT(initCheckUpdates()), Qt::QueuedConnection);
     connect(this, SIGNAL(check()), this, SLOT(initCheckHttpUpdates()), Qt::QueuedConnection);
     emit check();
-
-    // check for message
-//    connect(this, SIGNAL(adieu()), this, SLOT(say_Ciao()), Qt::QueuedConnection);
-//    emit adieu();
 
 }
 
@@ -3808,22 +3803,21 @@ QString MDImain::strippedName(const QString &fullFileName)
 
 void MDImain::on_actionCheck_for_updates_triggered()
 {
-    //remove the old zip file used for previous Update
+    //remove the old installer file used for previous Update
     QFile::remove(qApp->applicationDirPath() + "/update_HEXplorer.exe");
 
-    //DialogUpdate updater("//ivcharb07/pc$imf/USER/Hoel/HEXplorer/update.xml", true, this);
     QUrl url("http://hexplorer.googlecode.com/svn/trunk/src/update.xml");
-    DialogHttpUpdate updater(url, this);
+    DialogHttpUpdate updater(url, true, this);
 }
 
 
 void MDImain::initCheckHttpUpdates()
 {
-   //remove the old zip file used for previous Update
+   //remove the old installer file used for previous Update
    QFile::remove(qApp->applicationDirPath() + "/update_HEXplorer.exe");
 
    QUrl url("http://hexplorer.googlecode.com/svn/trunk/src/update.xml");
-   DialogHttpUpdate updater(url, this);
+   DialogHttpUpdate updater(url, false, this);
 }
 
 
