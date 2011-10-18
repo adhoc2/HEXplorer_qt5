@@ -1,6 +1,9 @@
 <HEXplorer application="HEXplorer">
-    <revision version="0.6.6">http://hexplorer.googlecode.com/files/update_HEXplorer_0_6_5.exe</revision>
-    <details>revision 0.6.6 (12/10/2011) :
+    <revision version="0.6.7">http://hexplorer.googlecode.com/files/update_HEXplorer_0_6_7.exe</revision>
+    <details>revision 0.6.7 (18/10/2011) :
+    - HTTP updater
+
+revision 0.6.6 (12/10/2011) :
     - bug correction when no target Hex file defined to copy
 
 revision 0.6.5 (06/10/2011) :
