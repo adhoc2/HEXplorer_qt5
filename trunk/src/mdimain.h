@@ -139,9 +139,7 @@ private slots:
      void on_actionOpen_Saphir_file_triggered();
      void on_actionSettings_triggered();
      void on_actionCheck_for_updates_triggered();
-     void initCheckUpdates();
      void initCheckHttpUpdates();
-     //void say_Ciao();
      void openRecentFile();
      void read_ValuesFromCsv();
      void read_ValuesFromCdfx();

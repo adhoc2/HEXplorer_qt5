@@ -1,3 +1,22 @@
+// HEXplorer is an Asap and HEX file editor
+// Copyright (C) 2011  <Christophe Hoel>
+//
+// This file is part of HEXplorer.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// please contact the author at : christophe.hoel@gmail.com
+
 #include "dialoghttpupdate.h"
 
 #include "mdimain.h"
@@ -9,39 +28,45 @@
 #include <QHostInfo>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#ifdef Q_WS_WIN32
-    #include "LMCons.h"
-    #include "windows.h"
-#endif
+#include <QAuthenticator>
 
 DialogHttpUpdate::DialogHttpUpdate(const QUrl& cfgUrl, QWidget *mdiMain)
 {
-    QNetworkProxy proxy;
-    proxy.setType(QNetworkProxy::HttpCachingProxy);
-    proxy.setHostName("151.88.24.11");
-    proxy.setPort(8080);
-    proxy.setUser("to1tt");
-    proxy.setPassword("09Dayasalion");
-    QNetworkProxy::setApplicationProxy(proxy);
 
-    QFile::remove("cfg");
-    QFile::remove("bin");
+    //Save Proxy settings with QSettings
+    QSettings settings;
+    if (!settings.contains("behindProxy"))
+        settings.setValue("behindProxy", false);
+    if (!settings.contains("HostName"))
+        settings.setValue("HostName", "");
+    if (!settings.contains("Port"))
+        settings.setValue("Port", "");
+    if (!settings.contains("User"))
+        settings.setValue("User", "");
+    if (!settings.contains("User"))
+        settings.setValue("User", "");
 
-    d = new HttpUpdater(mdiMain);
-    d->http = new QHttp;
-    d->http->setProxy(proxy);
-    d->cfgFile = new QFile("cfg");
-    d->binFile = new QFile("bin");
+     //QNetworkManager
+    d = new HttpUpdater(mdiMain, this);
 
+    //configure proxy
+    bool bl = settings.value("behindProxy").toBool();
+    if (bl)
+    {
+        QNetworkProxy proxy;
+        proxy.setType(QNetworkProxy::HttpCachingProxy);
+        proxy.setHostName(settings.value("HostName").toString());
+        proxy.setPort(settings.value("Port").toInt());
+        d->manager.setProxy(proxy);
+    }
 
-    QObject::connect(d->http, SIGNAL(requestFinished(int, bool)), d, SLOT(onRequestFinished(int, bool)));
-
-    d->check(cfgUrl);
+    //check if updates are available
+    d->getXml(cfgUrl);
 }
 
 DialogHttpUpdate::~DialogHttpUpdate(void)
 {
-    QFile::remove("/HEXplorer.zip");
+
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -52,43 +77,118 @@ HttpUpdater::HttpUpdater(QWidget *mainApp, DialogHttpUpdate *par)
 {
     parent = par;
     mdiMain = (MDImain*)mainApp;
+
+    connect(&manager, SIGNAL(finished(QNetworkReply*)),
+            this, SLOT(getXmlFinished(QNetworkReply*)));
+    connect(&manager, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)),
+            this, SLOT(authenticationRequired(QNetworkReply*,QAuthenticator*)));
+    connect(&manager, SIGNAL(proxyAuthenticationRequired(QNetworkProxy,QAuthenticator*)),
+           this, SLOT(proxyAuthenticationRequired(QNetworkProxy,QAuthenticator*)));
 }
 
-void HttpUpdater::check(const QUrl& url)
+void HttpUpdater::getXml(const QUrl& url)
 {
-    if(!cfgFile->open(QFile::ReadWrite))
-        qDebug() << "Unable to open config file for parsing";
-
-    http->setHost(url.host(), url.scheme().toLower() == "https" ? QHttp::ConnectionModeHttps : QHttp::ConnectionModeHttp, url.port() == -1 ? 0 : url.port());
-
-    if (!url.userName().isEmpty())
-        http->setUser(url.userName(), url.password());
-
-    QByteArray path = QUrl::toPercentEncoding(url.path(), "!$&'()*+,;=:@/");
-    if (path.isEmpty())
-        path = "/";
-
-    cfgId = http->get(path, cfgFile);
+    QNetworkRequest request(url);
+    requestXml = manager.get(request);
 }
 
-void HttpUpdater::onRequestFinished(int id, bool error)
+QString HttpUpdater::saveFileName(const QUrl &url)
 {
-    Q_UNUSED(error);
+    QString path = url.path();
+    //QString basename = QFileInfo(path).fileName();
+    QString basename = qApp->applicationDirPath() + "/" + QFileInfo(path).fileName();
 
-    if (id == cfgId)
+    if (basename.isEmpty())
+        basename = "download";
+
+    return basename;
+}
+
+void HttpUpdater::downloadInstaller(const QUrl& url)
+{
+    //download the file from net into local place
+    QString filename = saveFileName(url);
+    binFile.setFileName(filename);
+    if (!binFile.open(QIODevice::WriteOnly))
     {
-        //close file if already open
-        if(!cfgFile->openMode() == QIODevice::NotOpen)
-            cfgFile->close();
+        qDebug() << "error to write file";
+        fprintf(stderr, "Problem opening save file '%s' for download '%s': %s\n",
+                qPrintable(filename), url.toEncoded().constData(),
+                qPrintable(binFile.errorString()));
 
-        if (!cfgFile->open(QFile::ReadOnly | QFile::Text))
+        return;
+    }
+
+    QNetworkRequest request(url);
+    requestInstaller = manager.get(request);
+
+    connect(requestInstaller, SIGNAL(downloadProgress(qint64,qint64)), SLOT(downloadProgress(qint64,qint64)));
+    connect(requestInstaller, SIGNAL(finished()), SLOT(downloadFinished()));
+    connect(requestInstaller, SIGNAL(readyRead()), this, SLOT(downloadReadyRead()));
+
+    downloadTime.start();
+}
+
+void HttpUpdater::launchInstaller()
+{
+    //update Installation_UserList file
+    QFileInfo info(updateFilePath);
+    QString fileName = info.fileName();
+    QString application = qApp->applicationDirPath() + "/" + fileName;
+
+     QProcess *myProcess = new QProcess();
+     myProcess->start(application);
+
+     if(myProcess->waitForStarted())
+     {
+         mdiMain->close();
+     }
+}
+
+//// SLOTS ////
+
+void HttpUpdater::authenticationRequired(QNetworkReply *reply, QAuthenticator *auth)
+{
+    QSettings settings;
+    auth->setUser(settings.value("User").toString());
+    auth->setPassword(settings.value("Password").toString());
+}
+
+void HttpUpdater::proxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *auth)
+{
+    QSettings settings;
+    auth->setUser(settings.value("User").toString());
+    auth->setPassword(settings.value("Password").toString());
+}
+
+void HttpUpdater::getXmlFinished(QNetworkReply *reply)
+{
+    if (reply == requestXml)
+    {
+        //if xml file could not be downloaded
+        if (reply->error())
         {
-            qDebug() << "Unable to open update.xml for reading.";
+            QMessageBox::warning(0, "HEXplorer::update", QString(reply->errorString()) +
+                                  "\n\n" +
+                                  "HEXplorer could not download update.xml file.\n" +
+                                  "Please control your internet connection \n" +
+                                  "or set the proxy parameters properly into Edit/Settings",
+                                  QMessageBox::Ok, QMessageBox::Cancel);
+
+            return; //exit download
+        }
+
+        if (!reply->open(QFile::ReadOnly | QFile::Text))
+        {
+            QMessageBox::warning(0, "HEXplorer::update", "Unable to open update.xml file",
+                                  QMessageBox::Ok, QMessageBox::Cancel);
+
             return;
         }
         else
         {
-            QXmlStreamReader reader(cfgFile);
+            QByteArray data = reply->readAll();
+            QXmlStreamReader reader(data);
             while (!reader.atEnd())
             {
                 reader.readNext();
@@ -103,7 +203,7 @@ void HttpUpdater::onRequestFinished(int id, bool error)
                         reader.readNext();
                         if(reader.isCharacters())
                         {
-                            updateReleaseName = reader.text().toString();
+                            updateFilePath = reader.text().toString();
                         }
                     }
                     else if (newList.at(0).toDouble() == oldList.at(0).toDouble())
@@ -113,7 +213,7 @@ void HttpUpdater::onRequestFinished(int id, bool error)
                             reader.readNext();
                             if(reader.isCharacters())
                             {
-                                updateReleaseName = reader.text().toString();
+                                updateFilePath = reader.text().toString();
                             }
                         }
                         else if (newList.at(1).toDouble() == oldList.at(1).toDouble())
@@ -123,7 +223,7 @@ void HttpUpdater::onRequestFinished(int id, bool error)
                                 reader.readNext();
                                 if(reader.isCharacters())
                                 {
-                                    updateReleaseName = reader.text().toString();
+                                    updateFilePath = reader.text().toString();
                                 }
                             }
                         }
@@ -134,8 +234,7 @@ void HttpUpdater::onRequestFinished(int id, bool error)
                     reader.readNext();
                     if(reader.isCharacters())
                     {
-                        binUrl.setUrl(reader.text().toString());
-                        //updateDetails = reader.text().toString();
+                        updateDetails = reader.text().toString();
                     }
                 }
             }
@@ -149,7 +248,7 @@ void HttpUpdater::onRequestFinished(int id, bool error)
             }
 
             //if update is or not available, do:
-            if(updateReleaseName.isEmpty())
+            if(updateFilePath.isEmpty())
             {
                 QMessageBox::information(0, "HEXplorer::update", "You are up to date at version "
                                          + qApp->applicationVersion(),
@@ -166,47 +265,61 @@ void HttpUpdater::onRequestFinished(int id, bool error)
                 msgBox.setDetailedText(updateDetails);
                 int ret = msgBox.exec();
 
-
                 if (ret == QMessageBox::Yes)
                 {
-                    downloadFile(binUrl);;
+                    binUrl.setUrl(updateFilePath);
+                    downloadInstaller(binUrl);;
                 }
                 else
                     return;
             }
         }
-
-    }
-    else if (id == binId)
-    {
-
-//        if(!binFile->openMode() == QIODevice::NotOpen)
-//            binFile->close();
-
-//        qDebug() << "Download completed, would you like to install ?";
-
-//        char c = getchar(); getchar();
-
-//        if(c == 'y')
-//            extract();
     }
 }
 
-void HttpUpdater::downloadFile(const QUrl& url)
+void HttpUpdater::downloadReadyRead()
 {
-    // download the file from net into local place
-    if(!binFile->open(QFile::ReadWrite))
-        qDebug() << "Unable to open binary file for saving";
+    binFile.write(requestInstaller->readAll());
+}
 
-    http->setHost(url.host(), url.scheme().toLower() == "https" ? QHttp::ConnectionModeHttps : QHttp::ConnectionModeHttp, url.port() == -1 ? 0 : url.port());
+void HttpUpdater::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
+{
+    progressBar.show();
+    progressBar.setStatus(bytesReceived, bytesTotal);
 
-    if (!url.userName().isEmpty())
-        http->setUser(url.userName(), url.password());
+    // calculate the download speed
+    double speed = bytesReceived * 1000.0 / downloadTime.elapsed();
+    QString unit;
+    if (speed < 1024) {
+        unit = "bytes/sec";
+    } else if (speed < 1024*1024) {
+        speed /= 1024;
+        unit = "kB/s";
+    } else {
+        speed /= 1024*1024;
+        unit = "MB/s";
+    }
 
-    QByteArray path = QUrl::toPercentEncoding(url.path(), "!$&'()*+,;=:@/");
-    if (path.isEmpty())
-        path = "/";
+    progressBar.setMessage(QFileInfo(updateFilePath).fileName() + " " + QString::fromLatin1("%1 %2")
+                          .arg(speed, 3, 'f', 1).arg(unit));
 
+}
+
+void HttpUpdater::downloadFinished()
+{
+    progressBar.hide();
+    binFile.close();
+
+    if (requestInstaller->error())
+    {
+        QMessageBox::warning(0, "HEXplorer::update", QString(requestInstaller->errorString()) +
+                              "\n\n" +
+                              "Please control your internet connection \n" +
+                              "or set the proxy parameters properly into Edit/Settings",
+                              QMessageBox::Ok, QMessageBox::Cancel);
+
+        return; //exit
+    }
 
     QMessageBox msgBox;
     msgBox.setIconPixmap(QPixmap(":/icones/updates.png").scaled(80,80));
@@ -219,53 +332,9 @@ void HttpUpdater::downloadFile(const QUrl& url)
     //update user_List
     if (ret == QMessageBox::Yes)
     {
-        //download file...maybe??
-        binId = http->get(path, binFile);
-
         //execute the downloaded file
-        installUpdate();
+        launchInstaller();
     }
     else
         return;
-
-}
-
-void HttpUpdater::installUpdate()
-{
-    //update Installation_UserList file
-    QFileInfo info(updateReleaseName);
-    QString fileName = info.fileName();
-    QString application = qApp->applicationDirPath() + "/" + fileName;
-
-     QProcess *myProcess = new QProcess();
-     myProcess->start(application);
-
-     if(myProcess->waitForStarted())
-     {
-         mdiMain->close();
-     }
-}
-
-QString HttpUpdater::getUserName()
-{
-    #ifdef Q_WS_WIN32
-        QString userName;
-        #if defined(UNICODE)
-        if ( QSysInfo::windowsVersion () ==  QSysInfo::WV_NT)
-        {
-            TCHAR winUserName[UNLEN + 1]; // UNLEN is defined in LMCons.h
-            DWORD winUserNameSize = sizeof(winUserName);
-            GetUserName( winUserName, &winUserNameSize );
-            userName = QString::fromUtf16((ushort*)winUserName );
-        } else
-        #endif
-        {
-            char winUserName[UNLEN + 1]; // UNLEN is defined in LMCons.h
-            DWORD winUserNameSize = sizeof(winUserName);
-            GetUserNameA( winUserName, &winUserNameSize );
-            userName = QString::fromLocal8Bit( winUserName );
-        }
-        return userName;
-    #endif
-
 }
