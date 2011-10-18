@@ -245,7 +245,8 @@ HEADERS += a2l.h \
     Quex/a2l_quex_lexer.qx \
     Quex/a2l_quex_lexer \
     Quex/a2l_quex_lexer-token_ids \
-    dialoghttpupdate.h
+    dialoghttpupdate.h \
+    dialogprogressdownload.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -261,7 +262,8 @@ FORMS += formeditor.ui \
     dialogbitdisplay.ui \
     formscript.ui \
     dialogchooseexportformat.ui \
-    dialogdatadimension.ui
+    dialogdatadimension.ui \
+    dialogprogressdownload.ui
 SOURCES += a2l.cpp \
     formeditor.cpp \
     main.cpp \
@@ -392,12 +394,20 @@ SOURCES += a2l.cpp \
     charmodel.cpp \
     freezetablewidget.cpp \
     sptablemodelHex.cpp \
+    dialoghttpupdate.cpp \
     Quex/a2l_quex_lexer.cpp \
-    dialoghttpupdate.cpp
+    dialogprogressdownload.cpp
 
 OTHER_FILES += \
     GNU_license.txt \
     update.xml
+
+
+
+
+
+
+
 
 
 
