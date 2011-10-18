@@ -36,7 +36,7 @@ class HttpUpdater : public QObject
     Q_OBJECT
 
 public:
-    HttpUpdater(QWidget *mainApp, DialogHttpUpdate *parent = 0);
+    HttpUpdater(QWidget *mainApp, bool display, DialogHttpUpdate *parent = 0);
     void getXml(const QUrl& url);
     void downloadInstaller(const QUrl& url);
     void launchInstaller();
@@ -60,6 +60,7 @@ public slots:
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
 
 private:
+    bool displayUptoDate;
     DialogProgressDownload progressBar;
     DialogHttpUpdate *parent;
     MDImain *mdiMain;
@@ -79,7 +80,7 @@ class DialogHttpUpdate : public QObject
     Q_OBJECT
 
 public:
-    explicit DialogHttpUpdate(const QUrl& url, QWidget *parent = 0);
+    explicit DialogHttpUpdate(const QUrl& url, bool display, QWidget *parent = 0);
     ~DialogHttpUpdate(void);
 
 private:

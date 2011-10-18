@@ -30,7 +30,7 @@
 #include <QNetworkReply>
 #include <QAuthenticator>
 
-DialogHttpUpdate::DialogHttpUpdate(const QUrl& cfgUrl, QWidget *mdiMain)
+DialogHttpUpdate::DialogHttpUpdate(const QUrl& cfgUrl, bool display, QWidget *mdiMain)
 {
 
     //Save Proxy settings with QSettings
@@ -47,7 +47,7 @@ DialogHttpUpdate::DialogHttpUpdate(const QUrl& cfgUrl, QWidget *mdiMain)
         settings.setValue("User", "");
 
      //QNetworkManager
-    d = new HttpUpdater(mdiMain, this);
+    d = new HttpUpdater(mdiMain, display, this);
 
     //configure proxy
     bool bl = settings.value("behindProxy").toBool();
@@ -73,8 +73,9 @@ DialogHttpUpdate::~DialogHttpUpdate(void)
 //                        Class HTTPUPDATER                               //
 ////////////////////////////////////////////////////////////////////////////
 
-HttpUpdater::HttpUpdater(QWidget *mainApp, DialogHttpUpdate *par)
+HttpUpdater::HttpUpdater(QWidget *mainApp, bool display, DialogHttpUpdate *par)
 {
+    displayUptoDate = display;
     parent = par;
     mdiMain = (MDImain*)mainApp;
 
@@ -94,9 +95,10 @@ void HttpUpdater::getXml(const QUrl& url)
 
 QString HttpUpdater::saveFileName(const QUrl &url)
 {
-    QString path = url.path();
+    //QString path = url.path();
     //QString basename = QFileInfo(path).fileName();
-    QString basename = qApp->applicationDirPath() + "/" + QFileInfo(path).fileName();
+    //QString basename = qApp->applicationDirPath() + "/" + QFileInfo(path).fileName();
+    QString basename = qApp->applicationDirPath() + "/update_HEXplorer.exe";
 
     if (basename.isEmpty())
         basename = "download";
@@ -250,9 +252,12 @@ void HttpUpdater::getXmlFinished(QNetworkReply *reply)
             //if update is or not available, do:
             if(updateFilePath.isEmpty())
             {
-                QMessageBox::information(0, "HEXplorer::update", "You are up to date at version "
-                                         + qApp->applicationVersion(),
-                                      QMessageBox::Ok, QMessageBox::Cancel);
+                if (displayUptoDate)
+                {
+                    QMessageBox::information(0, "HEXplorer::update", "You are up to date at version "
+                                             + qApp->applicationVersion(),
+                                             QMessageBox::Ok, QMessageBox::Cancel);
+                }
             }
             else
             {
