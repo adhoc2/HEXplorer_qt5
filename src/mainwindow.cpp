@@ -41,7 +41,7 @@ MainWindow::MainWindow()
 
     QSettings *settings = new QSettings(QSettings::NativeFormat,
                                         QSettings::UserScope,
-                                        "Ch.Hoel",
+                                        "Ch.Hoël",
                                         "HEXplorer");
     setSettingsObject(settings);
     fallbacksAct->setEnabled(true);

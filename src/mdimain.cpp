@@ -3811,25 +3811,11 @@ void MDImain::on_actionCheck_for_updates_triggered()
     //remove the old zip file used for previous Update
     QFile::remove(qApp->applicationDirPath() + "/update_HEXplorer.exe");
 
-    DialogUpdate updater("//ivcharb07/pc$imf/USER/Hoel/HEXplorer/update.xml", true, this);
+    //DialogUpdate updater("//ivcharb07/pc$imf/USER/Hoel/HEXplorer/update.xml", true, this);
+    QUrl url("http://hexplorer.googlecode.com/svn/trunk/src/update.xml");
+    DialogHttpUpdate updater(url, this);
 }
 
-void MDImain::initCheckUpdates()
-{
-   //remove the old zip file used for previous Update
-   QFile::remove(qApp->applicationDirPath() + "/update_HEXplorer.exe");
-
-   DialogUpdate updater("//ivcharb07/pc$imf/USER/Hoel/HEXplorer/update.xml", false, this);
-
-   //check if pc is registered
-//   QSettings settings;
-//   if (!settings.value("isRegistered").toBool())
-//   {
-//        settings.setValue("isRegistered", registerVersion());
-//   }
-
-   registerVersion();
-}
 
 void MDImain::initCheckHttpUpdates()
 {
@@ -3838,33 +3824,8 @@ void MDImain::initCheckHttpUpdates()
 
    QUrl url("http://hexplorer.googlecode.com/svn/trunk/src/update.xml");
    DialogHttpUpdate updater(url, this);
-
 }
 
-//void MDImain::say_Ciao()
-//{
-//    //ce n'est qu'un au revoir !!
-//    //to save the choice of the user into the message window.
-//    QSettings settings;
-//    QStringList list = settings.allKeys();
-//    if (list.contains("sayCiao"))
-//    {
-//        boolCiao = settings.value("sayCiao").toBool();
-//    }
-//    else
-//        boolCiao = true;
-
-//    //if the message window has to be open
-//    if (boolCiao)
-//    {
-//        Ciao *myCiao = new Ciao(boolCiao, this);
-//        myCiao->exec();
-
-//        //save show again boolean
-//        settings.setValue("sayCiao", boolCiao);
-
-//    }
-//}
 
 bool MDImain::registerVersion()
 {
