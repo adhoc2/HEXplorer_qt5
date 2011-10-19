@@ -35,14 +35,16 @@ DialogHttpUpdate::DialogHttpUpdate(const QUrl& cfgUrl, bool display, QWidget *md
 
     //Save Proxy settings with QSettings
     QSettings settings;
+    if (!settings.contains("Update/automatic"))
+        settings.setValue("Update/automatic", true);
     if (!settings.contains("Proxy/behindProxy"))
         settings.setValue("Proxy/behindProxy", false);
     if (!settings.contains("Proxy/HostName"))
         settings.setValue("Proxy/HostName", "");
     if (!settings.contains("Proxy/Port"))
         settings.setValue("Proxy/Port", "");
-    if (!settings.contains("Proxy/User"))
-        settings.setValue("Proxy/User", "");
+    if (!settings.contains("Proxy/Password"))
+        settings.setValue("Proxy/Password", "");
     if (!settings.contains("Proxy/User"))
         settings.setValue("Proxy/User", "");
 

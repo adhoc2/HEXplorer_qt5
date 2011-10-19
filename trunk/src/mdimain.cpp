@@ -151,7 +151,10 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
 
     // check for updates
     connect(this, SIGNAL(check()), this, SLOT(initCheckHttpUpdates()), Qt::QueuedConnection);
-    emit check();
+
+    QSettings settings;
+    if ((settings.value("Update/automatic") == true) || (!settings.contains("Update/automatic")))
+        emit check();
 
 }
 
