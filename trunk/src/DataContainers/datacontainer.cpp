@@ -250,7 +250,7 @@ bool DataContainer::exportDataList2Csv(QStringList dataList, QString fileName)
     if (fileName == "")
     {
         //give a name to the file
-        QSettings settings;
+        QSettings settings(qApp->organizationName(), qApp->applicationName());
         QString path = settings.value("currentCsvPath").toString();
         fileName = QFileDialog::getSaveFileName(0,"select CSV files", path,
                                                         "CSV files (*.csv);;all files (*.*)");
@@ -263,7 +263,7 @@ bool DataContainer::exportDataList2Csv(QStringList dataList, QString fileName)
     }
 
     //set the csvFilePath into settings
-    QSettings settings;
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
     QString currentCsvPath = QFileInfo(fileName).absolutePath();
     settings.setValue("currentCsvPath", currentCsvPath);
 
@@ -350,7 +350,7 @@ bool DataContainer::exportDataList2Cdf(QStringList dataList, QString fileName)
     if (fileName == "")
     {
         //create CDF file(s)
-        QSettings settings;
+        QSettings settings(qApp->organizationName(), qApp->applicationName());
         QString path = settings.value("currentCdfxPath").toString();
         fileName = QFileDialog::getSaveFileName(0,"select CDF files", path,
                             "CDF files (*.cdfx | *.cdf);;all files (*.*)");
@@ -363,7 +363,7 @@ bool DataContainer::exportDataList2Cdf(QStringList dataList, QString fileName)
     }
 
     //set the csvFilePath into settings
-    QSettings settings;
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
     QString currentCdfxPath = QFileInfo(fileName).absolutePath();
     settings.setValue("currentCdfxPath", currentCdfxPath);
 

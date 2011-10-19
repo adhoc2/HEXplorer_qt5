@@ -477,7 +477,7 @@ void ChooseLabel::on_buttonBox_accepted()
 void ChooseLabel::on_import_2_clicked()
 {    
     //select a File from disk
-    QSettings settings;
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
     QString currentLabPath = settings.value("currentLabPath").toString();
     QString filename = QFileDialog::getOpenFileName(this,
                                       tr("select a lab file (lab)"), currentLabPath,
@@ -558,7 +558,7 @@ void ChooseLabel::on_export_2_clicked()
     foreach(QListWidgetItem *item, ui->listWidget_2->selectedItems())
         strList.append(item->text());
 
-    QSettings settings;
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
     QString currentLabPath = settings.value("currentLabPath").toString();
     QString fileName = QFileDialog::getSaveFileName(this,"save lab files", currentLabPath,
                                                     "lab files (*.lab);;all files (*.*)");

@@ -1397,7 +1397,7 @@ void FormCompare::on_compare_clicked()
 
         if (ret == QMessageBox::Yes)
         {
-            QSettings settings;
+            QSettings settings(qApp->organizationName(), qApp->applicationName());
             QString currentLabPath = settings.value("currentLabPath").toString();
             QString fileName = QFileDialog::getSaveFileName(this,"save lab files", currentLabPath,
                                                             "lab files (*.txt);;all files (*.*)");

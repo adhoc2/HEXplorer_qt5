@@ -1839,7 +1839,7 @@ void HexFile::exportSubsetList2Csv(QStringList subsetList)
     Node *fun = a2l->getProject()->getNode("MODULE/" + getModuleName() + "/FUNCTION");
     if (fun != NULL)
     {
-        QSettings settings;
+        QSettings settings(qApp->organizationName(), qApp->applicationName());
         QString path = settings.value("currentCsvPath").toString();
         QString fileName = QFileDialog::getSaveFileName(0,tr("select CSV files"), path,
                                                         tr("CSV files (*.csv);;all files (*.*)"));
@@ -1900,7 +1900,7 @@ void HexFile::exportSubsetList2Cdf(QStringList subsetList)
     Node *fun = a2l->getProject()->getNode("MODULE/" + getModuleName() + "/FUNCTION");
     if (fun != NULL)
     {
-        QSettings settings;
+        QSettings settings(qApp->organizationName(), qApp->applicationName());
         QString path = settings.value("currentCdfxPath").toString();
         QString fileName = QFileDialog::getSaveFileName(0,tr("select CDF files"), path,
                                                         tr("CDF files (*.cdfx | *.cdf);;all files (*.*)"));

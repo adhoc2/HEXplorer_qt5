@@ -33,7 +33,7 @@
 DialogHttpUpdate::DialogHttpUpdate(const QUrl& cfgUrl, bool display, QWidget *mdiMain)
 {
     //Save Proxy settings with QSettings
-    QSettings settings;
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
     if (!settings.contains("Update/automatic"))
         settings.setValue("Update/automatic", true);
     if (!settings.contains("Proxy/behindProxy"))
@@ -155,14 +155,14 @@ void HttpUpdater::launchInstaller()
 
 void HttpUpdater::authenticationRequired(QNetworkReply *reply, QAuthenticator *auth)
 {
-    QSettings settings;
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
     auth->setUser(settings.value("Proxy/User").toString());
     auth->setPassword(settings.value("Proxy/Password").toString());
 }
 
 void HttpUpdater::proxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *auth)
 {
-    QSettings settings;
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
     auth->setUser(settings.value("Proxy/User").toString());
     auth->setPassword(settings.value("Proxy/Password").toString());
 }

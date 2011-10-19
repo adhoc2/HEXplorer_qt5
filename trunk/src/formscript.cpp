@@ -101,7 +101,7 @@ QScriptValue includeFunction(QScriptContext *context, QScriptEngine *engine)
         QString fileName = context->argument(i).toString();
 
         //update currentJsPath
-        QSettings settings;
+        QSettings settings(qApp->organizationName(), qApp->applicationName());
         QString path = settings.value("currentScriptPath").toString();
 
         QString filePath = path + "/" + fileName;
@@ -493,7 +493,7 @@ void FormScript::createToolbar()
 
 void FormScript::openFile()
 {
-    QSettings settings;
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
     QString path = settings.value("currentScriptPath").toString();
 
     QString fileName =  QFileDialog::getOpenFileName(this,
