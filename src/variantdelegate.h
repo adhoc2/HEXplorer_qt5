@@ -42,10 +42,10 @@
 #ifndef VARIANTDELEGATE_H
 #define VARIANTDELEGATE_H
 
-#include <QItemDelegate>
+#include <QStyledItemDelegate>
 #include <QRegExp>
 
-class VariantDelegate : public QItemDelegate
+class VariantDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 

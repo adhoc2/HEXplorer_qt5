@@ -151,7 +151,9 @@ void SettingsTree::updateSetting(QTreeWidgetItem *item)
 
     settings->setValue(key, item->data(2, Qt::UserRole));
     if (autoRefresh)
+    {
         refresh();
+    }
 }
 
 void SettingsTree::updateChildItems(QTreeWidgetItem *parent)
@@ -180,6 +182,7 @@ void SettingsTree::updateChildItems(QTreeWidgetItem *parent)
 
     foreach (QString key, settings->childKeys()) {
         QTreeWidgetItem *child;
+
         int childIndex = findChild(parent, key, 0);
 
         if (childIndex == -1 || childIndex >= dividerIndex) {
@@ -203,7 +206,21 @@ void SettingsTree::updateChildItems(QTreeWidgetItem *parent)
         } else {
             child->setText(1, value.typeName());
         }
-        child->setText(2, VariantDelegate::displayText(value));
+
+        if (child->text(0) == "Password")
+        {
+            int num = VariantDelegate::displayText(value).length();
+            QString str;
+            for (int i = 0; i < num; i++)
+            {
+                str.append("x");
+            }
+            child->setText(2, str);
+        }
+        else
+        {
+            child->setText(2, VariantDelegate::displayText(value));
+        }
         child->setData(2, Qt::UserRole, value);
     }
 
