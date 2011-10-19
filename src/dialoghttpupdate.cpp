@@ -115,10 +115,13 @@ void HttpUpdater::downloadInstaller(const QUrl& url)
     binFile.setFileName(filename);
     if (!binFile.open(QIODevice::WriteOnly))
     {
-        qDebug() << "error to write file";
-        fprintf(stderr, "Problem opening save file '%s' for download '%s': %s\n",
-                qPrintable(filename), url.toEncoded().constData(),
-                qPrintable(binFile.errorString()));
+
+        QMessageBox::warning(0, "HEXplorer::update", "Problem opening file " +
+                           filename + " for download at " + url.toEncoded().constData() +
+                           " : " + url.toEncoded().constData() + "\n",
+                              QMessageBox::Ok, QMessageBox::Cancel);
+
+        return;
 
         return;
     }
@@ -174,9 +177,10 @@ void HttpUpdater::getXmlFinished(QNetworkReply *reply)
         {
             QMessageBox::warning(0, "HEXplorer::update", QString(reply->errorString()) +
                                   "\n\n" +
-                                  "HEXplorer could not download update.xml file.\n" +
-                                  "Please control your internet connection \n" +
-                                  "or set the proxy parameters properly into Edit/Settings",
+                                  "HEXplorer could not read update.xml file for available updates.\n\n" +
+                                  "Please control or configure your internet connection \n" +
+                                  "setting properly the proxy parameters if you are behind a proxy\n" +
+                                  "or simply disabling the automatic updates into Edit/Settings.\n",
                                   QMessageBox::Ok, QMessageBox::Cancel);
 
             return; //exit download
