@@ -32,7 +32,6 @@
 
 DialogHttpUpdate::DialogHttpUpdate(const QUrl& cfgUrl, bool display, QWidget *mdiMain)
 {
-
     //Save Proxy settings with QSettings
     QSettings settings;
     if (!settings.contains("Update/automatic"))

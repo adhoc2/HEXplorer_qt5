@@ -43,8 +43,9 @@
 
 #include "variantdelegate.h"
 
+
 VariantDelegate::VariantDelegate(QObject *parent)
-    : QItemDelegate(parent)
+    : QStyledItemDelegate(parent)
 {
     boolExp.setPattern("true|false");
     boolExp.setCaseSensitivity(Qt::CaseInsensitive);
@@ -68,17 +69,18 @@ void VariantDelegate::paint(QPainter *painter,
                             const QStyleOptionViewItem &option,
                             const QModelIndex &index) const
 {
+
     if (index.column() == 2) {
         QVariant value = index.model()->data(index, Qt::UserRole);
         if (!isSupportedType(value.type())) {
             QStyleOptionViewItem myOption = option;
             myOption.state &= ~QStyle::State_Enabled;
-            QItemDelegate::paint(painter, myOption, index);
+            QStyledItemDelegate::paint(painter, myOption, index);
             return;
         }
     }
 
-    QItemDelegate::paint(painter, option, index);
+    QStyledItemDelegate::paint(painter, option, index);
 }
 
 QWidget *VariantDelegate::createEditor(QWidget *parent,
@@ -156,7 +158,20 @@ void VariantDelegate::setEditorData(QWidget *editor,
 {
     QVariant value = index.model()->data(index, Qt::UserRole);
     if (QLineEdit *lineEdit = qobject_cast<QLineEdit *>(editor))
-        lineEdit->setText(displayText(value));
+    {
+        QModelIndex indexSettingName = index.model()->index(index.row(), 0,index.parent());
+        QVariant valueName = indexSettingName.model()->data(indexSettingName, Qt::DisplayRole);
+
+        if (valueName.toString() == "Password")
+        {
+            lineEdit->setEchoMode(QLineEdit::Password);
+            lineEdit->setText(displayText(value));
+        }
+        else
+        {
+            lineEdit->setText(displayText(value));
+        }
+    }
 }
 
 void VariantDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
