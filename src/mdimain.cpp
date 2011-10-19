@@ -152,7 +152,7 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
     // check for updates
     connect(this, SIGNAL(check()), this, SLOT(initCheckHttpUpdates()), Qt::QueuedConnection);
 
-    QSettings settings;
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
     if ((settings.value("Update/automatic") == true) || (!settings.contains("Update/automatic")))
         emit check();
 
@@ -170,7 +170,7 @@ void MDImain::closeEvent(QCloseEvent *e)
 {
     if (checkChangedHexFiles() && checkChangedCsvFiles())
     {
-        QSettings settings;
+        QSettings settings(qApp->organizationName(), qApp->applicationName());
         settings.setValue("geometry", saveGeometry());
         settings.setValue("windowState", saveState());
         e->accept();
@@ -181,7 +181,7 @@ void MDImain::closeEvent(QCloseEvent *e)
 
 void MDImain::readSettings()
 {
-    QSettings settings;
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
     restoreGeometry(settings.value("geometry").toByteArray());
     restoreState(settings.value("windowState").toByteArray());
 }
@@ -988,7 +988,7 @@ bool MDImain::checkChangedCsvFiles()
 
 void MDImain::on_actionNewA2lProject_triggered()
 {
-    QSettings settings;
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
     QString path = settings.value("currentA2lPath").toString();
 
     const QStringList files =
@@ -1026,7 +1026,7 @@ void MDImain::openProject(QString &fullFileName)
     }
 
     //update currentA2lPath
-    QSettings settings;
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
     QString currentA2lPath = QFileInfo(fullFileName).absolutePath();
     settings.setValue("currentA2lPath", currentA2lPath);
 
@@ -1098,7 +1098,7 @@ void MDImain::addHexFile2Project()
         }
         else
         {
-            QSettings settings;
+            QSettings settings(qApp->organizationName(), qApp->applicationName());
             QString path = settings.value("currentHexPath").toString();
 
             QStringList files =
@@ -1148,7 +1148,7 @@ void MDImain::addHexFile2Project()
                     foreach (QString fullHexName, files)
                     {
                         //update currentHexPath
-                        QSettings settings;
+                        QSettings settings(qApp->organizationName(), qApp->applicationName());
                         QString currentHexPath = QFileInfo(fullHexName).absolutePath();
                         settings.setValue("currentHexPath", currentHexPath);
 
@@ -1249,7 +1249,7 @@ void MDImain::addCsvFile2Project()
         }
         else
         {
-            QSettings settings;
+            QSettings settings(qApp->organizationName(), qApp->applicationName());
             QString path = settings.value("currentCsvPath").toString();
 
             QStringList files = QFileDialog::getOpenFileNames(this,
@@ -1297,7 +1297,7 @@ void MDImain::addCsvFile2Project()
                     foreach (QString fullCsvName, files)
                     {
                         //update currentHexPath
-                        QSettings settings;
+                        QSettings settings(qApp->organizationName(), qApp->applicationName());
                         QString currentCsvPath = QFileInfo(fullCsvName).absolutePath();
                         settings.setValue("currentCsvPath", currentCsvPath);
 
@@ -1407,7 +1407,7 @@ void MDImain::addCdfxFile2Project()
         }
         else
         {
-            QSettings settings;
+            QSettings settings(qApp->organizationName(), qApp->applicationName());
             QString path = settings.value("currentCdfxPath").toString();
 
             QStringList files = QFileDialog::getOpenFileNames(this,
@@ -1455,7 +1455,7 @@ void MDImain::addCdfxFile2Project()
                     foreach (QString fullCdfxName, files)
                     {
                         //update currentHexPath
-                        QSettings settings;
+                        QSettings settings(qApp->organizationName(), qApp->applicationName());
                         QString currentCdfxPath = QFileInfo(fullCdfxName).absolutePath();
                         settings.setValue("currentCdfxPath", currentCdfxPath);
 
@@ -2060,7 +2060,7 @@ void MDImain::export_ListData()
     QStringList listData = ((A2lTreeModel*)ui->treeView_2->model())->getListDataName();
     strList.append(listData);
 
-    QSettings settings;
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
     QString currentLabPath = settings.value("currentLabPath").toString();
     QString fileName = QFileDialog::getSaveFileName(this,"save lab files", currentLabPath,
                                                     "lab files (*.lab);;all files (*.*)");
@@ -2618,7 +2618,7 @@ void MDImain::read_ValuesFromCsv()
         {
             HexFile *hex  = (HexFile*)model->getNode(index);
 
-            QSettings settings;
+            QSettings settings(qApp->organizationName(), qApp->applicationName());
             QString path = settings.value("currentCsvPath").toString();
 
             QStringList files = QFileDialog::getOpenFileNames(this,
@@ -2664,7 +2664,7 @@ void MDImain::read_ValuesFromCsv()
                 foreach (QString fullCsvName, files)
                 {
                     //update currentHexPath
-                    QSettings settings;
+                    QSettings settings(qApp->organizationName(), qApp->applicationName());
                     QString currentCsvPath = QFileInfo(fullCsvName).absolutePath();
                     settings.setValue("currentCsvPath", currentCsvPath);
 
@@ -2772,7 +2772,7 @@ void MDImain::read_ValuesFromCdfx()
         {
             HexFile *hex  = (HexFile*)model->getNode(index);
 
-            QSettings settings;
+            QSettings settings(qApp->organizationName(), qApp->applicationName());
             QString path = settings.value("currentCdfxPath").toString();
 
             QStringList files = QFileDialog::getOpenFileNames(this,
@@ -2818,7 +2818,7 @@ void MDImain::read_ValuesFromCdfx()
                 foreach (QString fullCdfxName, files)
                 {
                     //update currentHexPath
-                    QSettings settings;
+                    QSettings settings(qApp->organizationName(), qApp->applicationName());
                     QString currentCdfxPath = QFileInfo(fullCdfxName).absolutePath();
                     settings.setValue("currentCdfxPath", currentCdfxPath);
 
@@ -3547,7 +3547,7 @@ void MDImain::import_Subsets()
         {
             HexFile *hex  = (HexFile*)model->getNode(index);
 
-            QSettings settings;
+            QSettings settings(qApp->organizationName(), qApp->applicationName());
             QString path = settings.value("currentCsvPath").toString();
 
             QStringList files = QFileDialog::getOpenFileNames(this,
@@ -3580,7 +3580,7 @@ void MDImain::import_Subsets()
                 foreach (QString fullCsvName, files)
                 {
                     //update currentHexPath
-                    QSettings settings;
+                    QSettings settings(qApp->organizationName(), qApp->applicationName());
                     QString currentCsvPath = QFileInfo(fullCsvName).absolutePath();
                     settings.setValue("currentCsvPath", currentCsvPath);
 
@@ -3764,7 +3764,7 @@ void MDImain::setCurrentFile(const QString &fileName)
     curFile = fileName;
     setWindowFilePath(curFile);
 
-    QSettings settings;
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
     QStringList files = settings.value("recentFileList").toStringList();
     files.removeAll(fileName);
     files.prepend(fileName);
@@ -3782,7 +3782,7 @@ void MDImain::setCurrentFile(const QString &fileName)
 
 void MDImain::updateRecentFileActions()
 {
-    QSettings settings;
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
     QStringList files = settings.value("recentFileList").toStringList();
 
     int numRecentFiles = qMin(files.size(), (int)MaxRecentFiles);
