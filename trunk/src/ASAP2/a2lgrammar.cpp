@@ -41,6 +41,7 @@ A2lGrammar::A2lGrammar()
     initDef_characteristic();
     initFormula();
     initFunction();
+    initFunction_list();
     initHeader();
     initProject();
     initModule();
@@ -71,6 +72,7 @@ A2lGrammar::A2lGrammar()
     initCustomer_number();
     initDefault_value();
     initDeposit();
+    initDisplay_identifier();
     initEcu();
     initEcu_address();
     initEpk();
@@ -103,8 +105,8 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
     QList<std::string> list;
 
     list << "ASAP2_VERSION" << "A2ML_VERSION" << "AXIS_DESCR" << "AXIS_PTS_REF" << "PROJECT"
-        << "PROJECT_NO" << "VERSION" << "HEADER"
-        << "MODULE" << "A2ML" << "MOD_PAR" << "CHARACTERISTIC"
+         << "PROJECT_NO" << "VERSION" << "HEADER" << "DISPLAY_IDENTIFIER"
+         << "MODULE" << "A2ML" << "MOD_PAR" << "CHARACTERISTIC" << "FUNCTION_LIST"
         << "AXIS_PTS" << "BYTE_ORDER" << "ANNOTATION" << "MEASUREMENT" << "LOC_MEASUREMENT"
         << "COMPU_TAB" << "GROUP" <<  "RECORD_LAYOUT" << "REF_CHARACTERISTIC"
         << "IF_DATA" << "SYSTEM_CONSTANT" << "EXTENDED_LIMITS" << "ANNOTATION_LABEL"
@@ -298,12 +300,15 @@ void A2lGrammar::initCharacteristic()
     characteristic.factoryOptNode.insert("IF_DATA", &IF_DATA::nodeFactory);
     characteristic.factoryOptNode.insert("ANNOTATION", &ANNOTATION::nodeFactory);
     characteristic.factoryOptNode.insert("AXIS_DESCR", &AXIS_DESCR::nodeFactory);
+    characteristic.factoryOptNode.insert("FUNCTION_LIST", &FUNCTION_LIST::nodeFactory);
 
+    characteristic.factoryOptItem.insert("BIT_MASK", &BIT_MASK::itemFactory);
     characteristic.factoryOptItem.insert("FORMAT", &FORMAT::itemFactory);
     characteristic.factoryOptItem.insert("EXTENDED_LIMITS", &EXTENDED_LIMITS::itemFactory);
     characteristic.factoryOptItem.insert("NUMBER", &NUMBER::itemFactory);
     characteristic.factoryOptItem.insert("READ_ONLY", &READ_ONLY::itemFactory);
     characteristic.factoryOptItem.insert("MAX_REFRESH", &MAX_REFRESH::itemFactory);
+    characteristic.factoryOptItem.insert("DISPLAY_IDENTIFIER", &DISPLAY_IDENTIFIER::itemFactory);
 
 }
 
@@ -316,10 +321,12 @@ void A2lGrammar::initAxis_pts()
 
     axis_pts.factoryOptNode.insert("IF_DATA", &IF_DATA::nodeFactory);
     axis_pts.factoryOptNode.insert("ANNOTATION", &ANNOTATION::nodeFactory);
+    axis_pts.factoryOptNode.insert("FUNCTION_LIST", &FUNCTION_LIST::nodeFactory);
 
     axis_pts.factoryOptItem.insert("FORMAT", &FORMAT::itemFactory);
     axis_pts.factoryOptItem.insert("EXTENDED_LIMITS", &EXTENDED_LIMITS::itemFactory);
     axis_pts.factoryOptItem.insert("DEPOSIT", &DEPOSIT::itemFactory);
+    axis_pts.factoryOptItem.insert("DISPLAY_IDENTIFIER", &DISPLAY_IDENTIFIER::itemFactory);
 }
 
 void A2lGrammar::initRecord_layout()
@@ -364,6 +371,7 @@ void A2lGrammar::initMeasurement()
     measurement.factoryOptItem.insert("ARRAY_SIZE", &ARRAY_SIZE::itemFactory);
     measurement.factoryOptItem.insert("BIT_MASK", &BIT_MASK::itemFactory);
     measurement.factoryOptItem.insert("BYTE_ORDER", &Byte_Order::itemFactory);
+    measurement.factoryOptItem.insert("DISPLAY_IDENTIFIER", &DISPLAY_IDENTIFIER::itemFactory);
 
 }
 
@@ -417,6 +425,11 @@ void A2lGrammar::initFunction()
     function.factoryOptNode.insert("IN_MEASUREMENT", &IN_MEASUREMENT::nodeFactory);
     function.factoryOptNode.insert("OUT_MEASUREMENT", &OUT_MEASUREMENT::nodeFactory);
     function.factoryOptNode.insert("SUB_FUNCTION", &SUB_FUNCTION::nodeFactory);
+}
+
+void A2lGrammar::initFunction_list()
+{
+
 }
 
 void A2lGrammar::initHeader()
@@ -489,6 +502,7 @@ void A2lGrammar::initMod_common()
     mod_common.factoryOptItem.insert("ALIGNMENT_WORD", &ALIGNMENT_WORD::itemFactory);
     mod_common.factoryOptItem.insert("ALIGNMENT_LONG", &ALIGNMENT_LONG::itemFactory);
     mod_common.factoryOptItem.insert("S_REC_LAYOUT", &S_REC_LAYOUT::itemFactory);
+    mod_common.factoryOptItem.insert("DEPOSIT", &DEPOSIT::itemFactory);
     mod_common.factoryOptItem.insert("ALIGNMENT_FLOAT32_IEEE", &ALIGNMENT_FLOAT32_IEEE::itemFactory);
 
 }
@@ -638,6 +652,12 @@ void A2lGrammar::initDeposit()
 {
     deposit.typePar  << Mode;
     deposit.namePar << "Mode";
+}
+
+void A2lGrammar::initDisplay_identifier()
+{
+    display_identifier.typePar  << Identifier;
+    display_identifier.namePar << "display_name";
 }
 
 void A2lGrammar::initEcu()

@@ -49,7 +49,9 @@ AXIS_PTS::AXIS_PTS( Node *parentNode)
     occOptPar->insert("IF_DATA", ZeroOrMore);
     occOptPar->insert("EXTENDED_LIMITS", ZeroOrOne);
     occOptPar->insert("ANNOTATION", ZeroOrMore);
-    occOptPar->insert("DEPOSIT", ZeroOrMore);    
+    occOptPar->insert("DEPOSIT", ZeroOrMore);
+    occOptPar->insert("DISPLAY_IDENTIFIER", ZeroOrOne);
+    occOptPar->insert("FUNCTION_LIST", ZeroOrOne);
 
     //Set the line where the Node starts in ASAP file
     this->a2lLine = lex->getLine();
