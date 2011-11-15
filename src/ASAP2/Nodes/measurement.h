@@ -29,6 +29,7 @@
 #include "Items/array_size.h"
 #include "Items/bit_mask.h"
 #include "Items/byte_order.h"
+#include "Items/display_identifier.h"
 #include "Nodes/if_data.h"
 
 class MEASUREMENT : public Node

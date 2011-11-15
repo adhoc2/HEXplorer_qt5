@@ -17,43 +17,28 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#ifndef DEF_CHARACTERISTIC_H
-#define DEF_CHARACTERISTIC_H
+#ifndef DISPLAY_IDENTIFIER_H
+#define DISPLAY_IDENTIFIER_H
 
-#include "node.h"
 #include "item.h"
 #include "lexer.h"
 #include "basefactory.h"
 
-
-class DEF_CHARACTERISTIC : public Node
+class DISPLAY_IDENTIFIER : public Item
 {
     public:
-        DEF_CHARACTERISTIC( Node *parentNode);
-        ~DEF_CHARACTERISTIC();
-
-        QMap<std::string, std::string> *getParameters();
-        static Factory<Node,DEF_CHARACTERISTIC> nodeFactory;
-        std::string pixmap();
-        QStringList getCharList();
+        DISPLAY_IDENTIFIER( Node *parentNode);
+        ~DISPLAY_IDENTIFIER();
+        QMap<std::string, std::string> getParameters();
+        static Factory<Item,DISPLAY_IDENTIFIER> itemFactory;
+        static void initialize();
         char* getPar(std::string str);
 
     private:
-        // Fix parameters
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;
-
-        // Opt parameters
-        QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
-        QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;
-
-        // CHARACTERISTICS list
-        QList<std::string> charList;
-
-        TokenTyp parseListChar();
-        void parseFixPar(QList<TokenTyp> *typePar);
-        TokenTyp parseOptPar();
 };
 
-#endif // DEF_CHARACTERISTIC_H
+#endif // DISPLAY_IDENTIFIER_H

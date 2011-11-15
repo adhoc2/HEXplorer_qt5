@@ -28,8 +28,10 @@
 #include "Items/extended_limits.h"
 #include "Nodes/if_data.h"
 #include "Nodes/function.h"
+#include "Nodes/function_list.h"
 #include "Nodes/annotation.h"
 #include "Items/deposit.h"
+#include "Items/display_identifier.h"
 
 class AXIS_PTS : public Node
 {

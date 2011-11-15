@@ -133,6 +133,9 @@ TokenTyp CHARACTERISTIC::parseOptPar()
      nameOptPar.insert("READ_ONLY", ZeroOrOne);
      nameOptPar.insert("ANNOTATION", ZeroOrMore);
      nameOptPar.insert("AXIS_DESCR", ZeroOrMore);
+     nameOptPar.insert("DISPLAY_IDENTIFIER",ZeroOrOne);
+     nameOptPar.insert("BIT_MASK",ZeroOrOne);
+     nameOptPar.insert("FUNCTION_LIST",ZeroOrOne);
 
     if (nameOptPar.isEmpty())
         return nextToken();

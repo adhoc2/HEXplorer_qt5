@@ -126,6 +126,7 @@ TokenTyp MEASUREMENT::parseOptPar()
     nameOptPar.insert("BYTE_ORDER", ZeroOrOne);
     nameOptPar.insert("IF_DATA", ZeroOrMore);
     nameOptPar.insert("ARRAY_SIZE", ZeroOrOne);
+    nameOptPar.insert("DISPLAY_IDENTIFIER", ZeroOrOne);
 
     if (nameOptPar.isEmpty())
         return nextToken();

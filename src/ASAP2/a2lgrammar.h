@@ -65,6 +65,7 @@ class A2lGrammar
         ElementNode measurement;
         ElementNode formula;
         ElementNode function;
+        ElementNode function_list;
         ElementNode header;
         ElementNode project;
         ElementNode module;
@@ -95,6 +96,7 @@ class A2lGrammar
         ElementItem customer_number;
         ElementItem default_value;
         ElementItem deposit;
+        ElementItem display_identifier;
         ElementItem ecu;
         ElementItem ecu_address;
         ElementItem epk;
@@ -139,6 +141,7 @@ private:
         void initMeasurement();
         void initFormula();
         void initFunction();
+        void initFunction_list();
         void initHeader();
         void initProject();
         void initModule();
@@ -168,6 +171,7 @@ private:
         void initCustomer_number();
         void initDefault_value();
         void initDeposit();
+        void initDisplay_identifier();
         void initEcu();
         void initEcu_address();
         void initEpk();

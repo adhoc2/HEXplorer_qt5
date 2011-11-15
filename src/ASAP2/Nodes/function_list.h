@@ -17,53 +17,43 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#ifndef CHARACTERISTIC_H
-#define CHARACTERISTIC_H
+#ifndef FUNCTION_LIST_H
+#define FUNCTION_LIST_H
 
 #include "node.h"
 #include "item.h"
 #include "lexer.h"
 #include "basefactory.h"
-#include "Items/format.h"
-#include "Items/extended_limits.h"
-#include "Items/max_refresh.h"
-#include "Nodes/if_data.h"
-#include "Nodes/annotation.h"
-#include "Nodes/axis_descr.h"
-#include "Nodes/function.h"
-#include "Nodes/function_list.h"
-#include "Items/number.h"
-#include "Items/read_only.h"
-#include "Items/display_identifier.h"
 
-class CHARACTERISTIC : public Node
+
+class FUNCTION_LIST : public Node
 {
     public:
-        CHARACTERISTIC( Node *parentNode);
-        ~CHARACTERISTIC();
+        FUNCTION_LIST( Node *parentNode);
+        ~FUNCTION_LIST();
 
         QMap<std::string, std::string> *getParameters();
-        static Factory<Node,CHARACTERISTIC> nodeFactory;
+        static Factory<Node,FUNCTION_LIST> nodeFactory;
         std::string pixmap();
+        QStringList getCharList();
         char* getPar(std::string str);
-        char* getPar(int i);
-        QString getSubsetName();
-        void setSubset(FUNCTION *fun);
 
     private:
-        // specific only for this node Characteristic
-        FUNCTION *subset;
-
         // Fix parameters
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;
-        void parseFixPar(QList<TokenTyp> *typePar);
 
         // Opt parameters
         QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
-        QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;        
+        QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;
+
+        // CHARACTERISTICS list
+        QList<std::string> subsetList;
+
+        TokenTyp parseListChar();
+        void parseFixPar(QList<TokenTyp> *typePar);
         TokenTyp parseOptPar();
 };
 
-#endif // CHARACTERISTIC_H
+#endif // FUNCTION_LIST_H
