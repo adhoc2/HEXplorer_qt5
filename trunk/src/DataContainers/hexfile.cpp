@@ -1014,7 +1014,7 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
             {
                 for (int i = 0; i < count; i++)
                 {
-                    decList.append(CAST2(blockList[block]->data[index + nByte*i], int32_t));
+                    decList.append(CAST2(blockList[block]->data[index + nByte*i], uint32_t));
                 }
             }
             else if (block < blockList.count() - 1)
@@ -1028,7 +1028,7 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
 
                 for (int i = 0; i < count; i++)
                 {
-                    decList.append(CAST2(buffer[nByte*i], int32_t));
+                    decList.append(CAST2(buffer[nByte*i], uint32_t));
                 }
 
                 delete buffer;

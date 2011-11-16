@@ -154,6 +154,8 @@ void A2l::parseSTA2l()
 
     //save the buffer into a stringstream qluex
     std::istringstream in(buffer);
+    //QString str = QString::fromAscii(buffer, size);
+    //QTextStream in(&str);
 
     //free memory from the char* buffer
     delete buffer;
@@ -162,7 +164,7 @@ void A2l::parseSTA2l()
     progBarMaxValue = size;
 
     //delete previous tree and create a new rootNode
-//    A2lLexer *lexer = new A2lLexer(in);
+    //A2lLexer *lexer = new A2lLexer(in);
     A2lQuexLexer *lexer = new A2lQuexLexer(in);
     connect(lexer, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)), Qt::DirectConnection);
     lexer->initialize();
