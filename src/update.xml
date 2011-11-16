@@ -1,7 +1,11 @@
 <HEXplorer application="HEXplorer">
-    <revision version="0.6.7">http://hexplorer.googlecode.com/files/update_HEXplorer_0_6_7.exe</revision>
-    <details>revision 0.6.7 (18/10/2011) :
+    <revision version="0.6.8">http://hexplorer.googlecode.com/files/update_HEXplorer_0_6_7.exe</revision>
+    <details>revision 0.6.8 (16/11/2011) :
+    - bug fix : edit value Val_Wu32
+
+revision 0.6.7 (18/10/2011) :
     - HTTP updater
+    - proxy setting
 
 revision 0.6.6 (12/10/2011) :
     - bug correction when no target Hex file defined to copy
