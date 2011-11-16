@@ -96,10 +96,9 @@ void HttpUpdater::getXml(const QUrl& url)
 
 QString HttpUpdater::saveFileName(const QUrl &url)
 {
-    //QString path = url.path();
-    //QString basename = QFileInfo(path).fileName();
-    //QString basename = qApp->applicationDirPath() + "/" + QFileInfo(path).fileName();
-    QString basename = qApp->applicationDirPath() + "/update_HEXplorer.exe";
+    QString path = url.path();
+    QString basename = qApp->applicationDirPath() + "/" + QFileInfo(path).fileName();
+    //QString basename = qApp->applicationDirPath() + "/update_HEXplorer.exe";
 
     if (basename.isEmpty())
         basename = "download";
@@ -144,6 +143,8 @@ void HttpUpdater::launchInstaller()
 
      QProcess *myProcess = new QProcess();
      myProcess->start(application);
+
+     qDebug() << application;
 
      if(myProcess->waitForStarted())
      {
