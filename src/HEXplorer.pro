@@ -246,7 +246,9 @@ HEADERS += a2l.h \
     Quex/a2l_quex_lexer \
     Quex/a2l_quex_lexer-token_ids \
     dialoghttpupdate.h \
-    dialogprogressdownload.h
+    dialogprogressdownload.h \
+    ASAP2/Items/display_identifier.h \
+    ASAP2/Nodes/function_list.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -396,11 +398,17 @@ SOURCES += a2l.cpp \
     sptablemodelHex.cpp \
     dialoghttpupdate.cpp \
     Quex/a2l_quex_lexer.cpp \
-    dialogprogressdownload.cpp
+    dialogprogressdownload.cpp \
+    ASAP2/Items/display_identifier.cpp \
+    ASAP2/Nodes/function_list.cpp
 
 OTHER_FILES += \
     GNU_license.txt \
     update.xml
+
+
+
+
 
 
 
