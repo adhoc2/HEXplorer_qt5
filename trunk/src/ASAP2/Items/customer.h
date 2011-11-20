@@ -17,46 +17,27 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#ifndef MOD_COMMON_H
-#define MOD_COMMON_H
+#ifndef CUSTOMER_H
+#define CUSTOMER_H
 
-#include "node.h"
+#include "item.h"
+#include "lexer.h"
 #include "basefactory.h"
-#include "Items/byte_order.h"
-#include "Items/alignment_byte.h"
-#include "Items/alignment_float32_ieee.h"
-#include "Items/alignment_float64_ieee.h"
-#include "Items/alignment_word.h"
-#include "Items/alignment_long.h"
-#include "Items/data_size.h"
-#include "Items/s_rec_layout.h"
 
-
-class MOD_COMMON : public Node
+class CUSTOMER : public Item
 {
     public:
-        MOD_COMMON( Node *parentNode);
-        ~MOD_COMMON();
-        QMap<std::string, std::string> *getParameters();
-        char* fixPar(int n);
-        static Factory<Node,MOD_COMMON> nodeFactory;
-        std::string pixmap();
+        CUSTOMER(Node *parentNode);
+        ~CUSTOMER();
+        QMap<std::string, std::string> getParameters();
+        static Factory<Item, CUSTOMER> itemFactory;
         char* getPar(std::string str);
 
     private:
-        // Fix parameters
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;
-
-        // Opt parameters
-        QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
-        QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;
-
-        //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
-
-        void parseFixPar(QList<TokenTyp> *typePar);
-        TokenTyp parseOptPar();
 };
 
-#endif // MOD_COMMON_H
+#endif // CUSTOMER_H
