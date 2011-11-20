@@ -17,30 +17,26 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#include "customer_no.h"
+#include "alignment_float64_ieee.h"
 #include <QMessageBox>
 #include "a2lgrammar.h"
 
 //initialise static variables
-Factory<Item,CUSTOMER_NO> CUSTOMER_NO::itemFactory;
+Factory<Item,ALIGNMENT_FLOAT64_IEEE> ALIGNMENT_FLOAT64_IEEE::itemFactory;
 
-CUSTOMER_NO::CUSTOMER_NO( Node *parentNode) : Item(parentNode)
+ALIGNMENT_FLOAT64_IEEE::ALIGNMENT_FLOAT64_IEEE( Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
-    namePar = &gram->customer_number.namePar;
-    typePar = &gram->customer_number.typePar;
+    namePar = &gram->alignment_float64_ieee.namePar;
+    typePar = &gram->alignment_float64_ieee.typePar;
 
     //Parse Mandatory PARAMETERS
     parseFixPar(typePar);
-    if (parameters.count() > 0)
-        name = parameters.at(0);
-    else
-        name = (char*)"customer_no";
+    name = (char*)"ALIGNMENT_FLOAT64_IEEE";
 }
 
-
-CUSTOMER_NO::~CUSTOMER_NO()
+ALIGNMENT_FLOAT64_IEEE::~ALIGNMENT_FLOAT64_IEEE()
 {
     foreach (char* ptr, parameters)
     {
@@ -48,7 +44,7 @@ CUSTOMER_NO::~CUSTOMER_NO()
     }
 }
 
-void CUSTOMER_NO::parseFixPar(QList<TokenTyp> *typePar)
+void ALIGNMENT_FLOAT64_IEEE::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
@@ -70,7 +66,7 @@ void CUSTOMER_NO::parseFixPar(QList<TokenTyp> *typePar)
     }
 }
 
-QMap<std::string, std::string> CUSTOMER_NO::getParameters()
+QMap<std::string, std::string> ALIGNMENT_FLOAT64_IEEE::getParameters()
 {
     QMap<std::string, std::string> par;
     for (int i = 0; i < namePar->count(); i++)
@@ -80,7 +76,7 @@ QMap<std::string, std::string> CUSTOMER_NO::getParameters()
     return par;
 }
 
-char* CUSTOMER_NO::getPar(std::string str)
+char* ALIGNMENT_FLOAT64_IEEE::getPar(std::string str)
 {
     int i = namePar->indexOf(str);
     return parameters.at(i);

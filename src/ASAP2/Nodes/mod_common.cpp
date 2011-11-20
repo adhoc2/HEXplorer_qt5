@@ -116,8 +116,10 @@ TokenTyp MOD_COMMON::parseOptPar()
     nameOptPar.insert("ALIGNMENT_WORD", ZeroOrOne);
     nameOptPar.insert("ALIGNMENT_LONG", ZeroOrOne);
     nameOptPar.insert("ALIGNMENT_FLOAT32_IEEE", ZeroOrOne);
+    nameOptPar.insert("ALIGNMENT_FLOAT64_IEEE", ZeroOrOne);
     nameOptPar.insert("S_REC_LAYOUT", ZeroOrOne);
     nameOptPar.insert("DEPOSIT", ZeroOrOne);
+    nameOptPar.insert("DATA_SIZE", ZeroOrOne);
 
 
     if (nameOptPar.isEmpty())

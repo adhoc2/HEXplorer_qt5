@@ -54,6 +54,7 @@ A2lGrammar::A2lGrammar()
     initAddr_epk();
     initAlignment_byte();
     initAlignment_float32_ieee();
+    initAlignment_float64_ieee();
     initAlignment_long();
     initAlignment_word();
     initAnnotation_label();
@@ -69,7 +70,9 @@ A2lGrammar::A2lGrammar()
     initCoeffs_linear();
     initCompu_tab_ref();
     initCpu_type();
+    initCustomer();
     initCustomer_number();
+    initData_size();
     initDefault_value();
     initDeposit();
     initDisplay_identifier();
@@ -96,6 +99,7 @@ A2lGrammar::A2lGrammar()
     initS_rec_layout();
     initSrc_addr_x();
     initSrc_addr_y();
+    initSupplier();
     initFunction_version();
 }
 
@@ -119,8 +123,9 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
         << "COEFFS" << "COEFFS_LINEAR" << "COMPU_TAB_REF" << "FORMULA" << "FORMULA_INV" << "REF_UNIT"
         << "STATUS_STRING_REF" << "DEFAULT_VALUE" << "DEF_CHARACTERISTIC" <<"OUT_MEASUREMENT"
         << "NO_AXIS_PTS_X" << "NO_AXIS_PTS_Y" << "AXIS_PTS_X" << "AXIS_PTS_Y" << "FNC_VALUES"
-        << "ALIGNMENT_FLOAT32_IEEE" << "ALIGNMENT_BYTE" << "ALIGNMENT_WORD" << "ALIGNMENT_LONG"
-        << "FUNCTION_VERSION" << "IN_MEASUREMENT" << "SUB_FUNCTION" << "MAX_REFRESH";
+        << "ALIGNMENT_FLOAT32_IEEE" << "ALIGNMENT_FLOAT64_IEEE" << "ALIGNMENT_BYTE" << "ALIGNMENT_WORD" << "ALIGNMENT_LONG"
+        << "FUNCTION_VERSION" << "IN_MEASUREMENT" << "SUB_FUNCTION" << "MAX_REFRESH" << "CUSTOMER" << "SUPPLIER"
+        << "DATA_SIZE";
 
     foreach (std::string str, list)
         keywordsList.insert(QString(str.c_str()), Keyword);
@@ -503,7 +508,9 @@ void A2lGrammar::initMod_common()
     mod_common.factoryOptItem.insert("ALIGNMENT_LONG", &ALIGNMENT_LONG::itemFactory);
     mod_common.factoryOptItem.insert("S_REC_LAYOUT", &S_REC_LAYOUT::itemFactory);
     mod_common.factoryOptItem.insert("DEPOSIT", &DEPOSIT::itemFactory);
+    mod_common.factoryOptItem.insert("DATA_SIZE", &DATA_SIZE::itemFactory);
     mod_common.factoryOptItem.insert("ALIGNMENT_FLOAT32_IEEE", &ALIGNMENT_FLOAT32_IEEE::itemFactory);
+    mod_common.factoryOptItem.insert("ALIGNMENT_FLOAT64_IEEE", &ALIGNMENT_FLOAT64_IEEE::itemFactory);
 
 }
 
@@ -518,12 +525,14 @@ void A2lGrammar::initMod_par()
 
     mod_par.factoryOptItem.insert("VERSION", &VERSION::itemFactory);
     mod_par.factoryOptItem.insert("ADDR_EPK", &ADDR_EPK::itemFactory);
+    mod_par.factoryOptItem.insert("CUSTOMER", &CUSTOMER::itemFactory);
     mod_par.factoryOptItem.insert("CUSTOMER_NO", &CUSTOMER_NO::itemFactory);
     mod_par.factoryOptItem.insert("EPK", &EPK::itemFactory);
     mod_par.factoryOptItem.insert("USER", &USER::itemFactory);
     mod_par.factoryOptItem.insert("ECU", &ECU::itemFactory);
     mod_par.factoryOptItem.insert("CPU_TYPE", &CPU_TYPE::itemFactory);
     mod_par.factoryOptItem.insert("PHONE_NO", &PHONE_NO::itemFactory);
+    mod_par.factoryOptItem.insert("SUPPLIER", &SUPPLIER::itemFactory);
     mod_par.factoryOptItem.insert("SYSTEM_CONSTANT", &SYSTEM_CONSTANT::itemFactory);
 }
 
@@ -543,6 +552,12 @@ void A2lGrammar::initAlignment_float32_ieee()
 {
     alignment_float32_ieee.typePar  << Integer;
     alignment_float32_ieee.namePar << "AlignmentBorder";
+}
+
+void A2lGrammar::initAlignment_float64_ieee()
+{
+    alignment_float64_ieee.typePar  << Integer;
+    alignment_float64_ieee.namePar << "AlignmentBorder";
 }
 
 void A2lGrammar::initAlignment_long()
@@ -636,10 +651,22 @@ void A2lGrammar::initCpu_type()
     cpu_type.namePar << "CPU";
 }
 
+void A2lGrammar::initCustomer()
+{
+    customer.typePar  << String;
+    customer.namePar << "Customer";
+}
+
 void A2lGrammar::initCustomer_number()
 {
     customer_number.typePar  << String;
     customer_number.namePar << "Number";
+}
+
+void A2lGrammar::initData_size()
+{
+    data_size.typePar  << Integer;
+    data_size.namePar << "Size";
 }
 
 void A2lGrammar::initDefault_value()
@@ -803,4 +830,10 @@ void A2lGrammar::initVersion()
 {
     version.typePar  << String;
     version.namePar << "VersionIdentifier";
+}
+
+void A2lGrammar::initSupplier()
+{
+    supplier.typePar  << String;
+    supplier.namePar << "Supplier";
 }

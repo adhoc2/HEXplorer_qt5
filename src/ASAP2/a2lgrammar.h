@@ -78,6 +78,7 @@ class A2lGrammar
         ElementItem addr_epk;
         ElementItem alignment_byte;
         ElementItem alignment_float32_ieee;
+        ElementItem alignment_float64_ieee;
         ElementItem alignment_long;
         ElementItem alignment_word;
         ElementItem annotation_label;
@@ -93,7 +94,9 @@ class A2lGrammar
         ElementItem coeffs_linear;
         ElementItem compu_tab_ref;
         ElementItem cpu_type;
+        ElementItem customer;
         ElementItem customer_number;
+        ElementItem data_size;
         ElementItem default_value;
         ElementItem deposit;
         ElementItem display_identifier;
@@ -119,6 +122,7 @@ class A2lGrammar
         ElementItem s_rec_layout;
         ElementItem src_addr_x;
         ElementItem src_addr_y;
+        ElementItem supplier;
         ElementItem user;
         ElementItem version;
 
@@ -153,6 +157,7 @@ private:
         void initAddr_epk();
         void initAlignment_byte();
         void initAlignment_float32_ieee();
+        void initAlignment_float64_ieee();
         void initAlignment_long();
         void initAlignment_word();
         void initAnnotation_label();
@@ -168,7 +173,9 @@ private:
         void initCoeffs_linear();
         void initCompu_tab_ref();
         void initCpu_type();
+        void initCustomer();
         void initCustomer_number();
+        void initData_size();
         void initDefault_value();
         void initDeposit();
         void initDisplay_identifier();
@@ -196,6 +203,7 @@ private:
         void initSrc_addr_y();
         void initUser();
         void initVersion();
+        void initSupplier();
 
 };
 

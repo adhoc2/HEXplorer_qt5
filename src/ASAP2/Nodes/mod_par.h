@@ -30,12 +30,14 @@
 #include "Items/version.h"
 #include "Items/addr_epk.h"
 #include "Items/epk.h"
+#include "Items/customer.h"
 #include "Items/customer_no.h"
 #include "Items/user.h"
 #include "Items/phone_no.h"
 #include "Items/ecu.h"
 #include "Items/cpu_type.h"
 #include "Items/system_constant.h"
+#include "Items/supplier.h"
 
 class MOD_PAR : public Node
 {

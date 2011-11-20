@@ -43,6 +43,7 @@ MOD_PAR::MOD_PAR(Node *parentNode)
     occOptPar = new QMap<std::string, Occurence>;
     occOptPar->insert("VERSION", ZeroOrOne);
     occOptPar->insert("EPK", ZeroOrOne);
+    occOptPar->insert("CUSTOMER", ZeroOrOne);
     occOptPar->insert("CUSTOMER_NO", ZeroOrOne);
     occOptPar->insert("USER", ZeroOrOne);
     occOptPar->insert("PHONE_NO", ZeroOrOne);
@@ -53,6 +54,7 @@ MOD_PAR::MOD_PAR(Node *parentNode)
     occOptPar->insert("MEMORY_LAYOUT", ZeroOrMore);
     occOptPar->insert("CALIBRATION_METHOD", ZeroOrMore);
     occOptPar->insert("SYSTEM_CONSTANT", ZeroOrMore);
+    occOptPar->insert("SUPPLIER", ZeroOrMore);
 
     //Set the line where the Node starts in ASAP file
     this->a2lLine = lex->getLine();
