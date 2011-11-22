@@ -47,6 +47,7 @@ MODULE::MODULE(Node *parentNode)
     occOptPar->insert("A2ML", ZeroOrOne);
     occOptPar->insert("MOD_PAR", ZeroOrOne);
     occOptPar->insert("MOD_COMMON", ZeroOrOne);
+    occOptPar->insert("GROUP", ZeroOrMore);
 
     //Set the line where the Node starts in ASAP file
     a2lLine = lex->getLine();
@@ -222,6 +223,19 @@ TokenTyp MODULE::parseOptPar(QMap<std::string, Occurence> *nameOptPar)
                                 }
                                 instance = factoryOptNode->value(lexem)->createInstance(child("FUNCTION", false));
                                 child("FUNCTION", false)->addChildNode(instance);
+                            }
+                            else if (lexem == "GROUP")
+                            {
+                                if (!this->isChild("GROUP"))
+                                {
+                                    Node *Grp = new Node(this, this->lex, this->errorList);
+                                    Grp->name = (char*)"GROUP";
+                                    this->addChildNode(Grp);
+                                    //Func->_pixmap = ":/icones/FUNCTION.bmp";
+                                    Grp->_pixmap = "";
+                                }
+                                instance = factoryOptNode->value(lexem)->createInstance(child("GROUP", false));
+                                child("GROUP", false)->addChildNode(instance);
                             }
                             else if (lexem == "COMPU_METHOD")
                             {
