@@ -248,7 +248,15 @@ HEADERS += a2l.h \
     dialoghttpupdate.h \
     dialogprogressdownload.h \
     ASAP2/Items/display_identifier.h \
-    ASAP2/Nodes/function_list.h
+    ASAP2/Nodes/function_list.h \
+    ASAP2/Items/alignment_float64_ieee.h \
+    ASAP2/Items/customer.h \
+    ASAP2/Items/supplier.h \
+    ASAP2/Items/data_size.h \
+    ASAP2/Nodes/group.h \
+    ASAP2/Items/root.h \
+    ASAP2/Nodes/sub_group.h \
+    ASAP2/Nodes/ref_measurement.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -400,11 +408,35 @@ SOURCES += a2l.cpp \
     Quex/a2l_quex_lexer.cpp \
     dialogprogressdownload.cpp \
     ASAP2/Items/display_identifier.cpp \
-    ASAP2/Nodes/function_list.cpp
+    ASAP2/Nodes/function_list.cpp \
+    ASAP2/Items/alignment_float64_ieee.cpp \
+    ASAP2/Items/customer.cpp \
+    ASAP2/Items/supplier.cpp \
+    ASAP2/Items/data_size.cpp \
+    ASAP2/Nodes/group.cpp \
+    ASAP2/Items/root.cpp \
+    ASAP2/Nodes/sub_group.cpp \
+    ASAP2/Nodes/ref_measurement.cpp
 
 OTHER_FILES += \
     GNU_license.txt \
     update.xml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
