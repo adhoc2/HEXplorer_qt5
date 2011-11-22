@@ -865,7 +865,7 @@ void MDImain::on_actionSettings_triggered()
 
 void MDImain::on_actionAbout_triggered()
 {
-    QString text = "Christophe Hoël"
+    QString text = "Christophe Ho‘l"
                    "\n\n"
                    "special thanks to :\n"
                    "Oscar, Niklaus, Jimi, Zack, Eric, Oneyed Jack, lofofora\n"
@@ -1773,10 +1773,11 @@ void MDImain::showFixPar()
     QModelIndex index  = ui->treeView->selectionModel()->currentIndex();
 
     //create a dialog window
-    Dialog *diag = new Dialog();
-
     QMap<std::string, std::string> *param = model->getPar(index);
 
+    if (param)
+    {
+        Dialog *diag = new Dialog();
 
         QMap<std::string, std::string>::const_iterator i = param->constBegin();
         while (i != param->constEnd())
@@ -1789,7 +1790,8 @@ void MDImain::showFixPar()
 
         delete param;
 
-    diag->show();
+        diag->show();
+    }
 }
 
 void MDImain::countChild()
