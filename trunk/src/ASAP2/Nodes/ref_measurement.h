@@ -17,51 +17,41 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#ifndef MODULE_H
-#define MODULE_H
+#ifndef REF_MEASUREMENT_H
+#define REF_MEASUREMENT_H
 
 #include "node.h"
 #include "item.h"
 #include "lexer.h"
 #include "basefactory.h"
-#include "Nodes/axis_pts.h"
-#include "Nodes/a2ml.h"
-#include "Nodes/measurement.h"
-#include "Nodes/mod_par.h"
-#include "Nodes/if_data.h"
-#include "Nodes/function.h"
-#include "Nodes/mod_common.h"
-#include "Nodes/compu_method.h"
-#include "Nodes/compu_vtab.h"
-#include "Nodes/record_layout.h"
-#include "Nodes/characteristic.h"
-#include "Nodes/group.h"
 
-class MODULE : public Node
+
+class REF_MEASUREMENT : public Node
 {
     public:
-        MODULE( Node *parentNode);
-        ~MODULE();
+        REF_MEASUREMENT(Node *parentNode);
+        ~REF_MEASUREMENT();
+
         QMap<std::string, std::string> *getParameters();
-        static Factory<Node, MODULE> nodeFactory;
+        static Factory<Node,REF_MEASUREMENT> nodeFactory;
+        std::string pixmap();
+        QStringList getCharList();
         char* getPar(std::string str);
-        QStringList listChar;
 
     private:
         // Fix parameters
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;
+        void parseFixPar(QList<TokenTyp> *typePar);
 
         // Opt parameters
-        QMap<std::string, Occurence> *occOptPar;
         QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
         QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;
 
-      //  #pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
-
-        void parseFixPar(QList<TokenTyp> *typePar);
-        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar);
+        // CHARACTERISTICS list
+        QList<std::string> charList;
+        TokenTyp parseListChar();
 };
 
-#endif // MODULE_H
+#endif // REF_MEASUREMENT_H

@@ -42,6 +42,7 @@ A2lGrammar::A2lGrammar()
     initFormula();
     initFunction();
     initFunction_list();
+    initGroup();
     initHeader();
     initProject();
     initModule();
@@ -125,7 +126,7 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
         << "NO_AXIS_PTS_X" << "NO_AXIS_PTS_Y" << "AXIS_PTS_X" << "AXIS_PTS_Y" << "FNC_VALUES"
         << "ALIGNMENT_FLOAT32_IEEE" << "ALIGNMENT_FLOAT64_IEEE" << "ALIGNMENT_BYTE" << "ALIGNMENT_WORD" << "ALIGNMENT_LONG"
         << "FUNCTION_VERSION" << "IN_MEASUREMENT" << "SUB_FUNCTION" << "MAX_REFRESH" << "CUSTOMER" << "SUPPLIER"
-        << "DATA_SIZE";
+        << "DATA_SIZE" << "GROUP" << "SUB_GROUP" << "ROOT" << "REF_MEASUREMENT";
 
     foreach (std::string str, list)
         keywordsList.insert(QString(str.c_str()), Keyword);
@@ -410,6 +411,16 @@ void A2lGrammar::initDef_characteristic()
 
 }
 
+void A2lGrammar::initSub_group()
+{
+
+}
+
+void A2lGrammar::initRef_measurement()
+{
+
+}
+
 void A2lGrammar::initFormula()
 {
     formula.typePar << String;
@@ -472,6 +483,7 @@ void A2lGrammar::initModule()
     module.factoryOptNode.insert("COMPU_METHOD", &COMPU_METHOD::nodeFactory);
     module.factoryOptNode.insert("COMPU_VTAB", &COMPU_VTAB::nodeFactory);
     module.factoryOptNode.insert("RECORD_LAYOUT", &RECORD_LAYOUT::nodeFactory);
+    module.factoryOptNode.insert("GROUP", &GROUP::nodeFactory);
 
 }
 
@@ -534,6 +546,22 @@ void A2lGrammar::initMod_par()
     mod_par.factoryOptItem.insert("PHONE_NO", &PHONE_NO::itemFactory);
     mod_par.factoryOptItem.insert("SUPPLIER", &SUPPLIER::itemFactory);
     mod_par.factoryOptItem.insert("SYSTEM_CONSTANT", &SYSTEM_CONSTANT::itemFactory);
+}
+
+void A2lGrammar::initGroup()
+{
+    group.typePar << Identifier << String;
+    group.namePar << "GroupName" << "GroupLongIdentifier";
+
+    group.factoryOptNode.insert("IF_DATA", &IF_DATA::nodeFactory);
+    group.factoryOptNode.insert("ANNOTATION", &ANNOTATION::nodeFactory);
+    group.factoryOptNode.insert("FUNCTION_LIST", &FUNCTION_LIST::nodeFactory);
+    group.factoryOptNode.insert("REF_CHARACTERISTIC", &REF_CHARACTERISTIC::nodeFactory);
+    group.factoryOptNode.insert("REF_MEASUREMENT", &REF_MEASUREMENT::nodeFactory);
+    group.factoryOptNode.insert("SUB_GROUP", &SUB_GROUP::nodeFactory);
+
+    group.factoryOptItem.insert("ROOT", &ROOT::itemFactory);
+
 }
 
 void A2lGrammar::initAddr_epk()
@@ -786,6 +814,11 @@ void A2lGrammar::initS_rec_layout()
 }
 
 void A2lGrammar::initRead_only()
+{
+
+}
+
+void A2lGrammar::initRoot()
 {
 
 }

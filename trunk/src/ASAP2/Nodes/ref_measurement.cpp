@@ -17,33 +17,33 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#include "Nodes/ref_characteristic.h"
+#include "Nodes/ref_measurement.h"
 #include <QMessageBox>
 #include <typeinfo>
 #include <QHash>
 #include "a2lgrammar.h"
 
 //initialise static variables
-Factory<Node,REF_CHARACTERISTIC> REF_CHARACTERISTIC::nodeFactory;
+Factory<Node,REF_MEASUREMENT> REF_MEASUREMENT::nodeFactory;
 
 // Functions (Predicate)
 bool nodeLessThan( const Node *a, const Node *b );
 bool itemLessThan( const Item *a, const Item *b );
 
-REF_CHARACTERISTIC::REF_CHARACTERISTIC(Node *parentNode)
+REF_MEASUREMENT::REF_MEASUREMENT(Node *parentNode)
     : Node(parentNode, parentNode->lex, parentNode->errorList)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
-    namePar = &gram->ref_characteristic.namePar;
-    typePar = &gram->ref_characteristic.typePar;
+    namePar = &gram->ref_measurement.namePar;
+    typePar = &gram->ref_measurement.typePar;
 
     //Set the line where the Node starts in ASAP file
     a2lLine = lex->getLine();
 
     //Parse Mandatory PARAMETERS
     //parseFixPar(typePar, namePar ,in);
-    name = (char*)"REF_CHARACTERISTIC";
+    name = (char*)"REF_MEASUREMENT";
 
     //Parse optional PARAMETERS
     //TokenTyp token = parseOptPar(in);
@@ -54,7 +54,7 @@ REF_CHARACTERISTIC::REF_CHARACTERISTIC(Node *parentNode)
     if (token == BlockEnd)
     {
         token = nextToken();
-        if (token == Keyword && lex->getLexem() == "REF_CHARACTERISTIC")
+        if (token == Keyword && lex->getLexem() == "REF_MEASUREMENT")
         {
             //Sort the childNodes
             //qSort(this->childNodes.begin(), this->childNodes.end(), nodeLessThan);
@@ -68,18 +68,18 @@ REF_CHARACTERISTIC::REF_CHARACTERISTIC(Node *parentNode)
         else
         {
             QString s(lex->toString(token).c_str());
-            this->showError("expected token : BlockEnd REF_CHARACTERISTIC\nfind token : " + s);
+            this->showError("expected token : BlockEnd REF_MEASUREMENT\nfind token : " + s);
         }
     }
     else
     {
         QString s1(lex->toString(token).c_str());
         QString s2(lex->getLexem().c_str());
-        this->showError("expected end REF_CHARACTERISTIC\nfind : " + s1 + " " + s2);
+        this->showError("expected end REF_MEASUREMENT\nfind : " + s1 + " " + s2);
     }
 }
 
-REF_CHARACTERISTIC::~REF_CHARACTERISTIC()
+REF_MEASUREMENT::~REF_MEASUREMENT()
 {
     foreach (char* ptr, parameters)
     {
@@ -87,7 +87,7 @@ REF_CHARACTERISTIC::~REF_CHARACTERISTIC()
     }
 }
 
-QMap<std::string, std::string> *REF_CHARACTERISTIC::getParameters()
+QMap<std::string, std::string> *REF_MEASUREMENT::getParameters()
 {
     QMap<std::string, std::string> *par = new QMap<std::string, std::string>;
     for (int i = 0; i < namePar->count(); i++)
@@ -97,12 +97,12 @@ QMap<std::string, std::string> *REF_CHARACTERISTIC::getParameters()
     return par;
 }
 
-std::string  REF_CHARACTERISTIC::pixmap()
+std::string  REF_MEASUREMENT::pixmap()
 {
     return ":/icones/CHAR.bmp";
 }
 
-TokenTyp REF_CHARACTERISTIC::parseListChar()
+TokenTyp REF_MEASUREMENT::parseListChar()
 {
     TokenTyp token = lex->getNextToken();
 
@@ -115,7 +115,7 @@ TokenTyp REF_CHARACTERISTIC::parseListChar()
     return token;
 }
 
-QStringList REF_CHARACTERISTIC::getCharList()
+QStringList REF_MEASUREMENT::getCharList()
 {
     QStringList list;
     foreach(std::string str, charList)
@@ -125,7 +125,7 @@ QStringList REF_CHARACTERISTIC::getCharList()
     return list;
 }
 
-char* REF_CHARACTERISTIC::getPar(std::string str)
+char* REF_MEASUREMENT::getPar(std::string str)
 {
     int i = namePar->indexOf(str);
     return parameters.at(i);

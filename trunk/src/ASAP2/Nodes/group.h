@@ -17,35 +17,25 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#ifndef MODULE_H
-#define MODULE_H
+#ifndef GROUP_H
+#define GROUP_H
 
 #include "node.h"
 #include "item.h"
 #include "lexer.h"
 #include "basefactory.h"
-#include "Nodes/axis_pts.h"
-#include "Nodes/a2ml.h"
-#include "Nodes/measurement.h"
-#include "Nodes/mod_par.h"
-#include "Nodes/if_data.h"
-#include "Nodes/function.h"
-#include "Nodes/mod_common.h"
-#include "Nodes/compu_method.h"
-#include "Nodes/compu_vtab.h"
-#include "Nodes/record_layout.h"
-#include "Nodes/characteristic.h"
-#include "Nodes/group.h"
+#include "Items/root.h"
+#include "Nodes/sub_group.h"
+#include "Nodes/ref_measurement.h"
 
-class MODULE : public Node
+class GROUP : public Node
 {
     public:
-        MODULE( Node *parentNode);
-        ~MODULE();
+        GROUP(Node *parentNode);
+        ~GROUP();
         QMap<std::string, std::string> *getParameters();
-        static Factory<Node, MODULE> nodeFactory;
+        static Factory<Node, GROUP> nodeFactory;
         char* getPar(std::string str);
-        QStringList listChar;
 
     private:
         // Fix parameters
@@ -58,10 +48,10 @@ class MODULE : public Node
         QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
         QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;
 
-      //  #pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
+        //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
 
         void parseFixPar(QList<TokenTyp> *typePar);
         TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar);
 };
 
-#endif // MODULE_H
+#endif // GROUP_H

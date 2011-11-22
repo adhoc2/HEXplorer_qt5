@@ -59,6 +59,8 @@ class A2lGrammar
         ElementNode characteristic;
         ElementNode compuVtab;
         ElementNode def_characteristic;
+        ElementNode ref_characteristic;
+        ElementNode ref_measurement;
         ElementNode axis_pts;
         ElementNode record_layout;
         ElementNode compu_method;
@@ -66,6 +68,8 @@ class A2lGrammar
         ElementNode formula;
         ElementNode function;
         ElementNode function_list;
+        ElementNode group;
+        ElementNode sub_group;
         ElementNode header;
         ElementNode project;
         ElementNode module;
@@ -116,6 +120,7 @@ class A2lGrammar
         ElementItem phone_no;
         ElementItem project_no;
         ElementItem read_only;
+        ElementItem root;
         ElementItem ref_unit;
         ElementItem status_string_ref;
         ElementItem system_constant;
@@ -146,6 +151,7 @@ private:
         void initFormula();
         void initFunction();
         void initFunction_list();
+        void initGroup();
         void initHeader();
         void initProject();
         void initModule();
@@ -153,6 +159,8 @@ private:
         void initMemory_layout();
         void initMod_common();
         void initMod_par();
+        void initSub_group();
+        void initRef_measurement();
 
         void initAddr_epk();
         void initAlignment_byte();
@@ -195,6 +203,7 @@ private:
         void initPhone_no();
         void initProject_no();
         void initRead_only();
+        void initRoot();
         void initRef_unit();
         void initStatus_string_ref();
         void initSystem_constant();
