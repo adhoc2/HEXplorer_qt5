@@ -865,7 +865,7 @@ void MDImain::on_actionSettings_triggered()
 
 void MDImain::on_actionAbout_triggered()
 {
-    QString text = "Christophe Ho‘l"
+    QString text = "Christophe Hoël"
                    "\n\n"
                    "special thanks to :\n"
                    "Oscar, Niklaus, Jimi, Zack, Eric, Oneyed Jack, lofofora\n"
