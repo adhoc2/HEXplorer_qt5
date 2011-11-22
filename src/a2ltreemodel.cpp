@@ -157,6 +157,7 @@ QMap<std::string, std::string>  *A2lTreeModel::getPar(const QModelIndex &index) 
     if (!node)
     {
         QMap<std::string, std::string> *par = new QMap<std::string, std::string>;
+        par->insert("no fix parameters", "");
         return par;
     }
     else
