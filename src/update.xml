@@ -1,6 +1,10 @@
 <HEXplorer application="HEXplorer">
-    <revision version="0.6.8">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
-    <details>revision 0.6.8 (16/11/2011) :
+    <revision version="0.6.9">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
+    <details> revision 0.6.9 (04/12/2011) :
+        - bug fix : Quex lexer for indentifier with brackets
+        - add Root and Sub_Group nodes
+
+revision 0.6.8 (16/11/2011) :
     - bug fix : edit value Val_Wu32
 
 revision 0.6.7 (18/10/2011) :
