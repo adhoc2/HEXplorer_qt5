@@ -8,7 +8,7 @@
 #include <quex/code_base/definitions>
 
 
-#   line 2 "/opt/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
+#   line 2 "C:/Program Files/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
 
        #include <iostream>
        #include <string>
@@ -65,22 +65,22 @@ public:
     virtual ~Token();
 
 
-#   line 25 "/opt/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
+#   line 25 "C:/Program Files/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
     std::basic_string<QUEX_TYPE_CHARACTER> text;
-#   line 26 "/opt/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
+#   line 26 "C:/Program Files/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
     size_t                                 number;
 #   line 73 "a2l_quex_lexer-token"
 
 
 public:
 
-#   line 25 "/opt/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
+#   line 25 "C:/Program Files/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
     std::basic_string<QUEX_TYPE_CHARACTER> get_text() const                                         { return text; }
-#   line 25 "/opt/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
+#   line 25 "C:/Program Files/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
     void                                   set_text(std::basic_string<QUEX_TYPE_CHARACTER>& Value)  { text = Value; }
-#   line 26 "/opt/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
+#   line 26 "C:/Program Files/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
     size_t                                 get_number() const                                       { return number; }
-#   line 26 "/opt/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
+#   line 26 "C:/Program Files/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
     void                                   set_number(size_t Value)                                 { number = Value; }
 #   line 86 "a2l_quex_lexer-token"
 
@@ -120,7 +120,7 @@ public:
     public:
 #   define self (*this)
 
-#   line 47 "/opt/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
+#   line 47 "C:/Program Files/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
 
         typedef std::basic_string<QUEX_TYPE_CHARACTER> __string;
 
@@ -201,7 +201,7 @@ public:
 
 
 
-#   line 154 "/opt/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
+#   line 154 "C:/Program Files/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
 
         inline std::ostream&
         operator<<(std::ostream& ostr, const QUEX_TYPE_TOKEN& Tok)
