@@ -48,7 +48,7 @@ QUEX_NAMESPACE_TOKEN_CLOSE
  *        Must come before token class definition, since the token class 
  *        might rely on contents of the header.                                */
 
-#   line 6 "a2l_quex_lexer.qx"
+#   line 7 "a2l_quex_lexer.qx"
 
 #include <cstdlib>  // for: atoi()
 
@@ -574,7 +574,7 @@ QUEX_NAME_TOKEN(copy)(Token* __this, const Token* __That)
     (void)__this;
     (void)__That;
 
-#   line 33 "/opt/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
+#   line 33 "C:/Program Files/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
 
         self._id    = Other._id;
         self.text   = Other.text;
@@ -617,7 +617,7 @@ QUEX_NAME_TOKEN(take_text)(Token*           __this,
     (void)__this;
     (void)__analyzer;
 
-#   line 113 "/opt/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
+#   line 113 "C:/Program Files/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
 
 #       if 0
         {
@@ -664,7 +664,7 @@ QUEX_NAME_TOKEN(repetition_n_get)(QUEX_TYPE_TOKEN* __this)
 #   define self      (*__this)
     (void)__this;
     
-#   line 150 "/opt/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
+#   line 150 "C:/Program Files/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
 
        return self.number;
    
@@ -681,7 +681,7 @@ QUEX_NAME_TOKEN(repetition_n_set)(QUEX_TYPE_TOKEN* __this, size_t N)
     (void)__this;
     (void)N;
     
-#   line 146 "/opt/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
+#   line 146 "C:/Program Files/quex/quex-0.59.7/quex/code_base/token/CppDefault.qx"
 
        self.number = N;
    
