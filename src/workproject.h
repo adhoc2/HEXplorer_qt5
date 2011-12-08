@@ -22,6 +22,7 @@
 
 #include <a2l.h>
 #include <hexfile.h>
+#include "srecfile.h"
 #include "a2ltreemodel.h"
 #include "mdimain.h"
 class Csv;
@@ -42,6 +43,11 @@ class WorkProject :  public A2l
         void removeHexFile(HexFile *hex);
         void rename(HexFile *hex);
 
+        QMap<QString, SrecFile*> srecFiles();
+        void addSrec(SrecFile *srec);
+        void removeSrecFile(SrecFile *srec);
+        void rename(SrecFile *srec);
+
         QMap<QString, Csv*> csvFiles();
         void addCsv(Csv *csv);
         void removeCsv(Csv *csv );
@@ -58,6 +64,7 @@ class WorkProject :  public A2l
     private:
         QList<QObject*> owners;
         QMap<QString, HexFile*> hexList;
+        QMap<QString, SrecFile*> srecList;
         QMap<QString, Csv*> csvList;
         QMap<QString, CdfxFile*> cdfxList;
 

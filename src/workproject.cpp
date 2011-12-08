@@ -90,6 +90,22 @@ void WorkProject::addHex(HexFile *hex )
     hex->attach(this);
 }
 
+void WorkProject::addSrec(SrecFile *srec )
+{
+    // add hex to a2lfile childrenslist
+    a2lFile->addChildNode(srec);
+    a2lFile->sortChildrensName();
+
+    // update treeView
+    treeModel->dataInserted(a2lFile, a2lFile->childNodes.indexOf(srec));
+
+    // add hex to this hexList
+    srecList.insert(srec->fullName(), srec);
+
+    // add this to the hex owners (pseudo garbage collector)
+    srec->attach(this);
+}
+
 void WorkProject::addCsv(Csv *csv )
 {
     // add csv to a2lfile childrenslist
@@ -131,6 +147,14 @@ void WorkProject::removeHexFile(HexFile *hex)
     hex->detach(this);
 }
 
+void WorkProject::removeSrecFile(SrecFile *srec)
+{
+    srecList.remove(srec->fullName());
+
+    // remove this Wp to the csv owners
+    srec->detach(this);
+}
+
 void WorkProject::removeCsv(Csv *csv )
 {
     csvList.remove(csv->fullName());
@@ -154,6 +178,13 @@ void WorkProject::rename(HexFile *hex)
     QString key = hexList.key(hex);
     hexList.remove(key);
     hexList.insert(hex->fullName(), hex);
+}
+
+void WorkProject::rename(SrecFile *srec)
+{
+    QString key = srecList.key(srec);
+    srecList.remove(key);
+    srecList.insert(srec->fullName(), srec);
 }
 
 void WorkProject::rename(Csv *csv)
