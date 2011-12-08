@@ -25,6 +25,7 @@
 #include <QAbstractProxyModel>
 #include "node.h"
 #include "hexfile.h"
+#include "srecfile.h"
 #include "Nodes/a2lfile.h"
 #include "chooselabel.h"
 #include "choosesubset.h"
@@ -2249,6 +2250,16 @@ HexFile *FormCompare::getHex1()
 HexFile *FormCompare::getHex2()
 {
     return hex2;
+}
+
+SrecFile *FormCompare::getSrec1()
+{
+    return srec1;
+}
+
+SrecFile *FormCompare::getSrec2()
+{
+    return srec2;
 }
 
 Csv *FormCompare::getCsv1()

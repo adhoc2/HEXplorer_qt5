@@ -35,6 +35,7 @@ class COMPU_VTAB;
 class RECORD_LAYOUT;
 class AXIS_DESCR;
 class HexFile;
+class SrecFile;
 class Csv;
 class CdfxFile;
 
@@ -50,9 +51,11 @@ class Data : public QObject, public Node
         Data();
         Data(Node *node);
         Data(CHARACTERISTIC *node, PROJECT  *pro, HexFile *hexFile, bool modif = true);
+        Data(CHARACTERISTIC *node, PROJECT  *pro, SrecFile *srecFile, bool modif = true);
         Data(CHARACTERISTIC *node, PROJECT *pro,  Csv *csv, bool modif = true);
         Data(CHARACTERISTIC *node, PROJECT *pro,  CdfxFile *cdfx, bool modif = true);
         Data(AXIS_PTS *node, PROJECT *pro, HexFile *hexFile, bool modif = true);
+        Data(AXIS_PTS *node, PROJECT *pro, SrecFile *srecFile, bool modif = true);
         Data(AXIS_PTS *node, PROJECT *pro,  Csv *csv, bool modif = true);
         Data(AXIS_PTS *node, PROJECT *pro,  CdfxFile *cdfx, bool modif = true);
 

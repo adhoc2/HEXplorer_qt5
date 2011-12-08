@@ -26,6 +26,7 @@
 #include <QStringListModel>
 
 class HexFile;
+class SrecFile;
 class A2LFILE;
 class SpTableModel;
 class TreeModelCompleter;
@@ -55,6 +56,8 @@ class FormCompare : public QWidget
         A2lTreeModel *getDiffModel();
         HexFile *getHex1();
         HexFile *getHex2();
+        SrecFile *getSrec1();
+        SrecFile *getSrec2();
         Csv *getCsv1();
         Csv *getCsv2();
         CdfxFile *getCdf1();
@@ -67,6 +70,8 @@ class FormCompare : public QWidget
     private:
         HexFile *hex1;
         HexFile *hex2;
+        SrecFile *srec1;
+        SrecFile *srec2;
         Csv *csv1;
         Csv *csv2;
         CdfxFile *cdfx1;

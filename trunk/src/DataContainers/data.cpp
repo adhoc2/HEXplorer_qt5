@@ -25,6 +25,7 @@
 #include <Nodes/function.h>
 #include <Nodes/project.h>
 #include <hexfile.h>
+#include <srecfile.h>
 #include <typeinfo>
 #include <math.h>
 #include <QMessageBox>
@@ -560,6 +561,11 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
     size += nPtsY;
 }
 
+Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) : Node(node->name), QObject()
+{
+
+}
+
 Data::Data(CHARACTERISTIC *node, PROJECT *pro, Csv *csv, bool modif) : Node(node->name), QObject()
 {
     isAxisXComparable = false;
@@ -1060,6 +1066,11 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, HexFile *hexFile, bool modif) : Node(no
     }
 
     size = 5;
+}
+
+Data::Data(AXIS_PTS *node, PROJECT *pro, SrecFile *srecFile, bool modif) : Node(node->name), QObject()
+{
+
 }
 
 Data::Data(AXIS_PTS *node, PROJECT *pro, Csv *csv, bool modif) : Node(node->name), QObject()
