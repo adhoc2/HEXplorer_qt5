@@ -17,44 +17,27 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#ifndef AXIS_DESCR_H
-#define AXIS_DESCR_H
+#ifndef ECU_ADDRESS_EXTENSION_H
+#define ECU_ADDRESS_EXTENSION_H
 
-#include "node.h"
 #include "item.h"
 #include "lexer.h"
 #include "basefactory.h"
-#include "Items/format.h"
-#include "Items/extended_limits.h"
-#include "Items/deposit.h"
-#include "Items/axis_pts_ref.h"
-#include "Items/fix_axis_par.h"
-#include "Items/fix_axis_par_dist.h"
 
-class AXIS_DESCR : public Node
+class ECU_ADDRESS_EXTENSION : public Item
 {
     public:
-        AXIS_DESCR(Node *parentNode);
-        ~AXIS_DESCR();
-        QMap<std::string, std::string> *getParameters();
-        static Factory<Node, AXIS_DESCR> nodeFactory;
+        ECU_ADDRESS_EXTENSION(Node *parentNode);
+        ~ECU_ADDRESS_EXTENSION();
+        QMap<std::string, std::string> getParameters();
+        static Factory<Item,ECU_ADDRESS_EXTENSION> itemFactory;
         char* getPar(std::string str);
 
     private:
-        // Fix parameters
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;
-
-        // Opt parameters
-        QHash<QString, Occurence> *occOptPar;
-        QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
-        QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;
-
-        //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
-
-        void parseFixPar(QList<TokenTyp> *typePar);
-        TokenTyp parseOptPar(QHash<QString, Occurence> *nameOptPar);
 };
 
-#endif // CHARACTERISTIC_H
+#endif // ECU_ADDRESS_EXTENSION_H

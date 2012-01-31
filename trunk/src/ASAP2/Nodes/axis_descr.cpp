@@ -46,6 +46,9 @@ AXIS_DESCR::AXIS_DESCR( Node *parentNode)
     occOptPar->insert("DEPOSIT", ZeroOrOne);
     occOptPar->insert("AXIS_PTS_REF", ZeroOrOne);
     occOptPar->insert("FIX_AXIS_PAR", ZeroOrOne);
+    occOptPar->insert("READ_ONLY", ZeroOrOne);
+    occOptPar->insert("FIX_AXIS_PAR_DIST", ZeroOrOne);
+    occOptPar->insert("BYTE_ORDER", ZeroOrOne);
 
     //Set the line where the Node starts in ASAP file
     this->a2lLine = lex->getLine();

@@ -136,6 +136,9 @@ TokenTyp CHARACTERISTIC::parseOptPar()
      nameOptPar.insert("DISPLAY_IDENTIFIER",ZeroOrOne);
      nameOptPar.insert("BIT_MASK",ZeroOrOne);
      nameOptPar.insert("FUNCTION_LIST",ZeroOrOne);
+     nameOptPar.insert("ECU_ADDRESS_EXTENSION", ZeroOrOne);
+     nameOptPar.insert("MATRIX_DIM", ZeroOrOne);
+     nameOptPar.insert("BYTE_ORDER", ZeroOrOne);
 
     if (nameOptPar.isEmpty())
         return nextToken();

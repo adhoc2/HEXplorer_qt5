@@ -17,26 +17,26 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#include "extended_limits.h"
+#include "fix_axis_par_dist.h"
 #include <QMessageBox>
 #include "a2lgrammar.h"
 
 //initialise static variables
-Factory<Item,EXTENDED_LIMITS> EXTENDED_LIMITS::itemFactory;
+Factory<Item,FIX_AXIS_PAR_DIST> FIX_AXIS_PAR_DIST::itemFactory;
 
-EXTENDED_LIMITS::EXTENDED_LIMITS(Node *parentNode)  : Item(parentNode)
+FIX_AXIS_PAR_DIST::FIX_AXIS_PAR_DIST( Node *parentNode)  : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
-    namePar = &gram->extended_limits.namePar;
-    typePar = &gram->extended_limits.typePar;
+    namePar = &gram->fix_axis_par_dist.namePar;
+    typePar = &gram->fix_axis_par_dist.typePar;
 
     //Parse Mandatory PARAMETERS
     parseFixPar(typePar);
-    name = (char*)"EXTENDED_LIMITS";
+    name =(char*)"FIX_AXIS_PAR_DIST";
 }
 
-EXTENDED_LIMITS::~EXTENDED_LIMITS()
+FIX_AXIS_PAR_DIST::~FIX_AXIS_PAR_DIST()
 {
     foreach (char* ptr, parameters)
     {
@@ -44,14 +44,14 @@ EXTENDED_LIMITS::~EXTENDED_LIMITS()
     }
 }
 
-void EXTENDED_LIMITS::parseFixPar(QList<TokenTyp> *typePar)
+void FIX_AXIS_PAR_DIST::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
         token = this->nextToken();
-        if (token == typePar->at(i) || token == Integer)
+        if (token == typePar->at(i))
         {
             char *c = new char[parentNode->lex->getLexem().length()+1];
             strcpy(c, parentNode->lex->getLexem().c_str());
@@ -66,7 +66,7 @@ void EXTENDED_LIMITS::parseFixPar(QList<TokenTyp> *typePar)
     }
 }
 
-QMap<std::string, std::string> EXTENDED_LIMITS::getParameters()
+QMap<std::string, std::string> FIX_AXIS_PAR_DIST::getParameters()
 {
     QMap<std::string, std::string> par;
     for (int i = 0; i < namePar->count(); i++)
@@ -76,7 +76,7 @@ QMap<std::string, std::string> EXTENDED_LIMITS::getParameters()
     return par;
 }
 
-char* EXTENDED_LIMITS::getPar(std::string str)
+char* FIX_AXIS_PAR_DIST::getPar(std::string str)
 {
     int i = namePar->indexOf(str);
     return parameters.at(i);

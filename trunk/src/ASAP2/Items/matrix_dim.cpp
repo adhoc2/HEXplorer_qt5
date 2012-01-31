@@ -17,26 +17,30 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#include "extended_limits.h"
+#include "matrix_dim.h"
 #include <QMessageBox>
 #include "a2lgrammar.h"
 
 //initialise static variables
-Factory<Item,EXTENDED_LIMITS> EXTENDED_LIMITS::itemFactory;
+Factory<Item,MATRIX_DIM> MATRIX_DIM::itemFactory;
 
-EXTENDED_LIMITS::EXTENDED_LIMITS(Node *parentNode)  : Item(parentNode)
+MATRIX_DIM::MATRIX_DIM( Node *parentNode) : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
-    namePar = &gram->extended_limits.namePar;
-    typePar = &gram->extended_limits.typePar;
+    namePar = &gram->matrix_dim.namePar;
+    typePar = &gram->matrix_dim.typePar;
 
     //Parse Mandatory PARAMETERS
     parseFixPar(typePar);
-    name = (char*)"EXTENDED_LIMITS";
+    if (parameters.count() > 0)
+        name = parameters.at(0);
+    else
+        name = (char*)"MATRIX_DIM";
 }
 
-EXTENDED_LIMITS::~EXTENDED_LIMITS()
+
+MATRIX_DIM::~MATRIX_DIM()
 {
     foreach (char* ptr, parameters)
     {
@@ -44,14 +48,14 @@ EXTENDED_LIMITS::~EXTENDED_LIMITS()
     }
 }
 
-void EXTENDED_LIMITS::parseFixPar(QList<TokenTyp> *typePar)
+void MATRIX_DIM::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
         token = this->nextToken();
-        if (token == typePar->at(i) || token == Integer)
+        if (token == typePar->at(i))
         {
             char *c = new char[parentNode->lex->getLexem().length()+1];
             strcpy(c, parentNode->lex->getLexem().c_str());
@@ -66,7 +70,7 @@ void EXTENDED_LIMITS::parseFixPar(QList<TokenTyp> *typePar)
     }
 }
 
-QMap<std::string, std::string> EXTENDED_LIMITS::getParameters()
+QMap<std::string, std::string> MATRIX_DIM::getParameters()
 {
     QMap<std::string, std::string> par;
     for (int i = 0; i < namePar->count(); i++)
@@ -76,7 +80,7 @@ QMap<std::string, std::string> EXTENDED_LIMITS::getParameters()
     return par;
 }
 
-char* EXTENDED_LIMITS::getPar(std::string str)
+char* MATRIX_DIM::getPar(std::string str)
 {
     int i = namePar->indexOf(str);
     return parameters.at(i);

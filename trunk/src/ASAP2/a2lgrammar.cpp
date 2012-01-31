@@ -79,12 +79,15 @@ A2lGrammar::A2lGrammar()
     initDisplay_identifier();
     initEcu();
     initEcu_address();
+    initEcu_address_extension();
     initEpk();
     initExtended_limits();
     initFix_axis_par();
+    initFix_axis_par_dist();
     initFnc_values();
     initFormat();
     initFormula_inv();
+    initMatrix_dim();
     initMax_refresh();
     initNo_axis_pts_x();
     initNo_axis_pts_y();
@@ -126,7 +129,7 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
         << "NO_AXIS_PTS_X" << "NO_AXIS_PTS_Y" << "AXIS_PTS_X" << "AXIS_PTS_Y" << "FNC_VALUES"
         << "ALIGNMENT_FLOAT32_IEEE" << "ALIGNMENT_FLOAT64_IEEE" << "ALIGNMENT_BYTE" << "ALIGNMENT_WORD" << "ALIGNMENT_LONG"
         << "FUNCTION_VERSION" << "IN_MEASUREMENT" << "SUB_FUNCTION" << "MAX_REFRESH" << "CUSTOMER" << "SUPPLIER"
-        << "DATA_SIZE" << "GROUP" << "SUB_GROUP" << "ROOT" << "REF_MEASUREMENT";
+        << "DATA_SIZE" << "GROUP" << "SUB_GROUP" << "ROOT" << "REF_MEASUREMENT" << "ECU_ADDRESS_EXTENSION" << "MATRIX_DIM" << "FIX_AXIS_PAR_DIST";
 
     foreach (std::string str, list)
         keywordsList.insert(QString(str.c_str()), Keyword);
@@ -295,6 +298,9 @@ void A2lGrammar::initAxis_descr()
     axis_descr.factoryOptItem.insert("DEPOSIT", &DEPOSIT::itemFactory);
     axis_descr.factoryOptItem.insert("AXIS_PTS_REF", &AXIS_PTS_REF::itemFactory);
     axis_descr.factoryOptItem.insert("FIX_AXIS_PAR", &FIX_AXIS_PAR::itemFactory);
+    axis_descr.factoryOptItem.insert("FIX_AXIS_PAR_DIST", &FIX_AXIS_PAR_DIST::itemFactory);
+    axis_descr.factoryOptItem.insert("READ_ONLY", &READ_ONLY::itemFactory);
+    axis_descr.factoryOptItem.insert("BYTE_ORDER", &Byte_Order::itemFactory);
 }
 
 void A2lGrammar::initCharacteristic()
@@ -309,13 +315,15 @@ void A2lGrammar::initCharacteristic()
     characteristic.factoryOptNode.insert("FUNCTION_LIST", &FUNCTION_LIST::nodeFactory);
 
     characteristic.factoryOptItem.insert("BIT_MASK", &BIT_MASK::itemFactory);
+    characteristic.factoryOptItem.insert("BYTE_ORDER", &Byte_Order::itemFactory);
     characteristic.factoryOptItem.insert("FORMAT", &FORMAT::itemFactory);
     characteristic.factoryOptItem.insert("EXTENDED_LIMITS", &EXTENDED_LIMITS::itemFactory);
     characteristic.factoryOptItem.insert("NUMBER", &NUMBER::itemFactory);
     characteristic.factoryOptItem.insert("READ_ONLY", &READ_ONLY::itemFactory);
     characteristic.factoryOptItem.insert("MAX_REFRESH", &MAX_REFRESH::itemFactory);
     characteristic.factoryOptItem.insert("DISPLAY_IDENTIFIER", &DISPLAY_IDENTIFIER::itemFactory);
-
+    characteristic.factoryOptItem.insert("ECU_ADDRESS_EXTENSION", &ECU_ADDRESS_EXTENSION::itemFactory);
+    characteristic.factoryOptItem.insert("MATRIX_DIM", &MATRIX_DIM::itemFactory);
 }
 
 void A2lGrammar::initAxis_pts()
@@ -333,6 +341,8 @@ void A2lGrammar::initAxis_pts()
     axis_pts.factoryOptItem.insert("EXTENDED_LIMITS", &EXTENDED_LIMITS::itemFactory);
     axis_pts.factoryOptItem.insert("DEPOSIT", &DEPOSIT::itemFactory);
     axis_pts.factoryOptItem.insert("DISPLAY_IDENTIFIER", &DISPLAY_IDENTIFIER::itemFactory);
+    axis_pts.factoryOptItem.insert("ECU_ADDRESS_EXTENSION", &ECU_ADDRESS_EXTENSION::itemFactory);
+    axis_pts.factoryOptItem.insert("BYTE_ORDER", &Byte_Order::itemFactory);
 }
 
 void A2lGrammar::initRecord_layout()
@@ -347,6 +357,10 @@ void A2lGrammar::initRecord_layout()
     record_layout.factoryOptItem.insert("FNC_VALUES", &FNC_VALUES::itemFactory);
     record_layout.factoryOptItem.insert("SRC_ADDR_X", &SRC_ADDR_X::itemFactory);
     record_layout.factoryOptItem.insert("SRC_ADDR_Y", &SRC_ADDR_Y::itemFactory);
+    record_layout.factoryOptItem.insert("ALIGNMENT_LONG", &ALIGNMENT_LONG::itemFactory);
+    record_layout.factoryOptItem.insert("ALIGNMENT_WORD", &ALIGNMENT_WORD::itemFactory);
+    record_layout.factoryOptItem.insert("ALIGNMENT_FLOAT32_IEEE", &ALIGNMENT_FLOAT32_IEEE::itemFactory);
+    record_layout.factoryOptItem.insert("ALIGNMENT_FLOAT64_IEEE", &ALIGNMENT_FLOAT32_IEEE::itemFactory);
 }
 
 void A2lGrammar::initCompu_method()
@@ -378,6 +392,7 @@ void A2lGrammar::initMeasurement()
     measurement.factoryOptItem.insert("BIT_MASK", &BIT_MASK::itemFactory);
     measurement.factoryOptItem.insert("BYTE_ORDER", &Byte_Order::itemFactory);
     measurement.factoryOptItem.insert("DISPLAY_IDENTIFIER", &DISPLAY_IDENTIFIER::itemFactory);
+    measurement.factoryOptItem.insert("ECU_ADDRESS_EXTENSION", &ECU_ADDRESS_EXTENSION::itemFactory);
 
 }
 
@@ -727,6 +742,12 @@ void A2lGrammar::initEcu_address()
     ecu_address.namePar << "Address";
 }
 
+void A2lGrammar::initEcu_address_extension()
+{
+    ecu_address_extension.typePar  << Hex;
+    ecu_address_extension.namePar << "Extension";
+}
+
 void A2lGrammar::initEpk()
 {
     epk.typePar  << String;
@@ -749,6 +770,13 @@ void A2lGrammar::initFix_axis_par()
 {
     fix_axis_par.typePar  << Integer << Integer << Integer;
     fix_axis_par.namePar << "Offset" << "Shift" << "Numberapo";
+
+}
+
+void A2lGrammar::initFix_axis_par_dist()
+{
+    fix_axis_par_dist.typePar  << Integer << Integer << Integer;
+    fix_axis_par_dist.namePar << "Offset" << "distance" << "Numberapo";
 
 }
 
@@ -775,6 +803,12 @@ void A2lGrammar::initFormula_inv()
 {
     formula_inv.typePar  << String;
     formula_inv.namePar << "goo";
+}
+
+void A2lGrammar::initMatrix_dim()
+{
+    matrix_dim.typePar  << Integer << Integer << Integer;
+    matrix_dim.namePar << "xDim" << "yDim" << "zDim";
 }
 
 void A2lGrammar::initNo_axis_pts_x()
