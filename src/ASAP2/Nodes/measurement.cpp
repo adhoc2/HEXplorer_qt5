@@ -127,6 +127,7 @@ TokenTyp MEASUREMENT::parseOptPar()
     nameOptPar.insert("IF_DATA", ZeroOrMore);
     nameOptPar.insert("ARRAY_SIZE", ZeroOrOne);
     nameOptPar.insert("DISPLAY_IDENTIFIER", ZeroOrOne);
+    nameOptPar.insert("ECU_ADDRESS_EXTENSION", ZeroOrOne);
 
     if (nameOptPar.isEmpty())
         return nextToken();

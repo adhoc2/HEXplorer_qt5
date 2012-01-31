@@ -24,7 +24,7 @@ equals( QMAKE_CXX, cl) {
 
     CONFIG += embed_manifest_exe qaxcontainer
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
-    INCLUDEPATH += . "C:\Programme\quex\quex-0.59.7" \
+    INCLUDEPATH += . "C:\Program Files\quex\quex-0.59.7" \
      .\ASAP2 \
      .\DataContainers \
      .\Quex  \
@@ -61,8 +61,8 @@ equals( QMAKE_CXX, cl) {
 
         QMAKE_CXXFLAGS_RELEASE -= -O2
         # only for file a2l_quex_lexer.cpp because microsoft compiler cannot compile with -Ox !!
-        #QMAKE_CXXFLAGS_RELEASE += -Osiy -Gs -openmp -DQUEX_OPTION_ASSERTS_DISABLED
-        QMAKE_CXXFLAGS_RELEASE += -Ox -openmp -DQUEX_OPTION_ASSERTS_DISABLED
+        QMAKE_CXXFLAGS_RELEASE += -Osiy -Gs -openmp -DQUEX_OPTION_ASSERTS_DISABLED
+        #QMAKE_CXXFLAGS_RELEASE += -Ox -openmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
 }
 
@@ -256,7 +256,10 @@ HEADERS += a2l.h \
     ASAP2/Nodes/group.h \
     ASAP2/Items/root.h \
     ASAP2/Nodes/sub_group.h \
-    ASAP2/Nodes/ref_measurement.h
+    ASAP2/Nodes/ref_measurement.h \
+    ASAP2/Items/ecu_address_extension.h \
+    ASAP2/Items/matrix_dim.h \
+    ASAP2/Items/fix_axis_par_dist.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -405,7 +408,6 @@ SOURCES += a2l.cpp \
     freezetablewidget.cpp \
     sptablemodelHex.cpp \
     dialoghttpupdate.cpp \
-    Quex/a2l_quex_lexer.cpp \
     dialogprogressdownload.cpp \
     ASAP2/Items/display_identifier.cpp \
     ASAP2/Nodes/function_list.cpp \
@@ -416,11 +418,23 @@ SOURCES += a2l.cpp \
     ASAP2/Nodes/group.cpp \
     ASAP2/Items/root.cpp \
     ASAP2/Nodes/sub_group.cpp \
-    ASAP2/Nodes/ref_measurement.cpp
+    ASAP2/Nodes/ref_measurement.cpp \
+    Quex/a2l_quex_lexer.cpp \
+    ASAP2/Items/ecu_address_extension.cpp \
+    ASAP2/Items/matrix_dim.cpp \
+    ASAP2/Items/fix_axis_par_dist.cpp
 
 OTHER_FILES += \
     GNU_license.txt \
     update.xml
+
+
+
+
+
+
+
+
 
 
 

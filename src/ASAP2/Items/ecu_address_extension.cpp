@@ -17,26 +17,27 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#include "extended_limits.h"
+#include "ecu_address_extension.h"
 #include <QMessageBox>
 #include "a2lgrammar.h"
 
 //initialise static variables
-Factory<Item,EXTENDED_LIMITS> EXTENDED_LIMITS::itemFactory;
+Factory<Item,ECU_ADDRESS_EXTENSION> ECU_ADDRESS_EXTENSION::itemFactory;
 
-EXTENDED_LIMITS::EXTENDED_LIMITS(Node *parentNode)  : Item(parentNode)
+ECU_ADDRESS_EXTENSION::ECU_ADDRESS_EXTENSION(Node *parentNode) : Item(parentNode)
 {
     //get grammar
     A2lGrammar* gram = parentNode->lex->grammar;
-    namePar = &gram->extended_limits.namePar;
-    typePar = &gram->extended_limits.typePar;
+    namePar = &gram->ecu_address_extension.namePar;
+    typePar = &gram->ecu_address_extension.typePar;
 
     //Parse Mandatory PARAMETERS
     parseFixPar(typePar);
-    name = (char*)"EXTENDED_LIMITS";
+    name = (char*)"ECU_ADDRESS_EXTENSION";
 }
 
-EXTENDED_LIMITS::~EXTENDED_LIMITS()
+
+ECU_ADDRESS_EXTENSION::~ECU_ADDRESS_EXTENSION()
 {
     foreach (char* ptr, parameters)
     {
@@ -44,14 +45,14 @@ EXTENDED_LIMITS::~EXTENDED_LIMITS()
     }
 }
 
-void EXTENDED_LIMITS::parseFixPar(QList<TokenTyp> *typePar)
+void ECU_ADDRESS_EXTENSION::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
     for (int i = 0; i < typePar->count(); i++)
     {
         token = this->nextToken();
-        if (token == typePar->at(i) || token == Integer)
+        if (token == typePar->at(i))
         {
             char *c = new char[parentNode->lex->getLexem().length()+1];
             strcpy(c, parentNode->lex->getLexem().c_str());
@@ -66,7 +67,7 @@ void EXTENDED_LIMITS::parseFixPar(QList<TokenTyp> *typePar)
     }
 }
 
-QMap<std::string, std::string> EXTENDED_LIMITS::getParameters()
+QMap<std::string, std::string> ECU_ADDRESS_EXTENSION::getParameters()
 {
     QMap<std::string, std::string> par;
     for (int i = 0; i < namePar->count(); i++)
@@ -76,7 +77,7 @@ QMap<std::string, std::string> EXTENDED_LIMITS::getParameters()
     return par;
 }
 
-char* EXTENDED_LIMITS::getPar(std::string str)
+char* ECU_ADDRESS_EXTENSION::getPar(std::string str)
 {
     int i = namePar->indexOf(str);
     return parameters.at(i);

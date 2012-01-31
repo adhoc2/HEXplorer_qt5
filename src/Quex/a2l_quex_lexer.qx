@@ -12,7 +12,7 @@ define
 {
    D_WHITESPACE    		[ \t\r\n]+
    //D_SUB_IDENTIFIER    	[_a-zA-Z][_a-zA-Z0-9\[\]]*
-   D_SUB_IDENTIFIER    	[_a-zA-Z][_a-zA-Z0-9]*(\[[_a-zA-Z0-9]+\])*
+   D_SUB_IDENTIFIER    	[_a-zA-Z0-9]*(\[[_a-zA-Z0-9]+\])*
    D_UINTEGER			[0-9]+
    D_HEX 				0x[0-9A-Fa-f]+	
    D_FLOAT 			[\+\-]?{D_UINTEGER}\.{D_UINTEGER}?
@@ -121,6 +121,7 @@ mode ONE_AND_ONLY :
         DISPLAY_IDENTIFIER 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	ECU 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	ECU_ADDRESS 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
+	ECU_ADDRESS_EXTENSION 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	EEPROM 	 { self_send1(QUEX_TKN_MEMORYTYPE , Lexeme); RETURN; }
 	EPK 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	EPROM 	 { self_send1(QUEX_TKN_MEMORYTYPE , Lexeme); RETURN; }
@@ -129,6 +130,7 @@ mode ONE_AND_ONLY :
 	EXTERN 	 { self_send1(QUEX_TKN_MEMATTRIBUTE , Lexeme); RETURN; }
 	FIX_AXIS 	 { self_send1(QUEX_TKN_ATTRIBUTE , Lexeme); RETURN; }
 	FIX_AXIS_PAR 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
+	FIX_AXIS_PAR_DIST 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	FLASH 	 { self_send1(QUEX_TKN_MEMORYTYPE , Lexeme); RETURN; }
 	FLOAT32_IEEE 	 { self_send1(QUEX_TKN_DATATYPE , Lexeme); RETURN; }
 	FLOAT64_IEEE 	 { self_send1(QUEX_TKN_DATATYPE , Lexeme); RETURN; }
@@ -153,6 +155,7 @@ mode ONE_AND_ONLY :
 	LOC_MEASUREMENT 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	LONG 	 { self_send1(QUEX_TKN_DATASIZE , Lexeme); RETURN; }
 	MAP 	 { self_send1(QUEX_TKN_TYPE , Lexeme); RETURN; }
+	MATRIX_DIM 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	MAX_REFRESH 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	MEASUREMENT 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	MEMORY_LAYOUT 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
@@ -218,7 +221,7 @@ mode ONE_AND_ONLY :
 
 	<<EOF>>     => QUEX_TKN_TERMINATION;
 	{D_WHITESPACE}  { }   
-    	{D_SUB_IDENTIFIER}(\.{D_SUB_IDENTIFIER}*)* 	{ self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; }
+    	[_a-zA-Z]{D_SUB_IDENTIFIER}(\.{D_SUB_IDENTIFIER}*)* 	{ self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; }
 	[\+\-]?{D_UINTEGER} 						{ self_send1(QUEX_TKN_INTEGER, Lexeme); RETURN; }
 	{D_FLOAT}([eE][\+\-]?{D_UINTEGER})?     		{ self_send1(QUEX_TKN_FLOAT, Lexeme); RETURN; }
 	{D_COMMENT}				 			{ self_send1(QUEX_TKN_COMMENT, Lexeme); RETURN; }

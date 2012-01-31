@@ -35,6 +35,8 @@
 #include "Items/number.h"
 #include "Items/read_only.h"
 #include "Items/display_identifier.h"
+#include "Items/ecu_address_extension.h"
+#include "Items/matrix_dim.h"
 
 class CHARACTERISTIC : public Node
 {

@@ -122,6 +122,11 @@ TokenTyp RECORD_LAYOUT::parseOptPar()
     nameOptPar.insert("FNC_VALUES", ZeroOrOne);
     nameOptPar.insert("SRC_ADDR_X", ZeroOrOne);
     nameOptPar.insert("SRC_ADDR_Y", ZeroOrOne);
+    nameOptPar.insert("ALIGNMENT_WORD", ZeroOrOne);
+    nameOptPar.insert("ALIGNMENT_LONG", ZeroOrOne);
+    nameOptPar.insert("ALIGNMENT_FLOAT32_IEEE", ZeroOrOne);
+    nameOptPar.insert("ALIGNMENT_FLOAT64_IEEE", ZeroOrOne);
+
 
     if (nameOptPar.isEmpty())
         return nextToken();
