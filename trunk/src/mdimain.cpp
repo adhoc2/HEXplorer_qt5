@@ -873,7 +873,7 @@ void MDImain::on_actionAbout_triggered()
                    "build " + qApp->applicationVersion() + " compiled with MSVC2010\n\n"
                    "This software uses external libraries :\n"
                    "   - Qt framework 4.7.4 (Nokia)\n"
-                   "   - Quex 0.59.7 (as efficient lexical analyser generator)\n"
+                   "   - Quex 0.61.2 (as efficient lexical analyser generator)\n"
                    "   - QScintilla (as efficient text editor)\n"
                    "   - Qwt (as 2D graph plotter)\n"
                    "   - Qwtplot3D (as 3D graph plotter)\n"

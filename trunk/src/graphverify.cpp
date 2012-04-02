@@ -88,6 +88,8 @@ GraphVerify::GraphVerify(HexFile *hex, QWidget *parent):  QMainWindow(parent)
         apsMap = hex->getData("RngMod_trqAPSCor_MAP");
         qLim = hexFile->getData("EngPrt_qLim_CUR");
         fmtc = hexFile->getData("PhyMod_trq2qBasEOM0_MAP");
+        if (!fmtc)
+            fmtc = hexFile->getData("PhyMod_trq2qBas_MAP");
         friction = hexFile->getData("RngMod_trqFrc_MAP");
         trqMax_C = hexFile->getData("Frm_trqMax_C");
         trqRef_C = hexFile->getData("Frm_trqRef_C");
