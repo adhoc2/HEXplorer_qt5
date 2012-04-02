@@ -1,6 +1,9 @@
 <HEXplorer application="HEXplorer">
-    <revision version="0.6.9">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
-    <details> revision 0.6.9 (04/12/2011) :
+    <revision version="0.6.10">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
+    <details>revision 0.6.10 (02/04/2012) :
+    - bug fix : update in function verify
+
+revision 0.6.9 (04/12/2011) :
         - bug fix : Quex lexer for indentifier with brackets
         - add Root and Sub_Group nodes
 

@@ -419,15 +419,17 @@ SOURCES += a2l.cpp \
     ASAP2/Items/root.cpp \
     ASAP2/Nodes/sub_group.cpp \
     ASAP2/Nodes/ref_measurement.cpp \
-    Quex/a2l_quex_lexer.cpp \
     ASAP2/Items/ecu_address_extension.cpp \
     ASAP2/Items/matrix_dim.cpp \
     ASAP2/Items/fix_axis_par_dist.cpp \
-    DataContainers/srecfile.cpp
+    DataContainers/srecfile.cpp \
+    Quex/a2l_quex_lexer.cpp
 
 OTHER_FILES += \
     GNU_license.txt \
     update.xml
+
+
 
 
 
