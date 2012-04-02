@@ -23,8 +23,8 @@
 #   define __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
 #endif
 
-#define QUEX_SETTING_VERSION           "0.59.7"
-#define QUEX_SETTING_BUILD_DATE        "Mon Jan 30 23:53:56 2012"
+#define QUEX_SETTING_VERSION           "0.60.2"
+#define QUEX_SETTING_BUILD_DATE        "Mon Apr  2 21:18:39 2012"
 #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 
 #ifndef    __QUEX_OPTION_PLAIN_C
@@ -271,6 +271,9 @@
 #ifndef    QUEX_TYPE_CHARACTER
 #   define QUEX_TYPE_CHARACTER       uint8_t
 #endif 
+#ifndef    QUEX_TYPE_ACCEPTANCE_ID
+#   define QUEX_TYPE_ACCEPTANCE_ID   int
+#endif
 
 #if defined(__QUEX_OPTION_PLAIN_C)
 #   define QUEX_NAMESPACE_MAIN        
