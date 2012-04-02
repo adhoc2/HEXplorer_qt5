@@ -24,7 +24,7 @@ equals( QMAKE_CXX, cl) {
 
     CONFIG += embed_manifest_exe qaxcontainer
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
-    INCLUDEPATH += . "C:\Program Files\quex\quex-0.59.7" \
+    INCLUDEPATH += . "C:\Program Files\quex\quex-0.62.1" \
      .\ASAP2 \
      .\DataContainers \
      .\Quex  \
