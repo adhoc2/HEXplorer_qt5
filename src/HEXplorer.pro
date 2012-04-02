@@ -79,7 +79,7 @@ equals( QMAKE_CXX, cl) {
     QWT_ROOT = ../LIBS/qwt-6.0.1
     QWT3D_ROOT = ../LIBS/qwtplot3d
     #QUEX_ROOT = /opt/quex/quex-0.59.7
-    QUEX_ROOT = /Applications/quex/quex-0.59.7
+    QUEX_ROOT = /Applications/quex/quex-0.60.2
 
     UI_DIR = ui
     MOC_DIR = moc
@@ -239,12 +239,6 @@ HEADERS += a2l.h \
     charmodel.h \
     freezetablewidget.h \
     sptablemodelHex.h \
-    Quex/a2l_quex_lexer-token \
-    Quex/a2l_quex_lexer-configuration \
-    Quex/a2l_quex_lexer_old.qx \
-    Quex/a2l_quex_lexer.qx \
-    Quex/a2l_quex_lexer \
-    Quex/a2l_quex_lexer-token_ids \
     dialoghttpupdate.h \
     dialogprogressdownload.h \
     ASAP2/Items/display_identifier.h \
@@ -260,7 +254,12 @@ HEADERS += a2l.h \
     ASAP2/Items/ecu_address_extension.h \
     ASAP2/Items/matrix_dim.h \
     ASAP2/Items/fix_axis_par_dist.h \
-    DataContainers/srecfile.h
+    DataContainers/srecfile.h \
+    Quex/a2l_quex_lexer.qx \
+    Quex/a2l_quex_lexer-token_ids \
+    Quex/a2l_quex_lexer-token \
+    Quex/a2l_quex_lexer-configuration \
+    Quex/a2l_quex_lexer
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
