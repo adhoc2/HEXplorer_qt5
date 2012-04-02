@@ -71,7 +71,7 @@ equals( QMAKE_CXX, cl) {
 #------------  g++ Gnu compiler --------------#
 #---------------------------------------------#
 
-equals( QMAKE_CXX, g++) {
+!equals( QMAKE_CXX, cl) {
 
     # --- common config --- #
 
@@ -259,7 +259,8 @@ HEADERS += a2l.h \
     ASAP2/Nodes/ref_measurement.h \
     ASAP2/Items/ecu_address_extension.h \
     ASAP2/Items/matrix_dim.h \
-    ASAP2/Items/fix_axis_par_dist.h
+    ASAP2/Items/fix_axis_par_dist.h \
+    DataContainers/srecfile.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -422,7 +423,8 @@ SOURCES += a2l.cpp \
     Quex/a2l_quex_lexer.cpp \
     ASAP2/Items/ecu_address_extension.cpp \
     ASAP2/Items/matrix_dim.cpp \
-    ASAP2/Items/fix_axis_par_dist.cpp
+    ASAP2/Items/fix_axis_par_dist.cpp \
+    DataContainers/srecfile.cpp
 
 OTHER_FILES += \
     GNU_license.txt \
