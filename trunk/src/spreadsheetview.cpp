@@ -1335,6 +1335,8 @@ void SpreadsheetView::editAsHex()
     QString parentName = "";
     if (data->getHexParent())
         parentName = data->getHexParent()->name;
+    else if (data->getSrecParent())
+        parentName = data->getSrecParent()->name;
     else if (data->getCsvParent())
         parentName = data->getCsvParent()->name;
     else if (data->getCdfxParent())

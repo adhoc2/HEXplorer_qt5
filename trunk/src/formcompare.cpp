@@ -2126,6 +2126,13 @@ void FormCompare::on_export_labels_clicked()
             else
                 exportStatus = hex1->exportDataList2Cdf(charList);
         }
+        else if (srec1)
+        {
+            if (exportFormat == "csv")
+                exportStatus = srec1->exportDataList2Csv(charList);
+            else
+                exportStatus = srec1->exportDataList2Cdf(charList);
+        }
         else if (csv1)
         {
             if (exportFormat == "csv")
@@ -2149,6 +2156,13 @@ void FormCompare::on_export_labels_clicked()
                 exportStatus = hex2->exportDataList2Csv(charList);
             else
                 exportStatus = hex2->exportDataList2Cdf(charList);
+        }
+        else if (srec2)
+        {
+            if (exportFormat == "csv")
+                exportStatus = srec2->exportDataList2Csv(charList);
+            else
+                exportStatus = srec2->exportDataList2Cdf(charList);
         }
         else if (csv2)
         {
@@ -2183,6 +2197,7 @@ void FormCompare::on_export_subset_clicked()
 {  
     //get the hex and a2l nodes
     HexFile *hex = NULL;
+    SrecFile *srec = NULL;
     A2LFILE *a2l = NULL;
     QString moduleName;
     if (ui->checkBoxSrc->isChecked() && !ui->lineEdit->text().isEmpty())
@@ -2190,20 +2205,32 @@ void FormCompare::on_export_subset_clicked()
         if (hex1)
         {
             hex = hex1;
+            moduleName = hex1->getModuleName();
+        }
+        else if (srec1)
+        {
+            srec = srec1;
+            moduleName = srec1->getModuleName();
         }
         else
         {
-            QMessageBox::information(this, "HEXplorer :: export subset", "please first select an HEX file.");
+            QMessageBox::information(this, "HEXplorer :: export subset", "please first select an HEX or a Srec file.");
             return;
         }
         a2l = a2l1;
-        moduleName = hex1->getModuleName();
+
     }
     else if (ui->checkBoxTrg->isChecked() && !ui->lineEdit_2->text().isEmpty())
     {
         if (hex2)
         {
             hex = hex2;
+            moduleName = hex2->getModuleName();
+        }
+        else if (srec2)
+        {
+            srec = srec2;
+            moduleName = srec2->getModuleName();
         }
         else
         {
@@ -2211,7 +2238,7 @@ void FormCompare::on_export_subset_clicked()
             return;
         }
         a2l = a2l2;
-        moduleName = hex2->getModuleName();
+
     }
     else
     {
@@ -2221,8 +2248,16 @@ void FormCompare::on_export_subset_clicked()
 
     //choose subset(s)
     QStringList subsetList;
-    ChooseSubset *chooseSubset = new ChooseSubset(a2l, hex, subsetList, this);
-    chooseSubset->exec();
+    if (hex)
+    {
+        ChooseSubset *chooseSubset = new ChooseSubset(a2l, hex, subsetList, this);
+        chooseSubset->exec();
+    }
+    else if (srec)
+    {
+        ChooseSubset *chooseSubset = new ChooseSubset(a2l, srec, subsetList, this);
+        chooseSubset->exec();
+    }
 
     if (subsetList.isEmpty())
         return;
@@ -2234,9 +2269,20 @@ void FormCompare::on_export_subset_clicked()
 
     //export
     if (exportFormat == "csv")
-        hex->exportSubsetList2Csv(subsetList);
+    {
+        if (hex)
+            hex->exportSubsetList2Csv(subsetList);
+        else if (srec)
+            srec->exportSubsetList2Csv(subsetList);
+
+    }
     else if (exportFormat == "cdf")
-        hex->exportSubsetList2Cdf(subsetList);
+    {
+        if (hex)
+            hex->exportSubsetList2Cdf(subsetList);
+        else if (srec)
+            srec->exportSubsetList2Cdf(subsetList);
+    }
 
     //output information
     MDImain *win = (MDImain*)mainWidget;

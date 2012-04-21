@@ -248,7 +248,7 @@ QString AXIS_PTS::getSubsetName()
     }
     else
     {
-        return "NO_SUBSET";
+        return "";
     }
 }
 

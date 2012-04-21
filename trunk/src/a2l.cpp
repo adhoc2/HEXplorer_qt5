@@ -539,6 +539,7 @@ void A2l::readSubset()
             foreach (MODULE *module, listModule)
             {
                 Node *fun = module->getNode("FUNCTION");
+                Node *group = module->getNode("GROUP");
                 Node *charac = module->getNode("CHARACTERISTIC");
                 Node *axis_pts =  module->getNode("AXIS_PTS");
 
@@ -546,10 +547,16 @@ void A2l::readSubset()
                 {
                     foreach (Node *subset, fun->childNodes)
                     {
+                        bool found = false;
                         DEF_CHARACTERISTIC *def = (DEF_CHARACTERISTIC*)subset->getNode("DEF_CHARACTERISTIC");
                         if (def)
                         {
                             QStringList listDefChar = def->getCharList();
+                            if (listDefChar.length() > 0)
+                            {
+                               found = true;
+                            }
+
                             foreach(QString str, listDefChar)
                             {
                                 CHARACTERISTIC *node = (CHARACTERISTIC*)charac->getNode(str);
@@ -573,6 +580,11 @@ void A2l::readSubset()
                             if (ref)
                             {
                                 QStringList listDefChar = ref->getCharList();
+                                if (listDefChar.length() > 0)
+                                {
+                                   found = true;
+                                }
+
                                 foreach(QString str, listDefChar)
                                 {
                                     CHARACTERISTIC *node = (CHARACTERISTIC*)charac->getNode(str);
@@ -588,6 +600,77 @@ void A2l::readSubset()
                                             node->setSubset((FUNCTION*)subset);
                                         }
                                     }
+                                }
+                            }
+                        }
+
+                        if (!found)
+                        {
+                            if (group)
+                            {
+                                GROUP *grp = (GROUP*)group->getNode(subset->name);
+                                if (grp)
+                                {
+                                    DEF_CHARACTERISTIC *def = (DEF_CHARACTERISTIC*)grp->getNode("DEF_CHARACTERISTIC");
+                                    if (def)
+                                    {
+                                        QStringList listDefChar = def->getCharList();
+                                        if (listDefChar.length() > 0)
+                                        {
+                                           found = true;
+                                        }
+
+                                        foreach(QString str, listDefChar)
+                                        {
+                                            CHARACTERISTIC *node = (CHARACTERISTIC*)charac->getNode(str);
+                                            if (node)
+                                            {
+                                                node->setSubset((FUNCTION*)subset);
+                                            }
+                                            else
+                                            {
+                                                AXIS_PTS *node = (AXIS_PTS*)axis_pts->getNode(str);
+                                                if (node)
+                                                {
+                                                    node->setSubset((FUNCTION*)subset);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        REF_CHARACTERISTIC *ref = (REF_CHARACTERISTIC*)grp->getNode("REF_CHARACTERISTIC");
+                                        if (ref)
+                                        {
+                                            QStringList listDefChar = ref->getCharList();
+                                            if (listDefChar.length() > 0)
+                                            {
+                                               found = true;
+                                            }
+
+                                            foreach(QString str, listDefChar)
+                                            {
+                                                CHARACTERISTIC *node = (CHARACTERISTIC*)charac->getNode(str);
+                                                if (node)
+                                                {
+                                                    node->setSubset((FUNCTION*)subset);
+                                                }
+                                                else
+                                                {
+                                                    AXIS_PTS *node = (AXIS_PTS*)axis_pts->getNode(str);
+                                                    if (node)
+                                                    {
+                                                        node->setSubset((FUNCTION*)subset);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                }
+                                else
+                                {
+
                                 }
                             }
                         }

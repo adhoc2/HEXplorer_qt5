@@ -164,6 +164,7 @@ class Data : public QObject, public Node
         double interp2D(double x, double y);
         void clearOldValues();
         HexFile *getHexParent();
+        SrecFile * getSrecParent();
         Csv *getCsvParent();
         CdfxFile *getCdfxParent();
 
