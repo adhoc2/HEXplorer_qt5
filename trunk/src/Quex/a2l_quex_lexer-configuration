@@ -23,8 +23,8 @@
 #   define __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
 #endif
 
-#define QUEX_SETTING_VERSION           "0.60.2"
-#define QUEX_SETTING_BUILD_DATE        "Mon Apr  2 21:18:39 2012"
+#define QUEX_SETTING_VERSION           "0.62.1"
+#define QUEX_SETTING_BUILD_DATE        "Mon Apr 02 21:50:57 2012"
 #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 
 #ifndef    __QUEX_OPTION_PLAIN_C
@@ -139,7 +139,7 @@
 /* Verbosity (uncomment the following, if you want it verbose.)            */
 /* #define QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED                    */
 
-/* Include Stack Support                                                  */
+/* Include Stack Support                                                   */
 #ifndef   QUEX_OPTION_INCLUDE_STACK
 #define    QUEX_OPTION_INCLUDE_STACK
 #endif
@@ -269,28 +269,76 @@
  *       a 'pure C' version of the quex generated engine. Thus templating would make this 
  *       goal harder achievable.                                                            */
 #ifndef    QUEX_TYPE_CHARACTER
-#   define QUEX_TYPE_CHARACTER       uint8_t
+#   define QUEX_TYPE_CHARACTER          uint8_t
 #endif 
+#ifndef    QUEX_SETTING_CHARACTER_SIZE
+    /* Size of a QUEX_TYPE_CHARACTER in bytes. A numeric value is required here!
+     * '-1' stands for 'Cannot be determined at code generation time'. In this case,
+     * it must be relied upon 'sizeof(QUEX_TYPE_CHARACTER)'.                                */
+#   define QUEX_SETTING_CHARACTER_SIZE  1
+#endif
+#ifndef    QUEX_SETTING_CHARACTER_CODEC   
+#   define QUEX_SETTING_CHARACTER_CODEC unicode
+#endif
+
 #ifndef    QUEX_TYPE_ACCEPTANCE_ID
 #   define QUEX_TYPE_ACCEPTANCE_ID   int
 #endif
 
+/* QUEX_TYPE_X  --> Type of X in global namespace 
+ * QUEX_TYPE0_X --> Type of X in local namespace (namespace omitted) */
 #if defined(__QUEX_OPTION_PLAIN_C)
-#   define QUEX_NAMESPACE_MAIN        
+#   define QUEX_FUNCTION_PREFIX        quex_a2l_quex_lexer_
+#   define QUEX_FUNCTION_DEF_PREFIX    quex_a2l_quex_lexer_
+    /* In 'C' there are no namespaces, so namespaces are coded directly
+     * into the type name. Both, global and local names are equal.       */
+#   define QUEX_TYPE0_ANALYZER         struct quex_a2l_quex_lexer_tag
+#   define QUEX_TYPE_ANALYZER          struct quex_a2l_quex_lexer_tag
+#   define QUEX_NAME_COMPLETE_ANALYZER quex_a2l_quex_lexer
+#   define QUEX_TYPE_DERIVED_ANALYZER  struct quex_a2l_quex_lexer_tag
+
+#   define QUEX_TYPE0_TOKEN            struct quex_Token_tag
+#   define QUEX_TYPE_TOKEN             struct quex_Token_tag
+#   define QUEX_NAME_COMPLETE_TOKEN    quex_Token
+
+#   define QUEX_NAMESPACE_MAIN         quex_a2l_quex_lexer
 #   define QUEX_NAMESPACE_MAIN_OPEN   
 #   define QUEX_NAMESPACE_MAIN_CLOSE  
+
 #   define QUEX_NAMESPACE_TOKEN   
 #   define QUEX_NAMESPACE_TOKEN_OPEN  
 #   define QUEX_NAMESPACE_TOKEN_CLOSE 
 
-#   define QUEX_NAME(NAME)             a2l_quex_lexer_ ## NAME
+#   define QUEX_NAME(NAME)             quex_a2l_quex_lexer_ ## NAME
 #   define QUEX_NAME_TOKEN(NAME)       quex_Token_ ## NAME
 #   define QUEX_MEMBER(NAME)           void /* Undefined, not required */
+    /* When creating a 'shared token class', macros are temporarily redefined.
+     * This happens to generate converters in the token's namespace. After 
+     * that, the original macros need to be restored. Thus: Backup!          */  
+#   define QUEX_NAMESPACE_MAIN_OPEN_BACKUP   
+#   define QUEX_NAMESPACE_MAIN_CLOSE_BACKUP  
+#   define QUEX_FUNCTION_PREFIX_BACKUP       quex_a2l_quex_lexer_
+#   define QUEX_FUNCTION_DEF_PREFIX_BACKUP   quex_a2l_quex_lexer_
+
 #else
+#   define QUEX_FUNCTION_DEF_PREFIX    /* Supposed we are IN the namespace for definition. */
+#   define QUEX_FUNCTION_PREFIX        ::quex::
+    /* Add namespaces for the global names of the classes of analyzer
+     * and token.                                                        */
+#   define QUEX_TYPE0_ANALYZER         a2l_quex_lexer
+#   define QUEX_TYPE_ANALYZER          ::quex::a2l_quex_lexer
+#   define QUEX_NAME_COMPLETE_ANALYZER ::quex::a2l_quex_lexer
+#   define QUEX_TYPE_DERIVED_ANALYZER  a2l_quex_lexer
+
+#   define QUEX_TYPE0_TOKEN            Token
+#   define QUEX_TYPE_TOKEN             ::quex::Token
+#   define QUEX_NAME_COMPLETE_TOKEN    ::quex::Token
+
 #   define QUEX_NAMESPACE_MAIN         ::quex
 #   define QUEX_NAMESPACE_MAIN_OPEN    namespace quex {\
 
 #   define QUEX_NAMESPACE_MAIN_CLOSE   } /* Closing Namespace 'quex' */\
+
 
 #   define QUEX_NAMESPACE_TOKEN        ::quex
 #   define QUEX_NAMESPACE_TOKEN_OPEN   namespace quex {\
@@ -301,35 +349,17 @@
 #   define QUEX_NAME(NAME)             a2l_quex_lexer_ ## NAME
 #   define QUEX_NAME_TOKEN(NAME)       Token_ ## NAME
 #   define QUEX_MEMBER(NAME)           a2l_quex_lexer::NAME                
+    /* When creating a 'shared token class', macros are temporarily redefined.
+     * This happens to generate converters in the token's namespace. After 
+     * that, the original macros need to be restored. Thus: Backup!          */  
+#   define QUEX_NAMESPACE_MAIN_OPEN_BACKUP   namespace quex {\
+
+#   define QUEX_NAMESPACE_MAIN_CLOSE_BACKUP  } /* Closing Namespace 'quex' */\
+
+#   define QUEX_FUNCTION_PREFIX_BACKUP        
+#   define QUEX_FUNCTION_DEF_PREFIX_BACKUP   ::quex::
 #endif
 
-/* For the utf8 printing: Name the function that converts the 
- * specific codec to utf8 representation.                       */
-#ifndef    QUEX_SETTING_CODEC   
-#   define QUEX_SETTING_CODEC          unicode
-#endif
-
-/* QUEX_TYPE_X  --> Type of X in global namespace 
- * QUEX_TYPE0_X --> Type of X in local namespace (namespace omitted) */
-#ifdef __QUEX_OPTION_PLAIN_C
-/* In 'C' there are no namespaces, so namespaces are coded directly
- * into the type name. Both, global and local names are equal.       */
-#   define QUEX_TYPE_ANALYZER                struct a2l_quex_lexer_tag
-#   define QUEX_TYPE0_ANALYZER               struct a2l_quex_lexer_tag
-#   define QUEX_TYPE_DERIVED_ANALYZER        struct a2l_quex_lexer_tag
-
-#   define QUEX_TYPE_TOKEN                   struct quex_Token_tag
-#   define QUEX_TYPE0_TOKEN                  struct quex_Token_tag
-#else
-/* Add namespaces for the global names of the classes of analyzer
- * and token.                                                        */
-#   define QUEX_TYPE_ANALYZER                ::quex::a2l_quex_lexer
-#   define QUEX_TYPE0_ANALYZER               a2l_quex_lexer
-#   define QUEX_TYPE_DERIVED_ANALYZER        a2l_quex_lexer
-
-#   define QUEX_TYPE_TOKEN                   ::quex::Token
-#   define QUEX_TYPE0_TOKEN                  Token
-#endif
 
 #ifndef    QUEX_TYPE_TOKEN_ID
 #   define QUEX_TYPE_TOKEN_ID        uint32_t

@@ -68,9 +68,9 @@ SrecFile::SrecFile(QString fullSrecFileName, WorkProject *parentWP, QString modu
     : QObject(parent) , DataContainer(parentWP, module)
 {
     //initialize
-    fullHexName = fullSrecFileName;
-    name = new char[(QFileInfo(fullHexName).fileName()).toLocal8Bit().count() + 1];
-    strcpy(name, (QFileInfo(fullHexName).fileName()).toLocal8Bit().data());
+    fullSrecName = fullSrecFileName;
+    name = new char[(QFileInfo(fullSrecName).fileName()).toLocal8Bit().count() + 1];
+    strcpy(name, (QFileInfo(fullSrecName).fileName()).toLocal8Bit().data());
     a2lProject = (PROJECT*)getParentWp()->a2lFile->getProject();
     maxValueProgbar = 0;
     valueProgBar = 0;
@@ -200,7 +200,7 @@ bool SrecFile::parseFile()
     timer.start();
 
     // open file in binary format
-    FILE *fid = fopen(fullHexName.toStdString().c_str(), "rb");
+    FILE *fid = fopen(fullSrecName.toStdString().c_str(), "rb");
     if (fid == NULL)
     {
         return false;
@@ -227,7 +227,7 @@ bool SrecFile::parseFile()
     {
         QString str = in.readLine();
 
-        if (str.startsWith(":"))
+        if (str.startsWith("S") || str.startsWith("s"))
         {
             lines << str;
         }
@@ -238,7 +238,7 @@ bool SrecFile::parseFile()
         }
         else
         {
-            QMessageBox::critical(0, "HEXplorer :: SrecFile", "wrong Hex file format.");
+            QMessageBox::critical(0, "HEXplorer :: SrecFile", "wrong Srec file format.");
             return false;
         }
     }
@@ -253,7 +253,6 @@ bool SrecFile::parseFile()
     // initialize variables
     int dataCnt = 0;
     int lineLength = 0;
-    bool firstLineOfBlock = false;
     int type = 0;
     MemBlock *actBlock = 0;
     int cnt = 0;
@@ -266,46 +265,59 @@ bool SrecFile::parseFile()
         QByteArray barray = lines.at(cnt).toLocal8Bit();
         char* _line = barray.data();
 
-        // get the type and the length of the record
+        // get the type of the record
         bool ok;
-        type = asciiToByte[*(ushort*)(_line + 7)];
+        type = asciiToByte[*(uchar*)(_line + 1)];
 
         // according to the type of the record, do :
         switch (type)
         {
-        case 0: //Data Record
-        {
-            //finish MemBlock definition
-            if (firstLineOfBlock)
-            {
-                // get the length, start, offset of the block
-                actBlock->start = (actBlock->offset + QByteArray(_line + 3, 4)).toUInt(&ok, 16);
-                int end = (actBlock->offset + "FFFF").toUInt(&ok, 16);
-                actBlock->lineLength = asciiToByte[*(ushort*)(_line + 1)];
-                actBlock->data = new unsigned char [(end - actBlock->start + 1)];
+        case 3: //Block header
+            //cnt++;
+            break;
 
-                firstLineOfBlock = false;
-            }
+        case 0: //Data Sequence
+        {
+
+            // create a new memory block
+            actBlock = new MemBlock();
+
+            // get the length, start, offset of the block
+            actBlock->offset = QByteArray(_line + 4, 4);
+            actBlock->start = (actBlock->offset + QByteArray(_line + 8, 4)).toUInt(&ok, 16);
+            int end = (actBlock->offset + "FFFF").toUInt(&ok, 16);
+            actBlock->lineLength = asciiToByte[*(ushort*)(_line +2)];
+            actBlock->data = new unsigned char [(end - actBlock->start + 1)];
 
             //read all the lines of the memory block
-            while (type == 0)
+            int _offsetRef = actBlock->offset.toUInt(&ok, 16);
+            int _offset = QByteArray(_line + 4, 4).toUInt(&ok, 16);
+            while (type == 0 && (_offsetRef == _offset))
             {
-                lineLength = asciiToByte[*(ushort*)(_line + 1)];
-                dataCnt = (actBlock->offset + QByteArray(_line + 3, 4)).toUInt(&ok, 16) - actBlock->start;
+                lineLength = asciiToByte[*(ushort*)(_line + 2)];
+                dataCnt = (actBlock->offset + QByteArray(_line + 8, 4)).toUInt(&ok, 16) - actBlock->start;
 
                 // save the ascii characters into a byte array
                 for (int i = 0; i < lineLength; i++)
                 {
-                    actBlock->data[dataCnt] = asciiToByte[*(ushort*)(_line + 9 + 2*i)];
+                    actBlock->data[dataCnt] = asciiToByte[*(ushort*)(_line + 12 + 2*i)];
                     dataCnt++;
                 }
 
                 // get the type and length of next line
-                cnt++;
-                barray = lines.at(cnt).toLocal8Bit();
-                _line = barray.data();
-                type = asciiToByte[*(ushort*)(_line + 7)];
-
+                if (cnt < (lines.count() - 1))
+                {
+                    cnt++;
+                    barray = lines.at(cnt).toLocal8Bit();
+                    _line = barray.data();
+                    type = asciiToByte[*(uchar*)(_line + 1)];
+                    _offset = QByteArray(_line + 4, 4).toUInt(&ok, 16);
+                }
+                else
+                {
+                    type = 66;
+                    cnt++;
+                }
             }
 
             //set blockend
@@ -318,37 +330,21 @@ bool SrecFile::parseFile()
 
             break;
 
-        case 1: //End of File
+        case 5: //Record count
             //cnt++;
-            cnt = lines.count();
+            //cnt = lines.count();
             break;
 
-        case 2: //Extended segment address record
-            cnt++;
+        case 7: //End of Block
+            //cnt++;
             break;
 
-        case 3: //Start Segment address record
-            cnt++;
+        case 8: //End of Block
+            //cnt++;
             break;
 
-        case 4: // Extended Linear Address Record
-        {
-            // create a new memory block
-            actBlock = new MemBlock();
-
-            // get the length, start, offset of the block
-            actBlock->offset = QByteArray(_line + 9, 4);
-
-            // set the flag to firstLineOfBlock to finish MemBlock definition
-            firstLineOfBlock = true;
-
-            cnt++;
-        }
-
-            break;
-
-        case 5: // Start Linear Address record
-            cnt++;
+        case 9: //End of Block
+            //cnt++;
             break;
 
         default:
@@ -2021,7 +2017,7 @@ std::string SrecFile::pixmap()
 
 QString SrecFile::fullName()
 {
-    return fullHexName;
+    return fullSrecName;
 }
 
 QString SrecFile::toString()
@@ -2037,7 +2033,7 @@ PROJECT *SrecFile::getA2lFileProject()
 
 void SrecFile::setFullName(QString fullName)
 {
-    fullHexName = fullName;
+    fullSrecName = fullName;
     WorkProject *wp = getParentWp();
     wp->rename(this);
 
@@ -2052,14 +2048,14 @@ void SrecFile::setFullName(QString fullName)
             {
                  QString str = QFileInfo(getParentWp()->getFullA2lFileName().c_str()).fileName()
                                + "/"
-                               + QFileInfo(fullHexName).fileName();
+                               + QFileInfo(fullSrecName).fileName();
                  fcomp->setDataset1(str);
             }
             else if (fcomp->getSrec2() == this)
             {
                 QString str = QFileInfo(getParentWp()->getFullA2lFileName().c_str()).fileName()
                               + "/"
-                              + QFileInfo(fullHexName).fileName();
+                              + QFileInfo(fullSrecName).fileName();
                  fcomp->setDataset2(str);
             }
         }

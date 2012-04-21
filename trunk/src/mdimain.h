@@ -95,6 +95,7 @@ private:
     QAction *addCsvFile;
     QAction *addCdfxFile;
     QAction *addHexFile;
+    QAction *addSrecFile;
     QAction *deleteFile;
     QAction *editFile;
     QAction *showParam;
@@ -173,6 +174,7 @@ private slots:
      void showFixPar();
      void nodeSelected();
      void addHexFile2Project();
+     void addSrecFile2Project();
      void addCsvFile2Project();
      void addCdfxFile2Project();
      void deleteFilesFromProject();
