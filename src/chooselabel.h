@@ -28,6 +28,7 @@
 class QTreeView;
 class A2LFILE;
 class HexFile;
+class SrecFile;
 class Csv;
 class ProjectListWidget;
 class CdfxFile;
@@ -42,6 +43,7 @@ class ChooseLabel : public QDialog
 
     public:
         ChooseLabel(A2LFILE *_a2l, HexFile *_hex, QWidget *parent = 0);
+        ChooseLabel(A2LFILE *_a2l, SrecFile *_srec, QWidget *parent = 0);
         ChooseLabel(A2LFILE *_a2l, Csv *_csv, QWidget *parent = 0);
         ChooseLabel(A2LFILE *_a2l, CdfxFile *_cdfx, QWidget *parent = 0);
         ~ChooseLabel();
@@ -59,6 +61,7 @@ class ChooseLabel : public QDialog
         Ui::ChooseLabel *ui;
         A2LFILE *a2l;
         HexFile *hex;
+        SrecFile *srec;
         Csv *csv;
         CdfxFile *cdfx;
 

@@ -64,6 +64,11 @@ QMap<QString, HexFile*> WorkProject::hexFiles()
     return hexList;
 }
 
+QMap<QString, SrecFile*> WorkProject::srecFiles()
+{
+    return srecList;
+}
+
 QMap<QString, Csv*> WorkProject::csvFiles()
 {
     return csvList;

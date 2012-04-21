@@ -195,6 +195,7 @@ class Data : public QObject, public Node
         PROJECT *project;
         Node *label;
         HexFile *hexParent;
+        SrecFile *srecParent;
         Csv *csvParent;
         CdfxFile *cdfxParent;
         bool displayed;

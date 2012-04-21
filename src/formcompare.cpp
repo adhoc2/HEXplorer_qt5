@@ -89,6 +89,8 @@ FormCompare::FormCompare(A2lTreeModel *model, QTreeView *tree, QTreeView *tree_2
     //initialize pointers
     hex1 = NULL;
     hex2 = NULL;
+    srec1 = NULL;
+    srec2 = NULL;
     csv1 = NULL;
     csv2 = NULL;
     cdfx1 = NULL;
@@ -155,6 +157,7 @@ void FormCompare::on_quicklook_clicked()
 
     //get the hex and a2l nodes
     HexFile *hex = NULL;
+    SrecFile *srec = NULL;
     Csv *csv = NULL;
     CdfxFile *cdfx = NULL;
     A2LFILE *a2l = NULL;
@@ -162,11 +165,14 @@ void FormCompare::on_quicklook_clicked()
     if (ui->checkBoxSrc->isChecked() && !ui->lineEdit->text().isEmpty())
     {
         hex = hex1;
+        srec = srec1;
         a2l = a2l1;
         csv = csv1;
         cdfx = cdfx1;
         if (hex)
             moduleName = hex->getModuleName();
+        else if (srec)
+            moduleName = srec->getModuleName();
         else if (csv)
             moduleName = csv->getModuleName();
         else
@@ -176,11 +182,14 @@ void FormCompare::on_quicklook_clicked()
     else if (ui->checkBoxTrg->isChecked() && !ui->lineEdit_2->text().isEmpty())
     {
         hex = hex2;
+        srec = srec2;
         a2l = a2l2;
         csv = csv2;
         cdfx = cdfx2;
         if (hex)
             moduleName = hex->getModuleName();
+        else if (srec)
+            moduleName = srec->getModuleName();
         else if (csv)
             moduleName = csv->getModuleName();
         else
@@ -197,6 +206,11 @@ void FormCompare::on_quicklook_clicked()
     if (charList.isEmpty())
     {
         if (hex)
+        {
+            MODULE *module = (MODULE*)a2l->getProject()->getNode("MODULE/" + moduleName);
+            charList = module->listChar;
+        }
+        else if (srec)
         {
             MODULE *module = (MODULE*)a2l->getProject()->getNode("MODULE/" + moduleName);
             charList = module->listChar;
@@ -228,6 +242,22 @@ void FormCompare::on_quicklook_clicked()
             {
                 outList.append("Action quicklook : " + str + " not an adjustable into "
                                + QString(hex->name));
+            }
+        }
+    }
+    else if (srec)
+    {
+        foreach (QString str, charList)
+        {
+            Data *data = srec->getData(str);
+            if (data)
+            {
+                list->append(data);
+            }
+            else
+            {
+                outList.append("Action quicklook : " + str + " not an adjustable into "
+                               + QString(srec->name));
             }
         }
     }
@@ -309,12 +339,14 @@ void FormCompare::on_choose_clicked()
     //get the hex and a2l nodes
     A2LFILE *a2l = NULL;
     HexFile *hex = NULL;
+    SrecFile *srec = NULL;
     Csv *csv = NULL;
     CdfxFile *cdfx = NULL;
     if (ui->checkBoxSrc->isChecked() && !ui->lineEdit->text().isEmpty())
     {
         a2l = a2l1;
         hex = hex1;
+        srec = srec1;
         csv = csv1;
         cdfx = cdfx1;
     }
@@ -322,6 +354,7 @@ void FormCompare::on_choose_clicked()
     {
         a2l = a2l2;
         hex = hex2;
+        srec = srec2;
         csv = csv2;
         cdfx = cdfx2;
     }
@@ -338,6 +371,12 @@ void FormCompare::on_choose_clicked()
             ChooseLabel *choose = new ChooseLabel(a2l, hex, this);
             choose->exec();
         }
+        else if (srec)
+        {
+            ChooseLabel *choose = new ChooseLabel(a2l, srec, this);
+            choose->exec();
+        }
+
         else if (csv)
         {
             ChooseLabel *choose = new ChooseLabel(a2l, csv, this);
@@ -374,6 +413,7 @@ void FormCompare::checkDroppedFile(QString oldText)
 
     QString name = typeid(*node).name();
     if (!name.toLower().endsWith("hexfile") &&
+        !name.toLower().endsWith("srecfile") &&
         !name.toLower().endsWith("csv") &&
         !name.toLower().endsWith("cdfxfile"))
     {
@@ -387,6 +427,12 @@ void FormCompare::checkDroppedFile(QString oldText)
         {
             hex1->getParentWp()->detach(this);
             hex1->detach(this);
+
+        }
+        else if (srec1)
+        {
+            srec1->getParentWp()->detach(this);
+            srec1->detach(this);
 
         }
         else if (csv1)
@@ -409,6 +455,15 @@ void FormCompare::checkDroppedFile(QString oldText)
             hex1 = (HexFile*)node;
             hex1->attach(this);
             hex1->getParentWp()->attach(this);
+            a2l1 = (A2LFILE*)node->getParentNode();
+        }
+        if (name.toLower().endsWith("srecfile"))
+        {
+            csv1 = NULL;
+            cdfx1 = NULL;
+            srec1 = (SrecFile*)node;
+            srec1->attach(this);
+            srec1->getParentWp()->attach(this);
             a2l1 = (A2LFILE*)node->getParentNode();
         }
         else if(name.toLower().endsWith("csv"))

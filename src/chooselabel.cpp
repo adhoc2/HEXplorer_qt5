@@ -73,6 +73,49 @@ ChooseLabel::ChooseLabel(A2LFILE *_a2l, HexFile *_hex, QWidget *parent) :
     ui->listWidget_2->addAction(leftSelect);
 }
 
+ChooseLabel::ChooseLabel(A2LFILE *_a2l, SrecFile *_srec, QWidget *parent) :
+    QDialog(parent), ui(new Ui::ChooseLabel)
+{
+    // setup Ui
+    ui->setupUi(this);
+    setWindowTitle("HEXplorer::select Labels into " + QString(_a2l->name));
+    QIcon icon(":/icones/milky_plus.png");
+    setWindowIcon(icon);
+
+    //initialize pointers
+    mainWidget = parent;
+    a2l = _a2l;
+    hex = NULL;
+    srec = _srec;
+    csv = NULL;
+    cdfx = NULL;
+
+    // copy the charList from formComapare into choosenList and listView_2
+    FormCompare *fc = (FormCompare*)mainWidget;
+    ui->listWidget_2->addItems(fc->charList);
+
+    // select the text from lineEdit
+    ui->lineEdit->setText("enter a label name ...");
+    ui->lineEdit->setFocus(Qt::OtherFocusReason);
+    ui->lineEdit->selectAll();
+
+    //clear the long_secription label
+    ui->label_3->clear();
+
+    // connect SLOTS
+    timer.setSingleShot(true);
+    connect(&timer, SIGNAL(timeout()), this, SLOT(on_lineEdit_textChanged()));
+    connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(on_lineEdit_textChanged()));
+    connect(ui->lineEdit, SIGNAL(textChanged(QString)), this, SLOT(searchItem()));
+    connect(ui->lineEdit_2, SIGNAL(textChanged(QString)), this, SLOT(searchItem()));
+    connect(ui->listWidget, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(selectedItem(QListWidgetItem*,QListWidgetItem*)));
+
+    // create actions for shortCuts
+    createActions();
+    ui->listWidget->addAction(rightSelect);
+    ui->listWidget_2->addAction(leftSelect);
+}
+
 ChooseLabel::ChooseLabel(A2LFILE *_a2l, Csv *_csv, QWidget *parent) :
         QDialog(parent), ui(new Ui::ChooseLabel)
 {
@@ -201,6 +244,10 @@ void ChooseLabel::on_lineEdit_textChanged(QString str)
     if (hex)
     {
         moduleName = hex->getModuleName();
+    }
+    else if (srec)
+    {
+        moduleName = srec->getModuleName();
     }
     else if (csv)
     {

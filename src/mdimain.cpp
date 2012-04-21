@@ -249,6 +249,11 @@ void MDImain::createActions()
     connect(addHexFile, SIGNAL(triggered()), this, SLOT(addHexFile2Project()));
     addHexFile->setDisabled(true);
 
+    addSrecFile = new QAction(tr("Import Srec file"), this);
+    addSrecFile->setIcon(QIcon(":/icones/milky_importHEX.png"));
+    connect(addSrecFile, SIGNAL(triggered()), this, SLOT(addSrecFile2Project()));
+    addSrecFile->setDisabled(true);
+
     addCsvFile = new QAction(tr("Import Csv file"), this);
     addCsvFile->setIcon(QIcon(":/icones/milky_importCsv.png"));
     connect(addCsvFile, SIGNAL(triggered()), this, SLOT(addCsvFile2Project()));
@@ -456,6 +461,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         addCsvFile->setEnabled(true);
         editChanged->setEnabled(false);
         addHexFile->setEnabled(true);
+        addSrecFile->setEnabled(true);
         deleteProject->setEnabled(true);
         deleteFile->setEnabled(false);
         editFile->setEnabled(true);
@@ -479,6 +485,35 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         addCdfxFile->setEnabled(false);
         addCsvFile->setEnabled(false);
         addHexFile->setEnabled(false);
+        addSrecFile->setEnabled(false);
+        deleteProject->setEnabled(false);
+        deleteFile->setEnabled(true);
+        editFile->setEnabled(true);
+        childCount->setEnabled(true);
+        showParam->setEnabled(false);
+        resetAllChangedData->setEnabled(true);
+        sortBySubset->setEnabled(true);
+        saveFile->setEnabled(true);
+        saveAsFile->setEnabled(true);
+        quicklook->setIcon(QIcon(":/icones/milky_loopHex.png"));
+        quicklook->setEnabled(true);
+        readValuesFromCsv->setEnabled(true);
+        readValuesFromCdfx->setEnabled(true);
+        editMeasChannels->setEnabled(false);
+        editCharacteristics->setEnabled(false);
+        openJScript->setEnabled(false);
+
+        ui->toolBar_data->show();
+
+    }
+    else if (name.endsWith("SrecFile"))
+    {
+        importSubsets->setEnabled(true);
+        exportSubsets->setEnabled(true);
+        addCdfxFile->setEnabled(false);
+        addCsvFile->setEnabled(false);
+        addHexFile->setEnabled(false);
+        addSrecFile->setEnabled(false);
         deleteProject->setEnabled(false);
         deleteFile->setEnabled(true);
         editFile->setEnabled(true);
@@ -506,6 +541,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         addCdfxFile->setEnabled(false);
         addCsvFile->setEnabled(false);
         addHexFile->setEnabled(false);
+        addSrecFile->setEnabled(false);
         deleteProject->setEnabled(false);
         deleteFile->setEnabled(true);
         editFile->setEnabled(true);
@@ -531,6 +567,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         addCdfxFile->setEnabled(false);
         addCsvFile->setEnabled(false);
         addHexFile->setEnabled(false);
+        addSrecFile->setEnabled(false);
         deleteProject->setEnabled(false);
         deleteFile->setEnabled(true);
         editFile->setEnabled(true);
@@ -680,6 +717,61 @@ void MDImain::showContextMenu(QPoint)
                 }
 
             }
+            else if (name.toLower().endsWith("srecfile"))
+            {
+                menu.addSeparator();
+                menu.addAction(quicklook);
+                menu.addAction(editFile);
+                menu.addSeparator();
+                menu.addAction(readValuesFromCsv);
+                menu.addAction(readValuesFromCdfx);
+                menu.addSeparator();
+                //menu.addAction(importSubsets);
+                menu.addAction(exportSubsets);
+                menu.addSeparator();
+                menu.addAction(editChanged);
+                menu.addAction(resetAllChangedData);
+                menu.addAction(sortBySubset);
+                menu.addMenu(toolsMenu);
+                menu.addSeparator();
+                menu.addAction(saveFile);
+                menu.addAction(saveAsFile);
+                menu.addAction(deleteFile);
+
+                //menu editModified
+                Node *node =  model->getNode(index);
+                SrecFile *srec = dynamic_cast<SrecFile *> (node);
+
+                if (srec->getModifiedData().isEmpty())
+                {
+                    sortBySubset->setDisabled(true);
+                    resetAllChangedData->setDisabled(true);
+                    editChanged->setDisabled(true);
+                }
+                else
+                {
+                    sortBySubset->setDisabled(false);
+                    resetAllChangedData->setDisabled(false);
+                    editChanged->setDisabled(false);
+                }
+
+                //menu tools
+                A2LFILE *a2l = dynamic_cast<A2LFILE *> (srec->getParentNode());
+                QString projectName = ((PROJECT*)a2l->getProject())->getPar("name");
+                projectName = projectName.toLower();
+
+                if (projectName == "c340" || projectName == "c342" || projectName == "p_662")
+                {
+                    verify->setDisabled(false);
+                    checkFmtc->setDisabled(false);
+                }
+                else
+                {
+                    verify->setDisabled(true);
+                    checkFmtc->setDisabled(true);
+                }
+
+            }
             else if (name.toLower().endsWith("a2lfile"))
             {
                 A2LFILE *a2lFile = (A2LFILE*)node;
@@ -690,6 +782,7 @@ void MDImain::showContextMenu(QPoint)
                     menu.addAction(editFile);                    
                     menu.addSeparator();
                     menu.addAction(addHexFile);
+                    menu.addAction(addSrecFile);
                     menu.addAction(addCsvFile);
                     menu.addAction(addCdfxFile);
                     menu.addSeparator();
@@ -1221,6 +1314,158 @@ void MDImain::addHexFile2Project()
         }
     }
 }
+
+void MDImain::addSrecFile2Project()
+{
+    // check if a project is selected in treeView
+    QModelIndex index  = ui->treeView->selectionModel()->currentIndex();
+
+    if (index.isValid())
+    {
+        //get a pointer on the selected item
+        Node *node =  model->getNode(index);
+        QString name = typeid(*node).name();
+
+        if (!name.endsWith("A2LFILE"))
+        {
+            QMessageBox::warning(this, "HEXplorer::add hex file to project", "Please select first a project.",
+                                             QMessageBox::Ok);
+            return;
+        }
+
+        int row = index.row();
+        if ( row < 0)
+        {
+            QMessageBox::information(this,"HEXplorer","please first select a project");
+            writeOutput("action open new dataset cancelled: no project first selected");
+            return;
+        }
+        else
+        {
+            QSettings settings(qApp->organizationName(), qApp->applicationName());
+            QString path = settings.value("currentHexPath").toString();
+
+            QStringList files =
+                    QFileDialog::getOpenFileNames(this,
+                                              tr("select a dataset (Srec)"), path,
+                                              tr("Srec files (*.s19 | *.s32 | *.hex_trimmed);;all files (*.*)"));
+
+
+            if (files.isEmpty())
+            {
+               statusBar()->showMessage(tr("Loading canceled"), 2000);
+               writeOutput("action open new dataset : no Srec file selected");
+               return;
+            }
+            else
+            {
+                //Get the project (A2l) name
+                QString fullA2lName = model->name(index);
+
+                //create a pointer on the WorkProject
+                WorkProject *wp = projectList->value(fullA2lName);
+
+                if (wp)  //to prevent any crash of the aplication
+                {
+                    // if no MOD_COMMON in ASAP file
+                    if (wp->a2lFile->getProject()->getNode("MODULE") == NULL)
+                    {
+                        QMessageBox::information(this, "HEXplorer", tr("no MOD_COMMON in ASAP file"));
+                        writeOutput("action open new dataset : no MOD_COMMON in ASAP file");
+                        return;
+                    }
+
+                    // check if Hexfile already in project
+                    foreach (QString fullSrecName, files)
+                    {
+                        //if the selected Srec file is already into the project => exit
+                        if (wp->hexFiles().contains(fullSrecName))
+                        {
+                            QMessageBox::information(this, "HEXplorer", "Srec file : " + fullSrecName
+                                                     + "\nalready included into the selected project");
+                            writeOutput("action open new dataset : Srec file already in project");
+                            files.removeOne(fullSrecName);
+                        }
+                    }
+
+                    //Open Srec files
+                    foreach (QString fullSrecName, files)
+                    {
+                        //update currentSrecPath
+                        QSettings settings(qApp->organizationName(), qApp->applicationName());
+                        QString currentSrecPath = QFileInfo(fullSrecName).absolutePath();
+                        settings.setValue("currentSrecPath", currentSrecPath);
+
+                        //start a timer
+                        double ti = omp_get_wtime();
+
+                        //add the file to the project (module)
+                        SrecFile *srec = NULL;
+                        QList<MODULE*> list = wp->a2lFile->getProject()->listModule();
+                        if (list.count() == 0)
+                        {
+                            writeOutput("action open new dataset : no Module into A2l file !");
+                            return;
+                        }
+                        else if (list.count() == 1)
+                        {
+                            srec = new SrecFile(fullSrecName, wp, QString(list.at(0)->name));
+                        }
+                        else
+                        {
+                            // select a module
+                            QString module;
+                            DialogChooseModule *diag = new DialogChooseModule(&module);
+                            QStringList listModuleName;
+                            foreach (MODULE* module, list)
+                            {
+                                listModuleName.append(module->name);
+                            }
+                            diag->setList(listModuleName);
+                            int ret = diag->exec();
+
+                            if (ret == QDialog::Accepted)
+                            {
+                                srec = new SrecFile(fullSrecName, wp, module);
+                            }
+                            else
+                            {
+                                writeOutput("action open new dataset : no module chosen !");
+                                return;
+                            }
+                        }
+
+                        // display status bar
+                        statusBar()->show();
+                        progBar->reset();
+                        //connect(hex, SIGNAL(lineParsed(int,int)), this, SLOT(setValueProgressBar(int,int)), Qt::DirectConnection);
+                        connect(srec, SIGNAL(progress(int,int)), this, SLOT(setValueProgressBar(int,int)), Qt::DirectConnection);
+
+                        if (srec->read())
+                            wp->addSrec(srec);
+                        else
+                            delete srec;
+
+                        // hide the statusbar
+                        statusBar()->hide();
+                        progBar->reset();
+
+                        //stop timer
+                        double tf = omp_get_wtime();
+
+                        //update the treeView model
+                        ui->treeView->expand(index);
+                        ui->treeView->resizeColumnToContents(0);
+
+                        writeOutput("action open new dataset : HEX file add to project in " + QString::number(tf-ti) + " sec");
+
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 void MDImain::addCsvFile2Project()
 {
@@ -3296,7 +3541,7 @@ void MDImain::quicklookFile()
         //get a pointer on the selected item
         Node *node =  model->getNode(index);
         QString name = typeid(*node).name();
-        if (name.endsWith("HexFile") || name.endsWith("Csv") || name.endsWith("CdfxFile"))
+        if (name.endsWith("HexFile") || name.endsWith("SrecFile") || name.endsWith("Csv") || name.endsWith("CdfxFile"))
         {
             QString str1 = model->getFullNodeName(index);
 
@@ -3310,7 +3555,7 @@ void MDImain::quicklookFile()
         }
         else
         {
-            QMessageBox::warning(this, "HEXplorer::quicklook", "Please select first an hex or csv file.",
+            QMessageBox::warning(this, "HEXplorer::quicklook", "Please select first an hex,Srec Cdfx or csv file.",
                                              QMessageBox::Ok);
             return;
         }

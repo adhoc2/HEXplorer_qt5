@@ -89,7 +89,7 @@ class SrecFile : public QObject, public DataContainer
         QList<MemBlock*> blockList;
         int refCount;        
         QList<QObject*> owners;
-        QString fullHexName;
+        QString fullSrecName;
         QString byteOrder;
         QHash<QString,int> nByte;
         QList<uint> listMemSegData;
