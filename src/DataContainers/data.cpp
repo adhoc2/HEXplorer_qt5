@@ -1070,7 +1070,9 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, Csv *csv, bool modif) : Node(node
     label = node;
     project = pro;
     hexParent = NULL;
+    srecParent = NULL;
     csvParent = csv;
+    cdfxParent = NULL;
     if (csv)
     {
         moduleName = csv->getModuleName();
@@ -1266,6 +1268,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, CdfxFile *cdfx, bool modif) : Nod
     label = node;
     project = pro;
     hexParent = NULL;
+    srecParent = NULL;
     csvParent = NULL;
     cdfxParent = cdfx;
     if (cdfx)
@@ -1465,6 +1468,7 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, HexFile *hexFile, bool modif) : Node(no
     label = node;
     project = pro;
     hexParent = hexFile;
+    srecParent = NULL;
     csvParent = NULL;
     cdfxParent = NULL;
     if (hexParent)
@@ -1685,6 +1689,7 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, Csv *csv, bool modif) : Node(node->name
     label = node;
     project = pro;
     hexParent = NULL;
+    srecParent = NULL;
     csvParent = csv;
     cdfxParent = NULL;
     if (csv)
@@ -1749,6 +1754,7 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, CdfxFile *cdfx, bool modif) : Node(node
     label = node;
     project = pro;
     hexParent = NULL;
+    srecParent = NULL;
     csvParent = NULL;
     cdfxParent = cdfx;
     if (cdfx)
@@ -3806,6 +3812,10 @@ bool Data::checkValues()
         {
             hexParent->removeModifiedData(this);
         }
+        else if (srecParent)
+        {
+            srecParent->removeModifiedData(this);
+        }
         else if (csvParent)
         {
             csvParent->removeModifiedData(this);
@@ -4527,6 +4537,8 @@ void Data::setX(int i, QString str)
             Data *axisData;
             if (hexParent)
                 axisData = hexParent->getData(nameAxisX);
+            else if (srecParent)
+                axisData = srecParent->getData(nameAxisX);
             else if (csvParent)
                 axisData = csvParent->getData(nameAxisX);
             else if( cdfxParent)
@@ -4674,6 +4686,8 @@ void Data::setX(QStringList list)
             Data *axisData;
             if (hexParent)
                 axisData = hexParent->getData(nameAxisX);
+            else if (srecParent)
+                axisData = srecParent->getData(nameAxisX);
             else if (csvParent)
                 axisData = csvParent->getData(nameAxisX);
             else if( cdfxParent)
@@ -4877,6 +4891,8 @@ void Data::setY(int i, QString str)
             Data *axisData;
             if (hexParent)
                 axisData = hexParent->getData(nameAxisY);
+            else if (srecParent)
+                axisData = srecParent->getData(nameAxisY);
             else if (csvParent)
                 axisData = csvParent->getData(nameAxisY);
             else if( cdfxParent)
@@ -5022,6 +5038,8 @@ void Data::setY(QStringList list)
             Data *axisData;
             if (hexParent)
                 axisData = hexParent->getData(nameAxisY);
+            else if (srecParent)
+                axisData = srecParent->getData(nameAxisY);
             else if (csvParent)
                 axisData = csvParent->getData(nameAxisY);
             else if( cdfxParent)
@@ -5857,6 +5875,14 @@ void Data::resetValX(int i)
                     axisData->resetValZ(i);
                 }
             }
+            else if (srecParent)
+            {
+                Data *axisData = srecParent->getData(nameAxisX);
+                if (axisData)
+                {
+                    axisData->resetValZ(i);
+                }
+            }
             else if (csvParent)
             {
                 Data *axisData = csvParent->getData(nameAxisX);
@@ -5896,6 +5922,14 @@ void Data::resetValY(int i)
             if (hexParent)
             {
                 Data *axisData = hexParent->getData(nameAxisY);
+                if (axisData)
+                {
+                    axisData->resetValZ(i);
+                }
+            }
+            else if (srecParent)
+            {
+                Data *axisData = srecParent->getData(nameAxisY);
                 if (axisData)
                 {
                     axisData->resetValZ(i);
@@ -5989,6 +6023,14 @@ void Data::undoValX(int i)
                     axisData->undoValZ(i);
                 }
             }
+            else if (srecParent)
+            {
+                Data *axisData = srecParent->getData(nameAxisX);
+                if (axisData)
+                {
+                    axisData->undoValZ(i);
+                }
+            }
             else if (csvParent)
             {
                 Data *axisData = csvParent->getData(nameAxisX);
@@ -6043,6 +6085,14 @@ void Data::undoValY(int i)
             QString nameAxisY = axisPtsRef->getPar("AxisPoints");
 
             if (hexParent)
+            {
+                Data *axisData = hexParent->getData(nameAxisY);
+                if (axisData)
+                {
+                    axisData->undoValZ(i);
+                }
+            }
+            else if (srecParent)
             {
                 Data *axisData = hexParent->getData(nameAxisY);
                 if (axisData)
@@ -7056,6 +7106,11 @@ bool Data::checkAxisZMonotony()
 HexFile *Data::getHexParent()
 {
     return hexParent;
+}
+
+SrecFile *Data::getSrecParent()
+{
+    return srecParent;
 }
 
 Csv *Data::getCsvParent()

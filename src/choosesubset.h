@@ -24,6 +24,7 @@
 #include <QStringList>
 class A2LFILE;
 class HexFile;
+class SrecFile;
 
 namespace Ui {
     class ChooseSubset;
@@ -33,6 +34,7 @@ class ChooseSubset : public QDialog {
     Q_OBJECT
 public:
     ChooseSubset(A2LFILE *_a2l, HexFile *_hex, QStringList &list,QWidget *parent = 0);
+    ChooseSubset(A2LFILE *_a2l, SrecFile *_srec, QStringList &list,QWidget *parent = 0);
     ~ChooseSubset();
 
 protected:
@@ -42,6 +44,7 @@ private:
     Ui::ChooseSubset *ui;
     A2LFILE *a2l;
     HexFile *hex;
+    SrecFile *srec;
     QWidget *mainWidget;
     QStringList *subsetList;
 

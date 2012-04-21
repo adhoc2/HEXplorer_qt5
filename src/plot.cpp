@@ -43,6 +43,10 @@ Plot::Plot(GraphModel *mod, QString type) : QwtPlot()
     {
         setTitle(data->getName() + " " + data->getUnit() + " (" + QString(data->getHexParent()->name) + ")");
     }
+    else if (data->getSrecParent())
+    {
+        setTitle(data->getName() + " " + data->getUnit() + " (" + QString(data->getSrecParent()->name) + ")");
+    }
     else if (data->getCsvParent())
     {
         setTitle(data->getName() + " " + data->getUnit() + " (" + QString(data->getCsvParent()->name) + ")");

@@ -281,7 +281,7 @@ QString CHARACTERISTIC::getSubsetName()
     }
     else
     {
-        return "NO_SUBSET";
+        return "";
     }
 }
 

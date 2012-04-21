@@ -21,6 +21,7 @@
 #include "ui_choosesubset.h"
 #include "Nodes/a2lfile.h"
 #include "hexfile.h"
+#include "srecfile.h"
 #include "Nodes/def_characteristic.h"
 #include "formcompare.h"
 #include "mdimain.h"
@@ -39,6 +40,45 @@ ChooseSubset::ChooseSubset(A2LFILE *_a2l, HexFile *_hex, QStringList &list, QWid
     mainWidget = parent;
     a2l = _a2l;
     hex = _hex;
+    srec = NULL;
+    subsetList = &list;
+
+
+    //define the 2 QListWidget as Sorted
+    ui->listWidget->setSortingEnabled(true);
+    ui->listWidget_2->setSortingEnabled(true);
+
+    // select the text from lineEdit
+    ui->lineEdit->setText("enter a subset name ...");
+    ui->lineEdit->setFocus(Qt::OtherFocusReason);
+    ui->lineEdit->selectAll();
+
+    QList<QKeySequence> listShortCutsLeft;
+    listShortCutsLeft.append(Qt::Key_Right);
+    listShortCutsLeft.append(Qt::Key_Space);
+
+    QAction *rightSelect = new QAction(ui->listWidget);
+    rightSelect->setShortcutContext(Qt::WidgetShortcut);
+    rightSelect->setShortcuts(listShortCutsLeft);
+    connect(rightSelect, SIGNAL(triggered()), this, SLOT(on_rightButton_clicked()));
+
+    ui->listWidget->addAction(rightSelect);
+
+}
+
+ChooseSubset::ChooseSubset(A2LFILE *_a2l, SrecFile *_srec, QStringList &list, QWidget *parent) : QDialog(parent), ui(new Ui::ChooseSubset)
+{
+    // setup Ui
+    ui->setupUi(this);
+    setWindowTitle("HEXplorer :: select Subsets into " + QString(_a2l->name));
+    QIcon icon(":/icones/Add record.png");
+    setWindowIcon(icon);
+
+    //initialize pointers
+    mainWidget = parent;
+    a2l = _a2l;
+    hex = NULL;
+    srec = _srec;
     subsetList = &list;
 
 
@@ -83,7 +123,12 @@ void ChooseSubset::changeEvent(QEvent *e)
 
 void ChooseSubset::on_lineEdit_textChanged(QString )
 {
-    QString moduleName = hex->getModuleName();
+    QString moduleName;
+    if (hex)
+        moduleName = hex->getModuleName();
+    else
+        moduleName = srec->getModuleName();
+
     Node *fun = a2l->getProject()->getNode("MODULE/" + moduleName + "/FUNCTION");
 
     //display the FUNCTION starting with text
@@ -188,7 +233,11 @@ void ChooseSubset::on_buttonBox_accepted()
 
 void ChooseSubset::on_import_2_clicked()
 {
-    QString moduleName = hex->getModuleName();
+    QString moduleName;
+    if (hex)
+        moduleName = hex->getModuleName();
+    else
+        moduleName = srec->getModuleName();
 
     //select a File from disk
     QString filename = QFileDialog::getOpenFileName(this,

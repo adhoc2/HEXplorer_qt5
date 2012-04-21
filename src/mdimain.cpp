@@ -401,6 +401,7 @@ void MDImain::initToolBars()
     // Project : A2l
     ui->toolBar_a2l->addAction(ui->actionNewA2lProject);    
     ui->toolBar_a2l->addAction(addHexFile);
+    ui->toolBar_a2l->addAction(addSrecFile);
     ui->toolBar_a2l->addAction(addCsvFile);
     ui->toolBar_a2l->addAction(addCdfxFile);
     ui->toolBar_a2l->addSeparator();
@@ -997,7 +998,7 @@ void MDImain::doubleClicked(QModelIndex)
     Node *node = model->getNode(index);
 
     QString name = typeid(*node).name();
-    if (name.toLower().endsWith("hexfile"))
+    if (name.toLower().endsWith("hexfile") || name.toLower().endsWith("srecfile"))
     {
         quicklookFile();
     }
@@ -1465,7 +1466,6 @@ void MDImain::addSrecFile2Project()
         }
     }
 }
-
 
 void MDImain::addCsvFile2Project()
 {
@@ -2070,7 +2070,7 @@ void MDImain::editTextFile()
         }
         else
         {
-            if (name.endsWith("HexFile") || name.endsWith("Csv") ||
+            if (name.endsWith("HexFile") || name.endsWith("Csv") || name.endsWith("SrecFile") ||
                 name.endsWith("CdfxFile") || name.endsWith("A2LFILE"))
             {
                 //Get the selected file name
@@ -2794,6 +2794,17 @@ void MDImain::sort_BySubset()
         else
             hex->sortModifiedDataBySubset(true);
     }
+    if (name.endsWith("SrecFile"))
+    {
+        //As the selected node is an Srec file we can cast the node into its real type : SrecFile
+        SrecFile *srec = dynamic_cast<SrecFile *> (node);
+
+        //call sort by subset
+        if (srec->isSortedBySubsets())
+            srec->sortModifiedDataBySubset(false);
+        else
+            srec->sortModifiedDataBySubset(true);
+    }
     else if (name.endsWith("Csv"))
     {
         //As the selected node is an Hex file we can cast the node into its real type : HexFile
@@ -2847,146 +2858,287 @@ void MDImain::read_ValuesFromCsv()
         Node *node =  model->getNode(index);
         QString name = typeid(*node).name();
 
-        if (!name.endsWith("HexFile"))
+        if (name.endsWith("HexFile"))
         {
-            QMessageBox::warning(this, "HEXplorer::import csv into hex file", "Please select first an hex file.",
+            int row = index.row();
+            if ( row < 0)
+            {
+                QMessageBox::information(this,"HEXplorer","please first select a project");
+                writeOutput("action open new dataset cancelled: no project first selected");
+                return;
+            }
+            else
+            {
+                HexFile *hex  = (HexFile*)model->getNode(index);
+
+                QSettings settings(qApp->organizationName(), qApp->applicationName());
+                QString path = settings.value("currentCsvPath").toString();
+
+                QStringList files = QFileDialog::getOpenFileNames(this,
+                                                  tr("select CSV files"), path,
+                                                  tr("CSV files (*.csv);;all files (*.*)"));
+
+                if (files.isEmpty())
+                {
+                   writeOutput("action open new CSV file : no CSV file selected");
+                   return;
+                }
+                else
+                {
+                    //Get the project (A2l) name
+                    QString fullA2lName = model->name(model->parent(index));
+
+                    //create a pointer on the WorkProject
+                    WorkProject *wp = projectList->value(fullA2lName);
+
+                    // if no MOD_COMMON in ASAP file
+                    if (wp->a2lFile->getProject()->getNode("MODULE") == NULL)
+                    {
+                        QMessageBox::information(this, "HEXplorer", tr("no MOD_COMMON in ASAP file"));
+                        writeOutput("action open new dataset : no MOD_COMMON in ASAP file");
+                        return;
+                    }
+
+                    // check if Csv already in project
+                    foreach (QString fullCsvName, files)
+                    {
+                        //if the selected Hex file is already into the project => exit
+                        if (wp->csvFiles().contains(fullCsvName))
+                        {
+                            QMessageBox::information(this, "HEXplorer", tr("file already in project"));
+                            writeOutput("action open new CSV file : CSV file already in project");
+                            files.removeOne(fullCsvName);
+                            return;
+                        }
+                    }
+
+                    // Read CSV files
+                    QList<Csv*> list;
+                    foreach (QString fullCsvName, files)
+                    {
+                        //update currentHexPath
+                        QSettings settings(qApp->organizationName(), qApp->applicationName());
+                        QString currentCsvPath = QFileInfo(fullCsvName).absolutePath();
+                        settings.setValue("currentCsvPath", currentCsvPath);
+
+                        //start a timer
+                        double ti = omp_get_wtime();
+
+                        //add the file to the project
+                        Csv *csv = new Csv(fullCsvName, wp, hex->getModuleName());
+
+                        // display status bar
+                        statusBar()->show();
+                        progBar->reset();
+                        connect(csv, SIGNAL(incProgressBar(int,int)), this, SLOT(setValueProgressBar(int,int)), Qt::DirectConnection);
+
+                        if (csv->readFile())
+                        {
+                            list.append(csv);
+
+                            //stop timer
+                            double tf = omp_get_wtime();
+
+                            writeOutput("action open new CSV file : CSV file add to project in " + QString::number(tf-ti) + " sec");
+                        }
+                        else
+                        {
+                             writeOutput("action open new CSV file : CSV file NOT added to project due to wrong format ");
+                        }
+
+                        // hide the statusbar
+                        statusBar()->hide();
+                        progBar->reset();
+                    }
+
+                    // display CSV files
+                    if (list.isEmpty())
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        QStringList listLabel;
+                        A2lTreeModel *mod = new A2lTreeModel();
+                        DialogCsv *w = new DialogCsv(this, &listLabel);
+
+                        foreach (Csv *csv, list)
+                        {
+                            csv->addLabelsAsChild();
+                            mod->addNode2RootNode(csv);
+                        }
+                        w->setModel(mod);
+                        w->exec();
+
+                        // copy the selected data
+                        Node *root = mod->getRootNode();
+                        foreach (QString str, listLabel)
+                        {
+                            Data *data1 = (Data*)root->getNode(str);
+                            if (data1)
+                            {
+                                // get the data from destination container
+                                Data* data2 = hex->getData(data1->name);
+
+                                // if destination data exists perform copy
+                                if (data2)
+                                {
+                                    data2->copyAllFrom(data1);
+                                }
+                            }
+                        }
+
+                        //delete csv files
+                        delete mod;
+                    }
+                }
+            }
+        }
+        else if (name.endsWith("SrecFile"))
+        {
+            int row = index.row();
+            if ( row < 0)
+            {
+                QMessageBox::information(this,"HEXplorer","please first select a project");
+                writeOutput("action open new dataset cancelled: no project first selected");
+                return;
+            }
+            else
+            {
+                SrecFile *srec  = (SrecFile*)model->getNode(index);
+
+                QSettings settings(qApp->organizationName(), qApp->applicationName());
+                QString path = settings.value("currentCsvPath").toString();
+
+                QStringList files = QFileDialog::getOpenFileNames(this,
+                                                  tr("select CSV files"), path,
+                                                  tr("CSV files (*.csv);;all files (*.*)"));
+
+                if (files.isEmpty())
+                {
+                   writeOutput("action open new CSV file : no CSV file selected");
+                   return;
+                }
+                else
+                {
+                    //Get the project (A2l) name
+                    QString fullA2lName = model->name(model->parent(index));
+
+                    //create a pointer on the WorkProject
+                    WorkProject *wp = projectList->value(fullA2lName);
+
+                    // if no MOD_COMMON in ASAP file
+                    if (wp->a2lFile->getProject()->getNode("MODULE") == NULL)
+                    {
+                        QMessageBox::information(this, "HEXplorer", tr("no MOD_COMMON in ASAP file"));
+                        writeOutput("action open new dataset : no MOD_COMMON in ASAP file");
+                        return;
+                    }
+
+                    // check if Csv already in project
+                    foreach (QString fullCsvName, files)
+                    {
+                        //if the selected Hex file is already into the project => exit
+                        if (wp->csvFiles().contains(fullCsvName))
+                        {
+                            QMessageBox::information(this, "HEXplorer", tr("file already in project"));
+                            writeOutput("action open new CSV file : CSV file already in project");
+                            files.removeOne(fullCsvName);
+                            return;
+                        }
+                    }
+
+                    // Read CSV files
+                    QList<Csv*> list;
+                    foreach (QString fullCsvName, files)
+                    {
+                        //update currentHexPath
+                        QSettings settings(qApp->organizationName(), qApp->applicationName());
+                        QString currentCsvPath = QFileInfo(fullCsvName).absolutePath();
+                        settings.setValue("currentCsvPath", currentCsvPath);
+
+                        //start a timer
+                        double ti = omp_get_wtime();
+
+                        //add the file to the project
+                        Csv *csv = new Csv(fullCsvName, wp, srec->getModuleName());
+
+                        // display status bar
+                        statusBar()->show();
+                        progBar->reset();
+                        connect(csv, SIGNAL(incProgressBar(int,int)), this, SLOT(setValueProgressBar(int,int)), Qt::DirectConnection);
+
+                        if (csv->readFile())
+                        {
+                            list.append(csv);
+
+                            //stop timer
+                            double tf = omp_get_wtime();
+
+                            writeOutput("action open new CSV file : CSV file add to project in " + QString::number(tf-ti) + " sec");
+                        }
+                        else
+                        {
+                             writeOutput("action open new CSV file : CSV file NOT added to project due to wrong format ");
+                        }
+
+                        // hide the statusbar
+                        statusBar()->hide();
+                        progBar->reset();
+                    }
+
+                    // display CSV files
+                    if (list.isEmpty())
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        QStringList listLabel;
+                        A2lTreeModel *mod = new A2lTreeModel();
+                        DialogCsv *w = new DialogCsv(this, &listLabel);
+
+                        foreach (Csv *csv, list)
+                        {
+                            csv->addLabelsAsChild();
+                            mod->addNode2RootNode(csv);
+                        }
+                        w->setModel(mod);
+                        w->exec();
+
+                        // copy the selected data
+                        Node *root = mod->getRootNode();
+                        foreach (QString str, listLabel)
+                        {
+                            Data *data1 = (Data*)root->getNode(str);
+                            if (data1)
+                            {
+                                // get the data from destination container
+                                Data* data2 = srec->getData(data1->name);
+
+                                // if destination data exists perform copy
+                                if (data2)
+                                {
+                                    data2->copyAllFrom(data1);
+                                }
+                            }
+                        }
+
+                        //delete csv files
+                        delete mod;
+                    }
+                }
+            }
+
+        }
+        else
+        {
+            QMessageBox::warning(this, "HEXplorer::read csv file values", "Please select first an hex or Srec file.",
                                              QMessageBox::Ok);
             return;
         }
 
-        int row = index.row();
-        if ( row < 0)
-        {
-            QMessageBox::information(this,"HEXplorer","please first select a project");
-            writeOutput("action open new dataset cancelled: no project first selected");
-            return;
-        }
-        else
-        {
-            HexFile *hex  = (HexFile*)model->getNode(index);
 
-            QSettings settings(qApp->organizationName(), qApp->applicationName());
-            QString path = settings.value("currentCsvPath").toString();
-
-            QStringList files = QFileDialog::getOpenFileNames(this,
-                                              tr("select CSV files"), path,
-                                              tr("CSV files (*.csv);;all files (*.*)"));
-
-            if (files.isEmpty())
-            {
-               writeOutput("action open new CSV file : no CSV file selected");
-               return;
-            }
-            else
-            {
-                //Get the project (A2l) name
-                QString fullA2lName = model->name(model->parent(index));
-
-                //create a pointer on the WorkProject
-                WorkProject *wp = projectList->value(fullA2lName);
-
-                // if no MOD_COMMON in ASAP file
-                if (wp->a2lFile->getProject()->getNode("MODULE") == NULL)
-                {
-                    QMessageBox::information(this, "HEXplorer", tr("no MOD_COMMON in ASAP file"));
-                    writeOutput("action open new dataset : no MOD_COMMON in ASAP file");
-                    return;
-                }
-
-                // check if Csv already in project
-                foreach (QString fullCsvName, files)
-                {
-                    //if the selected Hex file is already into the project => exit
-                    if (wp->csvFiles().contains(fullCsvName))
-                    {
-                        QMessageBox::information(this, "HEXplorer", tr("file already in project"));
-                        writeOutput("action open new CSV file : CSV file already in project");
-                        files.removeOne(fullCsvName);
-                        return;
-                    }
-                }
-
-                // Read CSV files
-                QList<Csv*> list;
-                foreach (QString fullCsvName, files)
-                {
-                    //update currentHexPath
-                    QSettings settings(qApp->organizationName(), qApp->applicationName());
-                    QString currentCsvPath = QFileInfo(fullCsvName).absolutePath();
-                    settings.setValue("currentCsvPath", currentCsvPath);
-
-                    //start a timer
-                    double ti = omp_get_wtime();
-
-                    //add the file to the project
-                    Csv *csv = new Csv(fullCsvName, wp, hex->getModuleName());
-
-                    // display status bar
-                    statusBar()->show();
-                    progBar->reset();
-                    connect(csv, SIGNAL(incProgressBar(int,int)), this, SLOT(setValueProgressBar(int,int)), Qt::DirectConnection);
-
-                    if (csv->readFile())
-                    {
-                        list.append(csv);
-
-                        //stop timer
-                        double tf = omp_get_wtime();
-
-                        writeOutput("action open new CSV file : CSV file add to project in " + QString::number(tf-ti) + " sec");
-                    }
-                    else
-                    {
-                         writeOutput("action open new CSV file : CSV file NOT added to project due to wrong format ");
-                    }
-
-                    // hide the statusbar
-                    statusBar()->hide();
-                    progBar->reset();
-                }
-
-                // display CSV files
-                if (list.isEmpty())
-                {
-                    return;
-                }
-                else
-                {
-                    QStringList listLabel;
-                    A2lTreeModel *mod = new A2lTreeModel();
-                    DialogCsv *w = new DialogCsv(this, &listLabel);
-
-                    foreach (Csv *csv, list)
-                    {
-                        csv->addLabelsAsChild();
-                        mod->addNode2RootNode(csv);
-                    }
-                    w->setModel(mod);
-                    w->exec();
-
-                    // copy the selected data
-                    Node *root = mod->getRootNode();
-                    foreach (QString str, listLabel)
-                    {
-                        Data *data1 = (Data*)root->getNode(str);
-                        if (data1)
-                        {
-                            // get the data from destination container
-                            Data* data2 = hex->getData(data1->name);
-
-                            // if destination data exists perform copy
-                            if (data2)
-                            {
-                                data2->copyAllFrom(data1);
-                            }
-                        }
-                    }
-
-                    //delete csv files
-                    delete mod;
-                }
-            }
-        }
     }
 }
 
@@ -3001,137 +3153,268 @@ void MDImain::read_ValuesFromCdfx()
         Node *node =  model->getNode(index);
         QString name = typeid(*node).name();
 
-        if (!name.endsWith("HexFile"))
+        if (name.endsWith("HexFile"))
         {
-            QMessageBox::warning(this, "HEXplorer::import csv into hex file", "Please select first an hex file.",
+            int row = index.row();
+            if ( row < 0)
+            {
+                QMessageBox::information(this,"HEXplorer","please first select an Hex file");
+                writeOutput("action read CDFX file cancelled: no Hex file selected");
+                return;
+            }
+            else
+            {
+                HexFile *hex  = (HexFile*)model->getNode(index);
+
+                QSettings settings(qApp->organizationName(), qApp->applicationName());
+                QString path = settings.value("currentCdfxPath").toString();
+
+                QStringList files = QFileDialog::getOpenFileNames(this,
+                                                  tr("select CDFX files"), path,
+                                                  tr("CDFX files (*.cdfx);;all files (*.*)"));
+
+                if (files.isEmpty())
+                {
+                   writeOutput("action read CDFX values : no CDFX file selected");
+                   return;
+                }
+                else
+                {
+                    //Get the project (A2l) name
+                    QString fullA2lName = model->name(model->parent(index));
+
+                    //create a pointer on the WorkProject
+                    WorkProject *wp = projectList->value(fullA2lName);
+
+                    // if no MOD_COMMON in ASAP file
+                    if (wp->a2lFile->getProject()->getNode("MODULE") == NULL)
+                    {
+                        QMessageBox::information(this, "HEXplorer", tr("no MOD_COMMON in ASAP file"));
+                        writeOutput("action open new dataset : no MOD_COMMON in ASAP file");
+                        return;
+                    }
+
+                    // check if Cdfx already in project
+                    foreach (QString fullCdfxName, files)
+                    {
+                        //if the selected Hex file is already into the project => exit
+                        if (wp->csvFiles().contains(fullCdfxName))
+                        {
+                            QMessageBox::information(this, "HEXplorer", tr("file already in project"));
+                            writeOutput("action read CDFX values : CDFX file already in project");
+                            files.removeOne(fullCdfxName);
+                            return;
+                        }
+                    }
+
+                    // Read CSV files
+                    QList<CdfxFile*> list;
+                    foreach (QString fullCdfxName, files)
+                    {
+                        //update currentHexPath
+                        QSettings settings(qApp->organizationName(), qApp->applicationName());
+                        QString currentCdfxPath = QFileInfo(fullCdfxName).absolutePath();
+                        settings.setValue("currentCdfxPath", currentCdfxPath);
+
+                        //start a timer
+                        double ti = omp_get_wtime();
+
+                        //add the file to the project
+                        CdfxFile *cdfx = new CdfxFile(fullCdfxName, wp, hex->getModuleName());
+                        if (cdfx->isRead)
+                        {
+                            list.append(cdfx);
+
+                            //stop timer
+                            double tf = omp_get_wtime();
+
+                            writeOutput("read CDFX values : CDFX file read in " + QString::number(tf-ti) + " sec");
+                        }
+                        else
+                        {
+                             writeOutput("read CDFX values : CDFX file NOT read due to wrong format ");
+                        }
+
+                    }
+
+                    // display CSV files
+                    if (list.isEmpty())
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        QStringList listLabel;
+                        A2lTreeModel *mod = new A2lTreeModel();
+                        DialogCsv *w = new DialogCsv(this, &listLabel);
+
+                        foreach (CdfxFile *cdfx, list)
+                        {
+                            cdfx->addLabelsAsChild();
+                            mod->addNode2RootNode(cdfx);
+                        }
+                        w->setModel(mod);
+                        w->exec();
+
+                        // copy the selected data
+                        Node *root = mod->getRootNode();
+                        foreach (QString str, listLabel)
+                        {
+                            Data *data1 = (Data*)root->getNode(str);
+                            if (data1)
+                            {
+                                // get the data into destination container
+                                Data* data2 = hex->getData(data1->name);
+
+                                // if destination data exists perform copy
+                                if (data2)
+                                {
+                                    data2->copyAllFrom(data1);
+                                }
+                            }
+                        }
+
+                        //delete cdfx files
+                        delete mod;
+                    }
+                }
+            }
+
+        }
+        else if (name.endsWith("SrecFile"))
+        {
+            int row = index.row();
+            if ( row < 0)
+            {
+                QMessageBox::information(this,"HEXplorer","please first select an Srec file");
+                writeOutput("action read CDFX file cancelled: no Srec file selected");
+                return;
+            }
+            else
+            {
+                SrecFile *srec  = (SrecFile*)model->getNode(index);
+
+                QSettings settings(qApp->organizationName(), qApp->applicationName());
+                QString path = settings.value("currentCdfxPath").toString();
+
+                QStringList files = QFileDialog::getOpenFileNames(this,
+                                                  tr("select CDFX files"), path,
+                                                  tr("CDFX files (*.cdfx);;all files (*.*)"));
+
+                if (files.isEmpty())
+                {
+                   writeOutput("action read CDFX values : no CDFX file selected");
+                   return;
+                }
+                else
+                {
+                    //Get the project (A2l) name
+                    QString fullA2lName = model->name(model->parent(index));
+
+                    //create a pointer on the WorkProject
+                    WorkProject *wp = projectList->value(fullA2lName);
+
+                    // if no MOD_COMMON in ASAP file
+                    if (wp->a2lFile->getProject()->getNode("MODULE") == NULL)
+                    {
+                        QMessageBox::information(this, "HEXplorer", tr("no MOD_COMMON in ASAP file"));
+                        writeOutput("action open new dataset : no MOD_COMMON in ASAP file");
+                        return;
+                    }
+
+                    // check if Cdfx already in project
+                    foreach (QString fullCdfxName, files)
+                    {
+                        //if the selected srec file is already into the project => exit
+                        if (wp->csvFiles().contains(fullCdfxName))
+                        {
+                            QMessageBox::information(this, "HEXplorer", tr("file already in project"));
+                            writeOutput("action read CDFX values : CDFX file already in project");
+                            files.removeOne(fullCdfxName);
+                            return;
+                        }
+                    }
+
+                    // Read CSV files
+                    QList<CdfxFile*> list;
+                    foreach (QString fullCdfxName, files)
+                    {
+                        //update currentHexPath
+                        QSettings settings(qApp->organizationName(), qApp->applicationName());
+                        QString currentCdfxPath = QFileInfo(fullCdfxName).absolutePath();
+                        settings.setValue("currentCdfxPath", currentCdfxPath);
+
+                        //start a timer
+                        double ti = omp_get_wtime();
+
+                        //add the file to the project
+                        CdfxFile *cdfx = new CdfxFile(fullCdfxName, wp, srec->getModuleName());
+                        if (cdfx->isRead)
+                        {
+                            list.append(cdfx);
+
+                            //stop timer
+                            double tf = omp_get_wtime();
+
+                            writeOutput("read CDFX values : CDFX file read in " + QString::number(tf-ti) + " sec");
+                        }
+                        else
+                        {
+                             writeOutput("read CDFX values : CDFX file NOT read due to wrong format ");
+                        }
+
+                    }
+
+                    // display CSV files
+                    if (list.isEmpty())
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        QStringList listLabel;
+                        A2lTreeModel *mod = new A2lTreeModel();
+                        DialogCsv *w = new DialogCsv(this, &listLabel);
+
+                        foreach (CdfxFile *cdfx, list)
+                        {
+                            cdfx->addLabelsAsChild();
+                            mod->addNode2RootNode(cdfx);
+                        }
+                        w->setModel(mod);
+                        w->exec();
+
+                        // copy the selected data
+                        Node *root = mod->getRootNode();
+                        foreach (QString str, listLabel)
+                        {
+                            Data *data1 = (Data*)root->getNode(str);
+                            if (data1)
+                            {
+                                // get the data into destination container
+                                Data* data2 = srec->getData(data1->name);
+
+                                // if destination data exists perform copy
+                                if (data2)
+                                {
+                                    data2->copyAllFrom(data1);
+                                }
+                            }
+                        }
+
+                        //delete cdfx files
+                        delete mod;
+                    }
+                }
+            }
+        }
+        else
+        {
+            QMessageBox::warning(this, "HEXplorer::read cdfx values", "Please select first an Hex or an Srec file.",
                                              QMessageBox::Ok);
             return;
         }
 
-        int row = index.row();
-        if ( row < 0)
-        {
-            QMessageBox::information(this,"HEXplorer","please first select an Hex file");
-            writeOutput("action read CDFX file cancelled: no Hex file selected");
-            return;
-        }
-        else
-        {
-            HexFile *hex  = (HexFile*)model->getNode(index);
-
-            QSettings settings(qApp->organizationName(), qApp->applicationName());
-            QString path = settings.value("currentCdfxPath").toString();
-
-            QStringList files = QFileDialog::getOpenFileNames(this,
-                                              tr("select CDFX files"), path,
-                                              tr("CDFX files (*.cdfx);;all files (*.*)"));
-
-            if (files.isEmpty())
-            {
-               writeOutput("action read CDFX values : no CDFX file selected");
-               return;
-            }
-            else
-            {
-                //Get the project (A2l) name
-                QString fullA2lName = model->name(model->parent(index));
-
-                //create a pointer on the WorkProject
-                WorkProject *wp = projectList->value(fullA2lName);
-
-                // if no MOD_COMMON in ASAP file
-                if (wp->a2lFile->getProject()->getNode("MODULE") == NULL)
-                {
-                    QMessageBox::information(this, "HEXplorer", tr("no MOD_COMMON in ASAP file"));
-                    writeOutput("action open new dataset : no MOD_COMMON in ASAP file");
-                    return;
-                }
-
-                // check if Cdfx already in project
-                foreach (QString fullCdfxName, files)
-                {
-                    //if the selected Hex file is already into the project => exit
-                    if (wp->csvFiles().contains(fullCdfxName))
-                    {
-                        QMessageBox::information(this, "HEXplorer", tr("file already in project"));
-                        writeOutput("action read CDFX values : CDFX file already in project");
-                        files.removeOne(fullCdfxName);
-                        return;
-                    }
-                }
-
-                // Read CSV files
-                QList<CdfxFile*> list;
-                foreach (QString fullCdfxName, files)
-                {
-                    //update currentHexPath
-                    QSettings settings(qApp->organizationName(), qApp->applicationName());
-                    QString currentCdfxPath = QFileInfo(fullCdfxName).absolutePath();
-                    settings.setValue("currentCdfxPath", currentCdfxPath);
-
-                    //start a timer
-                    double ti = omp_get_wtime();
-
-                    //add the file to the project
-                    CdfxFile *cdfx = new CdfxFile(fullCdfxName, wp, hex->getModuleName());
-                    if (cdfx->isRead)
-                    {
-                        list.append(cdfx);
-
-                        //stop timer
-                        double tf = omp_get_wtime();
-
-                        writeOutput("read CDFX values : CDFX file read in " + QString::number(tf-ti) + " sec");
-                    }
-                    else
-                    {
-                         writeOutput("read CDFX values : CDFX file NOT read due to wrong format ");
-                    }
-
-                }
-
-                // display CSV files
-                if (list.isEmpty())
-                {
-                    return;
-                }
-                else
-                {
-                    QStringList listLabel;
-                    A2lTreeModel *mod = new A2lTreeModel();
-                    DialogCsv *w = new DialogCsv(this, &listLabel);
-
-                    foreach (CdfxFile *cdfx, list)
-                    {
-                        cdfx->addLabelsAsChild();
-                        mod->addNode2RootNode(cdfx);
-                    }
-                    w->setModel(mod);
-                    w->exec();
-
-                    // copy the selected data
-                    Node *root = mod->getRootNode();
-                    foreach (QString str, listLabel)
-                    {
-                        Data *data1 = (Data*)root->getNode(str);
-                        if (data1)
-                        {
-                            // get the data into destination container
-                            Data* data2 = hex->getData(data1->name);
-
-                            // if destination data exists perform copy
-                            if (data2)
-                            {
-                                data2->copyAllFrom(data1);
-                            }
-                        }
-                    }
-
-                    //delete cdfx files
-                    delete mod;
-                }
-            }
-        }
     }
 }
 
@@ -3151,6 +3434,14 @@ void MDImain::reset_AllChangedData()
 
         //reset all labels;
         hex->resetAllModifiedData();
+    }
+    else if (name.endsWith("SrecFile"))
+    {
+        //As the selected node is an Srec file we can cast the node into its real type : SrecFile
+        SrecFile *srec = dynamic_cast<SrecFile *> (node);
+
+        //reset all labels;
+        srec->resetAllModifiedData();
     }
     else if (name.endsWith("Csv"))
     {
@@ -3594,6 +3885,29 @@ void MDImain::editChangedLabels()
         //set fComp as one of the hexfile owner
         hex->attach(fComp);
     }
+    else if (name.endsWith("SrecFile"))
+    {
+        SrecFile *srec = (SrecFile*)model->getNode(index);
+        QString str1 = model->getFullNodeName(index);
+
+        //create a new FormCompare
+        FormCompare *fComp = on_actionCompare_dataset_triggered();
+        fComp->setDataset1(str1);
+
+        // set the list to edit
+        fComp->charList.clear();
+        foreach(Data *data, srec->getModifiedData())
+        {
+            fComp->charList.append(data->name);
+        }
+        fComp->on_quicklook_clicked();
+
+        //set new FormCompare as activated
+        ui->tabWidget->setCurrentWidget(fComp);
+
+        //set fComp as one of the hexfile owner
+        srec->attach(fComp);
+    }
     else if (name.endsWith("Csv"))
     {
         Csv *csv = (Csv*)model->getNode(index);
@@ -3684,6 +3998,8 @@ void MDImain::edit()
         QString parentName = "";
         if (data->getHexParent())
             parentName = data->getHexParent()->name;
+        else if (data->getSrecParent())
+            parentName = data->getSrecParent()->name;
         else if (data->getCsvParent())
             parentName = data->getCsvParent()->name;
         else if (data->getCdfxParent())
@@ -3728,13 +4044,7 @@ void MDImain::export_Subsets()
         Node *node =  model->getNode(index);
         QString name = typeid(*node).name();
 
-        if (!name.endsWith("HexFile"))
-        {
-            QMessageBox::warning(this, "HEXplorer::export subsets from Hex file", "Please select first an hex file.",
-                                             QMessageBox::Ok);
-            return;
-        }
-        else
+        if (name.endsWith("HexFile"))
         {
             HexFile *hex  = (HexFile*)model->getNode(index);
             A2LFILE *a2l = hex->getParentWp()->a2lFile;
@@ -3769,6 +4079,52 @@ void MDImain::export_Subsets()
                 statusBar()->hide();
                 progBar->reset();
             }
+        }
+        else if (name.endsWith("SrecFile"))
+        {
+            SrecFile *srec  = (SrecFile*)model->getNode(index);
+            A2LFILE *a2l = srec->getParentWp()->a2lFile;
+
+            //choose subset(s)
+            QStringList subsetList;
+            ChooseSubset *chooseSubset = new ChooseSubset(a2l, srec, subsetList, this);
+            chooseSubset->exec();
+
+            if (subsetList.isEmpty())
+                return;
+            else
+            {
+                //choose format
+                QString exportFormat = "";
+                DialogChooseExportFormat *chooseFormat = new DialogChooseExportFormat(&exportFormat, this);
+                chooseFormat->exec();
+
+                // display status bar
+                statusBar()->show();
+                progBar->reset();
+                connect(srec, SIGNAL(lineParsed(int,int)), this, SLOT(setValueProgressBar(int,int)), Qt::DirectConnection);
+
+                //export
+                if (exportFormat == "csv")
+                    srec->exportSubsetList2Csv(subsetList);
+                else if (exportFormat == "cdf")
+                    srec->exportSubsetList2Cdf(subsetList);
+
+
+                // hide the statusbar
+                statusBar()->hide();
+                progBar->reset();
+            }
+        }
+
+        else
+        {
+
+            QMessageBox::warning(this, "HEXplorer::export subsets from Hex file", "Please select first an hex file.",
+                                             QMessageBox::Ok);
+            return;
+
+
         }
     }
 }
@@ -4060,7 +4416,6 @@ void MDImain::on_actionCheck_for_updates_triggered()
     DialogHttpUpdate updater(url, true, this);
 }
 
-
 void MDImain::initCheckHttpUpdates()
 {
    //remove the old installer file used for previous Update
@@ -4069,7 +4424,6 @@ void MDImain::initCheckHttpUpdates()
    QUrl url("http://hexplorer.googlecode.com/svn/trunk/src/update.xml");
    DialogHttpUpdate updater(url, false, this);
 }
-
 
 bool MDImain::registerVersion()
 {

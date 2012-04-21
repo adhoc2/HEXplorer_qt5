@@ -42,6 +42,7 @@
 #include "Nodes/mod_common.h"
 #include "Nodes/axis_pts.h"
 #include "Nodes/function.h"
+#include "Nodes/group.h"
 #include "data.h"
 #include "graphverify.h"
 #include "formcompare.h"
@@ -1829,6 +1830,7 @@ void SrecFile::exportSubsetList2Csv(QStringList subsetList)
 
     //create CSV file(s)
     Node *fun = a2l->getProject()->getNode("MODULE/" + getModuleName() + "/FUNCTION");
+    Node *group = a2l->getProject()->getNode("MODULE/" + getModuleName() + "/GROUP");
     if (fun != NULL)
     {
         QSettings settings(qApp->organizationName(), qApp->applicationName());
@@ -1870,9 +1872,29 @@ void SrecFile::exportSubsetList2Csv(QStringList subsetList)
             FUNCTION *subset = (FUNCTION*)fun->getNode(str);
             if (subset)
             {
-                // test monotony
+                QStringList labelList;
                 DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)subset->getNode("DEF_CHARACTERISTIC");
-                QStringList labelList = def_char->getCharList();
+                REF_CHARACTERISTIC *ref_char = (REF_CHARACTERISTIC*)subset->getNode("REF_CHARACTERISTIC");
+                if (def_char)
+                    labelList = def_char->getCharList();
+                else if (ref_char)
+                    labelList = ref_char->getCharList();
+                else
+                {
+                    if (group)
+                    {
+                        GROUP *grp = (GROUP*)group->getNode(subset->name);
+                        if (grp)
+                        {
+                            DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)grp->getNode("DEF_CHARACTERISTIC");
+                            REF_CHARACTERISTIC *ref_char = (REF_CHARACTERISTIC*)grp->getNode("REF_CHARACTERISTIC");
+                            if (def_char)
+                                labelList = def_char->getCharList();
+                            else if (ref_char)
+                                labelList = ref_char->getCharList();
+                        }
+                    }
+                }
 
                 exportDataList2Csv(labelList, newFileName);
             }
@@ -1890,6 +1912,7 @@ void SrecFile::exportSubsetList2Cdf(QStringList subsetList)
 
     //create CDF file(s)
     Node *fun = a2l->getProject()->getNode("MODULE/" + getModuleName() + "/FUNCTION");
+    Node *group = a2l->getProject()->getNode("MODULE/" + getModuleName() + "/GROUP");
     if (fun != NULL)
     {
         QSettings settings(qApp->organizationName(), qApp->applicationName());
@@ -1929,8 +1952,29 @@ void SrecFile::exportSubsetList2Cdf(QStringList subsetList)
             FUNCTION *subset = (FUNCTION*)fun->getNode(str);
             if (subset)
             {
+                QStringList labelList;
                 DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)subset->getNode("DEF_CHARACTERISTIC");
-                QStringList labelList = def_char->getCharList();
+                REF_CHARACTERISTIC *ref_char = (REF_CHARACTERISTIC*)subset->getNode("REF_CHARACTERISTIC");
+                if (def_char)
+                    labelList = def_char->getCharList();
+                else if (ref_char)
+                    labelList = ref_char->getCharList();
+                else
+                {
+                    if (group)
+                    {
+                        GROUP *grp = (GROUP*)group->getNode(subset->name);
+                        if (grp)
+                        {
+                            DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)grp->getNode("DEF_CHARACTERISTIC");
+                            REF_CHARACTERISTIC *ref_char = (REF_CHARACTERISTIC*)grp->getNode("REF_CHARACTERISTIC");
+                            if (def_char)
+                                labelList = def_char->getCharList();
+                            else if (ref_char)
+                                labelList = ref_char->getCharList();
+                        }
+                    }
+                }
 
                 exportDataList2Cdf(labelList, newFileName);
             }
