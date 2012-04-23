@@ -152,10 +152,12 @@ private slots:
      void compare_HexFile();
      bool save_File();
      bool save_HexFile(QModelIndex index);
+     bool save_SrecFile(QModelIndex index);
      bool save_CsvFile(QModelIndex index);
      bool save_CdfxFile(QModelIndex index);
      void saveAs_File();
      void saveAs_HexFile(QModelIndex index);
+     void saveAs_SrecFile(QModelIndex index);
      void saveAs_CsvFile(QModelIndex index);
      void saveAs_CdfxFile(QModelIndex index);
      void clear_Output();

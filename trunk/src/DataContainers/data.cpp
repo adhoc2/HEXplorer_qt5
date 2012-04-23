@@ -128,8 +128,14 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
     {
         bool bl;
         NUMBER *item =  (NUMBER*)node->getItem("NUMBER");
-        QString toto = item->getPar("Number");
-        nPtsX = toto.toInt(&bl, 10);
+        if (item)
+        {
+            QString toto = item->getPar("Number");
+            nPtsX = toto.toInt(&bl, 10);
+        }
+        else
+            nPtsX = 1;
+
         addressX = 0;
         addressY = 0;
 

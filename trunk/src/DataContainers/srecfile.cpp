@@ -268,16 +268,16 @@ bool SrecFile::parseFile()
 
         // get the type of the record
         bool ok;
-        type = asciiToByte[*(uchar*)(_line + 1)];
+        type = QByteArray(_line + 1, 1).toUInt();
 
         // according to the type of the record, do :
         switch (type)
         {
-        case 3: //Block header
-            //cnt++;
+        case 0: //Block header
+            cnt++;
             break;
 
-        case 0: //Data Sequence
+        case 3: //Data Sequence
         {
 
             // create a new memory block
@@ -293,13 +293,13 @@ bool SrecFile::parseFile()
             //read all the lines of the memory block
             int _offsetRef = actBlock->offset.toUInt(&ok, 16);
             int _offset = QByteArray(_line + 4, 4).toUInt(&ok, 16);
-            while (type == 0 && (_offsetRef == _offset))
+            while (type == 3 && (_offsetRef == _offset))
             {
                 lineLength = asciiToByte[*(ushort*)(_line + 2)];
                 dataCnt = (actBlock->offset + QByteArray(_line + 8, 4)).toUInt(&ok, 16) - actBlock->start;
 
                 // save the ascii characters into a byte array
-                for (int i = 0; i < lineLength; i++)
+                for (int i = 0; i < lineLength - 5; i++)
                 {
                     actBlock->data[dataCnt] = asciiToByte[*(ushort*)(_line + 12 + 2*i)];
                     dataCnt++;
@@ -311,7 +311,7 @@ bool SrecFile::parseFile()
                     cnt++;
                     barray = lines.at(cnt).toLocal8Bit();
                     _line = barray.data();
-                    type = asciiToByte[*(uchar*)(_line + 1)];
+                    type = QByteArray(_line + 1, 1).toUInt();;
                     _offset = QByteArray(_line + 4, 4).toUInt(&ok, 16);
                 }
                 else
@@ -332,23 +332,24 @@ bool SrecFile::parseFile()
             break;
 
         case 5: //Record count
-            //cnt++;
+            cnt++;
             //cnt = lines.count();
             break;
 
         case 7: //End of Block
-            //cnt++;
+            cnt++;
             break;
 
         case 8: //End of Block
-            //cnt++;
+            cnt++;
             break;
 
         case 9: //End of Block
-            //cnt++;
+            cnt++;
             break;
 
         default:
+            cnt++;
             break;
         }
 
@@ -1629,7 +1630,7 @@ QString SrecFile::checksum(QString values)
     int count = 0;
     int length = values.count();
     bool bl;
-    for (int i = 1; i < length - 1; i = i + 2)
+    for (int i = 2; i < length - 1; i = i + 2)
         count += values.mid(i, 2).toUInt(&bl, 16);
 
     //Count mod 0x100 or 256(int)
@@ -1637,7 +1638,7 @@ QString SrecFile::checksum(QString values)
 
     //Return 256 - mod
     char hex[31];
-    sprintf(hex, "%X", 256 - mod);
+    sprintf(hex, "%X", 256 - mod - 1);
 
     QString cks = hex;
     if (cks == "100")
@@ -1661,21 +1662,21 @@ QStringList SrecFile::block2list()
 
     for (int i = 0; i < blockList.count(); i++)
     {
-        QString cks = checksum(":02000004" + blockList[i]->offset);
-        lineList.append(":02000004" + blockList[i]->offset + cks);
         x = 0;
         j = 0;
 
-        bool bl;
-        QString start = blockList[i]->offset + "0000";
-        int strt = start.toUInt(&bl, 16);
+        //bool bl;
+        //QString start = blockList[i]->offset + "0000";
+        //int strt = start.toUInt(&bl, 16);
 
+        QString cks;
+        int strt =blockList[i]->start;
         int end = blockList[i]->length;
         while (j < end)
         {
             //create a line from data
             QString dat;
-            while (line.length() < blockList[i]->lineLength * 2)
+            while (line.length() < (blockList[i]->lineLength - 5) * 2)
             {
                 if (j <  blockList[i]->length)
                 {
@@ -1697,7 +1698,7 @@ QStringList SrecFile::block2list()
             if (line.count() != 0)
             {
                 //HEX: line address
-                int tamere =  blockList[i]->start - strt + x * blockList[i]->lineLength;
+                int tamere =  blockList[i]->start - strt + x * ( blockList[i]->lineLength - 5);
                 char hex[31];
                 sprintf(hex, "%X", tamere);
                 address = hex;
@@ -1705,11 +1706,12 @@ QStringList SrecFile::block2list()
                     address = "0" + address;
 
                 //HEX: line length
-                sprintf(hex, "%X", line.count()/ 2);
+                sprintf(hex, "%X", line.count()/ 2 + 5);
                 QString length = hex;
                 if (length.length() < 2)
                     length = "0" + length;
-                QString str1 = ":" + length + address + "00" + line;
+
+                QString str1 = "S3" + length + blockList[i]->offset + address + line;
                 cks = checksum(str1);
                 lineList.append((str1 + cks).toUpper());
                 x++;
@@ -1719,8 +1721,6 @@ QStringList SrecFile::block2list()
 
         emit progress(i *2000, maxValueProgbar);
     }
-
-    lineList.append(":00000001FF");
 
     return lineList;
 

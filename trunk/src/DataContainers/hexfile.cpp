@@ -328,7 +328,18 @@ bool HexFile::parseFile()
             break;
 
         case 2: //Extended segment address record
+        {
+            // create a new memory block
+            actBlock = new MemBlock();
+
+            // get the length, start, offset of the block
+            actBlock->offset = QByteArray(_line + 9, 4);
+
+            // set the flag to firstLineOfBlock to finish MemBlock definition
+            firstLineOfBlock = true;
+
             cnt++;
+        }
             break;
 
         case 3: //Start Segment address record

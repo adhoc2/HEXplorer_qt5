@@ -295,7 +295,7 @@ void MDImain::createActions()
     connect(saveAsFile, SIGNAL(triggered()), this, SLOT(saveAs_File()));
     saveAsFile->setDisabled(true);
 
-    compareHexFile = new QAction(tr("compare dataset (HEX)"), this);
+    compareHexFile = new QAction(tr("compare dataset"), this);
     compareHexFile->setIcon(QIcon(":/icones/copy.png"));
     connect(compareHexFile, SIGNAL(triggered()), this, SLOT(compare_HexFile()));
     compareHexFile->setDisabled(false);
@@ -871,7 +871,7 @@ void MDImain::showContextMenu(QPoint)
                 {
                     weiterData++;
                 }
-                else if (name.toLower().endsWith("hexfile"))
+                else if (name.toLower().endsWith("hexfile") || name.toLower().endsWith("srecfile"))
                 {
                     weiterHex++;
                 }
@@ -1344,7 +1344,7 @@ void MDImain::addSrecFile2Project()
         else
         {
             QSettings settings(qApp->organizationName(), qApp->applicationName());
-            QString path = settings.value("currentHexPath").toString();
+            QString path = settings.value("currentSrecPath").toString();
 
             QStringList files =
                     QFileDialog::getOpenFileNames(this,
@@ -1791,7 +1791,7 @@ void MDImain::deleteFilesFromProject()
             Node *node =  model->getNode(index);
             QString name = typeid(*node).name();
 
-            if (name.endsWith("HexFile") || name.endsWith("Csv") || name.endsWith("CdfxFile"))
+            if (name.endsWith("HexFile") || name.endsWith("SrecFile") || name.endsWith("Csv") || name.endsWith("CdfxFile"))
             {
                 int r = QMessageBox::question(this, "HEXplorer::question",
                                               "Remove : " + QString(node->name) +
@@ -1805,7 +1805,7 @@ void MDImain::deleteFilesFromProject()
             }
             else
             {
-                QMessageBox::warning(this, "HEXplorer::remove file from project", "Please select an hex, csv or cdfx file.",
+                QMessageBox::warning(this, "HEXplorer::remove file from project", "Please select an hex, Srec,csv or cdfx file.",
                                                  QMessageBox::Ok);
                 return;
             }
@@ -1879,6 +1879,56 @@ void MDImain::deleteFileFromProject(QModelIndex index)
                 //get the parentWp of the HexFile
                 WorkProject *wp = hex->getParentWp();
                 wp->removeHexFile(hex);
+
+                //update the treeView
+                model->update();
+                ui->treeView->expand(indexParent);
+                ui->treeView->resizeColumnToContents(0);
+            }
+
+            //hide toolbar hex
+            ui->toolBar_data->hide();
+        }
+        else if (name.endsWith("SrecFile"))
+        {
+            //ask for save changes
+            SrecFile *srec = dynamic_cast<SrecFile *> (node);
+            if (srec->childNodes.count() != 0)
+            {
+                // ask for saving changes
+                int r = QMessageBox::question(this, "HEXplorer::question", tr("Save changes ?"),
+                                      QMessageBox::Yes, QMessageBox::No);
+
+                if (r ==  QMessageBox::Yes)
+                {
+                    if (!save_SrecFile(index))
+                    {
+                        return;
+                    }
+                }
+
+                //get the parentNode of the HexFile (which must be an A2LFILE !!)
+                A2LFILE *a2l = dynamic_cast<A2LFILE *> (srec->getParentNode());
+                a2l->removeChildNode(srec);
+
+                //get the parentWp of the HexFile and delete Hex
+                WorkProject *wp = srec->getParentWp();
+                wp->removeSrecFile(srec); // delete hex included
+
+                //update the treeView
+                model->update();
+                ui->treeView->expand(indexParent);
+                ui->treeView->resizeColumnToContents(0);
+            }
+            else
+            {
+                //get the parentNode of the HexFile (which must be an A2LFILE !!)
+                A2LFILE *a2l = dynamic_cast<A2LFILE *> (srec->getParentNode());
+                a2l->removeChildNode(srec);
+
+                //get the parentWp of the HexFile
+                WorkProject *wp = srec->getParentWp();
+                wp->removeSrecFile(srec);
 
                 //update the treeView
                 model->update();
@@ -3482,6 +3532,10 @@ bool MDImain::save_File()
     {
         return save_HexFile(index);
     }
+    else if (name.endsWith("SrecFile"))
+    {
+        return save_SrecFile(index);
+    }
     else if (name.endsWith("Csv"))
     {
         return save_CsvFile(index);
@@ -3606,6 +3660,78 @@ bool MDImain::save_HexFile(QModelIndex index)
 
 }
 
+bool MDImain::save_SrecFile(QModelIndex index)
+{
+    double ti = omp_get_wtime();
+
+    SrecFile *srec = (SrecFile*)model->getNode(index);
+
+    int ret = QMessageBox::question(0, "HEXplorer :: save Srec file",
+                          "overwrite " + srec->fullName() + " ?", QMessageBox::Yes, QMessageBox::Cancel);
+
+    if (ret == QMessageBox::Yes)
+    {
+        // display status bar
+        statusBar()->show();
+        progBar->reset();
+
+        // write all
+        QStringList list = srec->writeHex();
+
+        if (list.isEmpty())
+        {
+            writeOutput("action save dataset : cancelled");
+            return false;
+        }
+
+        QString fileName = srec->fullName();
+        if (fileName.isEmpty())
+            return false;
+
+        QFile file(fileName);
+        if (!file.open(QFile::WriteOnly))
+        {
+            QMessageBox::warning(this, tr("Application"),
+                                 tr("Cannot write file %1:\n%2.")
+                                 .arg(fileName)
+                                 .arg(file.errorString()));
+            return false;
+        }
+
+        QApplication::setOverrideCursor(Qt::WaitCursor);
+
+        // write into file
+        QTextStream out(&file);
+        int i = progBar->value();
+        int max = progBar->maximum();
+        foreach (QString str, list)
+        {
+            out << str << "\r\n";
+            i++;
+            setValueProgressBar(i, max);
+        }
+
+        // hide the statusbar
+        statusBar()->hide();
+        progBar->reset();
+
+        QApplication::restoreOverrideCursor();
+
+        double tf = omp_get_wtime();
+        writeOutput("action save dataset : performed with success in " + QString::number(tf - ti) + " s");
+
+        file.close();
+        return true;
+    }
+    else
+    {
+        writeOutput("action save dataset : cancelled");
+        return false;
+    }
+
+
+}
+
 void MDImain::saveAs_File()
 {
     QModelIndex index  = ui->treeView->selectionModel()->currentIndex();
@@ -3618,6 +3744,10 @@ void MDImain::saveAs_File()
     {
         return saveAs_HexFile(index);
     }
+    else if (name.endsWith("SrecFile"))
+    {
+        return saveAs_SrecFile(index);
+    }
     else if (name.endsWith("Csv"))
     {
         return saveAs_CsvFile(index);
@@ -3628,7 +3758,7 @@ void MDImain::saveAs_File()
     }
     else
     {
-        QMessageBox::warning(this, "HEXplorer::save as file", "Please select first an hex or csv file.",
+        QMessageBox::warning(this, "HEXplorer::save as file", "Please select first an hex, Srec, Csv or or Cdfx file.",
                                          QMessageBox::Ok);
         return;
     }
@@ -3700,6 +3830,77 @@ void MDImain::saveAs_HexFile(QModelIndex index)
     // update Node name with the new file name
     model->renameNode(index, QFileInfo(fileName).fileName());
     hex->setFullName(fileName);
+
+    // log
+    writeOutput("action save dataset : performed with success ");
+}
+
+void MDImain::saveAs_SrecFile(QModelIndex index)
+{
+    // get the HexFile Node
+    SrecFile *Srec = (SrecFile*)model->getNode(index);
+
+    // ask for new HexFile name
+    QString fileName = QFileDialog::getSaveFileName(this,
+                                                    QFileInfo(Srec->fullName()).fileName(),
+                                                    QFileInfo(Srec->fullName()).absolutePath(),
+                                                    tr("Srec files (*.s19);;all files (*.*)"));
+    if (fileName.isEmpty())
+    {
+        writeOutput("action save dataset : cancelled");
+        return;
+    }
+    if ( QFileInfo(fileName).suffix().toLower() != "s19" &&
+         QFileInfo(fileName).suffix().toLower() != "s32")
+    {
+        fileName.append(".s19");
+    }
+
+    // display status bar
+    statusBar()->show();
+    progBar->reset();
+
+    // write the file
+    QStringList list = Srec->writeHex();
+    if (list.isEmpty())
+    {
+        writeOutput("action save dataset : cancelled");
+        QApplication::restoreOverrideCursor();
+        return;
+    }
+
+    // check if the new file can be written
+    QFile file(fileName);
+    if (!file.open(QFile::WriteOnly)) {
+        QMessageBox::warning(this, tr("Application"),
+                             tr("Cannot write file %1:\n%2.")
+                             .arg(fileName)
+                             .arg(file.errorString()));
+
+        writeOutput("action save dataset : impossible because file not ready for writing");
+        return;
+    }
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    QTextStream out(&file);
+    int i = progBar->value();
+    int max = progBar->maximum();
+    foreach (QString str, list)
+    {
+        out << str << "\r\n";
+        i++;
+        setValueProgressBar(i, max);
+    }
+
+    // hide the statusbar
+    statusBar()->hide();
+    progBar->reset();
+
+    QApplication::restoreOverrideCursor();
+
+    // update Node name with the new file name
+    model->renameNode(index, QFileInfo(fileName).fileName());
+    Srec->setFullName(fileName);
 
     // log
     writeOutput("action save dataset : performed with success ");
@@ -4525,6 +4726,14 @@ void MDImain::checkDroppedFile(QString str)
     QString name = typeid(*node).name();
     // attach this to the new dropped hex file
     if (name.toLower().endsWith("hexfile"))
+    {
+        //create a new FormCompare
+        FormCompare *fComp = on_actionCompare_dataset_triggered();
+        fComp->setDataset1(str);
+        fComp->on_quicklook_clicked();
+
+    }
+    else if (name.toLower().endsWith("srecfile"))
     {
         //create a new FormCompare
         FormCompare *fComp = on_actionCompare_dataset_triggered();
