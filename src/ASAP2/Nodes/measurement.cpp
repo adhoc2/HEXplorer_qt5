@@ -128,6 +128,7 @@ TokenTyp MEASUREMENT::parseOptPar()
     nameOptPar.insert("ARRAY_SIZE", ZeroOrOne);
     nameOptPar.insert("DISPLAY_IDENTIFIER", ZeroOrOne);
     nameOptPar.insert("ECU_ADDRESS_EXTENSION", ZeroOrOne);
+    nameOptPar.insert("MATRIX_DIM", ZeroOrOne);
 
     if (nameOptPar.isEmpty())
         return nextToken();

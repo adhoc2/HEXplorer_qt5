@@ -417,7 +417,7 @@ void FormCompare::checkDroppedFile(QString oldText)
         !name.toLower().endsWith("csv") &&
         !name.toLower().endsWith("cdfxfile"))
     {
-        QMessageBox::information(mainWidget,"HEXplorer::drop file","please drop an Hex, Csv or Cdfx file");
+        QMessageBox::information(mainWidget,"HEXplorer::drop file","please drop an Hex, Srec, Csv or Cdfx file");
         ui->lineEdit->setText(oldText);
     }
     else
@@ -504,10 +504,11 @@ void FormCompare::checkDroppedFile_2(QString str)
 
     QString name = typeid(*node).name();
     if (!name.toLower().endsWith("hexfile") &&
+        !name.toLower().endsWith("srecfile") &&
         !name.toLower().endsWith("csv") &&
         !name.toLower().endsWith("cdfxfile"))
     {
-        QMessageBox::information(mainWidget,"HEXplorer::drop File","please drop an Hex, CSV or CDFX file");
+        QMessageBox::information(mainWidget,"HEXplorer::drop File","please drop an Hex, Srec, Csv or Cdfx file");
          ui->lineEdit_2->setText(str);
     }
     else
@@ -538,6 +539,16 @@ void FormCompare::checkDroppedFile_2(QString str)
             hex2->attach(this);
             hex2->getParentWp()->attach(this);
             a2l2 = (A2LFILE*)hex2->getParentNode();
+        }
+        if (name.toLower().endsWith("srecfile"))
+        {
+            csv2 = NULL;
+            cdfx2 = NULL;
+            hex2 = NULL;
+            srec2 = (SrecFile*)node;
+            srec2->attach(this);
+            srec2->getParentWp()->attach(this);
+            a2l2 = (A2LFILE*)srec2->getParentNode();
         }
         else if(name.toLower().endsWith("csv"))
         {
@@ -583,6 +594,10 @@ void FormCompare::on_compare_clicked()
     {
         moduleName1 = hex1->getModuleName();
     }
+    else if (srec1)
+    {
+        moduleName1 = srec1->getModuleName();
+    }
     else if (csv1)
     {
         moduleName1 = csv1->getModuleName();
@@ -595,6 +610,10 @@ void FormCompare::on_compare_clicked()
     if (hex2)
     {
         moduleName2 = hex2->getModuleName();
+    }
+    else if (srec2)
+    {
+        moduleName2 = srec2->getModuleName();
     }
     else if (csv2)
     {
@@ -614,6 +633,11 @@ void FormCompare::on_compare_clicked()
                 MODULE *module = (MODULE*)a2l1->getProject()->getNode("MODULE/" + moduleName1);
                 charList = module->listChar;
             }
+            else if (srec1)
+            {
+                MODULE *module = (MODULE*)a2l1->getProject()->getNode("MODULE/" + moduleName1);
+                charList = module->listChar;
+            }
             else if (csv1)
             {
                 charList = csv1->getListNameData();
@@ -627,6 +651,11 @@ void FormCompare::on_compare_clicked()
         else
         {
             if (hex2)
+            {
+                MODULE *module = (MODULE*)a2l2->getProject()->getNode("MODULE/" + moduleName2);
+                charList = module->listChar;
+            }
+            else if (srec2)
             {
                 MODULE *module = (MODULE*)a2l2->getProject()->getNode("MODULE/" + moduleName2);
                 charList = module->listChar;
@@ -691,6 +720,24 @@ void FormCompare::on_compare_clicked()
                             }
                         }
                     }
+                    else if (srec1)
+                    {
+                        foreach (QString str, charList)
+                        {
+                            Data *data = srec1->getData(str);
+                            if (data)
+                            {
+                                list1->append(data);
+                            }
+                            else
+                            {
+                                outList1.append("Action compare : " + str + " not an adjustable into "
+                                               + QString(srec1->name));
+                                notFound = true;
+                                labelNotFoundInHex1.append(str);
+                            }
+                        }
+                    }
                     else if (csv1)
                     {
                         foreach (QString str, charList)
@@ -743,6 +790,24 @@ void FormCompare::on_compare_clicked()
                             {
                                 outList2.append("Action compare : " + str + " not an adjustable into "
                                                + QString(hex2->name));
+                                notFound = true;
+                                labelNotFoundInHex2.append(str);
+                            }
+                        }
+                    }
+                    else if (srec2)
+                    {
+                        foreach (QString str, charList)
+                        {
+                            Data *data = srec2->getData(str);
+                            if (data)
+                            {
+                                list2->append(data);
+                            }
+                            else
+                            {
+                                outList2.append("Action compare : " + str + " not an adjustable into "
+                                               + QString(srec2->name));
                                 notFound = true;
                                 labelNotFoundInHex2.append(str);
                             }
@@ -808,6 +873,24 @@ void FormCompare::on_compare_clicked()
                 }
             }
         }
+        else if (srec1)
+        {
+            foreach (QString str, charList)
+            {
+                Data *data = srec1->getData(str);
+                if (data)
+                {
+                    list1->append(data);
+                }
+                else
+                {
+                    outList1.append("Action compare : " + str + " not an adjustable into "
+                                   + QString(srec1->name));
+                    notFound = true;
+                    labelNotFoundInHex1.append(str);
+                }
+            }
+        }
         else if (csv1)
         {
             foreach (QString str, charList)
@@ -858,6 +941,24 @@ void FormCompare::on_compare_clicked()
                 {
                     outList2.append("Action compare : " + str + " not an adjustable into "
                                    + QString(hex2->name));
+                    notFound = true;
+                    labelNotFoundInHex2.append(str);
+                }
+            }
+        }
+        else if (srec2)
+        {
+            foreach (QString str, charList)
+            {
+                Data *data = srec2->getData(str);
+                if (data)
+                {
+                    list2->append(data);
+                }
+                else
+                {
+                    outList2.append("Action compare : " + str + " not an adjustable into "
+                                   + QString(srec2->name));
                     notFound = true;
                     labelNotFoundInHex2.append(str);
                 }
@@ -1329,6 +1430,10 @@ void FormCompare::on_compare_clicked()
                 {
                    rootNode1 = new Node(hex1->name);
                 }
+                else if (srec1)
+                {
+                   rootNode1 = new Node(srec1->name);
+                }
                 else if (csv1)
                 {
                    rootNode1 = new Node(csv1->name);
@@ -1375,6 +1480,10 @@ void FormCompare::on_compare_clicked()
                 if (hex2)
                 {
                    rootNode2 = new Node(hex2->name);
+                }
+                else if (srec2)
+                {
+                   rootNode2 = new Node(srec2->name);
                 }
                 else if (csv2)
                 {

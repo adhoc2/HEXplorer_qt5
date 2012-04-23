@@ -393,6 +393,7 @@ void A2lGrammar::initMeasurement()
     measurement.factoryOptItem.insert("BYTE_ORDER", &Byte_Order::itemFactory);
     measurement.factoryOptItem.insert("DISPLAY_IDENTIFIER", &DISPLAY_IDENTIFIER::itemFactory);
     measurement.factoryOptItem.insert("ECU_ADDRESS_EXTENSION", &ECU_ADDRESS_EXTENSION::itemFactory);
+    measurement.factoryOptItem.insert("MATRIX_DIM", &MATRIX_DIM::itemFactory);
 
 }
 

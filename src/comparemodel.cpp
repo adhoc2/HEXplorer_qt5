@@ -235,7 +235,7 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
             if (bdata1)
             {
                 if (row - sum == 0 && column == 0)
-                    return (listDat1->at(ind)->getName() + " " + listDat1->at(ind)->getUnit());
+                    return (listDat1->at(ind)->getName());
                 else if (row - sum == 1 && column == 0)
                     return listDat1->at(ind)->getComment();
                 else if (row - sum  == 0 && column == 1)
