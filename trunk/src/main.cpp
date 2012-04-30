@@ -24,7 +24,9 @@
 #include "mdimain.h"
 #include <bitset>
 #include <stdlib.h>
+#include <stdint.h>
 #include "qdebug.h"
+
 
 int main(int argc, char *argv[])
 {
