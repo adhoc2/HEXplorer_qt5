@@ -126,7 +126,9 @@ private:
     void createActions();
     void openProject(QString &fileName);
     bool checkChangedHexFiles();
+    bool checkChangedSrecFiles();
     bool checkChangedCsvFiles();
+    bool checkChangedCdfxFiles();
 
 private slots:
      void compare_A2lFile();

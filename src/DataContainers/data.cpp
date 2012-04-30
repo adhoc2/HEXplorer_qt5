@@ -477,6 +477,20 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             addressZ = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
             QList<double> decZ = hexParent->getDecValues(addressZ, Znbyte, nPtsX * nPtsY, datatypeZ);
 
+            //BIT_MASK
+            BIT_MASK *_bitmask = (BIT_MASK*)node->getItem("BIT_MASK");
+            if (_bitmask)
+            {
+                uint32_t mask = QString(_bitmask->getPar("Mask")).toUInt(&bl, 16);
+                for (int i = 0; i < decZ.count(); i++ )
+                {
+                    uint32_t _result = (uint32_t)decZ.at(i) & mask;
+                    uint32_t _decalage =  tzn(_result);
+                    _result = _result >> _decalage;
+                    decZ[i] = _result;
+                }
+            }
+
             //dec2phys
             listZ = dec2Phys(decZ, "z");
 
@@ -974,6 +988,20 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
             bool bl;
             addressZ = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
             QList<double> decZ = srecParent->getDecValues(addressZ, Znbyte, nPtsX * nPtsY, datatypeZ);
+
+            //BIT_MASK
+            BIT_MASK *_bitmask = (BIT_MASK*)node->getItem("BIT_MASK");
+            if (_bitmask)
+            {
+                uint32_t mask = QString(_bitmask->getPar("Mask")).toUInt(&bl, 16);
+                for (int i = 0; i < decZ.count(); i++ )
+                {
+                    uint32_t _result = (uint32_t)decZ.at(i) & mask;
+                    uint32_t _decalage =  tzn(_result);
+                    _result = _result >> _decalage;
+                    decZ[i] = _result;
+                }
+            }
 
             //dec2phys
             listZ = dec2Phys(decZ, "z");
@@ -1553,7 +1581,14 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, HexFile *hexFile, bool modif) : Node(no
             int Znbyte = hexParent->getNumByte(datatypeZ);
             addressZ = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
 
-            //listZ = hexParent->getHexValues(node->getPar("Adress"), offset, Znbyte, nPts);
+            //check if the number of points is specified otherwise take max number of points
+            if (nPts == 0)
+            {
+                QString _maxAxisPoints = node->getPar("MaxAxisPoints");
+                nPts = _maxAxisPoints.toUInt();
+            }
+
+            // get the hex values from Hex file
             QList<double> decZ = hexParent->getDecValues(addressZ, Znbyte, nPts, datatypeZ);
 
             //dec2phys
@@ -1661,11 +1696,14 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, SrecFile *srecFile, bool modif) : Node(
             int Znbyte = srecParent->getNumByte(datatypeZ);
             addressZ = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
 
+            //check if the number of points is specified otherwise take max number of points
             if (nPts == 0)
             {
-                QString tamere = node->getPar("MaxAxisPoints");
-                nPts = tamere.toUInt();
+                QString _maxAxisPoints = node->getPar("MaxAxisPoints");
+                nPts = _maxAxisPoints.toUInt();
             }
+
+            // get the hex values from Srec file
             QList<double> decZ = srecParent->getDecValues(addressZ, Znbyte, nPts, datatypeZ);
 
             //dec2phys
@@ -7177,4 +7215,43 @@ Node *Data::getLabel()
 PROJECT *Data::getProject()
 {
     return project;
+}
+
+unsigned int Data::tzn(unsigned int v)
+{
+    unsigned int c;     // c will be the number of zero bits on the right,
+                    // so if v is 1101000 (base 2), then c will be 3
+    // NOTE: if 0 == v, then c = 31.
+    if (v & 0x1)
+    {
+      // special case for odd v (assumed to happen half of the time)
+      c = 0;
+    }
+    else
+    {
+      c = 1;
+      if ((v & 0xffff) == 0)
+      {
+        v >>= 16;
+        c += 16;
+      }
+      if ((v & 0xff) == 0)
+      {
+        v >>= 8;
+        c += 8;
+      }
+      if ((v & 0xf) == 0)
+      {
+        v >>= 4;
+        c += 4;
+      }
+      if ((v & 0x3) == 0)
+      {
+        v >>= 2;
+        c += 2;
+      }
+      c -= v & 0x1;
+    }
+
+    return c;
 }

@@ -1041,6 +1041,43 @@ bool MDImain::checkChangedHexFiles()
     return bl;
 }
 
+bool MDImain::checkChangedSrecFiles()
+{
+    bool bl = true;
+
+    // check if Hex files have changes
+    foreach (WorkProject *wp, projectList->values())
+    {
+        foreach (SrecFile *srec, wp->srecFiles().values())
+        {
+            if (srec->childNodes.count() != 0)
+            {
+                int ret = QMessageBox::question(this, "HEXplorer :: exit",
+                                      "Save changes to " + srec->fullName(),
+                                      QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
+
+                if (ret == QMessageBox::Yes)
+                {
+                    QModelIndex index = ((A2lTreeModel*)ui->treeView->model())->getIndex(srec);
+                    save_SrecFile(index);
+                    bl = true;
+                }
+                else if (ret == QMessageBox::No)
+                {
+                    bl = true;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+        }
+    }
+
+    return bl;
+}
+
 bool MDImain::checkChangedCsvFiles()
 {
     bool bl = true;
@@ -1060,6 +1097,43 @@ bool MDImain::checkChangedCsvFiles()
                 {
                     QModelIndex index = ((A2lTreeModel*)ui->treeView->model())->getIndex(csv);
                     save_CsvFile(index);
+                    bl = true;
+                }
+                else if (ret == QMessageBox::No)
+                {
+                    bl = true;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+        }
+    }
+
+    return bl;
+}
+
+bool MDImain::checkChangedCdfxFiles()
+{
+    bool bl = true;
+
+    // check if Hex files have changes
+    foreach (WorkProject *wp, projectList->values())
+    {
+        foreach (CdfxFile *cdfx, wp->cdfxFiles().values())
+        {
+            if (cdfx->childNodes.count() != 0)
+            {
+                int ret = QMessageBox::question(this, "HEXplorer :: exit",
+                                      "Save changes to " + cdfx->fullName(),
+                                      QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
+
+                if (ret == QMessageBox::Yes)
+                {
+                    QModelIndex index = ((A2lTreeModel*)ui->treeView->model())->getIndex(cdfx);
+                    save_CdfxFile(index);
                     bl = true;
                 }
                 else if (ret == QMessageBox::No)

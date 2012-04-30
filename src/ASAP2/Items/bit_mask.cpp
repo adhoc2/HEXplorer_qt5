@@ -33,10 +33,7 @@ BIT_MASK::BIT_MASK( Node *parentNode) : Item(parentNode)
 
     //Parse Mandatory PARAMETERS
     parseFixPar(typePar);
-    if (parameters.count() > 0)
-        name = parameters.at(0);
-    else
-        name = (char*)"bit_mask";
+    name = (char*)"BIT_MASK";
 }
 
 
