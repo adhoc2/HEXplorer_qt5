@@ -2496,7 +2496,42 @@ void MDImain::editMeasuringChannels()
             }
             else
             {
-                Node *dim = module->getNode("DIM");
+                QString _module;
+                QList<MODULE*> listModule = wp->a2lFile->getProject()->listModule();
+                if (listModule.count() == 0)
+                {
+                    writeOutput("action edit measurement channels : no Module into A2l file !");
+                    return;
+                }
+                else if (listModule.count() == 1)
+                {
+                    _module = QString(listModule.at(0)->name);
+                }
+                else
+                {
+                    // select a module
+                    QString module;
+                    DialogChooseModule *diag = new DialogChooseModule(&module);
+                    QStringList listModuleName;
+                    foreach (MODULE* module, listModule)
+                    {
+                        listModuleName.append(module->name);
+                    }
+                    diag->setList(listModuleName);
+                    int ret = diag->exec();
+
+                    if (ret == QDialog::Accepted)
+                    {
+                         _module = module;
+                    }
+                    else
+                    {
+                        writeOutput("action open new dataset : no module chosen !");
+                        return;
+                    }
+                }
+
+                Node *dim = module->getNode(_module);
                 if (dim == NULL)
                 {
                     return;
@@ -2583,7 +2618,42 @@ void MDImain::editChar()
             }
             else
             {
-                Node *dim = module->getNode("DIM");
+                QString _module;
+                QList<MODULE*> listModule = wp->a2lFile->getProject()->listModule();
+                if (listModule.count() == 0)
+                {
+                    writeOutput("action edit characteristics : no Module into A2l file !");
+                    return;
+                }
+                else if (listModule.count() == 1)
+                {
+                    _module = QString(listModule.at(0)->name);
+                }
+                else
+                {
+                    // select a module
+                    QString module;
+                    DialogChooseModule *diag = new DialogChooseModule(&module);
+                    QStringList listModuleName;
+                    foreach (MODULE* module, listModule)
+                    {
+                        listModuleName.append(module->name);
+                    }
+                    diag->setList(listModuleName);
+                    int ret = diag->exec();
+
+                    if (ret == QDialog::Accepted)
+                    {
+                         _module = module;
+                    }
+                    else
+                    {
+                        writeOutput("action open new dataset : no module chosen !");
+                        return;
+                    }
+                }
+
+                Node *dim = module->getNode(_module);
                 if (dim == NULL)
                 {
                     return;
