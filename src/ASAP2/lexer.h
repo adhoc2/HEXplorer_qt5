@@ -33,7 +33,7 @@ enum TokenTyp
     Identifier ,String, StringFormat, Float, Integer, Comment, Hex, myUnknown, Plus, Minus, BlockComment,
     BlockBegin, BlockEnd, Eof,
     Keyword, DataType, Datasize, Addrtype, Byteorder, Indexorder, ConversionType, Type, Attribute, Mode,
-    PrgType, MemoryType, MemAttribute, IndexMode, Indentation
+    PrgType, MemoryType, MemAttribute, IndexMode, Indentation, UnitType
 };
 
 enum Occurence

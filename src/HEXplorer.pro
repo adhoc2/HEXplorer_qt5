@@ -259,7 +259,8 @@ HEADERS += a2l.h \
     Quex/a2l_quex_lexer-token_ids \
     Quex/a2l_quex_lexer-token \
     Quex/a2l_quex_lexer-configuration \
-    Quex/a2l_quex_lexer
+    Quex/a2l_quex_lexer \
+    ASAP2/Nodes/unit.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -423,7 +424,8 @@ SOURCES += a2l.cpp \
     ASAP2/Items/matrix_dim.cpp \
     ASAP2/Items/fix_axis_par_dist.cpp \
     DataContainers/srecfile.cpp \
-    Quex/a2l_quex_lexer.cpp
+    Quex/a2l_quex_lexer.cpp \
+    ASAP2/Nodes/unit.cpp
 
 OTHER_FILES += \
     GNU_license.txt \

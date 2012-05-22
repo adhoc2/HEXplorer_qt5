@@ -48,7 +48,7 @@ QUEX_NAMESPACE_TOKEN_CLOSE
  *        Must come before token class definition, since the token class 
  *        might rely on contents of the header.                                */
 
-#   line 7 "a2l_quex_lexer.qx"
+#   line 6 "a2l_quex_lexer.qx"
 
 #include <cstdlib>  // for: atoi()
 

@@ -77,6 +77,7 @@ class A2lGrammar
         ElementNode memory_layout;
         ElementNode mod_common;
         ElementNode mod_par;
+        ElementNode unit;
 
         //Items
         ElementItem addr_epk;
@@ -164,6 +165,7 @@ private:
         void initMod_par();
         void initSub_group();
         void initRef_measurement();
+        void initUnit();
 
         void initAddr_epk();
         void initAlignment_byte();

@@ -1,6 +1,5 @@
  //      -*- C++ -*-
-//     cd D:\C++\Quex\000
-//     cd C:\Users\Christophe Hoël\Documents\quex\Quex\000
+//     cd C:\Users\Christophe Hoël\Documents\hexplorer_svn\src\Quex
 //     quex -i a2l_quex_lexer.qx -o a2l_quex_lexer > toto.txt
 
 header
@@ -117,6 +116,7 @@ mode ONE_AND_ONLY :
 	DEF_CHARACTERISTIC 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	DEFAULT_VALUE 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	DEPOSIT 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
+	DERIVED 	 { self_send1(QUEX_TKN_UNITTYPE , Lexeme); RETURN; }
 	DIRECT 	 { self_send1(QUEX_TKN_ADDRTYPE , Lexeme); RETURN; }
         DISPLAY_IDENTIFIER 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	ECU 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
@@ -127,6 +127,7 @@ mode ONE_AND_ONLY :
 	EPROM 	 { self_send1(QUEX_TKN_MEMORYTYPE , Lexeme); RETURN; }
 	EXCLUDE_FROM_FLASH 	 { self_send1(QUEX_TKN_PRGTYPE , Lexeme); RETURN; }
 	EXTENDED_LIMITS 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
+	EXTENDED_SI 	 { self_send1(QUEX_TKN_UNITTYPE , Lexeme); RETURN; }
 	EXTERN 	 { self_send1(QUEX_TKN_MEMATTRIBUTE , Lexeme); RETURN; }
 	FIX_AXIS 	 { self_send1(QUEX_TKN_ATTRIBUTE , Lexeme); RETURN; }
 	FIX_AXIS_PAR 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
@@ -196,6 +197,7 @@ mode ONE_AND_ONLY :
 	S_REC_LAYOUT 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	SBYTE 	 { self_send1(QUEX_TKN_DATATYPE , Lexeme); RETURN; }
 	SERAM 	 { self_send1(QUEX_TKN_PRGTYPE , Lexeme); RETURN; }
+	SI_EXPONENTS 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	SLONG 	 { self_send1(QUEX_TKN_DATATYPE , Lexeme); RETURN; }
 	SRC_ADDR_X 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	SRC_ADDR_Y 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
@@ -211,6 +213,8 @@ mode ONE_AND_ONLY :
 	TAB_VERB 	 { self_send1(QUEX_TKN_CONVERSIONTYPE , Lexeme); RETURN; }
 	UBYTE 	 { self_send1(QUEX_TKN_DATATYPE , Lexeme); RETURN; }
 	ULONG 	 { self_send1(QUEX_TKN_DATATYPE , Lexeme); RETURN; }
+	UNIT 	 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
+	UNIT_CONVERSION 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	USER 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	UWORD 	 { self_send1(QUEX_TKN_DATATYPE , Lexeme); RETURN; }
 	VAL_BLK 	 { self_send1(QUEX_TKN_TYPE , Lexeme); RETURN; }

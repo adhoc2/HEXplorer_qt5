@@ -255,6 +255,13 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
     foreach (std::string str, list)
         keywordsList.insert(QString(str.c_str()), MemAttribute);
 
+    //--------------------------------
+
+    list << "DERIVED" << "EXTENDED_SI";
+
+    foreach (std::string str, list)
+        keywordsList.insert(QString(str.c_str()), UnitType);
+
     return keywordsList;
 }
 
@@ -577,6 +584,17 @@ void A2lGrammar::initGroup()
     group.factoryOptNode.insert("SUB_GROUP", &SUB_GROUP::nodeFactory);
 
     group.factoryOptItem.insert("ROOT", &ROOT::itemFactory);
+
+}
+
+void A2lGrammar::initUnit()
+{
+    unit.typePar << Identifier << String << String << UnitType;
+    unit.namePar << "Name" << "LongIdentifier" << "Display" << "Type";
+
+    unit.factoryOptItem.insert("REF_UNIT", &REF_UNIT::itemFactory);
+    //unit.factoryOptItem.insert("SI_EXPONENTS", &SI_EXPONENTS::itemFactory);
+    //unit.factoryOptItem.insert("UNIT_CONVERSION", &UNIT_CONVERSION::itemFactory);
 
 }
 
