@@ -2720,7 +2720,9 @@ void MDImain::compare_A2lFile()
 
     if (list.count() == 2)
     {
-        QString moduleName = "DIM";
+        //QString moduleName = "DIM";
+        QString moduleName1;
+        QString moduleName2;
 
         // get a2l file path
         QString str1 = model->name(list.at(0));
@@ -2735,7 +2737,42 @@ void MDImain::compare_A2lFile()
             // if MODULE in ASAP file
             if (wp1->a2lFile->getProject()->getNode("MODULE") != NULL)
             {
-                MODULE *mod = (MODULE*)wp1->a2lFile->getProject()->getNode("MODULE/" + moduleName);
+                //choose the module
+                QList<MODULE*> list = wp1->a2lFile->getProject()->listModule();
+                if (list.count() == 0)
+                {
+                    writeOutput("action comapre a2l cancelled : no Module into A2l file !");
+                    return;
+                }
+                else if (list.count() == 1)
+                {
+                    moduleName1 = QString(list.at(0)->name);
+                }
+                else
+                {
+                    // select a module
+                    QString module;
+                    DialogChooseModule *diag = new DialogChooseModule(&module);
+                    QStringList listModuleName;
+                    foreach (MODULE* module, list)
+                    {
+                        listModuleName.append(module->name);
+                    }
+                    diag->setList(listModuleName);
+                    int ret = diag->exec();
+
+                    if (ret == QDialog::Accepted)
+                    {
+                       moduleName1 = QString(list.at(0)->name);
+                    }
+                    else
+                    {
+                        writeOutput("action compare a2l : no module chosen !");
+                        return;
+                    }
+                }
+
+                MODULE *mod = (MODULE*)wp1->a2lFile->getProject()->getNode("MODULE/" + moduleName1);
                 list1 = mod->listChar;
             }
         }
@@ -2748,7 +2785,42 @@ void MDImain::compare_A2lFile()
             // if MODULE in ASAP file
             if (wp2->a2lFile->getProject()->getNode("MODULE") != NULL)
             {
-                list2 = ((MODULE*)wp2->a2lFile->getProject()->getNode("MODULE/" + moduleName))->listChar;
+                //choose the module
+                QList<MODULE*> list = wp2->a2lFile->getProject()->listModule();
+                if (list.count() == 0)
+                {
+                    writeOutput("action comapre a2l cancelled : no Module into A2l file !");
+                    return;
+                }
+                else if (list.count() == 1)
+                {
+                    moduleName2 = QString(list.at(0)->name);
+                }
+                else
+                {
+                    // select a module
+                    QString module;
+                    DialogChooseModule *diag = new DialogChooseModule(&module);
+                    QStringList listModuleName;
+                    foreach (MODULE* module, list)
+                    {
+                        listModuleName.append(module->name);
+                    }
+                    diag->setList(listModuleName);
+                    int ret = diag->exec();
+
+                    if (ret == QDialog::Accepted)
+                    {
+                       moduleName2 = QString(list.at(0)->name);
+                    }
+                    else
+                    {
+                        writeOutput("action compare a2l : no module chosen !");
+                        return;
+                    }
+                }
+
+                list2 = ((MODULE*)wp2->a2lFile->getProject()->getNode("MODULE/" + moduleName2))->listChar;
             }
         }
 
@@ -2775,8 +2847,8 @@ void MDImain::compare_A2lFile()
         }
 
         //Missing, new, modified subsets
-        Node *fun1 = wp1->a2lFile->getProject()->getNode("MODULE/" + moduleName + "/FUNCTION");
-        Node *fun2 = wp2->a2lFile->getProject()->getNode("MODULE/" + moduleName + "/FUNCTION");
+        Node *fun1 = wp1->a2lFile->getProject()->getNode("MODULE/" + moduleName1 + "/FUNCTION");
+        Node *fun2 = wp2->a2lFile->getProject()->getNode("MODULE/" + moduleName2 + "/FUNCTION");
         QStringList missingSubsets;
         QStringList newSubsets;
         QStringList modifiedSubsets;
@@ -2814,51 +2886,81 @@ void MDImain::compare_A2lFile()
             foreach (Node *subset1, fun1->childNodes)
             {
                 //get the label list from subset1
-                DEF_CHARACTERISTIC *node_char1 = (DEF_CHARACTERISTIC*)subset1->getNode("DEF_CHARACTERISTIC");
-                if (node_char1)
+                QStringList listChar_subset1;
+                DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)subset1->getNode("DEF_CHARACTERISTIC");
+                REF_CHARACTERISTIC *ref_char = (REF_CHARACTERISTIC*)subset1->getNode("REF_CHARACTERISTIC");
+                if (def_char)
+                    listChar_subset1 = def_char->getCharList();
+                else if (ref_char)
+                    listChar_subset1 = ref_char->getCharList();
+                else
                 {
-                    //get ListChar_subset1
-                    QStringList listChar_subset1 = node_char1->getCharList();
-
-                    //get Node into listSubsets2
-                    Node *subset2 = fun2->getNode(subset1->name);
-
-                    //get the label list from subset2
-                    if (subset2)
+                    Node *group = wp1->a2lFile->getProject()->getNode("MODULE/" + moduleName1 + "/GROUP");
+                    if (group)
                     {
-                        DEF_CHARACTERISTIC *node_char2 = (DEF_CHARACTERISTIC*)subset2->getNode("DEF_CHARACTERISTIC");
-
-                        if (node_char2)
+                        GROUP *grp = (GROUP*)group->getNode(subset1->name);
+                        if (grp)
                         {
-                            //get ListChar_subset2
-                            QStringList listChar_subset2 = node_char2->getCharList();
-
-                            //compare listChar_Subset
-                            bool same = true;
-                            foreach (QString str, listChar_subset1)
-                            {
-                                if (!listChar_subset2.contains(str))
-                                    same = false;
-                            }
-
-                            if (same)
-                            {
-                                foreach (QString str, listChar_subset2)
-                                {
-                                    if (!listChar_subset1.contains(str))
-                                        same = false;
-                                }
-                            }
-
-                            if (!same)
-                            {
-                                modifiedSubsets.append(subset1->name);
-                            }
-
-
+                            DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)grp->getNode("DEF_CHARACTERISTIC");
+                            REF_CHARACTERISTIC *ref_char = (REF_CHARACTERISTIC*)grp->getNode("REF_CHARACTERISTIC");
+                            if (def_char)
+                                listChar_subset1 = def_char->getCharList();
+                            else if (ref_char)
+                                listChar_subset1 = ref_char->getCharList();
                         }
-
                     }
+                }
+
+                //get Node into listSubsets2
+                Node *subset2 = fun2->getNode(subset1->name);
+
+                //get the label list from subset2
+                QStringList listChar_subset2;
+                def_char = (DEF_CHARACTERISTIC*)subset2->getNode("DEF_CHARACTERISTIC");
+                ref_char = (REF_CHARACTERISTIC*)subset2->getNode("REF_CHARACTERISTIC");
+                if (def_char)
+                    listChar_subset2 = def_char->getCharList();
+                else if (ref_char)
+                    listChar_subset2 = ref_char->getCharList();
+                else
+                {
+                    Node *group = wp2->a2lFile->getProject()->getNode("MODULE/" + moduleName2 + "/GROUP");
+                    if (group)
+                    {
+                        GROUP *grp = (GROUP*)group->getNode(subset1->name);
+                        if (grp)
+                        {
+                            DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)grp->getNode("DEF_CHARACTERISTIC");
+                            REF_CHARACTERISTIC *ref_char = (REF_CHARACTERISTIC*)grp->getNode("REF_CHARACTERISTIC");
+                            if (def_char)
+                                listChar_subset2 = def_char->getCharList();
+                            else if (ref_char)
+                                listChar_subset2 = ref_char->getCharList();
+                        }
+                    }
+                }
+
+
+                //compare listChar_Subset
+                bool same = true;
+                foreach (QString str, listChar_subset1)
+                {
+                    if (!listChar_subset2.contains(str))
+                        same = false;
+                }
+
+                if (same)
+                {
+                    foreach (QString str, listChar_subset2)
+                    {
+                        if (!listChar_subset1.contains(str))
+                            same = false;
+                    }
+                }
+
+                if (!same)
+                {
+                    modifiedSubsets.append(subset1->name);
                 }
 
             }
