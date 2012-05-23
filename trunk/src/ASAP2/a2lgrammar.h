@@ -126,12 +126,14 @@ class A2lGrammar
         ElementItem read_only;
         ElementItem root;
         ElementItem ref_unit;
+        ElementItem si_exponents;
         ElementItem status_string_ref;
         ElementItem system_constant;
         ElementItem s_rec_layout;
         ElementItem src_addr_x;
         ElementItem src_addr_y;
         ElementItem supplier;
+        ElementItem unit_conversion;
         ElementItem user;
         ElementItem version;
 
@@ -213,11 +215,13 @@ private:
         void initRead_only();
         void initRoot();
         void initRef_unit();
+        void initSi_exponents();
         void initStatus_string_ref();
         void initSystem_constant();
         void initS_rec_layout();
         void initSrc_addr_x();
         void initSrc_addr_y();
+        void initUnit_conversion();
         void initUser();
         void initVersion();
         void initSupplier();

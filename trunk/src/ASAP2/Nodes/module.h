@@ -36,6 +36,7 @@
 #include "Nodes/record_layout.h"
 #include "Nodes/characteristic.h"
 #include "Nodes/group.h"
+#include "Nodes/unit.h"
 
 class MODULE : public Node
 {

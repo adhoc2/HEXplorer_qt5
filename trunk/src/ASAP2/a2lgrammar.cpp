@@ -50,6 +50,7 @@ A2lGrammar::A2lGrammar()
     initMemory_layout();
     initMod_common();
     initMod_par();
+    initUnit();
 
     // initialize Items
     initAddr_epk();
@@ -105,6 +106,8 @@ A2lGrammar::A2lGrammar()
     initSrc_addr_y();
     initSupplier();
     initFunction_version();
+    initSi_exponents();
+    initUnit_conversion();
 }
 
 QHash<QString, TokenTyp> A2lGrammar::initKeywords()
@@ -128,7 +131,7 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
         << "STATUS_STRING_REF" << "DEFAULT_VALUE" << "DEF_CHARACTERISTIC" <<"OUT_MEASUREMENT"
         << "NO_AXIS_PTS_X" << "NO_AXIS_PTS_Y" << "AXIS_PTS_X" << "AXIS_PTS_Y" << "FNC_VALUES"
         << "ALIGNMENT_FLOAT32_IEEE" << "ALIGNMENT_FLOAT64_IEEE" << "ALIGNMENT_BYTE" << "ALIGNMENT_WORD" << "ALIGNMENT_LONG"
-        << "FUNCTION_VERSION" << "IN_MEASUREMENT" << "SUB_FUNCTION" << "MAX_REFRESH" << "CUSTOMER" << "SUPPLIER"
+        << "FUNCTION_VERSION" << "IN_MEASUREMENT" << "SUB_FUNCTION" << "MAX_REFRESH" << "CUSTOMER" << "SUPPLIER" << "UNIT" << "SI_EXPONENTS" << "UNIT_CONVERSION"
         << "DATA_SIZE" << "GROUP" << "SUB_GROUP" << "ROOT" << "REF_MEASUREMENT" << "ECU_ADDRESS_EXTENSION" << "MATRIX_DIM" << "FIX_AXIS_PAR_DIST";
 
     foreach (std::string str, list)
@@ -254,6 +257,7 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
 
     foreach (std::string str, list)
         keywordsList.insert(QString(str.c_str()), MemAttribute);
+    list.clear();
 
     //--------------------------------
 
@@ -507,6 +511,7 @@ void A2lGrammar::initModule()
     module.factoryOptNode.insert("COMPU_VTAB", &COMPU_VTAB::nodeFactory);
     module.factoryOptNode.insert("RECORD_LAYOUT", &RECORD_LAYOUT::nodeFactory);
     module.factoryOptNode.insert("GROUP", &GROUP::nodeFactory);
+    module.factoryOptNode.insert("UNIT", &UNIT::nodeFactory);
 
 }
 
@@ -593,8 +598,8 @@ void A2lGrammar::initUnit()
     unit.namePar << "Name" << "LongIdentifier" << "Display" << "Type";
 
     unit.factoryOptItem.insert("REF_UNIT", &REF_UNIT::itemFactory);
-    //unit.factoryOptItem.insert("SI_EXPONENTS", &SI_EXPONENTS::itemFactory);
-    //unit.factoryOptItem.insert("UNIT_CONVERSION", &UNIT_CONVERSION::itemFactory);
+    unit.factoryOptItem.insert("SI_EXPONENTS", &SI_EXPONENTS::itemFactory);
+    unit.factoryOptItem.insert("UNIT_CONVERSION", &UNIT_CONVERSION::itemFactory);
 
 }
 
@@ -922,4 +927,16 @@ void A2lGrammar::initSupplier()
 {
     supplier.typePar  << String;
     supplier.namePar << "Supplier";
+}
+
+void A2lGrammar::initSi_exponents()
+{
+    si_exponents.typePar  << Integer  << Integer  << Integer  << Integer  << Integer  << Integer  << Integer;
+    si_exponents.namePar << "Length" << "Mass" << "Time" << "ElectricCurrent" << "Temeprature" << "AmountOfSubstance" << "LuminousIntensity";
+}
+
+void A2lGrammar::initUnit_conversion()
+{
+    unit_conversion.typePar  << Float  << Float;
+    unit_conversion.namePar << "Gradient" << "Offset";
 }

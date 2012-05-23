@@ -6,7 +6,7 @@
  * NOTE: This file has been created automatically by Quex.
  *       Visit quex.org for further info.
  *
- * DATE: Tue May 22 23:11:04 2012
+ * DATE: Tue May 22 23:20:47 2012
  *
  * (C) 2005-2010 Frank-Rene Schaefer
  * ABSOLUTELY NO WARRANTY                                           */
@@ -53,6 +53,7 @@ const QUEX_TYPE_TOKEN_ID QUEX_TKN_STRINGFORMAT   = ((QUEX_TYPE_TOKEN_ID)10021);
 const QUEX_TYPE_TOKEN_ID QUEX_TKN_TERMINATION    = ((QUEX_TYPE_TOKEN_ID)0);
 const QUEX_TYPE_TOKEN_ID QUEX_TKN_TYPE           = ((QUEX_TYPE_TOKEN_ID)10022);
 const QUEX_TYPE_TOKEN_ID QUEX_TKN_UNINITIALIZED  = ((QUEX_TYPE_TOKEN_ID)1);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_UNITTYPE       = ((QUEX_TYPE_TOKEN_ID)10023);
 
 
 QUEX_NAMESPACE_TOKEN_OPEN

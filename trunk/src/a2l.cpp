@@ -88,7 +88,7 @@ void A2l::parse()
 #ifdef MY_DEBUG
     myDebug = 1;
 #endif
-    if (omp_get_num_procs() > 10 && !myDebug)
+    if (omp_get_num_procs() > 1 && !myDebug)
     {
         parseOpenMPA2l();
     }

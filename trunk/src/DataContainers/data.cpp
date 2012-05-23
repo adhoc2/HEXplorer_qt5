@@ -638,8 +638,13 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
     {
         bool bl;
         NUMBER *item =  (NUMBER*)node->getItem("NUMBER");
-        QString toto = item->getPar("Number");
-        nPtsX = toto.toInt(&bl, 10);
+        if (item)
+        {
+            QString toto = item->getPar("Number");
+            nPtsX = toto.toInt(&bl, 10);
+        }
+        else
+            nPtsX = 1;
         addressX = 0;
         addressY = 0;
 
@@ -2923,7 +2928,7 @@ QStringList Data::dec2Phys(QList<double> decValues, QString axis)
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)compu_methodZ->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisZ = (COMPU_VTAB*)hexParent->compu_vatb->getNode(compuTabRef);
+            compuTabAxisZ = (COMPU_VTAB*)srecParent->compu_vatb->getNode(compuTabRef);
 
             for (int i = 0; i < decValues.count(); i++)
             {
