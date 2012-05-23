@@ -49,7 +49,6 @@ A2LFILE::~A2LFILE()
 void A2LFILE::parser()
 {
     TokenTyp token = nextToken();
-
     while (token == Keyword)
     {
         if (lex->getLexem() == "ASAP2_VERSION")
@@ -80,7 +79,7 @@ void A2LFILE::parser()
             addChildNode(child);
             project = child;
 
-            token = nextToken();
+           // token = nextToken();
         }
         else
         {

@@ -17,41 +17,28 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#ifndef UNIT_H
-#define UNIT_H
+#ifndef UNIT_CONVERSION_H
+#define UNIT_CONVERSION_H
 
-#include "node.h"
 #include "item.h"
 #include "lexer.h"
 #include "basefactory.h"
-#include "Items/unit_conversion.h"
-#include "Items/si_exponents.h"
 
 
-class UNIT : public Node
+class UNIT_CONVERSION : public Item
 {
     public:
-        UNIT(Node *parentNode);
-        ~UNIT();
-        QMap<std::string, std::string> *getParameters();
-        static Factory<Node, UNIT> nodeFactory;
+        UNIT_CONVERSION(Node *parentNode);
+        ~UNIT_CONVERSION();
+        QMap<std::string, std::string> getParameters();
+        static Factory<Item,UNIT_CONVERSION> itemFactory;
         char* getPar(std::string str);
 
     private:
-        // Fix parameters
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;
-
-        // Opt parameters
-        QMap<std::string, Occurence> *occOptPar;
-        QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
-        QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;
-
-        //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
-
-        void parseFixPar(QList<TokenTyp> *typePar);
-        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar);
 };
 
-#endif // UNIT_H
+#endif // UNIT_CONVERSION_H

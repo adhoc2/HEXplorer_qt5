@@ -40,6 +40,7 @@ UNIT::UNIT(Node *parentNode)
     factoryOptItem = &gram->unit.factoryOptItem;
 
     //opt parameters
+    occOptPar = new QMap<std::string, Occurence>;
     occOptPar->insert("REF_UNIT", ZeroOrOne);
     occOptPar->insert("SI_EXPONENTS", ZeroOrOne);
     occOptPar->insert("UNIT_CONVERSION", ZeroOrOne);

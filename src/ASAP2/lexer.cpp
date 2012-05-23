@@ -234,6 +234,9 @@ std::string A2lLexer::toString(TokenTyp type)
         case MemAttribute:
             return "MemAttribute";
             break;
+        case UnitType:
+            return "UnitType";
+            break;
         default:
             return "Unknown";
     }
@@ -806,6 +809,7 @@ TokenTyp A2lQuexLexer::getNextToken()
         previousLine = getLine();
     }
 
+    //qDebug() << getLine() << " : " << token_p->type_id_name().c_str() << " : " << token_p->pretty_char_text().c_str();
     return myToken(token_p);
 }
 
@@ -898,6 +902,9 @@ std::string A2lQuexLexer::toString(TokenTyp type)
             break;
         case MemAttribute:
             return "MemAttribute";
+            break;
+        case UnitType:
+            return "UnitType";
             break;
 
         default:
@@ -1012,6 +1019,10 @@ TokenTyp A2lQuexLexer::myToken(quex::Token *token_p)
 
     case QUEX_TKN_STRINGFORMAT :
         return StringFormat;
+        break;
+
+    case QUEX_TKN_UNITTYPE :
+        return UnitType;
         break;
 
     case QUEX_TKN_TERMINATION :
