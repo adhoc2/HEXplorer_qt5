@@ -133,6 +133,10 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             QString toto = item->getPar("Number");
             nPtsX = toto.toInt(&bl, 10);
         }
+        else if (matrix_dim)
+        {
+           nPtsX = ((QString)matrix_dim->getPar("xDim")).toInt();
+        }
         else
             nPtsX = 1;
 
@@ -638,10 +642,15 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
     {
         bool bl;
         NUMBER *item =  (NUMBER*)node->getItem("NUMBER");
+        MATRIX_DIM *matrix_dim =  (MATRIX_DIM*)node->getItem("MATRIX_DIM");
         if (item)
         {
             QString toto = item->getPar("Number");
             nPtsX = toto.toInt(&bl, 10);
+        }
+        else if (matrix_dim)
+        {
+           nPtsX = ((QString)matrix_dim->getPar("xDim")).toInt();
         }
         else
             nPtsX = 1;
@@ -2928,7 +2937,10 @@ QStringList Data::dec2Phys(QList<double> decValues, QString axis)
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)compu_methodZ->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisZ = (COMPU_VTAB*)srecParent->compu_vatb->getNode(compuTabRef);
+            if (hexParent)
+                compuTabAxisZ = (COMPU_VTAB*)hexParent->compu_vtab->getNode(compuTabRef);
+            else if (srecParent)
+                compuTabAxisZ = (COMPU_VTAB*)srecParent->compu_vtab->getNode(compuTabRef);
 
             for (int i = 0; i < decValues.count(); i++)
             {
@@ -3920,7 +3932,7 @@ QString Data::getOrgX(int i)
                 else
                     return "error";
             }
-            if (srecParent)
+            else if (srecParent)
             {
                 Data *axisData = srecParent->getData(nameAxisX);
                 if (axisData)

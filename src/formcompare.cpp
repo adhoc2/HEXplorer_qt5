@@ -376,7 +376,6 @@ void FormCompare::on_choose_clicked()
             ChooseLabel *choose = new ChooseLabel(a2l, srec, this);
             choose->exec();
         }
-
         else if (csv)
         {
             ChooseLabel *choose = new ChooseLabel(a2l, csv, this);

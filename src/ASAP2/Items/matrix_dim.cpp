@@ -33,10 +33,7 @@ MATRIX_DIM::MATRIX_DIM( Node *parentNode) : Item(parentNode)
 
     //Parse Mandatory PARAMETERS
     parseFixPar(typePar);
-    if (parameters.count() > 0)
-        name = parameters.at(0);
-    else
-        name = (char*)"MATRIX_DIM";
+    name = (char*)"MATRIX_DIM";
 }
 
 

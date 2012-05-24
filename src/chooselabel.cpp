@@ -262,6 +262,7 @@ void ChooseLabel::on_lineEdit_textChanged(QString str)
     if (ui->lineEdit->text().startsWith('/') && ui->lineEdit->text().size() >= 2)
     {
         Node *fun = a2l->getProject()->getNode("MODULE/" + moduleName + "/FUNCTION");
+        Node *group = a2l->getProject()->getNode("MODULE/" + moduleName + "/GROUP");
         if (fun)
         {
             ui->listWidget->clear();
@@ -285,89 +286,107 @@ void ChooseLabel::on_lineEdit_textChanged(QString str)
                 if (subsetName.toLower().startsWith(text.toLower()))
                 {
                     //get the label list from A2l
-                    DEF_CHARACTERISTIC *node_char = (DEF_CHARACTERISTIC*)subset->getNode("DEF_CHARACTERISTIC");
                     QStringList listLabelSubset;
-                    if (node_char != NULL)
+                    DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)subset->getNode("DEF_CHARACTERISTIC");
+                    REF_CHARACTERISTIC *ref_char = (REF_CHARACTERISTIC*)subset->getNode("REF_CHARACTERISTIC");
+                    if (def_char)
+                        listLabelSubset = def_char->getCharList();
+                    else if (ref_char)
+                        listLabelSubset = ref_char->getCharList();
+                    else
                     {
-                        // get the label list
-                        listLabelSubset = node_char->getCharList();
-                        if (csv)
+                        if (group)
                         {
-                            QStringList csvLabelList = csv->getListNameData();
-                            foreach (QString labelName, listLabelSubset)
+                            GROUP *grp = (GROUP*)group->getNode(subset->name);
+                            if (grp)
                             {
-                                if (!csvLabelList.contains(labelName))
-                                {
-                                    listLabelSubset.removeOne(labelName);
-                                }
+                                DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)grp->getNode("DEF_CHARACTERISTIC");
+                                REF_CHARACTERISTIC *ref_char = (REF_CHARACTERISTIC*)grp->getNode("REF_CHARACTERISTIC");
+                                if (def_char)
+                                    listLabelSubset = def_char->getCharList();
+                                else if (ref_char)
+                                    listLabelSubset = ref_char->getCharList();
                             }
                         }
-                        else if (cdfx)
+                    }
+
+
+                    if (csv)
+                    {
+                        QStringList csvLabelList = csv->getListNameData();
+                        foreach (QString labelName, listLabelSubset)
                         {
-                            QStringList cdfxLabelList = cdfx->getListNameData();
-                            foreach (QString labelName, listLabelSubset)
+                            if (!csvLabelList.contains(labelName))
                             {
-                                if (!cdfxLabelList.contains(labelName))
-                                {
-                                    listLabelSubset.removeOne(labelName);
-                                }
+                                listLabelSubset.removeOne(labelName);
                             }
                         }
-
-                        // create a list of already chosen labels
-                        QStringList choosenList;
-                        for (int i = 0; i < ui->listWidget_2->count(); i++)
-                            choosenList.append(ui->listWidget_2->item(i)->text());
-
-                        // display only label not already chosen
-                        QStringList::iterator i;
-                        foreach(QString str, listLabelSubset)
+                    }
+                    else if (cdfx)
+                    {
+                        QStringList cdfxLabelList = cdfx->getListNameData();
+                        foreach (QString labelName, listLabelSubset)
                         {
-                            //check if the labels are already chosen or not
-                            i = qBinaryFind(choosenList.begin(), choosenList.end(), str);
-                            if (i == choosenList.end())
-                                strList.append(str);
-                        }
-
-                        // select the description
-                        MODULE *module = (MODULE*)a2l->getProject()->getNode("MODULE/" + moduleName);
-                        if (ui->lineEdit_2->isEnabled() && !ui->lineEdit_2->text().isEmpty() && ui->lineEdit_2->text() != "*")
-                        {
-                            // search in CHARACTERISTICS
-                            Node *nodeChar = module->getNode("CHARACTERISTIC");
-                            if (nodeChar)
+                            if (!cdfxLabelList.contains(labelName))
                             {
-                                foreach(QString str, strList)
-                                {
-                                   CHARACTERISTIC *charac = (CHARACTERISTIC*)nodeChar->getNode(str);
-                                   if (charac)
+                                listLabelSubset.removeOne(labelName);
+                            }
+                        }
+                    }
+
+                    // create a list of already chosen labels
+                    QStringList choosenList;
+                    for (int i = 0; i < ui->listWidget_2->count(); i++)
+                        choosenList.append(ui->listWidget_2->item(i)->text());
+
+                    // display only label not already chosen
+                    QStringList::iterator i;
+                    foreach(QString str, listLabelSubset)
+                    {
+                        //check if the labels are already chosen or not
+                        i = qBinaryFind(choosenList.begin(), choosenList.end(), str);
+                        if (i == choosenList.end())
+                            strList.append(str);
+                    }
+
+                    // select the description
+                    MODULE *module = (MODULE*)a2l->getProject()->getNode("MODULE/" + moduleName);
+                    if (ui->lineEdit_2->isEnabled() && !ui->lineEdit_2->text().isEmpty() && ui->lineEdit_2->text() != "*")
+                    {
+                        // search in CHARACTERISTICS
+                        Node *nodeChar = module->getNode("CHARACTERISTIC");
+                        if (nodeChar)
+                        {
+                            foreach(QString str, strList)
+                            {
+                               CHARACTERISTIC *charac = (CHARACTERISTIC*)nodeChar->getNode(str);
+                               if (charac)
+                               {
+                                   QString text = ui->lineEdit_2->text();
+                                   text.replace("*", ".*");
+                                   QString descr(charac->fixPar("LongIdentifier").c_str());
+                                   if (!descr.contains(QRegExp("^\"" + text, Qt::CaseInsensitive)))
                                    {
-                                       QString text = ui->lineEdit_2->text();
-                                       text.replace("*", ".*");
-                                       QString descr(charac->fixPar("LongIdentifier").c_str());
-                                       if (!descr.contains(QRegExp("^\"" + text, Qt::CaseInsensitive)))
-                                       {
-                                           strList.removeOne(str);
-                                       }
+                                       strList.removeOne(str);
                                    }
-                                   else
+                               }
+                               else
+                               {
+                                   // search in AXIS_PTS
+                                   Node *nodeAxis = module->getNode("AXIS_PTS");
+                                   if (nodeAxis )
                                    {
-                                       // search in AXIS_PTS
-                                       Node *nodeAxis = module->getNode("AXIS_PTS");
-                                       if (nodeAxis )
-                                       {
-                                          AXIS_PTS *axisPts = (AXIS_PTS*)nodeAxis->getNode(str);
-                                          if (axisPts)
+                                      AXIS_PTS *axisPts = (AXIS_PTS*)nodeAxis->getNode(str);
+                                      if (axisPts)
+                                      {
+                                          QString descr(axisPts->fixPar("LongIdentifier").c_str());
+                                          if (!descr.contains(QRegExp("^" + ui->lineEdit_2->text(), Qt::CaseInsensitive)))
                                           {
-                                              QString descr(axisPts->fixPar("LongIdentifier").c_str());
-                                              if (!descr.contains(QRegExp("^" + ui->lineEdit_2->text(), Qt::CaseInsensitive)))
-                                              {
-                                                  strList.removeOne(str);
-                                              }
+                                              strList.removeOne(str);
                                           }
-                                       }
+                                      }
                                    }
-                                }
+                               }
                             }
                         }
                     }

@@ -48,7 +48,7 @@ class SrecFile : public QObject, public DataContainer
         // members
         Node* record_layout;
         Node* compu_method;
-        Node* compu_vatb;
+        Node* compu_vtab;
         QStringList listNotValidData;
 
         // methods
