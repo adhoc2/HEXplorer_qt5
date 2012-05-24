@@ -148,7 +148,7 @@ SrecFile::SrecFile(QString fullSrecFileName, WorkProject *parentWP, QString modu
     //save the node to fasten SrecFile import (see Data class constructor)
     compu_method = a2lProject->getNode("MODULE/" + module + "/COMPU_METHOD");
     record_layout = a2lProject->getNode("MODULE/" + module + "/RECORD_LAYOUT");
-    compu_vatb = a2lProject->getNode("MODULE/" + module + "/COMPU_VTAB");
+    compu_vtab = a2lProject->getNode("MODULE/" + module + "/COMPU_VTAB");
 
     //get the memory_block used to store datas
     MOD_PAR *modePar = (MOD_PAR*)a2lProject->getNode("MODULE/" + getModuleName() + "/MOD_PAR");
@@ -379,7 +379,7 @@ bool SrecFile::isA2lCombined()
         {
             //get EPK address
             QString address = addr_epk->getPar("Address");
-            QStringList hexVal = getHexValues(address, 0, 1, 90);
+            QStringList hexVal = getHexValues(address, 0, 1, 32);
 
             //get EPK value into SrecFile
             QString str = "";
