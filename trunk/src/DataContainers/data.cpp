@@ -128,6 +128,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
     {
         bool bl;
         NUMBER *item =  (NUMBER*)node->getItem("NUMBER");
+        MATRIX_DIM *matrix_dim =  (MATRIX_DIM*)node->getItem("MATRIX_DIM");
         if (item)
         {
             QString toto = item->getPar("Number");
@@ -1959,6 +1960,16 @@ QString Data::getOutputQuantityZ()
     str.append(getUnit());
 
     return str;
+}
+
+int Data::getZnbyte()
+{
+    if (hexParent)
+        return hexParent->getNumByte(datatypeZ);
+    else if (srecParent)
+        return srecParent->getNumByte(datatypeZ);
+    else
+        return 0;
 }
 
 QString Data::getMaxDim()

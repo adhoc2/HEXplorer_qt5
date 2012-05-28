@@ -370,35 +370,39 @@ bool SrecFile::parseFile()
 
 bool SrecFile::isA2lCombined()
 {
-    //get the address of Bosch number in A2l
     MOD_PAR *modePar = (MOD_PAR*)a2lProject->getNode("MODULE/" + getModuleName() + "/MOD_PAR");
     if (modePar)
     {
-        ADDR_EPK *addr_epk = (ADDR_EPK*)modePar->getItem("addr_epk");
-        if (addr_epk)
+        QString str1;
+        QString str;
+
+        //EPK in A2l
+        EPK *epk = (EPK*)modePar->getItem("epk");
+        if (epk)
         {
-            //get EPK address
-            QString address = addr_epk->getPar("Address");
-            QStringList hexVal = getHexValues(address, 0, 1, 32);
+            str1 = epk->getPar("Identifier");
+            str1.remove('\"');
 
-            //get EPK value into SrecFile
-            QString str = "";
-            double c;
-            for (int i = 0; i < hexVal.count(); i++)
+            //get the address of EPK in A2l
+            ADDR_EPK *addr_epk = (ADDR_EPK*)modePar->getItem("addr_epk");
+            if (addr_epk)
             {
-                QString val = hexVal.at(i);
-                bool bl;
-                c = val.toUInt(&bl,16);
-                if (32 <= c && c < 127)
-                    str.append((unsigned char)c);
-            }
+                //get EPK address
+                QString address = addr_epk->getPar("Address");
+                QStringList hexVal = getHexValues(address, 0, 1, str1.size());
 
-            //compare EPK from A2L with EPK from SrecFile
-            EPK *epk = (EPK*)modePar->getItem("epk");
-            if (epk)
-            {
-                QString str1 = epk->getPar("Identifier");
-                str1.remove('\"');
+                //get EPK value into HexFile;
+                double c;
+                for (int i = 0; i < hexVal.count(); i++)
+                {
+                    QString val = hexVal.at(i);
+                    bool bl;
+                    c = val.toUInt(&bl,16);
+                    if (32 <= c && c < 127)
+                        str.append((unsigned char)c);
+                }
+
+                //compare EPK from A2L with EPK from HexFile
                 if (str == str1)
                     return true;
                 else
@@ -419,7 +423,7 @@ bool SrecFile::isA2lCombined()
             else
                 return true;
         }
-        else //EDC7: no addr_epk available into SrecFile
+        else //EDC7: no addr_epk available into HexFile
             return true;
     }
     else

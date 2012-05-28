@@ -150,6 +150,7 @@ class Data : public QObject, public Node
         bool checkAxisZMonotony();
         COMPU_VTAB *getCompuTabAxisZ();
         QString getOutputQuantityZ();
+        int getZnbyte();
 
         bool isSizeChanged();
         void extendSize(int newDimX, int newDimY);

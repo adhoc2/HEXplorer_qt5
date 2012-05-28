@@ -545,7 +545,7 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
 
                     if (listDat2->at(ind)->xCount() == 0) //Value
                     {
-                        if (row - sum == 2 && column == 1)
+                        if (row - sum == 1 && column == 1)
                         {
                             bool bl1, bl2;
                             double val1 = listDat1->at(ind)->getZ(0).toDouble(&bl1);
