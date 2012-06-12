@@ -54,5 +54,6 @@
         <file>icones/milky_importCdfx.png</file>
         <file>files/cdf_v2.0.0.cl.xsd</file>
         <file>icones/milky_importSubset.png</file>
+        <file>icones/milky_importS19.png</file>
     </qresource>
 </RCC>

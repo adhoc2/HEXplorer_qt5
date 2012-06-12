@@ -250,7 +250,7 @@ void MDImain::createActions()
     addHexFile->setDisabled(true);
 
     addSrecFile = new QAction(tr("Import Srec file"), this);
-    addSrecFile->setIcon(QIcon(":/icones/milky_importHEX.png"));
+    addSrecFile->setIcon(QIcon(":/icones/milky_importS19.png"));
     connect(addSrecFile, SIGNAL(triggered()), this, SLOT(addSrecFile2Project()));
     addSrecFile->setDisabled(true);
 
@@ -966,7 +966,7 @@ void MDImain::on_actionAbout_triggered()
                    "M, Radio Tarifa, Al, John, Paco, Noir dez, et tous les autres...\n\n"
                    "build " + qApp->applicationVersion() + " compiled with MSVC2010\n\n"
                    "This software uses external libraries :\n"
-                   "   - Qt framework 4.7.4 (Nokia)\n"
+                   "   - Qt framework 4.8.2 (Nokia)\n"
                    "   - Quex 0.61.2 (as efficient lexical analyser generator)\n"
                    "   - QScintilla (as efficient text editor)\n"
                    "   - Qwt (as 2D graph plotter)\n"
@@ -998,7 +998,8 @@ void MDImain::doubleClicked(QModelIndex)
     Node *node = model->getNode(index);
 
     QString name = typeid(*node).name();
-    if (name.toLower().endsWith("hexfile") || name.toLower().endsWith("srecfile"))
+    if (name.toLower().endsWith("hexfile") || name.toLower().endsWith("srecfile") ||
+        name.toLower().endsWith("csv") || name.toLower().endsWith("cdfxfile"))
     {
         quicklookFile();
     }
@@ -2885,84 +2886,88 @@ void MDImain::compare_A2lFile()
             //modified subsets
             foreach (Node *subset1, fun1->childNodes)
             {
-                //get the label list from subset1
-                QStringList listChar_subset1;
-                DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)subset1->getNode("DEF_CHARACTERISTIC");
-                REF_CHARACTERISTIC *ref_char = (REF_CHARACTERISTIC*)subset1->getNode("REF_CHARACTERISTIC");
-                if (def_char)
-                    listChar_subset1 = def_char->getCharList();
-                else if (ref_char)
-                    listChar_subset1 = ref_char->getCharList();
-                else
-                {
-                    Node *group = wp1->a2lFile->getProject()->getNode("MODULE/" + moduleName1 + "/GROUP");
-                    if (group)
-                    {
-                        GROUP *grp = (GROUP*)group->getNode(subset1->name);
-                        if (grp)
-                        {
-                            DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)grp->getNode("DEF_CHARACTERISTIC");
-                            REF_CHARACTERISTIC *ref_char = (REF_CHARACTERISTIC*)grp->getNode("REF_CHARACTERISTIC");
-                            if (def_char)
-                                listChar_subset1 = def_char->getCharList();
-                            else if (ref_char)
-                                listChar_subset1 = ref_char->getCharList();
-                        }
-                    }
-                }
-
                 //get Node into listSubsets2
                 Node *subset2 = fun2->getNode(subset1->name);
-
-                //get the label list from subset2
-                QStringList listChar_subset2;
-                def_char = (DEF_CHARACTERISTIC*)subset2->getNode("DEF_CHARACTERISTIC");
-                ref_char = (REF_CHARACTERISTIC*)subset2->getNode("REF_CHARACTERISTIC");
-                if (def_char)
-                    listChar_subset2 = def_char->getCharList();
-                else if (ref_char)
-                    listChar_subset2 = ref_char->getCharList();
-                else
+                if (subset2)
                 {
-                    Node *group = wp2->a2lFile->getProject()->getNode("MODULE/" + moduleName2 + "/GROUP");
-                    if (group)
+
+                    //get the label list from subset1
+                    QStringList listChar_subset1;
+                    DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)subset1->getNode("DEF_CHARACTERISTIC");
+                    REF_CHARACTERISTIC *ref_char = (REF_CHARACTERISTIC*)subset1->getNode("REF_CHARACTERISTIC");
+                    if (def_char)
+                        listChar_subset1 = def_char->getCharList();
+                    else if (ref_char)
+                        listChar_subset1 = ref_char->getCharList();
+                    else
                     {
-                        GROUP *grp = (GROUP*)group->getNode(subset1->name);
-                        if (grp)
+                        Node *group = wp1->a2lFile->getProject()->getNode("MODULE/" + moduleName1 + "/GROUP");
+                        if (group)
                         {
-                            DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)grp->getNode("DEF_CHARACTERISTIC");
-                            REF_CHARACTERISTIC *ref_char = (REF_CHARACTERISTIC*)grp->getNode("REF_CHARACTERISTIC");
-                            if (def_char)
-                                listChar_subset2 = def_char->getCharList();
-                            else if (ref_char)
-                                listChar_subset2 = ref_char->getCharList();
+                            GROUP *grp = (GROUP*)group->getNode(subset1->name);
+                            if (grp)
+                            {
+                                DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)grp->getNode("DEF_CHARACTERISTIC");
+                                REF_CHARACTERISTIC *ref_char = (REF_CHARACTERISTIC*)grp->getNode("REF_CHARACTERISTIC");
+                                if (def_char)
+                                    listChar_subset1 = def_char->getCharList();
+                                else if (ref_char)
+                                    listChar_subset1 = ref_char->getCharList();
+                            }
                         }
                     }
-                }
 
 
-                //compare listChar_Subset
-                bool same = true;
-                foreach (QString str, listChar_subset1)
-                {
-                    if (!listChar_subset2.contains(str))
-                        same = false;
-                }
-
-                if (same)
-                {
-                    foreach (QString str, listChar_subset2)
+                    //get the label list from subset2
+                    QStringList listChar_subset2;
+                    def_char = (DEF_CHARACTERISTIC*)subset2->getNode("DEF_CHARACTERISTIC");
+                    ref_char = (REF_CHARACTERISTIC*)subset2->getNode("REF_CHARACTERISTIC");
+                    if (def_char)
+                        listChar_subset2 = def_char->getCharList();
+                    else if (ref_char)
+                        listChar_subset2 = ref_char->getCharList();
+                    else
                     {
-                        if (!listChar_subset1.contains(str))
+                        Node *group = wp2->a2lFile->getProject()->getNode("MODULE/" + moduleName2 + "/GROUP");
+                        if (group)
+                        {
+                            GROUP *grp = (GROUP*)group->getNode(subset1->name);
+                            if (grp)
+                            {
+                                DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)grp->getNode("DEF_CHARACTERISTIC");
+                                REF_CHARACTERISTIC *ref_char = (REF_CHARACTERISTIC*)grp->getNode("REF_CHARACTERISTIC");
+                                if (def_char)
+                                    listChar_subset2 = def_char->getCharList();
+                                else if (ref_char)
+                                    listChar_subset2 = ref_char->getCharList();
+                            }
+                        }
+                    }
+
+
+                    //compare listChar_Subset
+                    bool same = true;
+                    foreach (QString str, listChar_subset1)
+                    {
+                        if (!listChar_subset2.contains(str))
                             same = false;
                     }
-                }
 
-                if (!same)
-                {
-                    modifiedSubsets.append(subset1->name);
-                }
+                    if (same)
+                    {
+                        foreach (QString str, listChar_subset2)
+                        {
+                            if (!listChar_subset1.contains(str))
+                                same = false;
+                        }
+                    }
 
+                    if (!same)
+                    {
+                        modifiedSubsets.append(subset1->name);
+                    }
+
+                }
             }
 
         }

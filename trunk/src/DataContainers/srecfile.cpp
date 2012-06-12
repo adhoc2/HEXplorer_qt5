@@ -1523,6 +1523,15 @@ void SrecFile::hex2MemBlock(Data *data)
         CHARACTERISTIC *node = (CHARACTERISTIC*)data->getA2lNode();
         type = node->getPar("Type");
 
+        //BIT_MASK
+        BIT_MASK *_bitmask = (BIT_MASK*)node->getItem("BIT_MASK");
+        uint32_t mask = 0;
+        bool bl;
+        if (_bitmask)
+        {
+            mask = QString(_bitmask->getPar("Mask")).toUInt(&bl, 16);
+        }
+
         if (type.toLower() == "value")
         {
             int nbyte = data->getZ(0).count() / 2;

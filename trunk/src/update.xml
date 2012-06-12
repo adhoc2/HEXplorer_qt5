@@ -1,6 +1,12 @@
 <HEXplorer application="HEXplorer">
     <revision version="0.6.10">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
-    <details>revision 0.6.10 (02/04/2012) :
+    <details>revision 0.6.11 (xx/xx/2012) :
+    - use of Qt 4.8.2
+    - A2L parser improvements (new keywords)
+    - import/export Srec files
+    - bug fixes!
+
+revision 0.6.10 (02/04/2012) :
     - bug fix : update in function verify
 
 revision 0.6.9 (04/12/2011) :
