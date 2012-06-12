@@ -1,3 +1,5 @@
+//12-06-2012
+
 #include "a2l_quex_lexer"
 #include <quex/code_base/analyzer/C-adaptions.h>
 QUEX_NAMESPACE_MAIN_OPEN
@@ -94126,7 +94128,7 @@ TERMINAL_3205:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 11);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 160 "a2l_quex_lexer.qx"
+#   line 161 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94139,7 +94141,7 @@ TERMINAL_3755:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 7);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 180 "a2l_quex_lexer.qx"
+#   line 181 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94152,7 +94154,7 @@ TERMINAL_3081:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 13);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 155 "a2l_quex_lexer.qx"
+#   line 156 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_BYTEORDER , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94165,7 +94167,7 @@ TERMINAL_1547:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 13);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 99 "a2l_quex_lexer.qx"
+#   line 100 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94178,7 +94180,7 @@ TERMINAL_4108:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 193 "a2l_quex_lexer.qx"
+#   line 194 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_PRGTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94191,7 +94193,7 @@ TERMINAL_4621:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 5);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 214 "a2l_quex_lexer.qx"
+#   line 215 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_DATATYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94204,7 +94206,7 @@ TERMINAL_2067:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 7);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 119 "a2l_quex_lexer.qx"
+#   line 120 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_UNITTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94217,7 +94219,7 @@ TERMINAL_4116:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 3);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 194 "a2l_quex_lexer.qx"
+#   line 195 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_MEMORYTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94230,7 +94232,7 @@ TERMINAL_2581:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 12);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 136 "a2l_quex_lexer.qx"
+#   line 137 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_DATATYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94243,7 +94245,7 @@ TERMINAL_534:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 14);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 71 "a2l_quex_lexer.qx"
+#   line 72 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94256,7 +94258,7 @@ TERMINAL_4635:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 5);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 215 "a2l_quex_lexer.qx"
+#   line 216 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_DATATYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94269,7 +94271,7 @@ TERMINAL_1054:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 12);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 85 "a2l_quex_lexer.qx"
+#   line 86 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94282,7 +94284,7 @@ TERMINAL_3617:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 5);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 174 "a2l_quex_lexer.qx"
+#   line 175 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_ADDRTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94295,7 +94297,7 @@ TERMINAL_2084:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 6);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 120 "a2l_quex_lexer.qx"
+#   line 121 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_ADDRTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94308,7 +94310,7 @@ TERMINAL_4646:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 4);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 216 "a2l_quex_lexer.qx"
+#   line 217 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94321,7 +94323,7 @@ TERMINAL_2047:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 7);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 118 "a2l_quex_lexer.qx"
+#   line 119 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94334,7 +94336,7 @@ TERMINAL_4136:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 7);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 195 "a2l_quex_lexer.qx"
+#   line 196 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_INDEXMODE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94347,7 +94349,7 @@ TERMINAL_3677:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 177 "a2l_quex_lexer.qx"
+#   line 178 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_PRGTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94360,7 +94362,7 @@ TERMINAL_4147:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 4);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 196 "a2l_quex_lexer.qx"
+#   line 197 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94373,7 +94375,7 @@ TERMINAL_3125:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 15);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 156 "a2l_quex_lexer.qx"
+#   line 157 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94386,7 +94388,7 @@ TERMINAL_2616:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 12);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 137 "a2l_quex_lexer.qx"
+#   line 138 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_DATATYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94399,7 +94401,7 @@ TERMINAL_1083:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 10);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 86 "a2l_quex_lexer.qx"
+#   line 87 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94412,7 +94414,7 @@ TERMINAL_1599:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 101 "a2l_quex_lexer.qx"
+#   line 102 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_ATTRIBUTE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94425,7 +94427,7 @@ TERMINAL_3136:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 4);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 157 "a2l_quex_lexer.qx"
+#   line 158 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_DATASIZE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94438,7 +94440,7 @@ TERMINAL_3654:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 5);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 176 "a2l_quex_lexer.qx"
+#   line 177 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_ADDRTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94451,7 +94453,7 @@ TERMINAL_3144:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 3);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 158 "a2l_quex_lexer.qx"
+#   line 159 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_TYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94464,7 +94466,7 @@ TERMINAL_4690:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 15);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 217 "a2l_quex_lexer.qx"
+#   line 218 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94477,7 +94479,7 @@ TERMINAL_2645:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 10);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 138 "a2l_quex_lexer.qx"
+#   line 139 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94490,7 +94492,7 @@ TERMINAL_4182:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 12);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 197 "a2l_quex_lexer.qx"
+#   line 198 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94503,7 +94505,7 @@ TERMINAL_1112:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 10);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 87 "a2l_quex_lexer.qx"
+#   line 88 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94516,7 +94518,7 @@ TERMINAL_2137:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 18);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 121 "a2l_quex_lexer.qx"
+#   line 122 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94529,7 +94531,7 @@ TERMINAL_3855:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 9);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 185 "a2l_quex_lexer.qx"
+#   line 186 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94542,7 +94544,7 @@ TERMINAL_4701:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 4);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 218 "a2l_quex_lexer.qx"
+#   line 219 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94555,7 +94557,7 @@ TERMINAL_2656:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 4);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 139 "a2l_quex_lexer.qx"
+#   line 140 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_CONVERSIONTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94568,7 +94570,7 @@ TERMINAL_2145:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 3);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 122 "a2l_quex_lexer.qx"
+#   line 123 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94581,7 +94583,7 @@ TERMINAL_1634:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 12);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 102 "a2l_quex_lexer.qx"
+#   line 103 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94751,7 +94753,7 @@ TERMINAL_4196:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 5);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 198 "a2l_quex_lexer.qx"
+#   line 199 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_DATATYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94764,7 +94766,7 @@ TERMINAL_3173:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 10);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 159 "a2l_quex_lexer.qx"
+#   line 160 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94777,7 +94779,7 @@ TERMINAL_3345:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 10);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 164 "a2l_quex_lexer.qx"
+#   line 165 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94790,7 +94792,7 @@ TERMINAL_4715:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 5);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 219 "a2l_quex_lexer.qx"
+#   line 220 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_DATATYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94803,7 +94805,7 @@ TERMINAL_622:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 16);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 73 "a2l_quex_lexer.qx"
+#   line 74 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_INDEXMODE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94816,7 +94818,7 @@ TERMINAL_2673:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 6);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 140 "a2l_quex_lexer.qx"
+#   line 141 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94829,7 +94831,7 @@ TERMINAL_4210:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 5);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 199 "a2l_quex_lexer.qx"
+#   line 200 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_PRGTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94842,7 +94844,7 @@ TERMINAL_3603:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 15);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 173 "a2l_quex_lexer.qx"
+#   line 174 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94855,7 +94857,7 @@ TERMINAL_3700:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 178 "a2l_quex_lexer.qx"
+#   line 179 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_PRGTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94868,7 +94870,7 @@ TERMINAL_1141:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 10);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 88 "a2l_quex_lexer.qx"
+#   line 89 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_BYTEORDER , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94881,7 +94883,7 @@ TERMINAL_2239:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 21);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 124 "a2l_quex_lexer.qx"
+#   line 125 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94894,7 +94896,7 @@ TERMINAL_1660:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 9);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 103 "a2l_quex_lexer.qx"
+#   line 104 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94907,7 +94909,7 @@ TERMINAL_4735:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 7);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 220 "a2l_quex_lexer.qx"
+#   line 221 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_TYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94920,7 +94922,7 @@ TERMINAL_2177:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 11);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 123 "a2l_quex_lexer.qx"
+#   line 124 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94933,7 +94935,7 @@ TERMINAL_363:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 14);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 68 "a2l_quex_lexer.qx"
+#   line 69 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94946,7 +94948,7 @@ TERMINAL_2693:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 7);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 141 "a2l_quex_lexer.qx"
+#   line 142 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94959,7 +94961,7 @@ TERMINAL_1164:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 89 "a2l_quex_lexer.qx"
+#   line 90 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94972,7 +94974,7 @@ TERMINAL_4749:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 5);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 221 "a2l_quex_lexer.qx"
+#   line 222 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_TYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94985,7 +94987,7 @@ TERMINAL_4245:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 12);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 200 "a2l_quex_lexer.qx"
+#   line 201 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -94998,7 +95000,7 @@ TERMINAL_1175:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 4);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 90 "a2l_quex_lexer.qx"
+#   line 91 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_DATASIZE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95011,7 +95013,7 @@ TERMINAL_1576:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 10);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 100 "a2l_quex_lexer.qx"
+#   line 101 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_INDEXMODE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95024,7 +95026,7 @@ TERMINAL_669:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 16);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 74 "a2l_quex_lexer.qx"
+#   line 75 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_INDEXMODE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95037,7 +95039,7 @@ TERMINAL_1698:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 13);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 104 "a2l_quex_lexer.qx"
+#   line 105 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95050,7 +95052,7 @@ TERMINAL_4259:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 5);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 201 "a2l_quex_lexer.qx"
+#   line 202 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_DATATYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95063,7 +95065,7 @@ TERMINAL_3237:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 11);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 161 "a2l_quex_lexer.qx"
+#   line 162 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95076,7 +95078,7 @@ TERMINAL_4775:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 9);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 222 "a2l_quex_lexer.qx"
+#   line 223 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_PRGTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95089,7 +95091,7 @@ TERMINAL_4039:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 9);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 190 "a2l_quex_lexer.qx"
+#   line 191 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_MODE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95102,7 +95104,7 @@ TERMINAL_3784:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 10);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 181 "a2l_quex_lexer.qx"
+#   line 182 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95115,7 +95117,7 @@ TERMINAL_1204:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 10);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 91 "a2l_quex_lexer.qx"
+#   line 92 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95351,7 +95353,7 @@ TERMINAL_4795:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 7);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 223 "a2l_quex_lexer.qx"
+#   line 224 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95364,7 +95366,7 @@ TERMINAL_2748:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 143 "a2l_quex_lexer.qx"
+#   line 144 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95377,7 +95379,7 @@ TERMINAL_1727:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 10);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 105 "a2l_quex_lexer.qx"
+#   line 106 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95390,7 +95392,7 @@ TERMINAL_4288:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 10);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 202 "a2l_quex_lexer.qx"
+#   line 203 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95403,7 +95405,7 @@ TERMINAL_1910:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 4);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 114 "a2l_quex_lexer.qx"
+#   line 115 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_PRGTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95416,7 +95418,7 @@ TERMINAL_4806:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 4);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 224 "a2l_quex_lexer.qx"
+#   line 225 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_DATASIZE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95437,7 +95439,7 @@ TERMINAL_3275:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 13);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 162 "a2l_quex_lexer.qx"
+#   line 163 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95450,7 +95452,7 @@ TERMINAL_716:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 16);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 75 "a2l_quex_lexer.qx"
+#   line 76 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_INDEXMODE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95463,7 +95465,7 @@ TERMINAL_207:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 7);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 62 "a2l_quex_lexer.qx"
+#   line 63 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_DATATYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95476,7 +95478,7 @@ TERMINAL_2256:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 6);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 125 "a2l_quex_lexer.qx"
+#   line 126 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_MEMORYTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95489,7 +95491,7 @@ TERMINAL_4822:
     __QUEX_COUNT_VOID(self.counter);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 228 "a2l_quex_lexer.qx"
+#   line 229 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95502,7 +95504,7 @@ TERMINAL_2264:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 3);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 126 "a2l_quex_lexer.qx"
+#   line 127 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95515,7 +95517,7 @@ TERMINAL_4827:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, LexemeL);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 229 "a2l_quex_lexer.qx"
+#   line 230 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_INTEGER, Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95528,7 +95530,7 @@ TERMINAL_4317:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 10);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 203 "a2l_quex_lexer.qx"
+#   line 204 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95541,7 +95543,7 @@ TERMINAL_3806:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 3);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 183 "a2l_quex_lexer.qx"
+#   line 184 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_MEMORYTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95554,7 +95556,7 @@ TERMINAL_2786:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 13);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 144 "a2l_quex_lexer.qx"
+#   line 145 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95567,7 +95569,7 @@ TERMINAL_230:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 63 "a2l_quex_lexer.qx"
+#   line 64 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_DATATYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95580,7 +95582,7 @@ TERMINAL_1767:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 6);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 107 "a2l_quex_lexer.qx"
+#   line 108 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_TYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95593,7 +95595,7 @@ TERMINAL_4841:
     __QUEX_COUNT_VOID(self.counter);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 231 "a2l_quex_lexer.qx"
+#   line 232 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_COMMENT, Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95606,7 +95608,7 @@ TERMINAL_241:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 4);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 64 "a2l_quex_lexer.qx"
+#   line 65 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95619,7 +95621,7 @@ TERMINAL_3316:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 14);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 163 "a2l_quex_lexer.qx"
+#   line 164 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95632,7 +95634,7 @@ TERMINAL_3829:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 184 "a2l_quex_lexer.qx"
+#   line 185 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_CONVERSIONTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95645,7 +95647,7 @@ TERMINAL_4855:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, LexemeL);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 232 "a2l_quex_lexer.qx"
+#   line 233 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_STRINGFORMAT, Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95658,7 +95660,7 @@ TERMINAL_1784:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 6);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 108 "a2l_quex_lexer.qx"
+#   line 109 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_TYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95671,7 +95673,7 @@ TERMINAL_4857:
     __QUEX_COUNT_VOID(self.counter);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 233 "a2l_quex_lexer.qx"
+#   line 234 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_STRING, Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95684,7 +95686,7 @@ TERMINAL_4859:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 6);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 234 "a2l_quex_lexer.qx"
+#   line 235 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_BLOCKBEGIN, Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95697,7 +95699,7 @@ TERMINAL_4861:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 4);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 235 "a2l_quex_lexer.qx"
+#   line 236 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_BLOCKEND, Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95710,7 +95712,7 @@ TERMINAL_4863:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, LexemeL);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 236 "a2l_quex_lexer.qx"
+#   line 237 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_HEX, Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95723,7 +95725,7 @@ TERMINAL_1750:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 106 "a2l_quex_lexer.qx"
+#   line 107 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95736,7 +95738,7 @@ TERMINAL_1801:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 6);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 109 "a2l_quex_lexer.qx"
+#   line 110 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_TYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95749,7 +95751,7 @@ TERMINAL_4367:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 17);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 204 "a2l_quex_lexer.qx"
+#   line 205 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95762,7 +95764,7 @@ TERMINAL_2833:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 16);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 145 "a2l_quex_lexer.qx"
+#   line 146 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95775,7 +95777,7 @@ TERMINAL_276:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 12);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 65 "a2l_quex_lexer.qx"
+#   line 66 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95788,7 +95790,7 @@ TERMINAL_1815:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 5);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 110 "a2l_quex_lexer.qx"
+#   line 111 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_TYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95801,7 +95803,7 @@ TERMINAL_792:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 16);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 77 "a2l_quex_lexer.qx"
+#   line 78 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95814,7 +95816,7 @@ TERMINAL_2331:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 18);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 128 "a2l_quex_lexer.qx"
+#   line 129 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_PRGTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95827,7 +95829,7 @@ TERMINAL_2847:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 5);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 146 "a2l_quex_lexer.qx"
+#   line 147 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95840,7 +95842,7 @@ TERMINAL_3365:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 7);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 165 "a2l_quex_lexer.qx"
+#   line 166 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95853,7 +95855,7 @@ TERMINAL_4390:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 205 "a2l_quex_lexer.qx"
+#   line 206 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_ATTRIBUTE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95866,7 +95868,7 @@ TERMINAL_299:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 66 "a2l_quex_lexer.qx"
+#   line 67 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_MODE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95879,7 +95881,7 @@ TERMINAL_1325:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 23);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 93 "a2l_quex_lexer.qx"
+#   line 94 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95892,7 +95894,7 @@ TERMINAL_2864:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 6);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 147 "a2l_quex_lexer.qx"
+#   line 148 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95905,7 +95907,7 @@ TERMINAL_1844:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 10);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 111 "a2l_quex_lexer.qx"
+#   line 112 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_ATTRIBUTE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95918,7 +95920,7 @@ TERMINAL_3893:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 13);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 186 "a2l_quex_lexer.qx"
+#   line 187 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95931,7 +95933,7 @@ TERMINAL_3382:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 6);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 166 "a2l_quex_lexer.qx"
+#   line 167 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95944,7 +95946,7 @@ TERMINAL_322:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 67 "a2l_quex_lexer.qx"
+#   line 68 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95957,7 +95959,7 @@ TERMINAL_2375:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 15);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 129 "a2l_quex_lexer.qx"
+#   line 130 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95970,7 +95972,7 @@ TERMINAL_4425:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 12);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 206 "a2l_quex_lexer.qx"
+#   line 207 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95983,7 +95985,7 @@ TERMINAL_842:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 17);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 78 "a2l_quex_lexer.qx"
+#   line 79 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -95996,7 +95998,7 @@ TERMINAL_1867:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 112 "a2l_quex_lexer.qx"
+#   line 113 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96009,7 +96011,7 @@ TERMINAL_3408:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 9);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 167 "a2l_quex_lexer.qx"
+#   line 168 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_BYTEORDER , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96022,7 +96024,7 @@ TERMINAL_3640:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 175 "a2l_quex_lexer.qx"
+#   line 176 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96035,7 +96037,7 @@ TERMINAL_996:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 10);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 83 "a2l_quex_lexer.qx"
+#   line 84 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96048,7 +96050,7 @@ TERMINAL_2910:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 7);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 149 "a2l_quex_lexer.qx"
+#   line 150 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96061,7 +96063,7 @@ TERMINAL_1936:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 9);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 115 "a2l_quex_lexer.qx"
+#   line 116 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96074,7 +96076,7 @@ TERMINAL_1378:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 18);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 94 "a2l_quex_lexer.qx"
+#   line 95 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96087,7 +96089,7 @@ TERMINAL_4451:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 9);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 207 "a2l_quex_lexer.qx"
+#   line 208 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96100,7 +96102,7 @@ TERMINAL_2278:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 5);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 127 "a2l_quex_lexer.qx"
+#   line 128 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_MEMORYTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96113,7 +96115,7 @@ TERMINAL_3431:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 168 "a2l_quex_lexer.qx"
+#   line 169 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_BYTEORDER , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96126,7 +96128,7 @@ TERMINAL_3946:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 18);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 187 "a2l_quex_lexer.qx"
+#   line 188 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96139,7 +96141,7 @@ TERMINAL_1899:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 11);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 113 "a2l_quex_lexer.qx"
+#   line 114 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96152,7 +96154,7 @@ TERMINAL_886:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 15);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 79 "a2l_quex_lexer.qx"
+#   line 80 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96165,7 +96167,7 @@ TERMINAL_745:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 10);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 76 "a2l_quex_lexer.qx"
+#   line 77 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96178,7 +96180,7 @@ TERMINAL_2424:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 6);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 131 "a2l_quex_lexer.qx"
+#   line 132 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_MEMATTRIBUTE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96191,7 +96193,7 @@ TERMINAL_575:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 14);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 72 "a2l_quex_lexer.qx"
+#   line 73 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96204,7 +96206,7 @@ TERMINAL_4474:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 208 "a2l_quex_lexer.qx"
+#   line 209 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96217,7 +96219,7 @@ TERMINAL_1257:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 18);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 92 "a2l_quex_lexer.qx"
+#   line 93 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96230,7 +96232,7 @@ TERMINAL_2951:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 14);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 150 "a2l_quex_lexer.qx"
+#   line 151 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96243,7 +96245,7 @@ TERMINAL_4488:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 5);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 209 "a2l_quex_lexer.qx"
+#   line 210 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_DATATYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96256,7 +96258,7 @@ TERMINAL_3735:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 12);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 179 "a2l_quex_lexer.qx"
+#   line 180 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_PRGTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96269,7 +96271,7 @@ TERMINAL_3469:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 13);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 169 "a2l_quex_lexer.qx"
+#   line 170 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96282,7 +96284,7 @@ TERMINAL_2447:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 132 "a2l_quex_lexer.qx"
+#   line 133 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_ATTRIBUTE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96295,7 +96297,7 @@ TERMINAL_3798:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 5);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 182 "a2l_quex_lexer.qx"
+#   line 183 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_ADDRTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96308,7 +96310,7 @@ TERMINAL_915:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 10);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 80 "a2l_quex_lexer.qx"
+#   line 81 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96321,7 +96323,7 @@ TERMINAL_3990:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 15);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 188 "a2l_quex_lexer.qx"
+#   line 189 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96334,7 +96336,7 @@ TERMINAL_1440:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 21);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 95 "a2l_quex_lexer.qx"
+#   line 96 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_PRGTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96347,7 +96349,7 @@ TERMINAL_2980:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 10);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 151 "a2l_quex_lexer.qx"
+#   line 152 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_INDEXORDER , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96360,7 +96362,7 @@ TERMINAL_428:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 22);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 69 "a2l_quex_lexer.qx"
+#   line 70 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96373,7 +96375,7 @@ TERMINAL_4013:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 189 "a2l_quex_lexer.qx"
+#   line 190 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96386,7 +96388,7 @@ TERMINAL_4839:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, LexemeL);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 230 "a2l_quex_lexer.qx"
+#   line 231 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_FLOAT, Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96399,7 +96401,7 @@ TERMINAL_2482:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 12);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 133 "a2l_quex_lexer.qx"
+#   line 134 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96412,7 +96414,7 @@ TERMINAL_3507:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 13);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 170 "a2l_quex_lexer.qx"
+#   line 171 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96425,7 +96427,7 @@ TERMINAL_4532:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 15);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 210 "a2l_quex_lexer.qx"
+#   line 211 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96438,7 +96440,7 @@ TERMINAL_953:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 13);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 81 "a2l_quex_lexer.qx"
+#   line 82 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96451,7 +96453,7 @@ TERMINAL_2407:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 11);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 130 "a2l_quex_lexer.qx"
+#   line 131 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_UNITTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96464,7 +96466,7 @@ TERMINAL_2890:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 9);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 148 "a2l_quex_lexer.qx"
+#   line 149 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_CONVERSIONTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96477,7 +96479,7 @@ TERMINAL_3009:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 10);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 152 "a2l_quex_lexer.qx"
+#   line 153 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_INDEXORDER , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96490,7 +96492,7 @@ TERMINAL_3524:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 6);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 171 "a2l_quex_lexer.qx"
+#   line 172 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96503,7 +96505,7 @@ TERMINAL_1989:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 18);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 116 "a2l_quex_lexer.qx"
+#   line 117 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96516,7 +96518,7 @@ TERMINAL_967:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 5);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 82 "a2l_quex_lexer.qx"
+#   line 83 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_TYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96529,7 +96531,7 @@ TERMINAL_1481:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 14);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 96 "a2l_quex_lexer.qx"
+#   line 97 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96542,7 +96544,7 @@ TERMINAL_4555:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 211 "a2l_quex_lexer.qx"
+#   line 212 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_CONVERSIONTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96555,7 +96557,7 @@ TERMINAL_3026:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 6);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 153 "a2l_quex_lexer.qx"
+#   line 154 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_MEMATTRIBUTE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96568,7 +96570,7 @@ TERMINAL_1492:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 4);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 97 "a2l_quex_lexer.qx"
+#   line 98 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_PRGTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96581,7 +96583,7 @@ TERMINAL_4062:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 191 "a2l_quex_lexer.qx"
+#   line 192 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_MEMORYTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96594,7 +96596,7 @@ TERMINAL_2725:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 11);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 142 "a2l_quex_lexer.qx"
+#   line 143 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96607,7 +96609,7 @@ TERMINAL_3043:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 6);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 154 "a2l_quex_lexer.qx"
+#   line 155 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_CONVERSIONTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96620,7 +96622,7 @@ TERMINAL_2532:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 17);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 134 "a2l_quex_lexer.qx"
+#   line 135 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96633,7 +96635,7 @@ TERMINAL_1509:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 6);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 98 "a2l_quex_lexer.qx"
+#   line 99 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96646,7 +96648,7 @@ TERMINAL_3559:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 12);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 172 "a2l_quex_lexer.qx"
+#   line 173 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_PRGTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96659,7 +96661,7 @@ TERMINAL_4584:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 10);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 212 "a2l_quex_lexer.qx"
+#   line 213 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_CONVERSIONTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96672,7 +96674,7 @@ TERMINAL_2027:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 13);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 117 "a2l_quex_lexer.qx"
+#   line 118 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96685,7 +96687,7 @@ TERMINAL_493:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 22);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 70 "a2l_quex_lexer.qx"
+#   line 71 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96698,7 +96700,7 @@ TERMINAL_2546:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 5);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 135 "a2l_quex_lexer.qx"
+#   line 136 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_MEMORYTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96711,7 +96713,7 @@ TERMINAL_4085:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 192 "a2l_quex_lexer.qx"
+#   line 193 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_ATTRIBUTE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96724,7 +96726,7 @@ TERMINAL_1019:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 84 "a2l_quex_lexer.qx"
+#   line 85 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96737,7 +96739,7 @@ TERMINAL_4607:
     __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 8);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
-#   line 213 "a2l_quex_lexer.qx"
+#   line 214 "a2l_quex_lexer.qx"
         self_send1(QUEX_TKN_CONVERSIONTYPE , Lexeme); RETURN;
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -96748,7 +96750,7 @@ TERMINAL_4607:
 _18632: /* TERMINAL: END_OF_STREAM */
     __QUEX_COUNT_END_OF_STREAM_EVENT(self.counter);
     {
-#   line 226 "a2l_quex_lexer.qx"
+#   line 227 "a2l_quex_lexer.qx"
     self_send(QUEX_TKN_TERMINATION);
     
 #   line 32767 "a2l_quex_lexer.cpp"
@@ -99301,6 +99303,7 @@ QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
    static const char  token_id_str_STRING[]         = "STRING";
    static const char  token_id_str_STRINGFORMAT[]   = "STRINGFORMAT";
    static const char  token_id_str_TYPE[]           = "TYPE";
+   static const char  token_id_str_UNITTYPE[]       = "UNITTYPE";
        
 
    /* NOTE: This implementation works only for token id types that are 
@@ -99341,6 +99344,7 @@ QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
    case QUEX_TKN_STRING:         return token_id_str_STRING;
    case QUEX_TKN_STRINGFORMAT:   return token_id_str_STRINGFORMAT;
    case QUEX_TKN_TYPE:           return token_id_str_TYPE;
+   case QUEX_TKN_UNITTYPE:       return token_id_str_UNITTYPE;
 
    }
 }
