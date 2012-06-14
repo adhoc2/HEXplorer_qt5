@@ -56,7 +56,8 @@ int SpTableModel::columnCount(const QModelIndex & /* parent */) const
 
 QVariant SpTableModel::data(const QModelIndex &index, int role) const
 {    
-    if (!index.isValid()) return QVariant();
+    if (!index.isValid())
+        return QVariant();
 
     int row = index.row();
     int column = index.column();
@@ -1104,7 +1105,7 @@ void SpTableModel::setList(QList<Data *> *labelList)
         nRow += listDataModel->at(i)->size;
 
     //calculate nCol
-    nColumn = 0;
+    nColumn = 3;
     for (int i = 0; i < listDataModel->count(); i++)
         if (listDataModel->at(i)->xCount() + 2 > nColumn)
             nColumn = listDataModel->at(i)->xCount() + 2;

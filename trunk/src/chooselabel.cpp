@@ -44,6 +44,7 @@ ChooseLabel::ChooseLabel(A2LFILE *_a2l, HexFile *_hex, QWidget *parent) :
     mainWidget = parent;
     a2l = _a2l;
     hex = _hex;
+    srec = NULL;
     csv = NULL;
     cdfx = NULL;
 
@@ -129,6 +130,7 @@ ChooseLabel::ChooseLabel(A2LFILE *_a2l, Csv *_csv, QWidget *parent) :
     mainWidget = parent;
     a2l = _a2l;
     hex = NULL;
+    srec = NULL;
     cdfx = NULL;
     csv = _csv;
 
@@ -170,6 +172,7 @@ ChooseLabel::ChooseLabel(A2LFILE *_a2l, CdfxFile *_cdfx, QWidget *parent) :
     mainWidget = parent;
     a2l = _a2l;
     hex = NULL;
+    srec = NULL;
     csv = NULL;
     cdfx = _cdfx;
 

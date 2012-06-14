@@ -1883,7 +1883,7 @@ void CompareModel::setList(QList<Data *> *labelList, QList<Data *> *labelList2)
 
     //calculate nRow / nColumn
     nRow = 0;
-    nColumn = 0;
+    nColumn = 3;
     for (int i = 0; i < listDat1->count(); i++)
     {
         nRow += listDat1->at(i)->size;
