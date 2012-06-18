@@ -143,7 +143,8 @@ QVariant SpTableModel::data(const QModelIndex &index, int role) const
                     return listDataModel->at(ind)->getZ(column - 1);
             }
             else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() > 0) //Map
-            {                
+            {
+                //qDebug()<< "size : " <<listDataModel->at(ind)->size << " and yCount() : " << listDataModel->at(ind)->yCount();
                 if (row - sum == 2 && column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
                     return listDataModel->at(ind)->getX(column - 2);
                 else if (row - sum == 2 && column == 0)
