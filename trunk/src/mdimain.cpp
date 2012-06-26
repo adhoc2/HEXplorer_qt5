@@ -595,6 +595,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         addCdfxFile->setEnabled(false);
         addCsvFile->setEnabled(false);
         addHexFile->setEnabled(false);
+        addSrecFile->setEnabled(false);
         deleteProject->setEnabled(false);
         deleteFile->setEnabled(false);
         editFile->setEnabled(false);

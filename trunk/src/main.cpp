@@ -19,7 +19,9 @@
 
 #include <QApplication>
 #ifdef Q_WS_WIN32
+#ifdef CL_COMPILER
     #include "usewinhoard.cpp"
+#endif
 #endif
 #include "mdimain.h"
 #include <bitset>
