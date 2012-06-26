@@ -435,8 +435,6 @@ void SrecFile::readAllData()
     QTime timer;
     timer.start();
 
-    bool phys = true;
-
     //empty the list
     listData.clear();
 
@@ -690,7 +688,7 @@ QString SrecFile::getHexValue(QString address, int offset,  int nByte)
 
     //find block and index of the desired address
     bool bl;
-    unsigned int IAddr =address.toUInt(&bl, 16) + offset;
+    unsigned int IAddr = address.toUInt(&bl, 16) + offset;
     int block = 0;
     while (block < blockList.count())
     {
@@ -1392,7 +1390,7 @@ QStringList SrecFile::writeHex()
     QStringList list;
     if (testMonotony(list))
     {
-        data2block();
+        modifiedData2block();
         return block2list();
     }
     else
@@ -1523,25 +1521,56 @@ void SrecFile::hex2MemBlock(Data *data)
         CHARACTERISTIC *node = (CHARACTERISTIC*)data->getA2lNode();
         type = node->getPar("Type");
 
-        //BIT_MASK
-        BIT_MASK *_bitmask = (BIT_MASK*)node->getItem("BIT_MASK");
-        uint32_t mask = 0;
-        bool bl;
-        if (_bitmask)
-        {
-            mask = QString(_bitmask->getPar("Mask")).toUInt(&bl, 16);
-        }
-
         if (type.toLower() == "value")
         {
-            int nbyte = data->getZ(0).count() / 2;
-            setValue(data->getAddressZ(), data->getZ(0), nbyte);
+            //BIT_MASK
+            BIT_MASK *_bitmask = (BIT_MASK*)node->getItem("BIT_MASK");
+            uint32_t mask = 0;
+            bool bl;
+            if (_bitmask)
+            {
+                // get the mask into uint
+                mask = QString(_bitmask->getPar("Mask")).toUInt(&bl, 16);
+                // calculate the decalage
+                uint32_t decalage = tzn(mask);
+                // get the original Value into uint
+                int nbyte = data->getZ(0).count() / 2;
+                uint32_t orgValue = getDecValues(data->getAddressZ(), nbyte, 1, data->getDatatypeZ()).at(0);
+                // get the value to be set into uint
+                uint32_t setValue = data->getZ(0).toUInt(&bl,16);
+                setValue = setValue << decalage;
+                // set the bits into orgValue according to the mask
+                int n = 32;
+                for (int i = 0; i < n; i++)
+                {
+                    if (mask & (1 << i))
+                    {
+                        if (setValue & (1 << i))
+                        {
+                            orgValue |= (1 << i);
+                        }
+                        else
+                        {
+                            orgValue |= (0 << i);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                int nbyte = data->getZ(0).count() / 2;
+                setValue(data->getAddressZ(), data->getZ(0), nbyte);
+            }
         }
         else if(type.toLower() == "curve")
         {
-            //axisX
             int nbyteX = data->getX(0).count() / 2;
-            setValues(data->getAddressX(), data->getX(), nbyteX);
+
+            //axisX : copy axisX only if it is a std_axis
+            if (!data->getAxisDescrX())
+            {
+                setValues(data->getAddressX(), data->getX(), nbyteX);
+            }
 
             //axisZ
             if (!data->isSizeChanged())
@@ -1551,7 +1580,7 @@ void SrecFile::hex2MemBlock(Data *data)
             }
             else
             {
-                // write new length of axis X into SrecFile
+                // write new length of axis X into HexFile
                 bool bl;
                 double addr = QString(node->getPar("Adress")).toUInt(&bl, 16);
                 QString length = data->getnPtsXHexa();
@@ -1569,15 +1598,22 @@ void SrecFile::hex2MemBlock(Data *data)
         }
         else if(type.toLower() == "map")
         {
-            //axisX
-            int nbyteX = data->getX(0).count() / 2;
-            setValues(data->getAddressX(), data->getX(), nbyteX);
+             int nbyteX = data->getX(0).count() / 2;
+             int nbyteY = data->getY(0).count() / 2;
 
-            //axisY
+            //axisX : copy axisX only if it is a std_axis
+            if (!data->getAxisDescrX())
+            {
+                setValues(data->getAddressX(), data->getX(), nbyteX);
+            }
+
+            //axisY : copy axisY only if it is a std_axis
             if (!data->isSizeChanged())
             {
-                int nbyteY = data->getY(0).count() / 2;
-                setValues(data->getAddressY(), data->getY(), nbyteY);
+                if (!data->getAxisDescrY())
+                {
+                    setValues(data->getAddressY(), data->getY(), nbyteY);
+                }
 
                 //axisZ
                 int nbyteZ = data->getZ(0).count() / 2;
@@ -1585,14 +1621,14 @@ void SrecFile::hex2MemBlock(Data *data)
             }
             else
             {
-                // write new length of axis X into SrecFile
+                // write new length of axis X into HexFile
                 bool bl;
                 double addr = QString(node->getPar("Adress")).toUInt(&bl, 16);
                 QString length = data->getnPtsXHexa();
                 int nbyteNPtsX = length.length() / 2;
                 setValue(addr, length, nbyteNPtsX);
 
-                // write new length of axis Y into SrecFile
+                // write new length of axis Y into HexFile
                 bl;
                 addr = QString(node->getPar("Adress")).toUInt(&bl, 16);
                 length = data->getnPtsYHexa();
@@ -1678,10 +1714,6 @@ QStringList SrecFile::block2list()
         x = 0;
         j = 0;
 
-        //bool bl;
-        //QString start = blockList[i]->offset + "0000";
-        //int strt = start.toUInt(&bl, 16);
-
         QString cks;
         int strt =blockList[i]->start;
         int end = blockList[i]->length;
@@ -1739,12 +1771,15 @@ QStringList SrecFile::block2list()
 
 }
 
-bool SrecFile::data2block()
+bool SrecFile::modifiedData2block()
 {
     foreach(Data* data, modifiedData)
     {
         data->clearOldValues();
+
+        //transform all the values into data in Hex format : getX() or getY() when COM_AXIS still returns physical format!!!
         data->phys2hex();
+
         hex2MemBlock(data);
         data->hex2phys();
         removeModifiedData(data);
@@ -2127,4 +2162,43 @@ void SrecFile::incrementValueProgBar(int n)
     emit progress(valueProgBar, maxValueProgbar);
 
     omp_unset_lock(&lock);
+}
+
+unsigned int SrecFile::tzn(unsigned int v)
+{
+    unsigned int c;     // c will be the number of zero bits on the right,
+                    // so if v is 1101000 (base 2), then c will be 3
+    // NOTE: if 0 == v, then c = 31.
+    if (v & 0x1)
+    {
+      // special case for odd v (assumed to happen half of the time)
+      c = 0;
+    }
+    else
+    {
+      c = 1;
+      if ((v & 0xffff) == 0)
+      {
+        v >>= 16;
+        c += 16;
+      }
+      if ((v & 0xff) == 0)
+      {
+        v >>= 8;
+        c += 8;
+      }
+      if ((v & 0xf) == 0)
+      {
+        v >>= 4;
+        c += 4;
+      }
+      if ((v & 0x3) == 0)
+      {
+        v >>= 2;
+        c += 2;
+      }
+      c -= v & 0x1;
+    }
+
+    return c;
 }

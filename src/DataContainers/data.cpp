@@ -490,7 +490,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
                 for (int i = 0; i < decZ.count(); i++ )
                 {
                     uint32_t _result = (uint32_t)decZ.at(i) & mask;
-                    uint32_t _decalage =  tzn(_result);
+                    uint32_t _decalage =  tzn(mask);
                     _result = _result >> _decalage;
                     decZ[i] = _result;
                 }
@@ -759,6 +759,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
                     //read the necessary parameters before reading values into HexFile
                     datatypeX = ((AXIS_PTS_X*)item)->getPar("Datatype");
                     int Xnbyte = srecParent->getNumByte(datatypeX);
+                    //addressX = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
                     addressX = QString(axisPtsX->getPar("Adress")).toUInt(&bl, 16) + offset;
 
                     //read values into HexFile
@@ -843,7 +844,6 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
         QString typeAxisY = axisDescrY->getPar("Attribute");
         if (typeAxisY.compare("COM_AXIS") == 0)
         {
-
             //AXIS_PTS
             AXIS_PTS_REF *axisPtsRef = (AXIS_PTS_REF*)axisDescrY->getItem("AXIS_PTS_REF");
             QString nameAxisY = axisPtsRef->getPar("AxisPoints");
@@ -885,14 +885,17 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
                     //read the necessary parameters before reading values into HexFile
                     datatypeY = ((AXIS_PTS_X*)item)->getPar("Datatype");
                     int Ynbyte = srecParent->getNumByte(datatypeY);
+                    //addressY = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
                     addressY = QString(axisPtsY->getPar("Adress")).toUInt(&bl, 16) + offset;
 
-                    //read values into HexFile
-                    if (nPtsY == 1)
+                    // get nPtsY if "NO_AXIS_PTS_X" is not specified
+                    if (nPtsY == 1) // done in case "NO_AXIS_PTS_X" is not specified => use "MaxAxisPoints"
                     {
                         QString tamere = axisPtsY->getPar("MaxAxisPoints");
                         nPtsY = tamere.toUInt();
                     }
+
+                    //read values into HexFile
                     QList<double> decY = srecParent->getDecValues(addressY, Ynbyte, nPtsY, datatypeY);
 
                     //convert the dec values into phys values
@@ -1012,7 +1015,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
                 for (int i = 0; i < decZ.count(); i++ )
                 {
                     uint32_t _result = (uint32_t)decZ.at(i) & mask;
-                    uint32_t _decalage =  tzn(_result);
+                    uint32_t _decalage =  tzn(mask);
                     _result = _result >> _decalage;
                     decZ[i] = _result;
                 }
@@ -1970,6 +1973,11 @@ int Data::getZnbyte()
         return srecParent->getNumByte(datatypeZ);
     else
         return 0;
+}
+
+std::string Data::getDatatypeZ()
+{
+    return datatypeZ;
 }
 
 QString Data::getMaxDim()
