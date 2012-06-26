@@ -4,7 +4,7 @@
     - use of Qt 4.8.2
     - A2L parser improvements (new keywords)
     - import/export Srec files
-    - bug fixes!
+    - some bug fixes!
 
 revision 0.6.10 (02/04/2012) :
     - bug fix : update in function verify
