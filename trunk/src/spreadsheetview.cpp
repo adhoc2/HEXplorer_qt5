@@ -1522,20 +1522,8 @@ void SpreadsheetView::changeLabelSize()
         QModelIndex index = model()->index(topLeft.row(), topLeft.column());
         Data *data = ((SpTableModel*)model())->getLabel(index, Qt::EditRole);
 
-        // determine type of data
-        bool isMap = 0;
-        if (data->yCount() > 0)
-        {
-            isMap = true;
-        }
-        else
-        {
-            isMap = false;
-        }
-
         int xDim = data->xCount();
         int yDim = data->yCount();
-
         DialogDataDimension *win = new DialogDataDimension(xDim, data->getMaxAxisX(),
                                                            yDim, data->getMaxAxisY());
         win->exec();
@@ -1551,17 +1539,6 @@ void SpreadsheetView::changeLabelSize()
         // get the data
         QModelIndex index = model()->index(topLeft.row(), topLeft.column());
         Data *data = ((CompareModel*)model())->getLabel(index, Qt::EditRole);
-
-        // determine type of data
-        bool isMap = 0;
-        if (data->yCount() > 0)
-        {
-            isMap = true;
-        }
-        else
-        {
-            isMap = false;
-        }
 
         int xDim = data->xCount();
         int yDim = data->yCount();

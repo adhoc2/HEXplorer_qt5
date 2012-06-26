@@ -935,7 +935,7 @@ void MDImain::checkFmtcMonotony()
     if (bl)
     {
         QMessageBox::information(this, "HEXplorer :: FMTC monotony",
-                                 "the whole FMTC map is strictly monotuous");
+                                 "the whole FMTC map is strictly monotonic");
     }
     else
     {
@@ -946,7 +946,7 @@ void MDImain::checkFmtcMonotony()
         }
         str.chop(2);
         QMessageBox::warning(this, "HEXplorer :: FMTC monotony",
-                             "the FMTC map is NOT strictly monotuous : \n"
+                             "the FMTC map is NOT strictly monotonic : \n"
                              "check column(s) : " + str);
     }
 }

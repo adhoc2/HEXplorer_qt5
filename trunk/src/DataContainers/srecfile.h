@@ -103,11 +103,12 @@ class SrecFile : public QObject, public DataContainer
         void readAllData();
         bool isA2lCombined();
         void hex2MemBlock(Data* data);
-        bool data2block();
+        bool modifiedData2block();
         QStringList block2list();
         void setValue(unsigned int IAddr, QString hex, int nByte);
         void setValues(unsigned int IAddr, QStringList hexList, int nByte);
-        QString checksum(QString str);       
+        QString checksum(QString str);
+        unsigned int tzn(unsigned int v);
 
     signals:
         //void lineParsed(int,int);

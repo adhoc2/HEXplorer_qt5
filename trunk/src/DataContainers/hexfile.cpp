@@ -1547,9 +1547,13 @@ void HexFile::hex2MemBlock(Data *data)
         }
         else if(type.toLower() == "curve")
         {
-            //axisX
             int nbyteX = data->getX(0).count() / 2;
-            setValues(data->getAddressX(), data->getX(), nbyteX);
+
+            //axisX : copy axisX only if it is a std_axis
+            if (!data->getAxisDescrX())
+            {
+                setValues(data->getAddressX(), data->getX(), nbyteX);
+            }
 
             //axisZ
             if (!data->isSizeChanged())
@@ -1577,15 +1581,22 @@ void HexFile::hex2MemBlock(Data *data)
         }
         else if(type.toLower() == "map")
         {
-            //axisX
-            int nbyteX = data->getX(0).count() / 2;
-            setValues(data->getAddressX(), data->getX(), nbyteX);
+             int nbyteX = data->getX(0).count() / 2;
+             int nbyteY = data->getY(0).count() / 2;
 
-            //axisY
+            //axisX : copy axisX only if it is a std_axis
+            if (!data->getAxisDescrX())
+            {
+                setValues(data->getAddressX(), data->getX(), nbyteX);
+            }
+
+            //axisY : copy axisY only if it is a std_axis
             if (!data->isSizeChanged())
             {
-                int nbyteY = data->getY(0).count() / 2;
-                setValues(data->getAddressY(), data->getY(), nbyteY);
+                if (!data->getAxisDescrY())
+                {
+                    setValues(data->getAddressY(), data->getY(), nbyteY);
+                }
 
                 //axisZ
                 int nbyteZ = data->getZ(0).count() / 2;
@@ -1753,7 +1764,10 @@ bool HexFile::data2block()
     foreach(Data* data, modifiedData)
     {
         data->clearOldValues();
+
+        //transform all the values into data in Hex format : getX() or getY() when COM_AXIS still returns physical format
         data->phys2hex();
+
         hex2MemBlock(data);
         data->hex2phys();
         removeModifiedData(data);
@@ -1981,25 +1995,32 @@ QList<int> HexFile::checkFmtcMonotony(bool *bl)
     else if(projectName.toLower() == "p_662")
     {
         fmtc = getData("PhyMod_trq2qBasEOM0_MAP");
+        if (!fmtc)
+        {
+            fmtc = getData("PhyMod_trq2qBas_MAP");
+        }
     }
 
     //check monotony of each column
     QList<int> list;
-    *bl = true;
-    for (int col = 0; col < fmtc->xCount(); col++)
+    if (fmtc)
     {
-        for (int row = 0; row < fmtc->yCount() - 1; row++)
+        *bl = true;
+        for (int col = 0; col < fmtc->xCount(); col++)
         {
-            bool bl1;
-            double dbl1 = fmtc->getZ(row, col, &bl1);
-            double dbl2 = fmtc->getZ(row + 1, col, &bl1);
-
-            if (dbl1 >= dbl2)
+            for (int row = 0; row < fmtc->yCount() - 1; row++)
             {
-                list.append(col);
-                *bl = false;
-            }
+                bool bl1;
+                double dbl1 = fmtc->getZ(row, col, &bl1);
+                double dbl2 = fmtc->getZ(row + 1, col, &bl1);
 
+                if (dbl1 >= dbl2)
+                {
+                    list.append(col);
+                    *bl = false;
+                }
+
+            }
         }
     }
 

@@ -34,12 +34,11 @@ equals( QMAKE_CXX, cl) {
      $${QWT3D_ROOT}\include \
 
     # ---- debug ----- #
-
     CONFIG( debug, debug|release ) {
         DEFINES += MY_DEBUG
-        UI_DIR = release\ui
-        MOC_DIR = release\moc
-        OBJECTS_DIR = release\obj
+        UI_DIR = debug\ui
+        MOC_DIR = debug\moc
+        OBJECTS_DIR = debug\obj
         LIBS += -l$${WINHOARD_ROOT}\winhoard \
         -l$${QSCINTILLA_ROOT}\Qt4\lib\qscintilla2d \
         -l$${QWT3D_ROOT}\lib\qwtplot3dd \
@@ -50,10 +49,9 @@ equals( QMAKE_CXX, cl) {
     else {
 
     # ---- release ---- #
-
-        UI_DIR = debug\ui
-        MOC_DIR = debug\moc
-        OBJECTS_DIR = debug\obj
+        UI_DIR = release\ui
+        MOC_DIR = release\moc
+        OBJECTS_DIR = release\obj
         LIBS += -l$${WINHOARD_ROOT}\winhoard \
         -l$${QSCINTILLA_ROOT}\Qt4\lib\qscintilla2 \
         -l$${QWT3D_ROOT}\lib\qwtplot3d \
@@ -78,29 +76,29 @@ equals( QMAKE_CXX, cl) {
     QSCINTILLA_ROOT = ../LIBS/QScintilla-gpl-2.5.1
     QWT_ROOT = ../LIBS/qwt-6.0.1
     QWT3D_ROOT = ../LIBS/qwtplot3d
-    #QUEX_ROOT = /opt/quex/quex-0.59.7
     QUEX_ROOT = /Applications/quex/quex-0.60.2
 
-    UI_DIR = ui
-    MOC_DIR = moc
-    OBJECTS_DIR = obj
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
-    INCLUDEPATH += . ./ASAP2 ./Quex ./DataContainers $${QWT_ROOT}/src $${QWT3D_ROOT}/include $${QSCINTILLA_ROOT}/Qt4 $${QUEX_ROOT}
+    INCLUDEPATH += . ./ASAP2 $${QUEX_ROOT} ./Quex ./DataContainers $${QWT_ROOT}/src $${QWT3D_ROOT}/include $${QSCINTILLA_ROOT}/Qt4
     LIBS += -L$${QSCINTILLA_ROOT}/Qt4/lib \
     -L$${QWT3D_ROOT}/lib \
     -L$${QWT_ROOT}/lib
 
     # --- debug config --- #
-
     CONFIG( debug, debug|release ) {
+        UI_DIR = debug/ui
+        MOC_DIR = debug/moc
+        OBJECTS_DIR = debug/obj
         DEFINES += MY_DEBUG
         LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
         QMAKE_CXXFLAGS_DEBUG += -fopenmp
     }
     else {
 
-    # --- debug config --- #
-
+    # --- release config --- #
+        UI_DIR = release/ui
+        MOC_DIR = release/moc
+        OBJECTS_DIR = release/obj
         LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
         QMAKE_CXXFLAGS_RELEASE += -O3 -fopenmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
