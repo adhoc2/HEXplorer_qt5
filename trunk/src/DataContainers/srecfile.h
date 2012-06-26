@@ -109,6 +109,7 @@ class SrecFile : public QObject, public DataContainer
         void setValues(unsigned int IAddr, QStringList hexList, int nByte);
         QString checksum(QString str);
         unsigned int tzn(unsigned int v);
+        QString dec2hex(double dec, std::string type);
 
     signals:
         //void lineParsed(int,int);
