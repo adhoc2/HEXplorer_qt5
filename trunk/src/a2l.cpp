@@ -608,7 +608,7 @@ void A2l::readSubset()
                         {
                             if (group)
                             {
-                                GROUP *grp = (GROUP*)group->getNode(subset->name);
+                                GGROUP *grp = (GGROUP*)group->getNode(subset->name);
                                 if (grp)
                                 {
                                     DEF_CHARACTERISTIC *def = (DEF_CHARACTERISTIC*)grp->getNode("DEF_CHARACTERISTIC");

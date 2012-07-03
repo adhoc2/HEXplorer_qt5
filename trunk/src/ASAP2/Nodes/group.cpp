@@ -23,13 +23,13 @@
 #include "a2lgrammar.h"
 
 //initialise static variables
-Factory<Node,GROUP> GROUP::nodeFactory;
+Factory<Node,GGROUP> GGROUP::nodeFactory;
 
 // Functions (Predicate)
 bool nodeLessThan( const Node *a, const Node *b );
 bool itemLessThan( const Item *a, const Item *b );
 
-GROUP::GROUP(Node *parentNode)
+GGROUP::GGROUP(Node *parentNode)
     : Node(parentNode, parentNode->lex, parentNode->errorList)
 {
     //get grammar
@@ -89,7 +89,7 @@ GROUP::GROUP(Node *parentNode)
     }    
 }
 
-GROUP::~GROUP()
+GGROUP::~GGROUP()
 {
     foreach (char* ptr, parameters)
     {
@@ -98,7 +98,7 @@ GROUP::~GROUP()
     delete occOptPar;
 }
 
-void GROUP::parseFixPar(QList<TokenTyp> *typePar)
+void GGROUP::parseFixPar(QList<TokenTyp> *typePar)
 {
     //Mandatory PARAMETERS
     TokenTyp token;
@@ -121,7 +121,7 @@ void GROUP::parseFixPar(QList<TokenTyp> *typePar)
     }
 }
 
-TokenTyp GROUP::parseOptPar(QMap<std::string, Occurence> *nameOptPar)
+TokenTyp GGROUP::parseOptPar(QMap<std::string, Occurence> *nameOptPar)
 {
 
     if (nameOptPar->isEmpty())
@@ -212,7 +212,7 @@ TokenTyp GROUP::parseOptPar(QMap<std::string, Occurence> *nameOptPar)
     }
 }
 
-QMap<std::string, std::string> *GROUP::getParameters()
+QMap<std::string, std::string> *GGROUP::getParameters()
 {
     QMap<std::string, std::string> *par = new QMap<std::string, std::string>;
     for (int i = 0; i < namePar->count(); i++)
@@ -222,7 +222,7 @@ QMap<std::string, std::string> *GROUP::getParameters()
     return par;
 }
 
-char* GROUP::getPar(std::string str)
+char* GGROUP::getPar(std::string str)
 {
     int i = namePar->indexOf(str);
     return parameters.at(i);

@@ -294,7 +294,7 @@ void FormCompare::on_quicklook_clicked()
         }
     }
 
-    //create a table model    
+    //create a table model
     if (tableModel)
         delete tableModel;
     SpTableModel *spTableModel = new SpTableModel(this);
@@ -443,7 +443,7 @@ void FormCompare::checkDroppedFile(QString oldText)
         else if (cdfx1)
         {
             cdfx1->getParentWp()->detach(this);
-            cdfx1->detach(this);            
+            cdfx1->detach(this);
         }
 
         // attach this to the new dropped hex, csv or cdfx file
@@ -1181,166 +1181,6 @@ void FormCompare::on_compare_clicked()
         listCompareTrg->erase(j, listCompareTrg->end());
     }
 
-//    int step = 0;
-//    foreach (Data* data1, *listCompareSrc)
-//    {
-//         QList<Data*>::iterator i =  qBinaryFind(listCompareTrg->begin(), listCompareTrg->end(), data1, dataLessThan);
-//         if (i == listCompareTrg->end())
-//         {
-//             //listNotFoundSrc.append(data1);
-//             listCompareSrc->removeOne(data1);
-//         }
-//         else
-//         {
-//             bool different = false;
-//             Data *data2 = *i;
-//             bool bl1;
-//             bool bl2;
-//             double val1 = 0;
-//             double val2 = 0;
-
-//             //unit
-//             if (data1->getUnit() != data2->getUnit())
-//                 different = true;
-
-//             //axisX
-//             if (data1->isAxisXComparable && data2->isAxisXComparable)
-//             {
-//                 if (data1->xCount() == data2->xCount())
-//                 {
-//                     for (int i = 0; i < data1->xCount(); i++)
-//                     {
-//                         val1 = data1->getX(i).toDouble(&bl1);
-//                         val2 = data2->getX(i).toDouble(&bl2);
-//                         if (bl1 && bl2)
-//                         {
-//                             if (val1 != val2)
-//                             {
-//                                different = true;
-//                                break;
-//                             }
-//                         }
-//                         else
-//                         {
-//                             if (data1->getX(i) != data2->getX(i))
-//                             {
-//                                 different = true;
-//                                 break;
-//                             }
-//                         }
-//                     }
-//                 }
-//                 else
-//                     different = true;
-//             }
-
-//             //axisY
-//             if (!different && data1->isAxisYComparable && data2->isAxisYComparable)
-//             {
-//                 if (data1->yCount() == data2->yCount())
-//                 {
-//                    for (int i = 0; i < data1->yCount(); i++)
-//                    {
-//                        val1 = data1->getY(i).toDouble(&bl1);
-//                        val2 = data2->getY(i).toDouble(&bl2);
-//                        if (bl1 && bl2)
-//                        {
-//                            if (val1 != val2)
-//                            {
-//                               different = true;
-//                               break;
-//                            }
-//                        }
-//                        else
-//                        {
-//                            if (data1->getY(i) != data2->getY(i))
-//                            {
-//                                different = true;
-//                                break;
-//                            }
-//                        }
-//                     }
-//                 }
-//                 else
-//                     different = true;
-//             }
-
-//             //Zvalues
-//             if (!different && data1->zCount() == data2->zCount())
-//             {
-//                 int Nrow = data1->yCount();
-//                 int Ncol = data1->xCount();
-
-//                 //check map // curve
-//                 if (Nrow == 0)
-//                 {
-//                     Nrow = 1;
-//                 }
-
-//                 if (Ncol == 0)
-//                 {
-//                     Ncol = 1;
-//                 }
-
-//                for (int i = 0; i < Nrow; i++)
-//                 {
-//                    for (int j = 0; j < Ncol; j++)
-//                     {
-//                        val1 = data1->getZ(i, j, &bl1);
-//                        val2 = data2->getZ(i, j, &bl2);
-
-//                        if (bl1 && bl2)
-//                        {
-//                            if (val1 != val2)
-//                            {
-//                                different = true;
-//                            }
-//                        }
-//                        else
-//                        {
-//                            if (data1->getZ(i, j) != data2->getZ(i, j))
-//                            {
-//                                different = true;
-//                                break;
-//                            }
-//                        }
-
-//                    }
-//                }
-//             }
-//             else
-//                 different = true;
-
-//             if (!different)
-//             {
-//                 listCompareSrc->removeOne(data1);
-//                 //listCompareTrg->removeOne(data2);
-//                 listCompareTrg->erase(i);
-//             }
-//         }
-
-//         //progressBar
-//         step++;
-//         if (step == stepMax)
-//         {
-//            step = 0;
-//            ui->progressBar->setValue(ui->progressBar->value() + stepMax);
-//            qApp->processEvents();
-//         }
-//     }
-
-//    // remove the data* from listDiffTrg not present into listDiffSrc
-//    foreach (Data* data2, *listCompareTrg)
-//    {
-//         QList<Data*>::iterator i =  qBinaryFind(listCompareSrc->begin(), listCompareSrc->end(), data2, dataLessThan);
-//         if (i == listCompareSrc->end())
-//         {
-//             //listNotFoundTrg.append(data2);
-//             //listCompareTrg->removeOne(data2);
-//             listCompareTrg->erase(i);
-//         }
-//    }
-
     //set the progress bar at its maximum value
     ui->progressBar->setValue(ui->progressBar->maximum());
 
@@ -1370,7 +1210,7 @@ void FormCompare::on_compare_clicked()
     }
 
     // display diff labels if exist
-    if (listCompareSrc->count() != 0)
+    if (listCompareSrc->count() > 0)
     {
         // get MODULES
         MODULE *module1 = (MODULE*)a2l1->getProject()->getNode("MODULE/" + moduleName1);
@@ -1382,7 +1222,8 @@ void FormCompare::on_compare_clicked()
         if (module1 && module2)
         {
             QStringList listDataName;
-            if (module1 == module2)
+            //if (module1 == module2)
+            if (module2)
             {
                 Node *rootNode1 = diffModel->getRootNode();
                 foreach(Data *data, *list1)
@@ -1399,11 +1240,6 @@ void FormCompare::on_compare_clicked()
                         Node *node = new Node(data->name);
                         sub->addChildNode(node);
                         node->setParentNode(sub);
-
-                        //following not possible because data.parent is already defined
-                        // into treeView1 when the data is modified
-//                        sub->addChildNode(data);
-//                        data->setParentNode(sub);
                     }
                     else
                     {
@@ -1653,6 +1489,10 @@ void FormCompare::on_copy_clicked()
         {
             source = QString(hex1->name);
         }
+        else if (srec1)
+        {
+            source = QString(srec1->name);
+        }
         else if (csv1)
         {
             source = QString(csv1->name);
@@ -1665,12 +1505,16 @@ void FormCompare::on_copy_clicked()
         {
             target = QString(hex2->name);
         }
+        else if (srec2)
+        {
+            target = QString(srec2->name);
+        }
         else if (csv2)
         {
             target = QString(csv2->name);
         }
         else if (cdfx2)
-            source = QString(cdfx2->name);
+            target = QString(cdfx2->name);
 
 
         int ret = QMessageBox::question(this, "HEXplorer :: copy action",
@@ -1694,6 +1538,10 @@ void FormCompare::on_copy_clicked()
         {
             target = QString(hex1->name);
         }
+        else if (srec1)
+            target = QString(srec1->name);
+        else if (cdfx1)
+            target = QString(cdfx1->name);
         else
             target = QString(csv1->name);
 
@@ -1701,6 +1549,10 @@ void FormCompare::on_copy_clicked()
         {
             source = QString(hex2->name);
         }
+        else if (srec2)
+            source = QString(srec2->name);
+        else if (cdfx2)
+            source = QString(cdfx2->name);
         else
             source = QString(csv2->name);
 
@@ -1741,6 +1593,12 @@ void FormCompare::on_copy_clicked()
                 MODULE *module = (MODULE*)a2l1->getProject()->getNode("MODULE/" + moduleName1);
                 charList = module->listChar;
             }
+            else if (srec1)
+            {
+                moduleName1 = srec1->getModuleName();
+                MODULE *module = (MODULE*)a2l1->getProject()->getNode("MODULE/" + moduleName1);
+                charList = module->listChar;
+            }
             else if (csv1)
             {
                 moduleName1 = csv1->getModuleName();
@@ -1757,6 +1615,12 @@ void FormCompare::on_copy_clicked()
             if (hex2)
             {
                 moduleName2 = hex2->getModuleName();
+                MODULE *module = (MODULE*)a2l2->getProject()->getNode("MODULE/" + moduleName2);
+                charList = module->listChar;
+            }
+            else if (srec2)
+            {
+                moduleName2 = srec2->getModuleName();
                 MODULE *module = (MODULE*)a2l2->getProject()->getNode("MODULE/" + moduleName2);
                 charList = module->listChar;
             }
@@ -1814,6 +1678,22 @@ void FormCompare::on_copy_clicked()
                             }
                         }
                     }
+                    else if (srec1)
+                    {
+                        foreach (QString str, charList)
+                        {
+                            Data *data = srec1->getData(str);
+                            if (data)
+                            {
+                                list1->append(data);
+                            }
+                            else
+                            {
+                                outList1.append("Action quicklook : " + str + " not an adjustable into "
+                                               + QString(srec1->name));
+                            }
+                        }
+                    }
                     else if (csv1)
                     {
                         foreach (QString str, charList)
@@ -1862,6 +1742,22 @@ void FormCompare::on_copy_clicked()
                             {
                                 outList2.append("Action quicklook : " + str + " not an adjustable into "
                                                + QString(hex2->name));
+                            }
+                        }
+                    }
+                    else if (srec2)
+                    {
+                        foreach (QString str, charList)
+                        {
+                            Data *data = srec2->getData(str);
+                            if (data)
+                            {
+                                list2->append(data);
+                            }
+                            else
+                            {
+                                outList2.append("Action quicklook : " + str + " not an adjustable into "
+                                               + QString(srec2->name));
                             }
                         }
                     }
@@ -2145,7 +2041,7 @@ void FormCompare::on_copy_clicked()
                 ui->progressBar->setValue(ui->progressBar->value() + stepMax);
              }
          }
-    }    
+    }
 
     //copy the different data from listSrc to listTrg
     int copiedLabels = 0;
@@ -2302,7 +2198,7 @@ void FormCompare::on_export_labels_clicked()
 }
 
 void FormCompare::on_export_subset_clicked()
-{  
+{
     //get the hex and a2l nodes
     HexFile *hex = NULL;
     SrecFile *srec = NULL;

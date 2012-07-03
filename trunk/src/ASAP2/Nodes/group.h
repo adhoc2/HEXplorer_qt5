@@ -28,13 +28,13 @@
 #include "Nodes/sub_group.h"
 #include "Nodes/ref_measurement.h"
 
-class GROUP : public Node
+class GGROUP : public Node
 {
     public:
-        GROUP(Node *parentNode);
-        ~GROUP();
+        GGROUP(Node *parentNode);
+        ~GGROUP();
         QMap<std::string, std::string> *getParameters();
-        static Factory<Node, GROUP> nodeFactory;
+        static Factory<Node, GGROUP> nodeFactory;
         char* getPar(std::string str);
 
     private:

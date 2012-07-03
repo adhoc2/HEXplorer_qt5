@@ -48,7 +48,7 @@ ChooseLabel::ChooseLabel(A2LFILE *_a2l, HexFile *_hex, QWidget *parent) :
     csv = NULL;
     cdfx = NULL;
 
-    // copy the charList from formComapare into choosenList and listView_2  
+    // copy the charList from formComapare into choosenList and listView_2
     FormCompare *fc = (FormCompare*)mainWidget;
     ui->listWidget_2->addItems(fc->charList);
 
@@ -283,7 +283,7 @@ void ChooseLabel::on_lineEdit_textChanged(QString str)
 
             foreach (Node *subset, fun->childNodes)
             {
-                subsetName = subset->name;                
+                subsetName = subset->name;
 
                 //QString text = ui->lineEdit->text().mid(1);
                 if (subsetName.toLower().startsWith(text.toLower()))
@@ -300,7 +300,7 @@ void ChooseLabel::on_lineEdit_textChanged(QString str)
                     {
                         if (group)
                         {
-                            GROUP *grp = (GROUP*)group->getNode(subset->name);
+                            GGROUP *grp = (GGROUP*)group->getNode(subset->name);
                             if (grp)
                             {
                                 DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)grp->getNode("DEF_CHARACTERISTIC");
@@ -393,7 +393,7 @@ void ChooseLabel::on_lineEdit_textChanged(QString str)
                             }
                         }
                     }
-                }            
+                }
 
             }
 
@@ -418,7 +418,7 @@ void ChooseLabel::on_lineEdit_textChanged(QString str)
 
     // diplay labels
     else if (ui->lineEdit->text().size() >= 1)
-    {        
+    {
         ui->listWidget->clear();
         MODULE *module = (MODULE*)a2l->getProject()->getNode("MODULE/" + moduleName);
         if (module)
@@ -528,7 +528,7 @@ void ChooseLabel::on_leftButton_clicked()
 {
     foreach(QListWidgetItem *item, ui->listWidget_2->selectedItems())
     {
-        delete item;           
+        delete item;
     }
     QString str;
     on_lineEdit_textChanged(str);
@@ -544,7 +544,7 @@ void ChooseLabel::on_buttonBox_accepted()
 }
 
 void ChooseLabel::on_import_2_clicked()
-{    
+{
     //select a File from disk
     QSettings settings(qApp->organizationName(), qApp->applicationName());
     QString currentLabPath = settings.value("currentLabPath").toString();
@@ -582,6 +582,10 @@ void ChooseLabel::on_import_2_clicked()
             if (hex)
             {
                 moduleName = hex->getModuleName();
+            }
+            else if (srec)
+            {
+                moduleName = srec->getModuleName();
             }
             else if (csv)
             {
