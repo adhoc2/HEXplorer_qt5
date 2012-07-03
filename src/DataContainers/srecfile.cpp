@@ -60,7 +60,6 @@ bool compareSrecData(Data *a, Data *b)
    else return false;
 }
 
-
 // _______________ class SrecFile Ctor/Dtor___________________//
 
 int SrecFile::asciiToByte[256*256];
@@ -87,7 +86,7 @@ SrecFile::SrecFile(QString fullSrecFileName, WorkProject *parentWP, QString modu
         }
     }
 
-    //get the byte_order   
+    //get the byte_order
     MOD_COMMON *modCommon = (MOD_COMMON*)a2lProject->getNode("MODULE/" + getModuleName() + "/MOD_COMMON");
     if (modCommon)
     {
@@ -454,7 +453,7 @@ void SrecFile::readAllData()
 #endif
         if (length > 5000 && omp_get_num_procs() > 1 && !myDebug)
         {
-            // split listChar into 2 lists            
+            // split listChar into 2 lists
             int middle = 0;
             if (length % 2 == 0)
                 middle = length / 2;
@@ -801,7 +800,7 @@ QStringList SrecFile::getHexValues(QString address, int offset, int nByte, int c
             tab.append(blockList[block + 1]->data[j]);
     }
 
-    //MSB_FIRST or MSB_LAST    
+    //MSB_FIRST or MSB_LAST
     if (byteOrder.toLower() == "msb_first")
     {
         QString hex;
@@ -1154,7 +1153,7 @@ QList<double> SrecFile::getDecValues(double IAddr, int nByte, int count, std::st
                 delete mem;
             }
             else if (block < blockList.count() - 1)
-            {                
+            {
                 char* buffer = new char[nByte*count];
                 int size = blockList[block]->length - index;
                 for (int i = 0; i < size; i++)
@@ -1554,13 +1553,13 @@ void SrecFile::hex2MemBlock(Data *data)
                             orgValue |= (0 << i);
                         }
                     }
-                }             
+                }
                 // convert orgValue into HEX
                 QString hexOrgValue = dec2hex(orgValue, data->getDatatypeZ());
                 // write the HEX value
                 setValue(data->getAddressZ(), hexOrgValue, nbyte);
-
             }
+
             else
             {
                 int nbyte = data->getZ(0).count() / 2;
@@ -1634,7 +1633,6 @@ void SrecFile::hex2MemBlock(Data *data)
                 setValue(addr, length, nbyteNPtsX);
 
                 // write new length of axis Y into HexFile
-                bl;
                 addr = QString(node->getPar("Adress")).toUInt(&bl, 16);
                 length = data->getnPtsYHexa();
                 int nbyteNPtsY = length.length() / 2;
@@ -1717,10 +1715,9 @@ QStringList SrecFile::block2list()
     for (int i = 0; i < blockList.count(); i++)
     {
         x = 0;
-        j = 0;
+        j = 0; // index into the block
 
-        QString cks;
-        int strt =blockList[i]->start;
+        // loop on the block length
         int end = blockList[i]->length;
         while (j < end)
         {
@@ -1747,8 +1744,11 @@ QStringList SrecFile::block2list()
             //complete the line (:, address, checksum)
             if (line.count() != 0)
             {
-                //HEX: line address
-                int tamere =  blockList[i]->start - strt + x * ( blockList[i]->lineLength - 5);
+                //HEX: line address (without offset)
+                QString _myStart = blockList[i]->offset + "0000";
+                bool bl;
+                uint _myStartUint = _myStart.toUInt(&bl,16);
+                int tamere =  blockList[i]->start - _myStartUint + x * ( blockList[i]->lineLength - 5);
                 char hex[31];
                 sprintf(hex, "%X", tamere);
                 address = hex;
@@ -1761,6 +1761,8 @@ QStringList SrecFile::block2list()
                 if (length.length() < 2)
                     length = "0" + length;
 
+                //CKS: checksum
+                QString cks;
                 QString str1 = "S3" + length + blockList[i]->offset + address + line;
                 cks = checksum(str1);
                 lineList.append((str1 + cks).toUpper());
@@ -1769,7 +1771,7 @@ QStringList SrecFile::block2list()
             }
         }
 
-        emit progress(i *2000, maxValueProgbar);
+        emit progress(i * 2000, maxValueProgbar);
     }
 
     return lineList;
@@ -1936,7 +1938,7 @@ void SrecFile::exportSubsetList2Csv(QStringList subsetList)
                 {
                     if (group)
                     {
-                        GROUP *grp = (GROUP*)group->getNode(subset->name);
+                        GGROUP *grp = (GGROUP*)group->getNode(subset->name);
                         if (grp)
                         {
                             DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)grp->getNode("DEF_CHARACTERISTIC");
@@ -2016,7 +2018,7 @@ void SrecFile::exportSubsetList2Cdf(QStringList subsetList)
                 {
                     if (group)
                     {
-                        GROUP *grp = (GROUP*)group->getNode(subset->name);
+                        GGROUP *grp = (GGROUP*)group->getNode(subset->name);
                         if (grp)
                         {
                             DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)grp->getNode("DEF_CHARACTERISTIC");

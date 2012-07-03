@@ -117,9 +117,11 @@ private:
     QAction *checkFmtc;
     QAction *editChanged;
     QAction *editLabel;
+    QAction *editLabelCompare;
     QAction *exportListData;
     QMenu *toolsMenu;
     QMenu *recentProMenu;
+    QWidget *myWidget;
 
 
     void initToolBars();
@@ -149,7 +151,7 @@ private slots:
      void on_actionSave_session_triggered();
      void fplotData();
      void on_listWidget_customContextMenuRequested();
-     void on_tabWidget_currentChanged(QWidget* );
+     void on_tabWidget_currentChanged(QWidget* _widget);
      void quicklookFile();
      void compare_HexFile();
      bool save_File();
@@ -196,6 +198,7 @@ private slots:
      void checkFmtcMonotony();
      void editChangedLabels();
      void edit();
+     void editCompare();
      void exception(int, const QString &, const QString &, const QString &);
      void doubleClicked(QModelIndex);
 

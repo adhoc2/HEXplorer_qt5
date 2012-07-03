@@ -54,8 +54,8 @@ class SrecFile : public QObject, public DataContainer
         // methods
         void attach(QObject*o);
         int getNumByte(std::string str);
-        void exportSubsetList2Csv(QStringList subsetList);        
-        void exportSubsetList2Cdf(QStringList subsetList);        
+        void exportSubsetList2Csv(QStringList subsetList);
+        void exportSubsetList2Cdf(QStringList subsetList);
         bool isValidAddress(QString address);
         bool read();
         void verify();
@@ -69,7 +69,7 @@ class SrecFile : public QObject, public DataContainer
         QList<int> checkFmtcMonotony(bool *bl);
         std::string pixmap();
         Data* readLabel(CHARACTERISTIC *label, bool phys);
-        Data* readLabel(AXIS_PTS *label, bool phys);       
+        Data* readLabel(AXIS_PTS *label, bool phys);
         PROJECT *getA2lFileProject();
 
     public slots:
@@ -87,7 +87,7 @@ class SrecFile : public QObject, public DataContainer
         int valueProgBar;
         PROJECT *a2lProject;
         QList<MemBlock*> blockList;
-        int refCount;        
+        int refCount;
         QList<QObject*> owners;
         QString fullSrecName;
         QString byteOrder;
@@ -98,7 +98,7 @@ class SrecFile : public QObject, public DataContainer
         static int asciiToByte[256*256];
 
         // methods
-        void incrementValueProgBar(int n);        
+        void incrementValueProgBar(int n);
         bool parseFile();
         void readAllData();
         bool isA2lCombined();

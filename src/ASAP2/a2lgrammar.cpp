@@ -510,7 +510,7 @@ void A2lGrammar::initModule()
     module.factoryOptNode.insert("COMPU_METHOD", &COMPU_METHOD::nodeFactory);
     module.factoryOptNode.insert("COMPU_VTAB", &COMPU_VTAB::nodeFactory);
     module.factoryOptNode.insert("RECORD_LAYOUT", &RECORD_LAYOUT::nodeFactory);
-    module.factoryOptNode.insert("GROUP", &GROUP::nodeFactory);
+    module.factoryOptNode.insert("GROUP", &GGROUP::nodeFactory);
     module.factoryOptNode.insert("UNIT", &UNIT::nodeFactory);
 
 }

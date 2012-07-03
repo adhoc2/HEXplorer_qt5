@@ -53,6 +53,7 @@
 #include "mainwindow.h"
 #include "spreadsheetview.h"
 #include "sptablemodel.h"
+#include "comparemodel.h"
 #include "dialogchoosemodule.h"
 #include <QtConcurrentRun>
 #include "measmodel.h"
@@ -359,6 +360,11 @@ void MDImain::createActions()
     connect(editLabel, SIGNAL(triggered()), this, SLOT(edit()));
     editLabel->setDisabled(false);
 
+    editLabelCompare= new QAction(tr("edit"), this);
+    editLabelCompare->setIcon(QIcon(":/icones/eye.png"));
+    connect(editLabelCompare, SIGNAL(triggered()), this, SLOT(editCompare()));
+    editLabelCompare->setDisabled(false);
+
     toolsMenu = new QMenu();
     toolsMenu->setTitle("tools");
     toolsMenu->setIcon(QIcon(":/icones/ToolboxFolder.png"));
@@ -399,7 +405,7 @@ void MDImain::on_listWidget_customContextMenuRequested()
 void MDImain::initToolBars()
 {
     // Project : A2l
-    ui->toolBar_a2l->addAction(ui->actionNewA2lProject);    
+    ui->toolBar_a2l->addAction(ui->actionNewA2lProject);
     ui->toolBar_a2l->addAction(addHexFile);
     ui->toolBar_a2l->addAction(addSrecFile);
     ui->toolBar_a2l->addAction(addCsvFile);
@@ -595,7 +601,6 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         addCdfxFile->setEnabled(false);
         addCsvFile->setEnabled(false);
         addHexFile->setEnabled(false);
-        addSrecFile->setEnabled(false);
         deleteProject->setEnabled(false);
         deleteFile->setEnabled(false);
         editFile->setEnabled(false);
@@ -662,10 +667,10 @@ void MDImain::showContextMenu(QPoint)
             {
                 menu.addAction(resetData);
                 menu.addAction(editLabel);
-                menu.addAction(plotData);                                
+                menu.addAction(plotData);
             }
             else if (name.toLower().endsWith("hexfile"))
-            {                                
+            {
                 menu.addSeparator();
                 menu.addAction(quicklook);
                 menu.addAction(editFile);
@@ -678,7 +683,7 @@ void MDImain::showContextMenu(QPoint)
                 menu.addSeparator();
                 menu.addAction(editChanged);
                 menu.addAction(resetAllChangedData);
-                menu.addAction(sortBySubset);                
+                menu.addAction(sortBySubset);
                 menu.addMenu(toolsMenu);
                 menu.addSeparator();
                 menu.addAction(saveFile);
@@ -781,7 +786,7 @@ void MDImain::showContextMenu(QPoint)
                 {
                     menu.addAction(ui->actionNewA2lProject);
                     menu.addAction(deleteProject);
-                    menu.addAction(editFile);                    
+                    menu.addAction(editFile);
                     menu.addSeparator();
                     menu.addAction(addHexFile);
                     menu.addAction(addSrecFile);
@@ -852,7 +857,7 @@ void MDImain::showContextMenu(QPoint)
             {
                 menu.addAction(ui->actionNewA2lProject);
                 menu.addAction(deleteProject);
-                menu.addAction(addHexFile);                
+                menu.addAction(addHexFile);
                 menu.addAction(editFile);
                 menu.addSeparator();
                 menu.addAction(showParam);
@@ -889,7 +894,7 @@ void MDImain::showContextMenu(QPoint)
                 menu.addAction(plotData);
             }
             else if (weiterHex == list.count())
-            {                
+            {
                 menu.addAction(deleteFile);
                 if (weiterHex == 2)
                     menu.addAction(compareHexFile);
@@ -914,6 +919,7 @@ void MDImain::showContextMenu_2(QPoint)
     if (index.isValid())
     {
         menu.addAction(exportListData);
+        menu.addAction(editLabelCompare);
     }
 
     menu.exec(QCursor::pos());
@@ -1425,7 +1431,7 @@ void MDImain::addSrecFile2Project()
             QStringList files =
                     QFileDialog::getOpenFileNames(this,
                                               tr("select a dataset (Srec)"), path,
-                                              tr("Srec files (*.s19 | *.s32 | *.hex_trimmed);;all files (*.*)"));
+                                              tr("Srec files (*.s19 | *.s32);;all files (*.*)"));
 
 
             if (files.isEmpty())
@@ -2905,7 +2911,7 @@ void MDImain::compare_A2lFile()
                         Node *group = wp1->a2lFile->getProject()->getNode("MODULE/" + moduleName1 + "/GROUP");
                         if (group)
                         {
-                            GROUP *grp = (GROUP*)group->getNode(subset1->name);
+                            GGROUP *grp = (GGROUP*)group->getNode(subset1->name);
                             if (grp)
                             {
                                 DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)grp->getNode("DEF_CHARACTERISTIC");
@@ -2932,7 +2938,7 @@ void MDImain::compare_A2lFile()
                         Node *group = wp2->a2lFile->getProject()->getNode("MODULE/" + moduleName2 + "/GROUP");
                         if (group)
                         {
-                            GROUP *grp = (GROUP*)group->getNode(subset1->name);
+                            GGROUP *grp = (GGROUP*)group->getNode(subset1->name);
                             if (grp)
                             {
                                 DEF_CHARACTERISTIC *def_char = (DEF_CHARACTERISTIC*)grp->getNode("DEF_CHARACTERISTIC");
@@ -3082,7 +3088,7 @@ void MDImain::sort_BySubset()
     QModelIndex index  = ui->treeView->selectionModel()->currentIndex();
 
     //get a pointer on the selected item
-    Node *node =  model->getNode(index);    
+    Node *node =  model->getNode(index);
 
     QString name = typeid(*node).name();
     if (name.endsWith("HexFile"))
@@ -3150,7 +3156,7 @@ void MDImain::reset_Data()
 }
 
 void MDImain::read_ValuesFromCsv()
-{       
+{
     // check if a project is selected in treeView
     QModelIndex index  = ui->treeView->selectionModel()->currentIndex();
 
@@ -3878,14 +3884,14 @@ bool MDImain::save_HexFile(QModelIndex index)
             return false;
         }
 
-        QApplication::setOverrideCursor(Qt::WaitCursor);        
+        QApplication::setOverrideCursor(Qt::WaitCursor);
 
         // write into file
         QTextStream out(&file);
         int i = progBar->value();
         int max = progBar->maximum();
         foreach (QString str, list)
-        {            
+        {
             out << str << "\r\n";
             i++;
             setValueProgressBar(i, max);
@@ -4432,7 +4438,7 @@ void MDImain::edit()
 
     foreach (QModelIndex index, listIndex)
     {
-        Data *data = (Data*)model->getNode(index);
+        Data *data = (Data*)this->model->getNode(index);
 
         QMainWindow *win = new QMainWindow(0);
         SpreadsheetView *view = new SpreadsheetView(win);
@@ -4463,6 +4469,109 @@ void MDImain::edit()
         win->resize(600, 400);
 
     }
+}
+
+void MDImain::editCompare()
+{
+    QModelIndex index = ui->treeView_2->selectionModel()->selectedIndexes().at(0);
+
+    //get the data name
+    Node *node = (Node*)((A2lTreeModel*)ui->treeView_2->model())->getNode(index);
+
+    QString name = typeid(*myWidget).name();
+    if (name.toLower().endsWith("formcompare"))
+    {
+        FormCompare *fComp = (FormCompare*)myWidget;
+
+        //get the DataContainer
+        Data *data1 = 0;
+        Data *data2 = 0;
+        SrecFile *_srec1 = fComp->getSrec1();
+        SrecFile *_srec2 = fComp->getSrec2();
+        HexFile *hex1 = fComp->getHex1();
+        HexFile *hex2 = fComp->getHex2();
+        Csv *csv1 = fComp->getCsv1();
+        Csv *csv2 = fComp->getCsv2();
+        CdfxFile *cdfx1 = fComp->getCdf1();
+        CdfxFile *cdfx2 = fComp->getCdf2();
+
+        if (_srec1)
+            data1 = _srec1->getData(node->name);
+        else if (hex1)
+            data1 = hex1->getData(node->name);
+        else if (csv1)
+            data1 = hex1->getData(node->name);
+        else if (cdfx1)
+            data1 = cdfx1->getData(node->name);
+
+        if (_srec2)
+            data2 = _srec2->getData(node->name);
+        else if (hex2)
+            data2 = hex2->getData(node->name);
+        else if (csv2)
+            data2 = hex2->getData(node->name);
+        else if (cdfx2)
+            data2 = cdfx2->getData(node->name);
+
+        if (data1 && data2)
+        {
+            QMainWindow *win = new QMainWindow(0);
+            SpreadsheetView *view = new SpreadsheetView(win);
+
+            CompareModel *model = new CompareModel();
+            QList<Data*> *list1 = new QList<Data*>;
+            QList<Data*> *list2 = new QList<Data*>;
+            list1->append(data1);
+            list2->append(data2);
+            model->setList(list1, list2);
+            view->setModel(model);
+            view->horizontalHeader()->setDefaultSectionSize(50);
+            view->verticalHeader()->setDefaultSectionSize(18);
+            view->setColumnWidth(0, 200);
+            win->setCentralWidget(view);
+
+            QString parentName1 = "";
+            if (data1->getHexParent())
+            {
+                parentName1 = data1->getHexParent()->name;
+            }
+            else if (data1->getSrecParent())
+            {
+                parentName1 = data1->getSrecParent()->name;
+            }
+            else if (data1->getCsvParent())
+            {
+                parentName1 = data1->getCsvParent()->name;
+            }
+            else if (data1->getCdfxParent())
+            {
+                parentName1 = data1->getCdfxParent()->name;
+            }
+
+            QString parentName2 = "";
+            if (data2->getHexParent())
+            {
+                parentName2 = data2->getHexParent()->name;
+            }
+            else if (data2->getSrecParent())
+            {
+                parentName2 = data2->getSrecParent()->name;
+            }
+            else if (data2->getCsvParent())
+            {
+                parentName2 = data2->getCsvParent()->name;
+            }
+            else if (data2->getCdfxParent())
+            {
+                parentName2 = data2->getCdfxParent()->name;
+            }
+            win->setWindowTitle("HEXplorer :: " + parentName1 + " vs " + parentName2);
+
+            win->show();
+            win->resize(600, 400);
+        }
+    }
+
 }
 
 FormCompare *MDImain::on_actionCompare_dataset_triggered()
@@ -4765,14 +4874,15 @@ void MDImain::resizeColumn0()
     ui->treeView->resizeColumnToContents(0);
 }
 
-void MDImain::on_tabWidget_currentChanged(QWidget* widget)
+void MDImain::on_tabWidget_currentChanged(QWidget* _widget)
 {
-    if (widget)
+    if (_widget)
     {
-        QString name = typeid(*widget).name();
+        myWidget = _widget;
+        QString name = typeid(*myWidget).name();
         if (name.toLower().endsWith("formcompare"))
         {
-            FormCompare *fComp = (FormCompare*)widget;
+            FormCompare *fComp = (FormCompare*)myWidget;
             if (fComp->getDiffModel())
             {
                 ui->treeView_2->setModel(fComp->getDiffModel());
@@ -4784,7 +4894,7 @@ void MDImain::on_tabWidget_currentChanged(QWidget* widget)
             }
         }
         else
-        {            
+        {
             ui->treeView_2->setModel(0);
         }
     }
