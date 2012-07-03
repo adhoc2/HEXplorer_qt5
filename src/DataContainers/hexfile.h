@@ -117,7 +117,9 @@ class HexFile : public QObject, public DataContainer
         QStringList block2list();
         void setValue(unsigned int IAddr, QString hex, int nByte);
         void setValues(unsigned int IAddr, QStringList hexList, int nByte);
-        QString checksum(QString str);       
+        QString checksum(QString str);
+        unsigned int tzn(unsigned int v);
+        QString dec2hex(double dec, std::string type);
 
     signals:
         //void lineParsed(int,int);

@@ -1550,7 +1550,7 @@ void SrecFile::hex2MemBlock(Data *data)
                         }
                         else
                         {
-                            orgValue |= (0 << i);
+                            orgValue &= ~(1 << i);
                         }
                     }
                 }
@@ -1559,7 +1559,6 @@ void SrecFile::hex2MemBlock(Data *data)
                 // write the HEX value
                 setValue(data->getAddressZ(), hexOrgValue, nbyte);
             }
-
             else
             {
                 int nbyte = data->getZ(0).count() / 2;

@@ -1542,8 +1542,48 @@ void HexFile::hex2MemBlock(Data *data)
 
         if (type.toLower() == "value")
         {
-            int nbyte = data->getZ(0).count() / 2;
-            setValue(data->getAddressZ(), data->getZ(0), nbyte);
+            //BIT_MASK
+            BIT_MASK *_bitmask = (BIT_MASK*)node->getItem("BIT_MASK");
+            uint32_t mask = 0;
+            bool bl;
+            if (_bitmask)
+            {
+                // get the mask into uint
+                mask = QString(_bitmask->getPar("Mask")).toUInt(&bl, 16);
+                // calculate the decalage
+                uint32_t decalage = tzn(mask);
+                // get the original Value into uint
+                int nbyte = data->getZ(0).count() / 2;
+                uint32_t orgValue = getDecValues(data->getAddressZ(), nbyte, 1, data->getDatatypeZ()).at(0);
+                // get the value to be set into uint
+                uint32_t _setValue = data->getZ(0).toUInt(&bl,16);
+                _setValue = _setValue << decalage;
+                // set the bits into orgValue according to the mask
+                int n = 32;
+                for (int i = 0; i < n; i++)
+                {
+                    if (mask & (1 << i))
+                    {
+                        if (_setValue & (1 << i))
+                        {
+                            orgValue |= (1 << i);
+                        }
+                        else
+                        {
+                            orgValue &= ~(1 << i);
+                        }
+                    }
+                }
+                // convert orgValue into HEX
+                QString hexOrgValue = dec2hex(orgValue, data->getDatatypeZ());
+                // write the HEX value
+                setValue(data->getAddressZ(), hexOrgValue, nbyte);
+            }
+            else
+            {
+                int nbyte = data->getZ(0).count() / 2;
+                setValue(data->getAddressZ(), data->getZ(0), nbyte);
+            }
         }
         else if(type.toLower() == "curve")
         {
@@ -2114,4 +2154,230 @@ void HexFile::incrementValueProgBar(int n)
     emit progress(valueProgBar, maxValueProgbar);
 
     omp_unset_lock(&lock);
+}
+
+unsigned int HexFile::tzn(unsigned int v)
+{
+    unsigned int c;     // c will be the number of zero bits on the right,
+                    // so if v is 1101000 (base 2), then c will be 3
+    // NOTE: if 0 == v, then c = 31.
+    if (v & 0x1)
+    {
+      // special case for odd v (assumed to happen half of the time)
+      c = 0;
+    }
+    else
+    {
+      c = 1;
+      if ((v & 0xffff) == 0)
+      {
+        v >>= 16;
+        c += 16;
+      }
+      if ((v & 0xff) == 0)
+      {
+        v >>= 8;
+        c += 8;
+      }
+      if ((v & 0xf) == 0)
+      {
+        v >>= 4;
+        c += 4;
+      }
+      if ((v & 0x3) == 0)
+      {
+        v >>= 2;
+        c += 2;
+      }
+      c -= v & 0x1;
+    }
+
+    return c;
+}
+
+QString HexFile::dec2hex(double dec, std::string type)
+{
+    QString qHex = "";
+    int E = (int)dec;
+    char hex[31];
+
+    if(type == "SBYTE")
+    {
+        if ((0.5 <= dec - E && dec >= 0 )|| (dec - E > -0.5 && dec < 0))
+        {
+            if (E < CHAR_MAX)
+            {
+                sprintf(hex, "%X", (int)ceil(dec));
+
+            }
+            else
+            {
+                sprintf(hex, "%X", E);
+            }
+        }
+        else
+        {
+            if (E > CHAR_MIN)
+            {
+                sprintf(hex, "%X", (int)floor(dec));
+            }
+            else
+            {
+                sprintf(hex, "%X", E);
+            }
+        }
+
+        qHex = QString(hex).right(2);
+        while (qHex.count() < 2)
+            qHex = "0" + qHex;
+    }
+    else if(type == "UBYTE")
+    {
+        if (0.5 <= dec - E)
+        {
+            if (E < UCHAR_MAX)
+            {
+                sprintf(hex, "%X", (int)ceil(dec));
+            }
+            else
+            {
+                sprintf(hex, "%X", E);
+            }
+        }
+        else
+        {
+            if (E > 0)
+            {
+                sprintf(hex, "%X", (int)floor(dec));
+            }
+            else
+            {
+                sprintf(hex, "%X", E);
+            }
+        }
+        qHex = QString(hex).right(2);
+        while (qHex.count() < 2)
+            qHex = "0" + qHex;
+    }
+    else if(type == "SWORD")
+    {
+        if ((0.5 <= dec - E && dec >=0 )|| (dec - E > -0.5 && dec < 0))
+        {
+            if (E < SHRT_MAX)
+            {
+                sprintf(hex, "%X", (int)ceil(dec));
+            }
+            else
+            {
+                sprintf(hex, "%X", E);
+            }
+        }
+        else
+        {
+            if (E > SHRT_MIN)
+            {
+                sprintf(hex, "%X", (int)floor(dec));
+            }
+            else
+            {
+                sprintf(hex, "%X", E);
+            }
+        }
+        qHex = QString(hex).right(4);
+        while (qHex.count() < 4)
+            qHex = "0" + qHex;
+    }
+    else if(type == "UWORD")
+    {
+        if (0.5 <= dec - E)
+        {
+            if (E < USHRT_MAX)
+            {
+                sprintf(hex, "%X", (int)ceil(dec));
+            }
+            else
+            {
+                sprintf(hex, "%X", E);
+            }
+        }
+        else
+        {
+            if (E > 0)
+            {
+                sprintf(hex, "%X", (int)floor(dec));
+            }
+            else
+            {
+                sprintf(hex, "%X", E);
+            }
+        }
+        qHex = QString(hex).right(4);
+        while (qHex.count() < 4)
+            qHex = "0" + qHex;
+    }
+    else if(type == "SLONG")
+    {
+        if ((0.5 <= dec - E && dec >=0 )|| (dec - E > -0.5 && dec < 0))
+        {
+            if (E < INT_MAX)
+            {
+                sprintf(hex, "%X", (int)ceil(dec));
+            }
+            else
+            {
+                sprintf(hex, "%X", E);
+            }
+        }
+        else
+        {
+            if (E > INT_MIN)
+            {
+                sprintf(hex, "%X", (int)floor(dec));
+            }
+            else
+            {
+                sprintf(hex, "%X", E);
+            }
+        }
+        qHex = QString(hex).right(8);
+        while (qHex.count() < 8)
+            qHex = "0" + qHex;
+    }
+    else if(type == "ULONG")
+    {
+        E = (unsigned int)dec;
+        if (0.5 <= dec - E)
+        {
+            if (E < (unsigned int)UINT_MAX)
+            {
+                sprintf(hex, "%X", (unsigned int)ceil(dec));
+            }
+            else
+            {
+                sprintf(hex, "%X", E);
+            }
+        }
+        else
+        {
+            if (E > 0)
+            {
+                sprintf(hex, "%X", (int)floor(dec));
+            }
+            else
+            {
+                sprintf(hex, "%X", E);
+            }
+        }
+        qHex = QString(hex).right(8);
+        while (qHex.count() < 8)
+            qHex = "0" + qHex;
+    }
+    else if(type == "FLOAT32_IEEE")
+    {
+        float f = (float)dec;
+        sprintf(hex, "%08X", *(int*)&f);
+        qHex = QString(hex);
+    }
+
+    return qHex;
 }

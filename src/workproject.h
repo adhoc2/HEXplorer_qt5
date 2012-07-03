@@ -42,21 +42,25 @@ class WorkProject :  public A2l
         void addHex(HexFile *hex);
         void removeHexFile(HexFile *hex);
         void rename(HexFile *hex);
+        bool containsHex(QString str);
 
         QMap<QString, SrecFile*> srecFiles();
         void addSrec(SrecFile *srec);
         void removeSrecFile(SrecFile *srec);
         void rename(SrecFile *srec);
+        bool containsSrec(QString str);
 
         QMap<QString, Csv*> csvFiles();
         void addCsv(Csv *csv);
         void removeCsv(Csv *csv );
         void rename(Csv *csv);
+        bool containsCsv(QString str);
 
         QMap<QString, CdfxFile*> cdfxFiles();
         void addCdfx(CdfxFile *cdfx);
         void removeCdfxFile(CdfxFile *cdfx );
         void rename(CdfxFile *cdfx);
+        bool containsCdfx(QString str);
 
         A2lTreeModel *treeModel;
         MDImain *parentWidget;

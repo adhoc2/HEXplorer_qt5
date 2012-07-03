@@ -4043,6 +4043,17 @@ void MDImain::saveAs_HexFile(QModelIndex index)
         fileName.append(".hex");
     }
 
+    //check if the file is already open in HEXplorer
+    qDebug() << hex->getParentWp()->hexFiles();
+    qDebug() << fileName;
+
+    if (hex->getParentWp()->containsHex(fileName))
+    {
+        QMessageBox::warning(this, tr("Application"),
+                             tr("file %1 is already open.\nFirst close the open version or enter another file name.")
+                             .arg(fileName));
+        return;
+    }
     // display status bar
     statusBar()->show();
     progBar->reset();
@@ -4112,6 +4123,15 @@ void MDImain::saveAs_SrecFile(QModelIndex index)
          QFileInfo(fileName).suffix().toLower() != "s32")
     {
         fileName.append(".s19");
+    }
+
+    //check if the file is already open in HEXplorer
+    if (Srec->getParentWp()->containsSrec(fileName))
+    {
+        QMessageBox::warning(this, tr("Application"),
+                             tr("file %1 is already open.\nFirst close the open version or enter another file name.")
+                             .arg(fileName));
+        return;
     }
 
     // display status bar
@@ -4184,6 +4204,15 @@ void MDImain::saveAs_CsvFile(QModelIndex index)
         fileName.append(".csv");
     }
 
+    //check if the file is already open in HEXplorer
+    if (csv->getParentWp()->containsCsv(fileName))
+    {
+        QMessageBox::warning(this, tr("Application"),
+                             tr("file %1 is already open.\nFirst close the open version or enter another file name.")
+                             .arg(fileName));
+        return;
+    }
+
     // write the file
     //QApplication::setOverrideCursor(Qt::WaitCursor);
     if (csv->save(fileName))
@@ -4224,6 +4253,15 @@ void MDImain::saveAs_CdfxFile(QModelIndex index)
     if ( QFileInfo(fileName).suffix().toLower() != "cdfx")
     {
         fileName.append(".cdfx");
+    }
+
+    //check if the file is already open in HEXplorer
+    if (cdfx->getParentWp()->containsCdfx(fileName))
+    {
+        QMessageBox::warning(this, tr("Application"),
+                             tr("file %1 is already open.\nFirst close the open version or enter another file name.")
+                             .arg(fileName));
+        return;
     }
 
     // check if the new file can be written
