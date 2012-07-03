@@ -185,11 +185,21 @@ void WorkProject::rename(HexFile *hex)
     hexList.insert(hex->fullName(), hex);
 }
 
+bool WorkProject::containsHex(QString str)
+{
+        return (hexList.keys().contains(str) || hexList.keys().contains(str.replace('/', '\\')));
+}
+
 void WorkProject::rename(SrecFile *srec)
 {
     QString key = srecList.key(srec);
     srecList.remove(key);
     srecList.insert(srec->fullName(), srec);
+}
+
+bool WorkProject::containsSrec(QString str)
+{
+    return (srecList.keys().contains(str) || srecList.keys().contains(str.replace('/', '\\')));
 }
 
 void WorkProject::rename(Csv *csv)
@@ -199,11 +209,21 @@ void WorkProject::rename(Csv *csv)
     csvList.insert(csv->fullName(), csv);
 }
 
+bool WorkProject::containsCsv(QString str)
+{
+    return (csvList.keys().contains(str) || csvList.keys().contains(str.replace('/', '\\')));
+}
+
 void WorkProject::rename(CdfxFile *cdfx)
 {
     QString key = cdfxList.key(cdfx);
     cdfxList.remove(key);
     cdfxList.insert(cdfx->fullName(), cdfx);
+}
+
+bool WorkProject::containsCdfx(QString str)
+{
+    return (cdfxList.keys().contains(str) || cdfxList.keys().contains(str.replace('/', '\\')));
 }
 
 HexFile* WorkProject::getHex(QString str)
