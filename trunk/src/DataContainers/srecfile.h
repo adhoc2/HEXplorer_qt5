@@ -68,8 +68,6 @@ class SrecFile : public QObject, public DataContainer
         QString fullName();
         QList<int> checkFmtcMonotony(bool *bl);
         std::string pixmap();
-        Data* readLabel(CHARACTERISTIC *label, bool phys);
-        Data* readLabel(AXIS_PTS *label, bool phys);
         PROJECT *getA2lFileProject();
 
     public slots:

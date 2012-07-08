@@ -51,14 +51,6 @@
 
 #define CAST2(val, type) *(type*)&val
 
-// ______________ class MemBlock _________________//
-
-bool compareSrecData(Data *a, Data *b)
-{
-   if (a->getName() < b->getName())
-       return true;
-   else return false;
-}
 
 // _______________ class SrecFile Ctor/Dtor___________________//
 
@@ -283,19 +275,19 @@ bool SrecFile::parseFile()
             actBlock = new MemBlock();
 
             // get the length, start, offset of the block
-            actBlock->offset = QByteArray(_line + 4, 4);
-            actBlock->start = (actBlock->offset + QByteArray(_line + 8, 4)).toUInt(&ok, 16);
-            int end = (actBlock->offset + "FFFF").toUInt(&ok, 16);
+            actBlock->uSBA = QByteArray(_line + 4, 4);
+            actBlock->start = (actBlock->uSBA + QByteArray(_line + 8, 4)).toUInt(&ok, 16);
+            int end = (actBlock->uSBA + "FFFF").toUInt(&ok, 16);
             actBlock->lineLength = asciiToByte[*(ushort*)(_line +2)];
             actBlock->data = new unsigned char [(end - actBlock->start + 1)];
 
             //read all the lines of the memory block
-            int _offsetRef = actBlock->offset.toUInt(&ok, 16);
+            int _offsetRef = actBlock->uSBA.toUInt(&ok, 16);
             int _offset = QByteArray(_line + 4, 4).toUInt(&ok, 16);
             while (type == 3 && (_offsetRef == _offset))
             {
                 lineLength = asciiToByte[*(ushort*)(_line + 2)];
-                dataCnt = (actBlock->offset + QByteArray(_line + 8, 4)).toUInt(&ok, 16) - actBlock->start;
+                dataCnt = (actBlock->uSBA + QByteArray(_line + 8, 4)).toUInt(&ok, 16) - actBlock->start;
 
                 // save the ascii characters into a byte array
                 for (int i = 0; i < lineLength - 5; i++)
@@ -492,18 +484,18 @@ void SrecFile::readAllData()
                                 {
                                     found = true;
                                     CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
-//                                    QString add = charac->getPar("Adress");
-//                                    bool bl = isValidAddress(add);
+                                    QString add = charac->getPar("Adress");
+                                    bool bl = isValidAddress(add);
 
-//                                    if(bl)
-//                                    {
+                                    if(bl)
+                                    {
                                         Data *data = new Data(charac, a2lProject, this);
                                         listData1.append(data);
-//                                    }
-//                                    else
-//                                    {
-//                                        listNotValid1.append(str + " : " + add);
-//                                    }
+                                    }
+                                    else
+                                    {
+                                        listNotValid1.append(str + " : " + add);
+                                    }
                                 }
                             }
 
@@ -515,18 +507,18 @@ void SrecFile::readAllData()
                                 {
                                     found = true;
                                     AXIS_PTS *axis = (AXIS_PTS*)label2;
-//                                    QString add = axis->getPar("Adress");
-//                                    bool bl = isValidAddress(add);
+                                    QString add = axis->getPar("Adress");
+                                    bool bl = isValidAddress(add);
 
-//                                    if (bl)
-//                                    {
+                                    if (bl)
+                                    {
                                         Data *data = new Data(axis, a2lProject, this);
                                         listData1.append(data);
-//                                    }
-//                                    else
-//                                    {
-//                                        listNotValid1.append(str + " : " + add);
-//                                    }
+                                    }
+                                    else
+                                    {
+                                        listNotValid1.append(str + " : " + add);
+                                    }
                                 }
                             }
 
@@ -553,18 +545,18 @@ void SrecFile::readAllData()
                                 {
                                     found = true;
                                     CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
-//                                    QString add = charac->getPar("Adress");
-//                                    bool bl = isValidAddress(add);
+                                    QString add = charac->getPar("Adress");
+                                    bool bl = isValidAddress(add);
 
-//                                    if(bl)
-//                                    {
+                                    if(bl)
+                                    {
                                         Data *data = new Data(charac, a2lProject, this);
                                         listData2.append(data);
-//                                    }
-//                                    else
-//                                    {
-//                                        listNotValid2.append(str + " : " + add);
-//                                    }
+                                    }
+                                    else
+                                    {
+                                        listNotValid2.append(str + " : " + add);
+                                    }
                                 }
                             }
 
@@ -576,18 +568,18 @@ void SrecFile::readAllData()
                                 {
                                     found = true;
                                     AXIS_PTS *axis = (AXIS_PTS*)label2;
-//                                    QString add = axis->getPar("Adress");
-//                                    bool bl = isValidAddress(add);
+                                    QString add = axis->getPar("Adress");
+                                    bool bl = isValidAddress(add);
 
-//                                    if (bl)
-//                                    {
+                                    if (bl)
+                                    {
                                         Data *data = new Data(axis, a2lProject, this);
                                         listData2.append(data);
-//                                    }
-//                                    else
-//                                    {
-//                                        listNotValid2.append(str + " : " + add);
-//                                    }
+                                    }
+                                    else
+                                    {
+                                        listNotValid2.append(str + " : " + add);
+                                    }
                                 }
                             }
 
@@ -1342,39 +1334,63 @@ QList<double> SrecFile::getDecValues(double IAddr, int nByte, int count, std::st
 
 bool SrecFile::isValidAddress(QString address)
 {
-    int length = listMemSegData.count();
+//    int length = listMemSegData.count();
+//    bool bl;
+//    unsigned int IAddr =address.toUInt(&bl, 16);
+
+//    if (length == 0)
+//    {
+//        int block = 0;
+//        while (block < blockList.count())
+//        {
+//            if ((blockList[block]->start <= IAddr) && (IAddr <= blockList[block]->end))
+//            {
+//                break;
+//            }
+//            block++;
+//        }
+
+//        if (block >=  blockList.count())
+//            return false;
+//        else
+//            return true;
+
+//    }
+//    else
+//    {
+//        for (int i = 0; i < length - 1; i+=2)
+//        {
+//            if (listMemSegData.at(i) <= IAddr && IAddr < listMemSegData.at(i + 1) )
+//                return true;
+//        }
+//    }
+
+
+//    return false;
+
     bool bl;
     unsigned int IAddr =address.toUInt(&bl, 16);
 
-    if (length == 0)
+    //find block and line
+    int block = 0;
+    while (block < blockList.count())
     {
-        int block = 0;
-        while (block < blockList.count())
+        if ((blockList[block]->start <= IAddr) && (IAddr <= blockList[block]->end))
         {
-            if ((blockList[block]->start <= IAddr) && (IAddr <= blockList[block]->end))
-            {
-                break;
-            }
-            block++;
+            break;
         }
+        block++;
+    }
 
-        if (block >=  blockList.count())
-            return false;
-        else
-            return true;
-
+    //if address is outside the Hex file address range => exit
+    if (block >= blockList.count())
+    {
+        return false;
     }
     else
-    {
-        for (int i = 0; i < length - 1; i+=2)
-        {
-            if (listMemSegData.at(i) <= IAddr && IAddr < listMemSegData.at(i + 1) )
-                return true;
-        }
-    }
+        return true;
 
 
-    return false;
 }
 
 int SrecFile::getNumByte(std::string str)
@@ -1744,7 +1760,7 @@ QStringList SrecFile::block2list()
             if (line.count() != 0)
             {
                 //HEX: line address (without offset)
-                QString _myStart = blockList[i]->offset + "0000";
+                QString _myStart = blockList[i]->uSBA + "0000";
                 bool bl;
                 uint _myStartUint = _myStart.toUInt(&bl,16);
                 int tamere =  blockList[i]->start - _myStartUint + x * ( blockList[i]->lineLength - 5);
@@ -1762,7 +1778,7 @@ QStringList SrecFile::block2list()
 
                 //CKS: checksum
                 QString cks;
-                QString str1 = "S3" + length + blockList[i]->offset + address + line;
+                QString str1 = "S3" + length + blockList[i]->uSBA + address + line;
                 cks = checksum(str1);
                 lineList.append((str1 + cks).toUpper());
                 x++;
@@ -1799,48 +1815,6 @@ bool SrecFile::modifiedData2block()
 Data* SrecFile::getData(QString str)
 {
     return ((DataContainer*)this)->getData(str);
-}
-
-Data* SrecFile::readLabel(CHARACTERISTIC *label, bool phys)
-{
-    Data dat(label);
-    QList<Data*>::iterator i = qBinaryFind(listData.begin(), listData.end(), &dat, compareSrecData);
-
-    if (i == listData.end())
-    {
-        Data *data = new Data(label, a2lProject, this);
-
-        if (phys)
-           data->hex2phys();
-
-        listData.append(data);
-        qSort(listData.begin(), listData.end(), compareSrecData);
-
-        return data;
-    }
-    else
-        return *i;
-}
-
-Data* SrecFile::readLabel(AXIS_PTS *label, bool phys)
-{
-    Data dat(label);
-    QList<Data*>::iterator i = qBinaryFind(listData.begin(), listData.end(), &dat, compareSrecData);
-
-    if (i == listData.end())
-    {
-        Data *data = new Data(label, a2lProject, this);
-
-        if (phys)
-           data->hex2phys();
-
-        listData.append(data);
-        qSort(listData.begin(), listData.end(), compareSrecData);
-
-        return data;
-    }
-    else
-        return *i;
 }
 
 void SrecFile::checkDisplay()
