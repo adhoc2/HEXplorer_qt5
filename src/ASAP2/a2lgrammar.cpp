@@ -800,7 +800,7 @@ void A2lGrammar::initFix_axis_par()
 void A2lGrammar::initFix_axis_par_dist()
 {
     fix_axis_par_dist.typePar  << Integer << Integer << Integer;
-    fix_axis_par_dist.namePar << "Offset" << "distance" << "Numberapo";
+    fix_axis_par_dist.namePar << "Offset" << "Distance" << "Numberapo";
 
 }
 

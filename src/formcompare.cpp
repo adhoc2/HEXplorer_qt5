@@ -46,13 +46,6 @@
 #include "cdfxfile.h"
 #include "dialogchooseexportformat.h"
 
-bool dataLessThan(Data *a, Data *b )
-{
-   if (a->getName() < b->getName())
-       return true;
-   else return false;
-}
-
 FormCompare::FormCompare(A2lTreeModel *model, QTreeView *tree, QTreeView *tree_2, QWidget *parent)
     :  QWidget(parent), ui(new Ui::FormCompare)
 {
@@ -1479,95 +1472,6 @@ void FormCompare::on_checkBoxTrg_clicked()
 
 void FormCompare::on_copy_clicked()
 {
-    //MessageBox to confirm copy action
-    if (ui->checkBoxSrc->isChecked())
-    {
-        QString source;
-        QString target;
-
-        if (hex1)
-        {
-            source = QString(hex1->name);
-        }
-        else if (srec1)
-        {
-            source = QString(srec1->name);
-        }
-        else if (csv1)
-        {
-            source = QString(csv1->name);
-        }
-        else if (cdfx1)
-            source = QString(cdfx1->name);
-
-
-        if (hex2)
-        {
-            target = QString(hex2->name);
-        }
-        else if (srec2)
-        {
-            target = QString(srec2->name);
-        }
-        else if (csv2)
-        {
-            target = QString(csv2->name);
-        }
-        else if (cdfx2)
-            target = QString(cdfx2->name);
-
-
-        int ret = QMessageBox::question(this, "HEXplorer :: copy action",
-                                        "Do you really want to copy :\n"
-                                        "from : " + source + "\n"
-                                        " to  : " + target + "'?",
-                                        (QMessageBox::Yes | QMessageBox::No), QMessageBox::Yes);
-
-        if (ret == QMessageBox::No)
-        {
-            return;
-        }
-    }
-    else
-    {
-
-        QString source;
-        QString target;
-
-        if (hex1)
-        {
-            target = QString(hex1->name);
-        }
-        else if (srec1)
-            target = QString(srec1->name);
-        else if (cdfx1)
-            target = QString(cdfx1->name);
-        else
-            target = QString(csv1->name);
-
-        if (hex2)
-        {
-            source = QString(hex2->name);
-        }
-        else if (srec2)
-            source = QString(srec2->name);
-        else if (cdfx2)
-            source = QString(cdfx2->name);
-        else
-            source = QString(csv2->name);
-
-        int ret = QMessageBox::question(this, "HEXplorer :: copy action",
-                                        "Do you really want to copy :\n"
-                                        "from : " + source + "\n"
-                                        " to  : " + target + " ?",
-                                        (QMessageBox::Yes | QMessageBox::No), QMessageBox::Yes);
-
-        if (ret == QMessageBox::No)
-        {
-            return;
-        }
-    }
-
     // start timer
     double t_ref1 = 0, t_final1 = 0;
     t_ref1= omp_get_wtime();
@@ -1575,69 +1479,96 @@ void FormCompare::on_copy_clicked()
     //define SOURCE / TARGET
     if (ui->lineEdit->text().isEmpty() || ui->lineEdit_2->text().isEmpty())
     {
-        QMessageBox::information(mainWidget,"HEXplorer::quicklook","source and target Hex files must be defined.");
+        QMessageBox::information(mainWidget,"HEXplorer::quicklook","please choose first a dataset in the project list");
         return;
     }
 
-    // COMPARE all if no label chosen
+    // COPY all if no label chosen
     bool all = false;
     QString moduleName1 = "";
+    if (hex1)
+    {
+        moduleName1 = hex1->getModuleName();
+    }
+    else if (srec1)
+    {
+        moduleName1 = srec1->getModuleName();
+    }
+    else if (csv1)
+    {
+        moduleName1 = csv1->getModuleName();
+    }
+    else
+    {
+        moduleName1 = cdfx1->getModuleName();
+    }
     QString moduleName2 = "";
+    if (hex2)
+    {
+        moduleName2 = hex2->getModuleName();
+    }
+    else if (srec2)
+    {
+        moduleName2 = srec2->getModuleName();
+    }
+    else if (csv2)
+    {
+        moduleName2 = csv2->getModuleName();
+    }
+    else
+    {
+        moduleName2 = cdfx2->getModuleName();
+    }
+
     if (charList.isEmpty())
     {
         if (ui->checkBoxSrc->isChecked())
         {
             if (hex1)
             {
-                moduleName1 = hex1->getModuleName();
                 MODULE *module = (MODULE*)a2l1->getProject()->getNode("MODULE/" + moduleName1);
                 charList = module->listChar;
             }
             else if (srec1)
             {
-                moduleName1 = srec1->getModuleName();
                 MODULE *module = (MODULE*)a2l1->getProject()->getNode("MODULE/" + moduleName1);
                 charList = module->listChar;
             }
             else if (csv1)
             {
-                moduleName1 = csv1->getModuleName();
                 charList = csv1->getListNameData();
             }
             else
             {
-                moduleName1 = cdfx1->getModuleName();
                 charList = cdfx1->getListNameData();
             }
+
         }
         else
         {
             if (hex2)
             {
-                moduleName2 = hex2->getModuleName();
                 MODULE *module = (MODULE*)a2l2->getProject()->getNode("MODULE/" + moduleName2);
                 charList = module->listChar;
             }
             else if (srec2)
             {
-                moduleName2 = srec2->getModuleName();
                 MODULE *module = (MODULE*)a2l2->getProject()->getNode("MODULE/" + moduleName2);
                 charList = module->listChar;
             }
             else if (csv2)
             {
-                moduleName2 = csv2->getModuleName();
                 charList = csv2->getListNameData();
             }
             else
             {
-                moduleName2 = cdfx2->getModuleName();
                 charList = cdfx2->getListNameData();
             }
         }
         all = true;
     }
 
+    //define progressBar
     int stepMax = 1;
     int progMax = charList.count();
     if (progMax > 10000)
@@ -1648,11 +1579,16 @@ void FormCompare::on_copy_clicked()
     ui->progressBar->setValue(0);
     ui->progressBar->setVisible(true);
 
-    // read HEX or Csv files
+    // read HEX or Csv files : generate List<Data*>
     QList<Data*> *list1 = new QList<Data*>;
     QList<Data*> *list2 = new QList<Data*>;
     QStringList outList1;
     QStringList outList2;
+    bool notFound = false;
+    QStringList labelNotFoundInHex1;
+    labelNotFoundInHex1.append("[Label]");
+    QStringList labelNotFoundInHex2;
+    labelNotFoundInHex2.append("[Label]");
     if (omp_get_num_procs() > 1 )
     {
         omp_set_num_threads(2);
@@ -1673,8 +1609,10 @@ void FormCompare::on_copy_clicked()
                             }
                             else
                             {
-                                outList1.append("Action quicklook : " + str + " not an adjustable into "
+                                outList1.append("Action compare : " + str + " not an adjustable into "
                                                + QString(hex1->name));
+                                notFound = true;
+                                labelNotFoundInHex1.append(str);
                             }
                         }
                     }
@@ -1689,8 +1627,10 @@ void FormCompare::on_copy_clicked()
                             }
                             else
                             {
-                                outList1.append("Action quicklook : " + str + " not an adjustable into "
+                                outList1.append("Action compare : " + str + " not an adjustable into "
                                                + QString(srec1->name));
+                                notFound = true;
+                                labelNotFoundInHex1.append(str);
                             }
                         }
                     }
@@ -1705,12 +1645,14 @@ void FormCompare::on_copy_clicked()
                             }
                             else
                             {
-                                outList1.append("Action quicklook : " + str + " not an adjustable into "
+                                outList1.append("Action compare : " + str + " not an adjustable into "
                                                + QString(csv1->name));
+                                notFound = true;
+                                labelNotFoundInHex1.append(str);
                             }
                         }
                     }
-                    else if (cdfx1)
+                    else
                     {
                         foreach (QString str, charList)
                         {
@@ -1721,12 +1663,14 @@ void FormCompare::on_copy_clicked()
                             }
                             else
                             {
-                                outList1.append("Action quicklook : " + str + " not an adjustable into "
+                                outList1.append("Action compare : " + str + " not an adjustable into "
                                                + QString(cdfx1->name));
+                                notFound = true;
+                                labelNotFoundInHex1.append(str);
                             }
                         }
                     }
-                 }
+                }
                #pragma omp section
                 {
                     if (hex2)
@@ -1740,8 +1684,10 @@ void FormCompare::on_copy_clicked()
                             }
                             else
                             {
-                                outList2.append("Action quicklook : " + str + " not an adjustable into "
+                                outList2.append("Action compare : " + str + " not an adjustable into "
                                                + QString(hex2->name));
+                                notFound = true;
+                                labelNotFoundInHex2.append(str);
                             }
                         }
                     }
@@ -1756,8 +1702,10 @@ void FormCompare::on_copy_clicked()
                             }
                             else
                             {
-                                outList2.append("Action quicklook : " + str + " not an adjustable into "
+                                outList2.append("Action compare : " + str + " not an adjustable into "
                                                + QString(srec2->name));
+                                notFound = true;
+                                labelNotFoundInHex2.append(str);
                             }
                         }
                     }
@@ -1772,12 +1720,14 @@ void FormCompare::on_copy_clicked()
                             }
                             else
                             {
-                                outList2.append("Action quicklook : " + str + " not an adjustable into "
+                                outList2.append("Action compare : " + str + " not an adjustable into "
                                                + QString(csv2->name));
+                                notFound = true;
+                                labelNotFoundInHex2.append(str);
                             }
                         }
                     }
-                    else if (cdfx2)
+                    else
                     {
                         foreach (QString str, charList)
                         {
@@ -1788,8 +1738,10 @@ void FormCompare::on_copy_clicked()
                             }
                             else
                             {
-                                outList2.append("Action quicklook : " + str + " not an adjustable into "
+                                outList2.append("Action compare : " + str + " not an adjustable into "
                                                + QString(cdfx2->name));
+                                notFound = true;
+                                labelNotFoundInHex2.append(str);
                             }
                         }
                     }
@@ -1810,8 +1762,28 @@ void FormCompare::on_copy_clicked()
                 }
                 else
                 {
-                    outList1.append("Action quicklook : " + str + " not an adjustable into "
+                    outList1.append("Action compare : " + str + " not an adjustable into "
                                    + QString(hex1->name));
+                    notFound = true;
+                    labelNotFoundInHex1.append(str);
+                }
+            }
+        }
+        else if (srec1)
+        {
+            foreach (QString str, charList)
+            {
+                Data *data = srec1->getData(str);
+                if (data)
+                {
+                    list1->append(data);
+                }
+                else
+                {
+                    outList1.append("Action compare : " + str + " not an adjustable into "
+                                   + QString(srec1->name));
+                    notFound = true;
+                    labelNotFoundInHex1.append(str);
                 }
             }
         }
@@ -1826,12 +1798,14 @@ void FormCompare::on_copy_clicked()
                 }
                 else
                 {
-                    outList1.append("Action quicklook : " + str + " not an adjustable into "
+                    outList1.append("Action compare : " + str + " not an adjustable into "
                                    + QString(csv1->name));
+                    notFound = true;
+                    labelNotFoundInHex1.append(str);
                 }
             }
         }
-        else if (cdfx1)
+        else
         {
             foreach (QString str, charList)
             {
@@ -1842,8 +1816,10 @@ void FormCompare::on_copy_clicked()
                 }
                 else
                 {
-                    outList1.append("Action quicklook : " + str + " not an adjustable into "
+                    outList1.append("Action compare : " + str + " not an adjustable into "
                                    + QString(cdfx1->name));
+                    notFound = true;
+                    labelNotFoundInHex1.append(str);
                 }
             }
         }
@@ -1859,8 +1835,28 @@ void FormCompare::on_copy_clicked()
                 }
                 else
                 {
-                    outList2.append("Action quicklook : " + str + " not an adjustable into "
+                    outList2.append("Action compare : " + str + " not an adjustable into "
                                    + QString(hex2->name));
+                    notFound = true;
+                    labelNotFoundInHex2.append(str);
+                }
+            }
+        }
+        else if (srec2)
+        {
+            foreach (QString str, charList)
+            {
+                Data *data = srec2->getData(str);
+                if (data)
+                {
+                    list2->append(data);
+                }
+                else
+                {
+                    outList2.append("Action compare : " + str + " not an adjustable into "
+                                   + QString(srec2->name));
+                    notFound = true;
+                    labelNotFoundInHex2.append(str);
                 }
             }
         }
@@ -1875,12 +1871,14 @@ void FormCompare::on_copy_clicked()
                 }
                 else
                 {
-                    outList2.append("Action quicklook : " + str + " not an adjustable into "
+                    outList2.append("Action compare : " + str + " not an adjustable into "
                                    + QString(csv2->name));
+                    notFound = true;
+                    labelNotFoundInHex2.append(str);
                 }
             }
         }
-        else if (cdfx2)
+        else
         {
             foreach (QString str, charList)
             {
@@ -1891,196 +1889,227 @@ void FormCompare::on_copy_clicked()
                 }
                 else
                 {
-                    outList2.append("Action quicklook : " + str + " not an adjustable into "
+                    outList2.append("Action compare : " + str + " not an adjustable into "
                                    + QString(cdfx2->name));
+                    notFound = true;
+                    labelNotFoundInHex2.append(str);
                 }
             }
         }
     }
 
-    //compare the read values (list1 <> list2) and copy if different
-    QList<Data*> *listSrc = NULL;
-    QList<Data*> *listTrg = NULL;
+    //choose the listSrc and listTrg
+    QList<Data*> *listCopySrc = NULL;
+    QList<Data*> *listCopyTrg = NULL;
     if (ui->checkBoxSrc->isChecked())
     {
-        listSrc = list1;
-        listTrg = list2;
+        listCopySrc = list1;
+        listCopyTrg = list2;
     }
     else
     {
-        listSrc = list2;
-        listTrg = list1;
+        listCopySrc = list2;
+        listCopyTrg = list1;
     }
 
-    //get the different data
+    //compare the listSrc and listTrg
     int step = 0;
-    foreach (Data* data1, *listSrc)
+    QList<Data*>::iterator i = listCopySrc->begin();
+    QList<Data*>::iterator j = listCopyTrg->begin();
+    while ((i != listCopySrc->end()) && (j != listCopyTrg->end()))
     {
-         QList<Data*>::iterator i =  qBinaryFind(listTrg->begin(), listTrg->end(), data1, dataLessThan);
-         if (i == listTrg->end())
-         {
-             listSrc->removeOne(data1);
-         }
-         else
-         {
-             bool different = false;
-             Data *data2 = *i;
-             bool bl1;
-             bool bl2;
-             double val1 = 0;
-             double val2 = 0;
+        Data* di = *i;
+        Data* dj = *j;
+        if (di->getName() == dj->getName())
+        {
+            bool different = false;
+            bool bl1;
+            bool bl2;
+            double val1 = 0;
+            double val2 = 0;
 
-             //axisX
-             if (data1->isAxisXComparable && data2->isAxisXComparable)
-             {
-                 if (data1->xCount() == data2->xCount())
-                 {
-                     for (int i = 0; i < data1->xCount(); i++)
-                     {
-                         val1 = data1->getX(i).toDouble(&bl1);
-                         val2 = data2->getX(i).toDouble(&bl2);
-                         if (bl1 && bl2)
-                         {
-                             if (val1 != val2)
-                             {
-                                //data2->setX(i, data1->getX(i));
-                                 different = true;
-                             }
-                         }
-                         else
-                         {
-                             if (data1->getX(i) != data2->getX(i))
-                             {
-                                //data2->setX(i, data1->getX(i));
-                                 different = true;
-                             }
-                         }
-                     }
-                 }
-             }
+            //unit
+            if (di->getUnit() != dj->getUnit())
+                different = true;
 
-             //axisY
-             if (data1->isAxisYComparable && data2->isAxisYComparable)
-             {
-                 if (data1->yCount() == data2->yCount())
-                 {
-                    for (int i = 0; i < data1->yCount(); i++)
+            //axisX
+            if (!different && di->isAxisXComparable && dj->isAxisXComparable)
+            {
+                if (di->xCount() == dj->xCount())
+                {
+                    for (int i = 0; i < di->xCount(); i++)
                     {
-                        val1 = data1->getY(i).toDouble(&bl1);
-                        val2 = data2->getY(i).toDouble(&bl2);
+                        val1 = di->getX(i).toDouble(&bl1);
+                        val2 = dj->getX(i).toDouble(&bl2);
                         if (bl1 && bl2)
                         {
-                            if (val1 != val2)
-                            {
-                               //data2->setY(i, data1->getY(i));
+                            if (val1 != val2) {
                                 different = true;
+                                break;
                             }
                         }
                         else
                         {
-                            if (data1->getY(i) != data2->getY(i))
-                            {
-                               //data2->setY(i, data1->getY(i));
+                            if (di->getX(i) != dj->getX(i)) {
                                 different = true;
+                                break;
                             }
-                        }
-                    }
-                 }
-             }
-
-             //Zvalues
-             if (data1->zCount() == data2->zCount())
-             {
-                 int Nrow = data1->yCount();
-                 int Ncol = data1->xCount();
-
-                 //check map // curve
-                 if (Nrow == 0)
-                 {
-                     Nrow = 1;
-                 }
-
-                 if (Ncol == 0)
-                 {
-                     Ncol = 1;
-                 }
-
-                for (int i = 0; i < Nrow; i++)
-                 {
-                    for (int j = 0; j < Ncol; j++)
-                     {
-                        val1 = data1->getZ(i, j, &bl1);
-                        val2 = data2->getZ(i, j, &bl2);
-
-                        if (bl1 && bl2)
-                        {
-                            if (val1 != val2)
-                            {
-                                different = true;
-                            }
-                        }
-                        else
-                        {
-                            if (data1->getZ(i, j) != data2->getZ(i, j))
-                                different = true;
                         }
                     }
                 }
-             }
+                else {
+                    different = true;
+                }
+            }
 
-             if (!different)
-             {
-                 listSrc->removeOne(data1);
-                 listTrg->removeOne(data2);
-             }
+            //axisY
+            if (!different && di->isAxisYComparable && dj->isAxisYComparable)
+            {
+                if (di->yCount() == dj->yCount())
+                {
+                    for (int i = 0; i < di->yCount(); i++)
+                    {
+                        val1 = di->getY(i).toDouble(&bl1);
+                        val2 = dj->getY(i).toDouble(&bl2);
+                        if (bl1 && bl2)
+                        {
+                            if (val1 != val2) {
+                                different = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            if (di->getY(i) != dj->getY(i)) {
+                                different = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else {
+                    different = true;
+                }
+            }
 
-             step++;
-             if (step == stepMax)
-             {
-                step = 0;
-                ui->progressBar->setValue(ui->progressBar->value() + stepMax);
-             }
-         }
-    }
+            //Zvalues
+            if (!different && (di->zCount() == dj->zCount()))
+            {
+                int Nrow = di->yCount();
+                int Ncol = di->xCount();
 
-    //copy the different data from listSrc to listTrg
-    int copiedLabels = 0;
-    ui->progressBar->setMaximum(progMax + listSrc->count() );
-    foreach (Data* data1, *listSrc)
-    {
-        QList<Data*>::iterator i =  qBinaryFind(listTrg->begin(), listTrg->end(), data1, dataLessThan);
-        if (i == listTrg->end())
+                //check map // curve
+                if (Nrow == 0)
+                {
+                    Nrow = 1;
+                }
+
+                if (Ncol == 0)
+                {
+                    Ncol = 1;
+                }
+
+                for (int i = 0; i < Nrow; i++)
+                {
+                    for (int j = 0; j < Ncol; j++)
+                    {
+                        val1 = di->getZ(i, j, &bl1);
+                        val2 = dj->getZ(i, j, &bl2);
+
+                        if (bl1 && bl2)
+                        {
+                            if (val1 != val2)
+                            {
+                                different = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            if (di->getZ(i, j) != dj->getZ(i, j)) {
+                                different = true;
+                                break;
+                            }
+                        }
+
+                    }
+                }
+            }
+            else
+                different = true;
+
+            if (!different)
+            {
+                i = listCopySrc->erase(i);
+                j = listCopyTrg->erase(j);
+            }
+            else
+            {
+                //dj->copyAllFrom(di);
+                i++;
+                j++;
+            }
+
+        }
+        else if (di->getName() < dj->getName())
         {
-            listSrc->removeOne(data1);
+            i = listCopySrc->erase(i);
+
         }
         else
         {
-            Data *data2 = *i;
-            data2->copyAllFrom(data1);
-            copiedLabels++;
-
-            ui->progressBar->setValue(ui->progressBar->value() + 1);
+            j = listCopyTrg->erase(j);
         }
+
+        //progressBar
+        step++;
+        if (step == stepMax)
+        {
+            step = 0;
+            ui->progressBar->setValue(ui->progressBar->value() + stepMax);
+            qApp->processEvents();
+        }
+    }
+
+    if (i != listCopySrc->end() && j == listCopyTrg->end())
+    {
+        listCopySrc->erase(i, listCopySrc->end());
+    }
+    else if (i == listCopySrc->end() && j != listCopyTrg->end())
+    {
+        listCopyTrg->erase(j, listCopyTrg->end());
+    }
+
+    //copy the different data from listSrc to listTrg
+    ui->progressBar->setMaximum(progMax + listCopySrc->count() );
+    for (int i = 0; i < listCopySrc->count(); i++)
+    {
+        Data *data1 = listCopySrc->at(i);
+        Data *data2 = listCopyTrg->at(i);
+        data2->copyAllFrom(data1);
+
+        ui->progressBar->setValue(ui->progressBar->value() + 1);
     }
 
     //set the progress bar at its maximum value
     ui->progressBar->setValue(ui->progressBar->maximum());
 
+    //create a compareModel to store diff datas
+    CompareModel *compareModel = new CompareModel(this);
+    delete tableModel;
+    tableModel = compareModel;
+
+    //send values to model
+    compareModel->setList(listCopySrc, listCopyTrg);
+    ui->tableView->horizontalHeader()->setDefaultSectionSize(50);
+    ui->tableView->verticalHeader()->setDefaultSectionSize(18);
+    ui->tableView->setModel(compareModel);
+    ui->tableView->setColumnWidth(0, 200);
+
     // stop timer
     t_final1 = omp_get_wtime();
     QString num1;
     num1.setNum(t_final1 - t_ref1);
-
-    //output information
-    MDImain *win = (MDImain*)mainWidget;
-    win->writeOutput(outList1);
-    win->writeOutput(outList2);
-    win->writeOutput(QString::number(copiedLabels) + " copied labels");
-    win->writeOutput("Action copy finished in " + num1 + " sec");
-
-    // delete the labelList in case no labels were chosen !!
-    if (all)
-        charList.clear();
 
     //delete previous diffLabels
     if (diffModel)
@@ -2090,11 +2119,76 @@ void FormCompare::on_copy_clicked()
         diffModel = NULL;
     }
 
-    //reset tableView
-    emit ui->tableView->reset();
+    // delete the labelList in case no labels were chosen !!
+    if (all)
+    {
+        charList.clear();
+    }
 
-    //close the prrogress bar
+    //output information
+    MDImain *win = (MDImain*)mainWidget;
+    win->writeOutput(outList1);
+    win->writeOutput(outList2);
+    win->writeOutput("Action copy finished in " + num1 + " sec ("
+                     + QString::number(listCopySrc->count()) + " copied labels)");
+
     ui->progressBar->setVisible(false);
+
+    //label not found information
+    if (notFound)
+    {
+        int ret = QMessageBox::question(this, "HEXplorer :: compare", "labels not found during compare.\n"
+                                  "would you like to export the list?",
+                                        QMessageBox::Yes, QMessageBox::No);
+
+
+        if (ret == QMessageBox::Yes)
+        {
+            QSettings settings(qApp->organizationName(), qApp->applicationName());
+            QString currentLabPath = settings.value("currentLabPath").toString();
+            QString fileName = QFileDialog::getSaveFileName(this,"save lab files", currentLabPath,
+                                                            "lab files (*.txt);;all files (*.*)");
+            if (fileName.isEmpty())
+                return;
+
+            if (!fileName.endsWith(".txt"))
+            {
+                fileName.append(".txt");
+            }
+            currentLabPath = QFileInfo(fileName).absolutePath();
+            settings.setValue("currentLabPath", currentLabPath);
+
+
+            QFile file(fileName);
+            if (!file.open(QFile::WriteOnly)) {
+                QMessageBox::warning(this, tr("Application"),
+                                     tr("Cannot write file %1:\n%2.")
+                                     .arg(fileName)
+                                     .arg(file.errorString()));
+                return;
+            }
+
+            QTextStream out(&file);
+            QApplication::setOverrideCursor(Qt::WaitCursor);
+
+            out << "labels not found into : " << ui->lineEdit->text() << "\r\n";
+            foreach (QString str, labelNotFoundInHex1)
+                out << str << "\r\n";
+
+            out << "labels not found into : " << ui->lineEdit_2->text() << "\r\n";
+            foreach (QString str, labelNotFoundInHex2)
+                out << str << "\r\n";
+
+
+            QApplication::restoreOverrideCursor();
+        }
+        else if (ret == QMessageBox::No)
+        {
+
+        }
+
+
+    }
 }
 
 void FormCompare::on_export_labels_clicked()

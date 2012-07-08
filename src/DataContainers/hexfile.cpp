@@ -52,13 +52,6 @@
 
 // ______________ class MemBlock _________________//
 
-bool compare(Data *a, Data *b)
-{
-   if (a->getName() < b->getName())
-       return true;
-   else return false;
-}
-
 MemBlock::~MemBlock()
 {
     delete data;
@@ -140,11 +133,21 @@ HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QString module,
         if (item4)
         {
             QString str = item4->getPar("AlignmentBorder");
-            nByte.insert("FLOAT32_IEEE", 4);
+            nByte.insert("FLOAT32_IEEE", str.toInt(&bl,10));
         }
         else
         {
             nByte.insert("FLOAT32_IEEE", 4);
+        }
+        ALIGNMENT_FLOAT64_IEEE *item5 = (ALIGNMENT_FLOAT64_IEEE*)modCommon->getItem("alignment_float64_ieee");
+        if (item5)
+        {
+            QString str = item5->getPar("AlignmentBorder");
+            nByte.insert("FLOAT64_IEEE", str.toInt(&bl,10));
+        }
+        else
+        {
+            nByte.insert("FLOAT64_IEEE", 8);
         }
     }
 
@@ -283,10 +286,20 @@ bool HexFile::parseFile()
             if (firstLineOfBlock)
             {
                 // get the length, start, offset of the block
-                actBlock->start = (actBlock->offset + QByteArray(_line + 3, 4)).toUInt(&ok, 16);
-                int end = (actBlock->offset + "FFFF").toUInt(&ok, 16);
-                actBlock->lineLength = asciiToByte[*(ushort*)(_line + 1)];
-                actBlock->data = new unsigned char [(end - actBlock->start + 1)];
+                if (actBlock->uSBA.isEmpty())
+                {
+                    actBlock->start = (actBlock->uLBA + QByteArray(_line + 3, 4)).toUInt(&ok, 16);
+                    int end = (actBlock->uLBA + "FFFF").toUInt(&ok, 16);
+                    actBlock->lineLength = asciiToByte[*(ushort*)(_line + 1)];
+                    actBlock->data = new unsigned char [(end - actBlock->start + 1)];
+                }
+                else if (actBlock->uLBA.isEmpty())
+                {
+                    actBlock->start = (actBlock->uSBA + "0").toUInt(&ok, 16) + QByteArray(_line + 3, 4).toUInt(&ok, 16);
+                    int end = (actBlock->uSBA + "0").toUInt(&ok, 16) +  65535;
+                    actBlock->lineLength = asciiToByte[*(ushort*)(_line + 1)];
+                    actBlock->data = new unsigned char [(end - actBlock->start + 1)];
+                }
 
                 firstLineOfBlock = false;
             }
@@ -295,7 +308,14 @@ bool HexFile::parseFile()
             while (type == 0)
             {
                 lineLength = asciiToByte[*(ushort*)(_line + 1)];
-                dataCnt = (actBlock->offset + QByteArray(_line + 3, 4)).toUInt(&ok, 16) - actBlock->start;
+                if (actBlock->uSBA.isEmpty())
+                {
+                    dataCnt = (actBlock->uLBA + QByteArray(_line + 3, 4)).toUInt(&ok, 16) - actBlock->start;
+                }
+                else if (actBlock->uLBA.isEmpty())
+                {
+                    dataCnt = (actBlock->uSBA + "0").toUInt(&ok, 16) + QByteArray(_line + 3, 4).toUInt(&ok, 16) - actBlock->start;
+                }
 
                 // save the ascii characters into a byte array
                 for (int i = 0; i < lineLength; i++)
@@ -333,7 +353,8 @@ bool HexFile::parseFile()
             actBlock = new MemBlock();
 
             // get the length, start, offset of the block
-            actBlock->offset = QByteArray(_line + 9, 4);
+            actBlock->uLBA = "";
+            actBlock->uSBA = QByteArray(_line + 9, 4);
 
             // set the flag to firstLineOfBlock to finish MemBlock definition
             firstLineOfBlock = true;
@@ -352,7 +373,8 @@ bool HexFile::parseFile()
             actBlock = new MemBlock();
 
             // get the length, start, offset of the block
-            actBlock->offset = QByteArray(_line + 9, 4);
+            actBlock->uSBA = "";
+            actBlock->uLBA = QByteArray(_line + 9, 4);
 
             // set the flag to firstLineOfBlock to finish MemBlock definition
             firstLineOfBlock = true;
@@ -1362,39 +1384,61 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
 
 bool HexFile::isValidAddress(QString address)
 {
-    int length = listMemSegData.count();
+//    int length = listMemSegData.count();
+//    bool bl;
+//    unsigned int IAddr =address.toUInt(&bl, 16);
+
+//    if (length == 0)
+//    {
+//        int block = 0;
+//        while (block < blockList.count())
+//        {
+//            if ((blockList[block]->start <= IAddr) && (IAddr <= blockList[block]->end))
+//            {
+//                break;
+//            }
+//            block++;
+//        }
+
+//        if (block >=  blockList.count())
+//            return false;
+//        else
+//            return true;
+
+//    }
+//    else
+//    {
+//        for (int i = 0; i < length - 1; i+=2)
+//        {
+//            if (listMemSegData.at(i) <= IAddr && IAddr < listMemSegData.at(i + 1) )
+//                return true;
+//        }
+//    }
+
+
+//    return false;
+
     bool bl;
     unsigned int IAddr =address.toUInt(&bl, 16);
 
-    if (length == 0)
+    //find block and line
+    int block = 0;
+    while (block < blockList.count())
     {
-        int block = 0;
-        while (block < blockList.count())
+        if ((blockList[block]->start <= IAddr) && (IAddr <= blockList[block]->end))
         {
-            if ((blockList[block]->start <= IAddr) && (IAddr <= blockList[block]->end))
-            {
-                break;
-            }
-            block++;
+            break;
         }
+        block++;
+    }
 
-        if (block >=  blockList.count())
-            return false;
-        else
-            return true;
-
+    //if address is outside the Hex file address range => exit
+    if (block >= blockList.count())
+    {
+        return false;
     }
     else
-    {
-        for (int i = 0; i < length - 1; i+=2)
-        {
-            if (listMemSegData.at(i) <= IAddr && IAddr < listMemSegData.at(i + 1) )
-                return true;
-        }
-    }
-
-
-    return false;
+        return true;
 }
 
 int HexFile::getNumByte(std::string str)
@@ -1734,13 +1778,13 @@ QStringList HexFile::block2list()
 
     for (int i = 0; i < blockList.count(); i++)
     {
-        QString cks = checksum(":02000004" + blockList[i]->offset);
-        lineList.append(":02000004" + blockList[i]->offset + cks);
+        QString cks = checksum(":02000004" + blockList[i]->uSBA);
+        lineList.append(":02000004" + blockList[i]->uSBA + cks);
         x = 0;
         j = 0;
 
         bool bl;
-        QString start = blockList[i]->offset + "0000";
+        QString start = blockList[i]->uSBA + "0000";
         int strt = start.toUInt(&bl, 16);
 
         int end = blockList[i]->length;
@@ -1821,48 +1865,6 @@ bool HexFile::data2block()
 Data* HexFile::getData(QString str)
 {
     return ((DataContainer*)this)->getData(str);
-}
-
-Data* HexFile::readLabel(CHARACTERISTIC *label, bool phys)
-{
-    Data dat(label);
-    QList<Data*>::iterator i = qBinaryFind(listData.begin(), listData.end(), &dat, compare);
-
-    if (i == listData.end())
-    {
-        Data *data = new Data(label, a2lProject, this);
-
-        if (phys)
-           data->hex2phys();
-
-        listData.append(data);
-        qSort(listData.begin(), listData.end(), compare);
-
-        return data;
-    }
-    else
-        return *i;
-}
-
-Data* HexFile::readLabel(AXIS_PTS *label, bool phys)
-{
-    Data dat(label);
-    QList<Data*>::iterator i = qBinaryFind(listData.begin(), listData.end(), &dat, compare);
-
-    if (i == listData.end())
-    {
-        Data *data = new Data(label, a2lProject, this);
-
-        if (phys)
-           data->hex2phys();
-
-        listData.append(data);
-        qSort(listData.begin(), listData.end(), compare);
-
-        return data;
-    }
-    else
-        return *i;
 }
 
 void HexFile::checkDisplay()
