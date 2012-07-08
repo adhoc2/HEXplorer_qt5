@@ -743,9 +743,14 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
         else if (matrix_dim)
         {
            nPtsX = ((QString)matrix_dim->getPar("xDim")).toInt();
+           nPtsY = ((QString)matrix_dim->getPar("yDim")).toInt();
         }
         else
+        {
             nPtsX = 1;
+            nPtsY = 1;
+        }
+
         addressX = 0;
         addressY = 0;
 
@@ -754,6 +759,15 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
         for (int i = 0; i < nPtsX; i++)
         {
             listX.append(str.setNum(i));
+        }
+
+        //AXIS_PTS_Y
+        if (nPtsY > 1)
+        {
+            for (int i = 0; i < nPtsY; i++)
+            {
+                listY.append(str.setNum(i));
+            }
         }
 
         size = 4;
@@ -1853,7 +1867,6 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, SrecFile *srecFile, bool modif) : Node(
     size = 5;
 
 }
-
 
 Data::Data(AXIS_PTS *node, PROJECT *pro, Csv *csv, bool modif) : Node(node->name), QObject()
 {
@@ -5182,7 +5195,7 @@ void Data::setY(int i, QString str)
                             str = strUpperExtLim;
                     }
                     else if (!allowExceedWeakBounds && (dbl > dblUpperWB))
-                        str = dblUpperWB;
+                        str = strUpperWB;
 
                 }
                 else if(dbl < dblLowerWB)

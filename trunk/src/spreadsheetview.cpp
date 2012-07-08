@@ -1268,31 +1268,15 @@ void SpreadsheetView::editAsBit()
     if (data && !data->getCompuTabAxisZ())
     {
         //get the bits number through the deposit field of the characteristic node
-//        QString deposit = ((CHARACTERISTIC*)data->getA2lNode())->getPar("Deposit");
-//        int _length = 0;
-//        QRegExp rx("(\\d+)");
-//        QStringList list;
-//        int pos = 0;
+        int _length = data->getZnbyte()*8;
 
-//        while ((pos = rx.indexIn(deposit, pos)) != -1)
-//        {
-//            list << rx.cap(1);
-//            pos += rx.matchedLength();
-//        }
+        //open the bit edit window
+        ulong value = (ulong)model()->data(index).toDouble();
+        DialogBitDisplay *dsp = new DialogBitDisplay(value, _length);
+        dsp->exec();
 
-        //if (!list.isEmpty())
-        //{
-            //_length = list.last().toInt();
-            int _length = data->getZnbyte()*8;
-
-            //open the bit edit window
-            ulong value = (ulong)model()->data(index).toDouble();
-            DialogBitDisplay *dsp = new DialogBitDisplay(value, _length);
-            dsp->exec();
-
-            // save the result into the Data model
-            ((SpTableModel*)model())->setData(index, QString::number(value), Qt::EditRole);
-        //}
+        // save the result into the Data model
+        ((SpTableModel*)model())->setData(index, QString::number(value), Qt::EditRole);
     }
 }
 
