@@ -1778,13 +1778,13 @@ QStringList HexFile::block2list()
 
     for (int i = 0; i < blockList.count(); i++)
     {
-        QString cks = checksum(":02000004" + blockList[i]->uSBA);
-        lineList.append(":02000004" + blockList[i]->uSBA + cks);
+        QString cks = checksum(":02000004" + blockList[i]->uLBA);
+        lineList.append(":02000004" + blockList[i]->uLBA + cks);
         x = 0;
         j = 0;
 
         bool bl;
-        QString start = blockList[i]->uSBA + "0000";
+        QString start = blockList[i]->uLBA + "0000";
         int strt = start.toUInt(&bl, 16);
 
         int end = blockList[i]->length;
