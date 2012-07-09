@@ -1472,6 +1472,108 @@ void FormCompare::on_checkBoxTrg_clicked()
 
 void FormCompare::on_copy_clicked()
 {
+    //MessageBox to confirm copy action
+    if (ui->checkBoxSrc->isChecked())
+    {
+        QString source;
+        QString target;
+
+        if (hex1)
+        {
+            source = QString(hex1->name);
+        }
+        else if (srec1)
+        {
+            source = QString(srec1->name);
+        }
+        else if (csv1)
+        {
+            source = QString(csv1->name);
+        }
+        else if (cdfx1)
+            source = QString(cdfx1->name);
+
+
+        if (hex2)
+        {
+            target = QString(hex2->name);
+        }
+        if (srec2)
+        {
+            target = QString(srec2->name);
+        }
+        else if (csv2)
+        {
+            target = QString(csv2->name);
+        }
+        else if (cdfx2)
+        {
+            target = QString(cdfx2->name);
+        }
+
+
+        int ret = QMessageBox::question(this, "HEXplorer :: copy action",
+                                        "Do you really want to copy :\n"
+                                        "from : " + source + "\n"
+                                        " to  : " + target + "'?",
+                                        (QMessageBox::Yes | QMessageBox::No), QMessageBox::Yes);
+
+        if (ret == QMessageBox::No)
+        {
+            return;
+        }
+    }
+    else
+    {
+        QString source;
+        QString target;
+
+        if (hex1)
+        {
+            target = QString(hex1->name);
+        }
+        else if (srec1)
+        {
+            target = QString(srec1->name);
+        }
+        else if (csv1)
+        {
+            target = QString(csv1->name);
+        }
+        else if (cdfx1)
+            target = QString(cdfx1->name);
+
+
+        if (hex2)
+        {
+            source = QString(hex2->name);
+        }
+        if (srec2)
+        {
+            source = QString(srec2->name);
+        }
+        else if (csv2)
+        {
+            source = QString(csv2->name);
+        }
+        else if (cdfx2)
+        {
+            source = QString(cdfx2->name);
+        }
+
+
+        int ret = QMessageBox::question(this, "HEXplorer :: copy action",
+                                        "Do you really want to copy :\n"
+                                        "from : " + source + "\n"
+                                        " to  : " + target + "'?",
+                                        (QMessageBox::Yes | QMessageBox::No), QMessageBox::Yes);
+
+        if (ret == QMessageBox::No)
+        {
+            return;
+        }
+    }
+
     // start timer
     double t_ref1 = 0, t_final1 = 0;
     t_ref1= omp_get_wtime();
@@ -2189,6 +2291,7 @@ void FormCompare::on_copy_clicked()
 
 
     }
+
 }
 
 void FormCompare::on_export_labels_clicked()
