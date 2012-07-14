@@ -83,13 +83,13 @@ HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QString module,
         }
     }
 
-    //get the byte_order   
+    //MOD_COMMON values (BYTE_ORDER, ALIGNEMENT_SWORD,...)
     MOD_COMMON *modCommon = (MOD_COMMON*)a2lProject->getNode("MODULE/" + getModuleName() + "/MOD_COMMON");
     if (modCommon)
     {
         Byte_Order *item = (Byte_Order*)modCommon->getItem("BYTE_ORDER");
         if (item)
-            byteOrder = item->getPar("ByteOrder");
+            byteOrderCommon = item->getPar("ByteOrder");
 
         //define dataType map
         bool bl;
@@ -151,7 +151,7 @@ HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QString module,
         }
     }
 
-    //save the node to fasten HexFile import (see Data class constructor)
+    //save the node to speed-up HexFile import (see Data class constructor)
     compu_method = a2lProject->getNode("MODULE/" + module + "/COMPU_METHOD");
     record_layout = a2lProject->getNode("MODULE/" + module + "/RECORD_LAYOUT");
     compu_vtab = a2lProject->getNode("MODULE/" + module + "/COMPU_VTAB");
@@ -495,7 +495,7 @@ void HexFile::readAllData()
 #endif
         if (length > 5000 && omp_get_num_procs() > 1 && !myDebug)
         {
-            // split listChar into 2 lists            
+            // split listChar into 2 lists
             int middle = 0;
             if (length % 2 == 0)
                 middle = length / 2;
@@ -724,9 +724,8 @@ void HexFile::readAllData()
 
 // ________________ read Hex values___________________ //
 
-QString HexFile::getHexValue(QString address, int offset,  int nByte)
+QString HexFile::getHexValue(QString address, int offset,  int nByte, QString _byteOrder)
 {
-
     //find block and index of the desired address
     bool bl;
     unsigned int IAddr =address.toUInt(&bl, 16) + offset;
@@ -768,7 +767,11 @@ QString HexFile::getHexValue(QString address, int offset,  int nByte)
 
     //MSB_FIRST or MSB_LAST
     QString str = "ZZ";
-    if (byteOrder.toLower() == "msb_first")
+    if (_byteOrder.isEmpty())
+    {
+        _byteOrder = byteOrderCommon;
+    }
+    if (_byteOrder.toLower() == "msb_first")
     {
         QString hex;
         str = "";
@@ -781,7 +784,7 @@ QString HexFile::getHexValue(QString address, int offset,  int nByte)
                 str += hex;
         }
     }
-    else if (byteOrder.toLower() == "msb_last")
+    else if (_byteOrder.toLower() == "msb_last")
     {
         QString hex;
         str = "";
@@ -798,7 +801,7 @@ QString HexFile::getHexValue(QString address, int offset,  int nByte)
     return str.toUpper();
 }
 
-QStringList HexFile::getHexValues(QString address, int offset, int nByte, int count)
+QStringList HexFile::getHexValues(QString address, int offset, int nByte, int count, QString _byteOrder)
 {
     //variable to be returned
     QStringList hexList;
@@ -842,8 +845,12 @@ QStringList HexFile::getHexValues(QString address, int offset, int nByte, int co
             tab.append(blockList[block + 1]->data[j]);
     }
 
-    //MSB_FIRST or MSB_LAST    
-    if (byteOrder.toLower() == "msb_first")
+    //MSB_FIRST or MSB_LAST
+    if (_byteOrder.isEmpty())
+    {
+        _byteOrder = byteOrderCommon;
+    }
+    if (byteOrderCommon.toLower() == "msb_first")
     {
         QString hex;
         QString str;
@@ -862,7 +869,7 @@ QStringList HexFile::getHexValues(QString address, int offset, int nByte, int co
             hexList.append(str);
         }
     }
-    else if (byteOrder.toLower() == "msb_last")
+    else if (byteOrderCommon.toLower() == "msb_last")
     {
         QString hex;
         QString str;
@@ -884,7 +891,7 @@ QStringList HexFile::getHexValues(QString address, int offset, int nByte, int co
     return hexList;
 }
 
-QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::string type)
+QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::string type, QString _byteOrder)
 {
     //variable to be returned
     QList<double> decList;
@@ -910,8 +917,12 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
     //get index of the address into block
     int index = IAddr - blockList[block]->start;
 
-
-    if (byteOrder.toLower() == "msb_last")
+    //MSB_FIRST or MSB_LAST
+    if (_byteOrder.isEmpty())
+    {
+        _byteOrder = byteOrderCommon;
+    }
+    if (_byteOrder.toLower() == "msb_last")
     {
         if(type == "SBYTE")
         {
@@ -1195,7 +1206,7 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                 delete mem;
             }
             else if (block < blockList.count() - 1)
-            {                
+            {
                 char* buffer = new char[nByte*count];
                 int size = blockList[block]->length - index;
                 for (int i = 0; i < size; i++)
@@ -1463,7 +1474,7 @@ QStringList HexFile::writeHex()
     }
 }
 
-void HexFile::setValue(unsigned int IAddr, QString hex,  int nByte)
+void HexFile::setValue(unsigned int IAddr, QString hex,  int nByte, QString _byteOrder)
 {
     //find block and line
     bool bl;
@@ -1480,7 +1491,11 @@ void HexFile::setValue(unsigned int IAddr, QString hex,  int nByte)
 
     //MSB_FIRST or MSB_LAST
     QList<unsigned char> tab;
-    if (byteOrder.toLower() == "msb_first")
+    if (_byteOrder.isEmpty())
+    {
+        _byteOrder = byteOrderCommon;
+    }
+    if (_byteOrder.toLower() == "msb_first")
     {
         QString str;
         for (int i = 0; i < nByte; i++)
@@ -1489,7 +1504,7 @@ void HexFile::setValue(unsigned int IAddr, QString hex,  int nByte)
             tab.append(str.toUShort(&bl, 16));
         }
     }
-    else if (byteOrder.toLower() == "msb_last")
+    else if (_byteOrder.toLower() == "msb_last")
     {
         QString str;
         for (int i = nByte - 1; i >= 0; i--)
@@ -1518,7 +1533,7 @@ void HexFile::setValue(unsigned int IAddr, QString hex,  int nByte)
     }
 }
 
-void HexFile::setValues(unsigned int IAddr, QStringList hexList, int nByte)
+void HexFile::setValues(unsigned int IAddr, QStringList hexList, int nByte, QString _byteOrder)
 {
     //find block and line
     bool bl;
@@ -1535,7 +1550,11 @@ void HexFile::setValues(unsigned int IAddr, QStringList hexList, int nByte)
 
     //MSB_FIRST or MSB_LAST
     QList<unsigned char> tab;
-    if (byteOrder.toLower() == "msb_first")
+    if (_byteOrder.isEmpty())
+    {
+        _byteOrder = byteOrderCommon;
+    }
+    if (_byteOrder.toLower() == "msb_first")
     {
         QString str;
         foreach (QString hex, hexList)
@@ -1547,7 +1566,7 @@ void HexFile::setValues(unsigned int IAddr, QStringList hexList, int nByte)
             }
         }
     }
-    else if (byteOrder.toLower() == "msb_last")
+    else if (_byteOrder.toLower() == "msb_last")
     {
         QString str;
         foreach (QString hex, hexList)
@@ -1598,7 +1617,7 @@ void HexFile::hex2MemBlock(Data *data)
                 uint32_t decalage = tzn(mask);
                 // get the original Value into uint
                 int nbyte = data->getZ(0).count() / 2;
-                uint32_t orgValue = getDecValues(data->getAddressZ(), nbyte, 1, data->getDatatypeZ()).at(0);
+                uint32_t orgValue = getDecValues(data->getAddressZ(), nbyte, 1, data->getDatatypeZ(), data->getByteOrderZ()).at(0);
                 // get the value to be set into uint
                 uint32_t _setValue = data->getZ(0).toUInt(&bl,16);
                 _setValue = _setValue << decalage;
@@ -1621,12 +1640,12 @@ void HexFile::hex2MemBlock(Data *data)
                 // convert orgValue into HEX
                 QString hexOrgValue = dec2hex(orgValue, data->getDatatypeZ());
                 // write the HEX value
-                setValue(data->getAddressZ(), hexOrgValue, nbyte);
+                setValue(data->getAddressZ(), hexOrgValue, nbyte, data->getByteOrderZ());
             }
             else
             {
                 int nbyte = data->getZ(0).count() / 2;
-                setValue(data->getAddressZ(), data->getZ(0), nbyte);
+                setValue(data->getAddressZ(), data->getZ(0), nbyte, data->getByteOrderZ());
             }
         }
         else if(type.toLower() == "curve")
@@ -1636,14 +1655,14 @@ void HexFile::hex2MemBlock(Data *data)
             //axisX : copy axisX only if it is a std_axis
             if (!data->getAxisDescrX())
             {
-                setValues(data->getAddressX(), data->getX(), nbyteX);
+                setValues(data->getAddressX(), data->getX(), nbyteX, data->getByteOrderX());
             }
 
             //axisZ
             if (!data->isSizeChanged())
             {
                 int nbyteZ = data->getZ(0).count() / 2;
-                setValues(data->getAddressZ(), data->getZ(), nbyteZ);
+                setValues(data->getAddressZ(), data->getZ(), nbyteZ, data->getByteOrderZ());
             }
             else
             {
@@ -1652,14 +1671,14 @@ void HexFile::hex2MemBlock(Data *data)
                 double addr = QString(node->getPar("Adress")).toUInt(&bl, 16);
                 QString length = data->getnPtsXHexa();
                 int nbyteNPtsX = length.length() / 2;
-                setValue(addr, length, nbyteNPtsX);
+                setValue(addr, length, nbyteNPtsX, data->getByteOrderX());
 
                 //calculate new Address Z due to axisX length modification
                 double newAddressZ = data->getAddressX() + nbyteX * data->xCount();
 
                 //write the Z hex values
                 int nbyteZ = data->getZ(0).count() / 2;
-                setValues(newAddressZ, data->getZ(), nbyteZ);
+                setValues(newAddressZ, data->getZ(), nbyteZ, data->getByteOrderZ());
 
             }
         }
@@ -1671,7 +1690,7 @@ void HexFile::hex2MemBlock(Data *data)
             //axisX : copy axisX only if it is a std_axis
             if (!data->getAxisDescrX())
             {
-                setValues(data->getAddressX(), data->getX(), nbyteX);
+                setValues(data->getAddressX(), data->getX(), nbyteX, data->getByteOrderX());
             }
 
             //axisY : copy axisY only if it is a std_axis
@@ -1679,12 +1698,12 @@ void HexFile::hex2MemBlock(Data *data)
             {
                 if (!data->getAxisDescrY())
                 {
-                    setValues(data->getAddressY(), data->getY(), nbyteY);
+                    setValues(data->getAddressY(), data->getY(), nbyteY, data->getByteOrderY());
                 }
 
                 //axisZ
                 int nbyteZ = data->getZ(0).count() / 2;
-                setValues(data->getAddressZ(), data->getZ(), nbyteZ);
+                setValues(data->getAddressZ(), data->getZ(), nbyteZ, data->getByteOrderZ());
             }
             else
             {
@@ -1693,28 +1712,28 @@ void HexFile::hex2MemBlock(Data *data)
                 double addr = QString(node->getPar("Adress")).toUInt(&bl, 16);
                 QString length = data->getnPtsXHexa();
                 int nbyteNPtsX = length.length() / 2;
-                setValue(addr, length, nbyteNPtsX);
+                setValue(addr, length, nbyteNPtsX, data->getByteOrderX());
 
                 // write new length of axis Y into HexFile
                 bl;
                 addr = QString(node->getPar("Adress")).toUInt(&bl, 16);
                 length = data->getnPtsYHexa();
                 int nbyteNPtsY = length.length() / 2;
-                setValue(addr + nbyteNPtsX, length, nbyteNPtsY);
+                setValue(addr + nbyteNPtsX, length, nbyteNPtsY, data->getByteOrderY());
 
                 //calculate new Address Y due to axisX length modification
                 double newAddressY = data->getAddressX() + nbyteX * data->xCount();
 
                 //write the Y hex values
                 int nbyteY = data->getY(0).count() / 2;
-                setValues(newAddressY, data->getY(), nbyteY);
+                setValues(newAddressY, data->getY(), nbyteY, data->getByteOrderY());
 
                 //calculate new Address Z due to axisX and axisY length modification
                 double newAddressZ = newAddressY + nbyteY * data->yCount();
 
                 //write the Z hex values
                 int nbyteZ = data->getZ(0).count() / 2;
-                setValues(newAddressZ, data->getZ(), nbyteZ);
+                setValues(newAddressZ, data->getZ(), nbyteZ, data->getByteOrderZ());
 
 
             }
@@ -1723,20 +1742,20 @@ void HexFile::hex2MemBlock(Data *data)
         {
             //axisZ
             int nbyteZ = data->getZ(0).count() / 2;
-            setValues(data->getAddressZ(), data->getZ(), nbyteZ);
+            setValues(data->getAddressZ(), data->getZ(), nbyteZ, data->getByteOrderZ());
         }
         else if (type.toLower() == "ascii")
         {
             //axisZ
             int nbyteZ = data->getZ(0).count() / 2;
-            setValues(data->getAddressZ(), data->getZ(), nbyteZ);
+            setValues(data->getAddressZ(), data->getZ(), nbyteZ, data->getByteOrderZ());
         }
     }
     else
     {
         //axisZ
         int nbyteZ = data->getZ(0).count() / 2;
-        setValues(data->getAddressZ(), data->getZ(), nbyteZ);
+        setValues(data->getAddressZ(), data->getZ(), nbyteZ, data->getByteOrderZ());
     }
 }
 

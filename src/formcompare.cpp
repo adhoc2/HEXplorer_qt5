@@ -511,6 +511,11 @@ void FormCompare::checkDroppedFile_2(QString str)
             hex2->detach(this);
             hex2->getParentWp()->detach(this);
         }
+        else if (srec2)
+        {
+            srec2->getParentWp()->detach(this);
+            srec2->detach(this);
+        }
         else if (csv2)
         {
             csv2->detach(this);
@@ -1498,7 +1503,7 @@ void FormCompare::on_copy_clicked()
         {
             target = QString(hex2->name);
         }
-        if (srec2)
+        else if (srec2)
         {
             target = QString(srec2->name);
         }

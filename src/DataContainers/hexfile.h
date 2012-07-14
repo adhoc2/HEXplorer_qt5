@@ -73,9 +73,9 @@ class HexFile : public QObject, public DataContainer
         void checkDisplay();
         void setFullName(QString fullName);
         QStringList writeHex();
-        QString getHexValue(QString address, int offset, int nByte);
-        QStringList getHexValues(QString address, int offset, int nByte, int size);
-        QList<double> getDecValues(double address, int nByte, int size, std::string type);
+        QString getHexValue(QString address, int offset, int nByte, QString _byteOrder = "");
+        QStringList getHexValues(QString address, int offset, int nByte, int size, QString _byteOrder = "");
+        QList<double> getDecValues(double address, int nByte, int size, std::string type, QString _byteOrder = "");
         QString fullName();
         QList<int> checkFmtcMonotony(bool *bl);
         std::string pixmap();
@@ -99,7 +99,7 @@ class HexFile : public QObject, public DataContainer
         int refCount;
         QList<QObject*> owners;
         QString fullHexName;
-        QString byteOrder;
+        QString byteOrderCommon;
         QHash<QString,int> nByte;
         QList<uint> listMemSegData;
 
@@ -114,8 +114,8 @@ class HexFile : public QObject, public DataContainer
         void hex2MemBlock(Data* data);
         bool data2block();
         QStringList block2list();
-        void setValue(unsigned int IAddr, QString hex, int nByte);
-        void setValues(unsigned int IAddr, QStringList hexList, int nByte);
+        void setValue(unsigned int IAddr, QString hex, int nByte, QString _byteOrder = "");
+        void setValues(unsigned int IAddr, QStringList hexList, int nByte, QString _byteOrder = "");
         QString checksum(QString str);
         unsigned int tzn(unsigned int v);
         QString dec2hex(double dec, std::string type);

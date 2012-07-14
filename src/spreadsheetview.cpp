@@ -194,7 +194,7 @@ void SpreadsheetView::createActions()
 }
 
 void SpreadsheetView::contextMenuEvent ( QPoint p )
-{    
+{
     QMenu *menu = new QMenu(this);
     QModelIndex index = indexAt(p);
     if (index.isValid())
@@ -735,7 +735,7 @@ void SpreadsheetView::plot()
 
     //plot the label
     if (data)
-    {        
+    {
         data->plot(this);
     }
 }
@@ -1273,10 +1273,13 @@ void SpreadsheetView::editAsBit()
         //open the bit edit window
         ulong value = (ulong)model()->data(index).toDouble();
         DialogBitDisplay *dsp = new DialogBitDisplay(value, _length);
-        dsp->exec();
+        int ret = dsp->exec();
 
         // save the result into the Data model
-        ((SpTableModel*)model())->setData(index, QString::number(value), Qt::EditRole);
+        if (ret == QDialog::Accepted)
+        {
+            ((SpTableModel*)model())->setData(index, QString::number(value), Qt::EditRole);
+        }
     }
 }
 

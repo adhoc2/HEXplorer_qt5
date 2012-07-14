@@ -35,6 +35,8 @@ public:
 private slots:
     void on_buttonBox_accepted();
 
+    void on_buttonBox_rejected();
+
 private:
     QList<QRadioButton*> listRadio;
     bitset<32> myBitset;
