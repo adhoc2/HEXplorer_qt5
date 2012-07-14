@@ -23,7 +23,7 @@ using namespace std;
 
 DialogBitDisplay::DialogBitDisplay(ulong & value, int length, QWidget *parent) : QDialog(parent)
 {
-    setupUi(this);   
+    setupUi(this);
 
     myValue = &value;
     bitset<32> myBitset(static_cast<unsigned long long>(value));
@@ -83,4 +83,9 @@ void DialogBitDisplay::on_buttonBox_accepted()
     }
 
      *myValue = myBitset.to_ulong();
+}
+
+void DialogBitDisplay::on_buttonBox_rejected()
+{
+
 }

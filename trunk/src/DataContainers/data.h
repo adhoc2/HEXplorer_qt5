@@ -88,6 +88,7 @@ class Data : public QObject, public Node
         // axisX
         bool isAxisXComparable;
         int xOrgSize;
+        QString getByteOrderX();
         QString getOrgX(int i);
         QString getX(int i);
         QStringList getX();
@@ -108,6 +109,7 @@ class Data : public QObject, public Node
         //axisY
         int yOrgSize;
         bool isAxisYComparable;
+        QString getByteOrderY();
         QString getOrgY(int i);
         QString getY(int i);
         QStringList getY();
@@ -125,6 +127,7 @@ class Data : public QObject, public Node
         QString getInputQuantityY();
 
         //axisZ
+        QString getByteOrderZ();
         QString getOrgZ(int i);
         QString getOrgZ(int row, int col);
         double getOrgZ(int row, int col, bool *bl);
@@ -185,7 +188,7 @@ class Data : public QObject, public Node
         void setY(QStringList list);
         void setZ(QStringList list);
         QStringList sortByRow();
-        QStringList sortByColumn();        
+        QStringList sortByColumn();
         QList<double> hex2dec(QStringList listHex, std::string type,  int base);
         double hex2dec(QString hex, std::string type,  int base);
         QStringList dec2hex(QList<double> listdec, std::string type,  int base);
@@ -226,6 +229,9 @@ class Data : public QObject, public Node
         int precisionX;
         int precisionY;
         int precisionZ;
+        QString byteOrderX;
+        QString byteOrderY;
+        QString byteOrderZ;
 
     public slots:
         void setX(QScriptValue value);
