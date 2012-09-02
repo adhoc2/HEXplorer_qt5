@@ -1617,9 +1617,13 @@ void SrecFile::hex2MemBlock(Data *data)
             int nbyteX = data->getX(0).count() / 2;
 
             //axisX : copy axisX only if it is a std_axis
-            if (!data->getAxisDescrX())
+            if (data->getAxisDescrX())
             {
-                setValues(data->getAddressX(), data->getX(), nbyteX, data->getByteOrderX());
+                QString typeAxisX = data->getAxisDescrX()->getPar("Attribute");
+                if (typeAxisX.compare("STD_AXIS") == 0)
+                {
+                    setValues(data->getAddressX(), data->getX(), nbyteX, data->getByteOrderX());
+                }
             }
 
             //axisZ
@@ -1648,21 +1652,29 @@ void SrecFile::hex2MemBlock(Data *data)
         }
         else if(type.toLower() == "map")
         {
-             int nbyteX = data->getX(0).count() / 2;
-             int nbyteY = data->getY(0).count() / 2;
+            int nbyteX = data->getX(0).count() / 2;
+            int nbyteY = data->getY(0).count() / 2;
 
-            //axisX : copy axisX only if it is a std_axis
-            if (!data->getAxisDescrX())
-            {
-                setValues(data->getAddressX(), data->getX(), nbyteX, data->getByteOrderX());
-            }
+           //axisX : copy axisX only if it is a std_axis
+           if (data->getAxisDescrX())
+           {
+               QString typeAxisX = data->getAxisDescrX()->getPar("Attribute");
+               if (typeAxisX.compare("STD_AXIS") == 0)
+               {
+                   setValues(data->getAddressX(), data->getX(), nbyteX, data->getByteOrderX());
+               }
+           }
 
             //axisY : copy axisY only if it is a std_axis
             if (!data->isSizeChanged())
             {
-                if (!data->getAxisDescrY())
+                if (data->getAxisDescrY())
                 {
-                    setValues(data->getAddressY(), data->getY(), nbyteY, data->getByteOrderY());
+                    QString typeAxisX = data->getAxisDescrX()->getPar("Attribute");
+                    if (typeAxisX.compare("STD_AXIS") == 0)
+                    {
+                        setValues(data->getAddressY(), data->getY(), nbyteY, data->getByteOrderY());
+                    }
                 }
 
                 //axisZ
