@@ -1653,9 +1653,13 @@ void HexFile::hex2MemBlock(Data *data)
             int nbyteX = data->getX(0).count() / 2;
 
             //axisX : copy axisX only if it is a std_axis
-            if (!data->getAxisDescrX())
+            if (data->getAxisDescrX())
             {
-                setValues(data->getAddressX(), data->getX(), nbyteX, data->getByteOrderX());
+                QString typeAxisX = data->getAxisDescrX()->getPar("Attribute");
+                if (typeAxisX.compare("STD_AXIS") == 0)
+                {
+                    setValues(data->getAddressX(), data->getX(), nbyteX, data->getByteOrderX());
+                }
             }
 
             //axisZ
@@ -1688,17 +1692,25 @@ void HexFile::hex2MemBlock(Data *data)
              int nbyteY = data->getY(0).count() / 2;
 
             //axisX : copy axisX only if it is a std_axis
-            if (!data->getAxisDescrX())
+            if (data->getAxisDescrX())
             {
-                setValues(data->getAddressX(), data->getX(), nbyteX, data->getByteOrderX());
+                QString typeAxisX = data->getAxisDescrX()->getPar("Attribute");
+                if (typeAxisX.compare("STD_AXIS") == 0)
+                {
+                    setValues(data->getAddressX(), data->getX(), nbyteX, data->getByteOrderX());
+                }
             }
 
             //axisY : copy axisY only if it is a std_axis
             if (!data->isSizeChanged())
             {
-                if (!data->getAxisDescrY())
+                if (data->getAxisDescrY())
                 {
-                    setValues(data->getAddressY(), data->getY(), nbyteY, data->getByteOrderY());
+                    QString typeAxisX = data->getAxisDescrX()->getPar("Attribute");
+                    if (typeAxisX.compare("STD_AXIS") == 0)
+                    {
+                        setValues(data->getAddressY(), data->getY(), nbyteY, data->getByteOrderY());
+                    }
                 }
 
                 //axisZ
@@ -1797,14 +1809,27 @@ QStringList HexFile::block2list()
 
     for (int i = 0; i < blockList.count(); i++)
     {
-        QString cks = checksum(":02000004" + blockList[i]->uLBA);
-        lineList.append(":02000004" + blockList[i]->uLBA + cks);
+        QString cks = "";
+        int strt = 0;
+        if (blockList[i]->uSBA.isEmpty())
+        {
+            cks = checksum(":02000004" + blockList[i]->uLBA);
+            lineList.append(":02000004" + blockList[i]->uLBA + cks);
+        }
+        else if (blockList[i]->uLBA.isEmpty())
+        {
+            cks = checksum(":02000002" + blockList[i]->uSBA);
+            lineList.append(":02000002" + blockList[i]->uSBA + cks);
+        }
+
         x = 0;
         j = 0;
 
-        bool bl;
-        QString start = blockList[i]->uLBA + "0000";
-        int strt = start.toUInt(&bl, 16);
+//        bool bl;
+//        QString start = blockList[i]->uLBA + "0000";
+//        strt = start.toUInt(&bl, 16);
+
+        strt = blockList[i]->start;
 
         int end = blockList[i]->length;
         while (j < end)

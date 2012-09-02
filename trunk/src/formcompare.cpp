@@ -2019,7 +2019,7 @@ void FormCompare::on_copy_clicked()
         listCopyTrg = list1;
     }
 
-    //compare the listSrc and listTrg
+    //compare the listSrc and listTrg to copy only the "physically" different lables
     int step = 0;
     QList<Data*>::iterator i = listCopySrc->begin();
     QList<Data*>::iterator j = listCopyTrg->begin();
