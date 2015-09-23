@@ -1,4 +1,5 @@
 #---------------- GENERAL settings ---------------#
+#test svn Github
 
 TEMPLATE = app
 DEPENDPATH += .
