@@ -1,5 +1,6 @@
 #---------------- GENERAL settings ---------------#
 #test svn Github
+#test svn LMB
 
 TEMPLATE = app
 DEPENDPATH += .
