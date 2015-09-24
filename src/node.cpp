@@ -337,13 +337,13 @@ int Node::distance(QString source, QString target)
 
       for (int i = 1; i <= n; i++) {
 
-        const char s_i = source.at(i-1).toAscii();
+        const char s_i = source.at(i-1).toLatin1();
 
         // Step 4
 
         for (int j = 1; j <= m; j++) {
 
-          const char t_j = target.at(j-1).toAscii();
+          const char t_j = target.at(j-1).toLatin1();
 
           // Step 5
 

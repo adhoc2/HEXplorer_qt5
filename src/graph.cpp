@@ -1,4 +1,4 @@
-// HEXplorer is an Asap and HEX file editor
+//HEXplorer is an Asap and HEX file editor
 // Copyright (C) 2011  <Christophe Hoel>
 //
 // This file is part of HEXplorer.
@@ -18,7 +18,7 @@
 // please contact the author at : christophe.hoel@gmail.com
 
 #include "graph.h"
-#include "plot3d.h"
+//#include "plot3d.h"
 #include "plot.h"
 #include <qtoolbar.h>
 #include <qtoolbutton.h>
@@ -47,15 +47,15 @@ Graph::Graph(QWidget *parent, Data *dat) :  QMainWindow(parent)
 
     // create plots
     data = dat;
-    plotXZ = new Plot(model, "XZ");
+    plotXZ = new Plot(model, QString("XZ"));
     verticalLayout->addWidget(plotXZ);
     canvasXZ =  new CanvasPicker(this, plotXZ);
     if (dat->yCount() > 0)
     {
-        plotYZ = new Plot(model, "YZ");
+        plotYZ = new Plot(model, QString("YZ"));
         verticalLayout->addWidget(plotYZ);
         plotYZ->hide();
-        canvasYZ =  new CanvasPicker(this, plotYZ, true);
+        canvasYZ =  new CanvasPicker(this, plotYZ);
     }
 
     // tableView
@@ -119,9 +119,9 @@ void Graph::plot3D()
 {
     if (data->getY().count() > 0)
     {
-        Plot3D *plot = new Plot3D(0, data);
-        plot->resize(600, 400);
-        plot->show();
+        //Plot3D *plot = new Plot3D(0, data);
+        //plot->resize(600, 400);
+        //plot->show();
     }
 }
 

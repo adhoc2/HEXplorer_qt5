@@ -40,7 +40,8 @@ void MeasModel::setList(QList<Node *> labelList)
     nRow = labelList.count() + 1;
     nColumn = 10;
 
-    reset();
+    beginResetModel();
+    endResetModel();
 }
 
 int MeasModel::rowCount(const QModelIndex &parent) const
@@ -157,7 +158,8 @@ QVariant MeasModel::data(const QModelIndex &index, int role) const
 
         case Qt::ForegroundRole: // the foreground brush (text color, typically) used for items rendered with the default delegate.
             {
-                return Qt::red;
+            QColor color = Qt::red;
+            return color;
             }
             break;
         }
@@ -282,7 +284,8 @@ QVariant MeasModel::data(const QModelIndex &index, int role) const
             {
                 if (column == 0)
                 {
-                    return Qt::blue;
+                    QColor color = Qt::blue;
+                    return color;
                 }
             }
             break;

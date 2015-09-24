@@ -19,7 +19,7 @@
 
 #include "a2lgrammar.h"
 #include "Nodes/a2lfile.h"
-
+#include "qdebug.h"
 
 A2lGrammar::A2lGrammar()
 {
@@ -37,7 +37,9 @@ A2lGrammar::A2lGrammar()
     initMeasurement();
     initCalibration_handle();
     initCalibration_method();
+    initCompuTab();
     initCompuVtab();
+    initCompuVtabRange();
     initDef_characteristic();
     initFormula();
     initFunction();
@@ -76,6 +78,7 @@ A2lGrammar::A2lGrammar()
     initCustomer_number();
     initData_size();
     initDefault_value();
+    initDefault_value_numeric();
     initDeposit();
     initDisplay_identifier();
     initEcu();
@@ -112,6 +115,8 @@ A2lGrammar::A2lGrammar()
 
 QHash<QString, TokenTyp> A2lGrammar::initKeywords()
 {
+    //----------Token Type : Keyword ----------------------
+
     QHash<QString, TokenTyp> keywordsList;
     QList<std::string> list;
 
@@ -125,21 +130,21 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
         << "BIT_MASK" << "ADDR_EPK" << "EPK" << "CUSTOMER_NO" << "USER" << "PHONE_NO" << "ECU"
         << "CPU_TYPE" << "MEMORY_SEGMENT" << "CALIBRATION_METHOD" << "CALIBRATION_HANDLE"
         << "CALIBRATION_HANDLE_TEXT" << "FUNCTION" << "MOD_COMMON" << "COMPU_METHOD" << "COMPU_VTAB"
-        << "MEMORY_LAYOUT" << "S_REC_LAYOUT" << "SRC_ADDR_X" << "SRC_ADDR_Y"
+        << "COMPU_VTAB_RANGE" << "MEMORY_LAYOUT" << "S_REC_LAYOUT" << "SRC_ADDR_X" << "SRC_ADDR_Y"
         << "/begin" << "/end" << "DEPOSIT" << "NUMBER" << "READ_ONLY" << "FIX_AXIS_PAR"
         << "COEFFS" << "COEFFS_LINEAR" << "COMPU_TAB_REF" << "FORMULA" << "FORMULA_INV" << "REF_UNIT"
-        << "STATUS_STRING_REF" << "DEFAULT_VALUE" << "DEF_CHARACTERISTIC" <<"OUT_MEASUREMENT"
+        << "STATUS_STRING_REF" << "DEFAULT_VALUE" << "DEFAULT_VALUE_NUMERIC" << "DEF_CHARACTERISTIC" <<"OUT_MEASUREMENT"
         << "NO_AXIS_PTS_X" << "NO_AXIS_PTS_Y" << "AXIS_PTS_X" << "AXIS_PTS_Y" << "FNC_VALUES"
         << "ALIGNMENT_FLOAT32_IEEE" << "ALIGNMENT_FLOAT64_IEEE" << "ALIGNMENT_BYTE" << "ALIGNMENT_WORD" << "ALIGNMENT_LONG"
         << "FUNCTION_VERSION" << "IN_MEASUREMENT" << "SUB_FUNCTION" << "MAX_REFRESH" << "CUSTOMER" << "SUPPLIER" << "UNIT" << "SI_EXPONENTS" << "UNIT_CONVERSION"
-        << "DATA_SIZE" << "GROUP" << "SUB_GROUP" << "ROOT" << "REF_MEASUREMENT" << "ECU_ADDRESS_EXTENSION" << "MATRIX_DIM" << "FIX_AXIS_PAR_DIST";
+        << "DATA_SIZE" << "SUB_GROUP" << "ROOT" << "REF_MEASUREMENT" << "ECU_ADDRESS_EXTENSION" << "MATRIX_DIM" << "FIX_AXIS_PAR_DIST";
 
     foreach (std::string str, list)
         keywordsList.insert(QString(str.c_str()), Keyword);
 
     list.clear();
 
-    //--------------------------------
+    //----------Token Type : Type ----------------------
 
     list << "ASCII" << "CURVE" << "MAP" << "CUBOID" << "CUBE_4" << "CUBE_5" << "VAL_BLK" << "VALUE";
 
@@ -148,7 +153,7 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
 
     list.clear();
 
-    //--------------------------------
+    //----------Token Type : DataType ----------------------
 
     list << "UBYTE" << "SBYTE" << "UWORD" << "SWORD" << "ULONG" << "SLONG" << "A_UINT64"
             << "A_INT64" << "FLOAT32_IEEE" << "FLOAT64_IEEE";
@@ -158,7 +163,7 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
 
     list.clear();
 
-    //--------------------------------
+    //----------Token Type : Datasize ----------------------
 
     list << "BYTE" << "WORD" << "LONG";
 
@@ -167,7 +172,7 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
 
     list.clear();
 
-    //--------------------------------
+    //----------Token Type : Addrtype ----------------------
 
     list << "PBYTE" << "PWORD" << "PLONG" << "DIRECT";
 
@@ -176,7 +181,7 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
 
     list.clear();
 
-    //--------------------------------
+    //----------Token Type : Byteorder ----------------------
 
     list << "LITTLE_ENDIAN" << "BIG_ENDIAN" << "MSB_LAST" << "MSB_FIRST";
 
@@ -185,7 +190,7 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
 
     list.clear();
 
-    //--------------------------------
+    //----------Token Type : IndexMode ----------------------
 
     list << "ALTERNATE_CURVES" <<"ALTERNATE_WITH_X" << "ALTERNATE_WITH_Y" << "COLUMN_DIR"
             << "ROW_DIR";
@@ -195,7 +200,7 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
 
     list.clear();
 
-    //--------------------------------
+    //----------Token Type : Indexorder ----------------------
 
     list << "INDEX_DECR" <<"INDEX_INCR";
 
@@ -204,7 +209,7 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
 
     list.clear();
 
-    //--------------------------------
+    //----------Token Type : ConversionType ----------------------
 
     list << "RAT_FUNC" << "TAB_VERB" << "IDENTICAL" << "FORM" << "LINEAR" << "TAB_INTP"
             << "TAB_NOINTP";
@@ -214,7 +219,7 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
 
     list.clear();
 
-    //--------------------------------
+    //----------Token Type : Attribute ----------------------
 
     list << "CURVE_AXIS" << "COM_AXIS" << "FIX_AXIS" << "RES_AXIS" << "STD_AXIS";
 
@@ -223,7 +228,7 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
 
     list.clear();
 
-    //--------------------------------
+    //----------Token Type : Mode ----------------------
 
     list << "ABSOLUTE" << "REFERENCE";
 
@@ -232,7 +237,7 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
 
     list.clear();
 
-    //--------------------------------
+    //----------Token Type : PrgType ----------------------
 
     list << "CALIBRATION_VARIABLES" << "CODE" << "DATA" << "EXCLUDE_FROM_FLASH" << "OFFLINE_DATA"
             << "RESERVED" << "SERAM" << "VARIABLES" << "PRG_CODE" << "PRG_DATA" << "PRG_RESERVED";
@@ -242,7 +247,7 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
 
     list.clear();
 
-    //--------------------------------
+    //----------Token Type : MemoryType ----------------------
 
     list << "EEPROM" << "EPROM" << "FLASH" << "RAM" << "ROM" << "REGISTER";
 
@@ -251,7 +256,7 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
 
     list.clear();
 
-    //--------------------------------
+    //----------Token Type : MemAttribute ----------------------
 
     list << "INTERN" << "EXTERN";
 
@@ -259,12 +264,14 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
         keywordsList.insert(QString(str.c_str()), MemAttribute);
     list.clear();
 
-    //--------------------------------
+    //----------Token Type : UnitType ----------------------
 
     list << "DERIVED" << "EXTENDED_SI";
 
     foreach (std::string str, list)
         keywordsList.insert(QString(str.c_str()), UnitType);
+
+
 
     return keywordsList;
 }
@@ -347,7 +354,7 @@ void A2lGrammar::initAxis_pts()
     axis_pts.factoryOptNode.insert("IF_DATA", &IF_DATA::nodeFactory);
     axis_pts.factoryOptNode.insert("ANNOTATION", &ANNOTATION::nodeFactory);
     axis_pts.factoryOptNode.insert("FUNCTION_LIST", &FUNCTION_LIST::nodeFactory);
-
+    axis_pts.factoryOptItem.insert("READ_ONLY", &READ_ONLY::itemFactory);
     axis_pts.factoryOptItem.insert("FORMAT", &FORMAT::itemFactory);
     axis_pts.factoryOptItem.insert("EXTENDED_LIMITS", &EXTENDED_LIMITS::itemFactory);
     axis_pts.factoryOptItem.insert("DEPOSIT", &DEPOSIT::itemFactory);
@@ -424,12 +431,31 @@ void A2lGrammar::initCalibration_method()
 
 }
 
+void A2lGrammar::initCompuTab()
+{
+    compuTab.typePar << Identifier << String << ConversionType << Integer;
+    compuTab.namePar << "Name" << "LongIdentifier" << "ConversionType" << "NumberValuePairs";
+
+    compuTab.factoryOptItem.insert("DEFAULT_VALUE", &DEFAULT_VALUE::itemFactory);
+    compuTab.factoryOptItem.insert("DEFAULT_VALUE_NUMERIC", &DEFAULT_VALUE_NUMERIC::itemFactory);
+
+}
+
 void A2lGrammar::initCompuVtab()
 {
     compuVtab.typePar << Identifier << String << ConversionType << Integer;
     compuVtab.namePar << "Name" << "LongIdentifier" << "ConversionType" << "NumberValuePairs";
 
     compuVtab.factoryOptItem.insert("DEFAULT_VALUE", &DEFAULT_VALUE::itemFactory);
+
+}
+
+void A2lGrammar::initCompuVtabRange()
+{
+    compuVtabRange.typePar << Identifier << String  << Integer;
+    compuVtabRange.namePar << "Name" << "LongIdentifier"  << "NumberValuePairs";
+
+    compuVtabRange.factoryOptItem.insert("DEFAULT_VALUE", &DEFAULT_VALUE::itemFactory);
 
 }
 
@@ -508,7 +534,9 @@ void A2lGrammar::initModule()
     module.factoryOptNode.insert("FUNCTION", &FUNCTION::nodeFactory);
     module.factoryOptNode.insert("MOD_COMMON", &MOD_COMMON::nodeFactory);
     module.factoryOptNode.insert("COMPU_METHOD", &COMPU_METHOD::nodeFactory);
+    module.factoryOptNode.insert("COMPU_TAB", &COMPU_TAB::nodeFactory);
     module.factoryOptNode.insert("COMPU_VTAB", &COMPU_VTAB::nodeFactory);
+    module.factoryOptNode.insert("COMPU_VTAB_RANGE", &COMPU_VTAB_RANGE::nodeFactory);
     module.factoryOptNode.insert("RECORD_LAYOUT", &RECORD_LAYOUT::nodeFactory);
     module.factoryOptNode.insert("GROUP", &GGROUP::nodeFactory);
     module.factoryOptNode.insert("UNIT", &UNIT::nodeFactory);
@@ -740,6 +768,13 @@ void A2lGrammar::initDefault_value()
 {
     default_value.typePar  << String;
     default_value.namePar << "display_string";
+}
+
+
+void A2lGrammar::initDefault_value_numeric()
+{
+    default_value_numeric.typePar  << Float;
+    default_value_numeric.namePar << "display_float";
 }
 
 void A2lGrammar::initDeposit()

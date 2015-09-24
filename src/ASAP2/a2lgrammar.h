@@ -57,7 +57,9 @@ class A2lGrammar
         ElementNode calibration_handle;
         ElementNode calibration_method;
         ElementNode characteristic;
+        ElementNode compuTab;
         ElementNode compuVtab;
+        ElementNode compuVtabRange;
         ElementNode def_characteristic;
         ElementNode ref_characteristic;
         ElementNode ref_measurement;
@@ -103,6 +105,7 @@ class A2lGrammar
         ElementItem customer_number;
         ElementItem data_size;
         ElementItem default_value;
+        ElementItem default_value_numeric;
         ElementItem deposit;
         ElementItem display_identifier;
         ElementItem ecu;
@@ -148,7 +151,9 @@ private:
         void initCalibration_handle();
         void initCalibration_method();
         void initCharacteristic();
+        void initCompuTab();
         void initCompuVtab();
+        void initCompuVtabRange();
         void initDef_characteristic();
         void initAxis_pts();
         void initRecord_layout();
@@ -192,6 +197,7 @@ private:
         void initCustomer_number();
         void initData_size();
         void initDefault_value();
+        void initDefault_value_numeric();
         void initDeposit();
         void initDisplay_identifier();
         void initEcu();

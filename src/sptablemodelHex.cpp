@@ -357,9 +357,9 @@ QVariant SpTableModelHex::data(const QModelIndex &index, int role) const
             QColor color2 = Qt::blue;
 
             if (row - sum == 0 && column == 0)
-                return Qt::blue;
+                return color2;
             else if (row - sum  == 0 && column == 1)
-                return Qt::red;
+                return color1;
 
             if (listDataModel->at(ind)->xCount() == 0) //Value
             {
@@ -1093,7 +1093,8 @@ void SpTableModelHex::setList(QList<Data *> *labelList)
         if (listDataModel->at(i)->xCount() + 2 > nColumn)
             nColumn = listDataModel->at(i)->xCount() + 2;
 
-    reset();
+    beginResetModel();
+    endResetModel();
 }
 
 QList<Data*> *SpTableModelHex::getList()

@@ -40,7 +40,8 @@ void CharModel::setList(QList<Node *> labelList)
     nRow = labelList.count() + 1;
     nColumn = 10;
 
-    reset();
+    beginResetModel();
+    endResetModel();
 }
 
 int CharModel::rowCount(const QModelIndex &parent) const
@@ -161,7 +162,8 @@ QVariant CharModel::data(const QModelIndex &index, int role) const
 
         case Qt::ForegroundRole: // the foreground brush (text color, typically) used for items rendered with the default delegate.
             {
-                return Qt::red;
+            QColor color = Qt::red;
+            return color;
             }
             break;
         }
@@ -285,8 +287,10 @@ QVariant CharModel::data(const QModelIndex &index, int role) const
 
         case Qt::ForegroundRole: // the foreground brush (text color, typically) used for items rendered with the default delegate.
             {
-                if (column == 0) {
-                    return Qt::blue;
+                if (column == 0)
+                {
+                    QColor color = Qt::blue;
+                    return color;
                 }
             }
             break;

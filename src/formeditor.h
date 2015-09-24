@@ -20,7 +20,7 @@
 #ifndef FORMEDITOR_H
 #define FORMEDITOR_H
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 namespace Ui {
     class FormEditor;

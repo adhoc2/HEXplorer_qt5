@@ -109,7 +109,7 @@ bool SwInstance::isConsistentWith(Data *data)
 //             {
 //                 if (i < text.length() - 2)
 //                 {
-//                     asciiVal = text.at(i + 1).toAscii();
+//                     asciiVal = text.at(i + 1).toLatin1();
 //                     list.append(QString::number(asciiVal));
 //                 }
 //                 else
@@ -803,7 +803,7 @@ void CdfxFile::swInstance2Data()
                         {
                             if (i < text.length() - 2)
                             {
-                                asciiVal = text.at(i + 1).toAscii();
+                                asciiVal = text.at(i + 1).toLatin1();
                                 list.append(QString::number(asciiVal));
                             }
                             else

@@ -56,7 +56,7 @@ void DialogEditAsText::on_buttonBox_accepted()
     {
         if (i < text.length())
         {
-            asciiVal = text.at(i).toAscii();
+            asciiVal = text.at(i).toLatin1();
             myData->setZ(i, QString::number(asciiVal));
         }
         else

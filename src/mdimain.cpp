@@ -17,7 +17,7 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QtCore>
 #include <cstdarg>
 #include <omp.h>
@@ -150,12 +150,17 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
     connect(ui->treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(nodeSelected()));
     connect(ui->tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(removeTab(int)));
 
-    // check for updates
+    //check for updates
     connect(this, SIGNAL(check()), this, SLOT(initCheckHttpUpdates()), Qt::QueuedConnection);
-
     QSettings settings(qApp->organizationName(), qApp->applicationName());
     if ((settings.value("Update/automatic") == true) || (!settings.contains("Update/automatic")))
         emit check();
+
+    //create settings variables for multi_thread and lexer type
+    if (!settings.contains("openMP"))
+        settings.setValue("openMP", 1);
+    if (!settings.contains("lexer"))
+        settings.setValue("lexer", "Quex");
 
 }
 
@@ -973,12 +978,12 @@ void MDImain::on_actionAbout_triggered()
                    "M, Radio Tarifa, Al, John, Paco, Noir dez, et tous les autres...\n\n"
                    "build " + qApp->applicationVersion() + " compiled with MSVC2010\n\n"
                    "This software uses external libraries :\n"
-                   "   - Qt framework 4.8.2 (Nokia)\n"
-                   "   - Quex 0.61.2 (as efficient lexical analyser generator)\n"
-                   "   - QScintilla (as efficient text editor)\n"
-                   "   - Qwt (as 2D graph plotter)\n"
+                   "   - Qt framework 5.5.0\n"
+                   "   - Quex 0.65.4 (as efficient lexical analyser generator)\n"
+                   "   - QScintilla 2.9 (as efficient text editor)\n"
+                   "   - Qwt 6.1.2 (as 2D graph plotter)\n"
                    "   - Qwtplot3D (as 3D graph plotter)\n"
-                   "   - Winhoard (as efficient malloc-replacement for windows)\n\n"
+                   "   - Winhoard 38(as efficient malloc-replacement for windows)\n\n"
                    "Please visit the following link for more information :\n"
             "http://code.google.com/p/hexplorer/";
     QMessageBox::about(this, tr("HEXplorer :: About"), tr(text.toLocal8Bit().data()));
@@ -4829,10 +4834,10 @@ void MDImain::import_Subsets()
                     // copy subset if compatible
                     foreach (QString str, list.keys())
                     {
-                        Csv *csv = list.value(str);
+                       // Csv *csv = list.value(str);
 
-                        bool missingLabels = false;
-                        bool newLabels = false;
+                       // bool missingLabels = false;
+                       // bool newLabels = false;
                     }
 
                 }
@@ -5196,5 +5201,6 @@ QString MDImain::getUserName()
         }
         return userName;
     #endif
+        return "";
 
 }

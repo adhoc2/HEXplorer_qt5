@@ -20,7 +20,7 @@
 #ifndef MDIMAIN_H
 #define MDIMAIN_H
 
-#include <QtGui/QMainWindow>
+#include <QtWidgets/QMainWindow>
 #include <QModelIndex>
 #include <QProgressBar>
 class Node;

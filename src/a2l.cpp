@@ -24,7 +24,7 @@
 #include <QTime>
 #include <QMap>
 #include <QFileInfo>
-#include <qtconcurrentrun.h>
+#include <QtConcurrent/QtConcurrent>
 #include <QFutureWatcher>
 #include <QProgressDialog>
 
@@ -40,6 +40,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+
 using namespace std;
 
 
@@ -88,9 +89,18 @@ void A2l::parse()
 #ifdef MY_DEBUG
     myDebug = 1;
 #endif
-    if (omp_get_num_procs() > 1 && !myDebug)
+    QString multiThread = "";
+    QString lexerType = "";
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
+    if (settings.value("lexer") == "Quex")
+        lexerType = "Quex";
+    else
+        lexerType = "Lex";
+
+    if (omp_get_num_procs() > 1 && !myDebug && settings.value("openMP") == true)
     {
         parseOpenMPA2l();
+        multiThread = "openMP";
     }
     else
     {
@@ -112,7 +122,7 @@ void A2l::parse()
     double t = timer.elapsed();
     QString sec ;
     sec.setNum(t/1000);
-    this->outputList.append("elapsed time to parse the A2L file = " + sec + " s");
+    this->outputList.append("elapsed time to parse(" + lexerType + "/" + multiThread + ") the A2L file = " + sec + " s");
 
 }
 
@@ -133,6 +143,7 @@ void A2l::parseSTA2l()
     // create a stream into the file (Merci Oscar...)
     // open the file in binary mode "rb" to get the right file length
     // when openinig in ascci mode "r", the \r are cancelled when calling fread()
+
     FILE* fid = fopen(fullA2lName.toStdString().c_str(),"r");
     if (!fid)
     {
@@ -152,29 +163,51 @@ void A2l::parseSTA2l()
     fread(buffer, sizeof(char), size, fid);
     fclose(fid);
 
-    //save the buffer into a stringstream qluex
-    std::istringstream in(buffer);
-    //QString str = QString::fromAscii(buffer, size);
-    //QTextStream in(&str);
-
-    //free memory from the char* buffer
-    delete buffer;
-
     // set the maximum for the progressbar
     progBarMaxValue = size;
 
-    //delete previous tree and create a new rootNode
-    //A2lLexer *lexer = new A2lLexer(in);
-    A2lQuexLexer *lexer = new A2lQuexLexer(in);
-    connect(lexer, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)), Qt::DirectConnection);
-    lexer->initialize();
-    QStringList *errorList = new QStringList();
+    //Start tokenizer Quex or myLex
+    A2lLexer *lexer = 0;
+    QStringList *errorList = 0;
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
+    if (settings.value("lexer") == "Quex")
+    {
+        //save the buffer into a stringstream qluex
+        std::istringstream in(buffer);
 
-    //create an ASAP2 file Node to start parsing
-    A2LFILE *nodeA2l = new A2LFILE(0, lexer, errorList, fullA2lName);
-    nodeA2l->name = new char[(QFileInfo(fullA2lName).fileName()).toLocal8Bit().count() + 1];
-    strcpy(nodeA2l->name, QFileInfo(fullA2lName).fileName().toLocal8Bit().data());
-    a2lFile = nodeA2l;
+        //start the tokeniser Quex
+        lexer = new A2lQuexLexer(in);
+        connect(lexer, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)), Qt::DirectConnection);
+        lexer->initialize();
+        errorList = new QStringList();
+
+        //create an ASAP2 file Node to start parsing
+        A2LFILE *nodeA2l = new A2LFILE(0, lexer, errorList, fullA2lName);
+        nodeA2l->name = new char[(QFileInfo(fullA2lName).fileName()).toLocal8Bit().count() + 1];
+        strcpy(nodeA2l->name, QFileInfo(fullA2lName).fileName().toLocal8Bit().data());
+        a2lFile = nodeA2l;
+    }
+    else if (settings.value("lexer") != "Quex")
+    {
+        //save the buffer into a qtextstream  for my lexer
+        QString str = QString::fromLatin1(buffer, size);
+        QTextStream in(&str);
+
+        //start the tokeniser myLex
+        lexer = new A2lLexer(in);
+        connect(lexer, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)), Qt::DirectConnection);
+        lexer->initialize();
+        errorList = new QStringList();
+
+        //create an ASAP2 file Node to start parsing
+        A2LFILE *nodeA2l = new A2LFILE(0, lexer, errorList, fullA2lName);
+        nodeA2l->name = new char[(QFileInfo(fullA2lName).fileName()).toLocal8Bit().count() + 1];
+        strcpy(nodeA2l->name, QFileInfo(fullA2lName).fileName().toLocal8Bit().data());
+        a2lFile = nodeA2l;
+    }
+
+    //free memory from the char* buffer
+    delete buffer;
 
     // show error
     if (errorList->isEmpty())
@@ -228,7 +261,7 @@ bool A2l::parseOpenMPA2l()
     fclose(fid);
 
     //save the buffer into a QString for splitting
-    QString str = QString::fromAscii(buffer, size);
+    QString str = QString::fromLatin1(buffer, size);
 
     //free memory from the char* buffer
     delete buffer;
@@ -261,6 +294,7 @@ bool A2l::parseOpenMPA2l()
     omp_set_num_threads(2);
     double t_ref1 = 0, t_final1 = 0;
     double t_ref2 = 0, t_final2 = 0;
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
     #pragma omp parallel
       {
           #pragma omp sections
@@ -271,23 +305,43 @@ bool A2l::parseOpenMPA2l()
                     // start timer
                     t_ref1 = omp_get_wtime();
 
-                    // create a new lexer
-//                    QTextStream out1(&str1);
-//                    A2lLexer *lexer1 = new A2lLexer(out1);
-                    std::istringstream out1(str1.toStdString());
-                    A2lQuexLexer *lexer1 = new A2lQuexLexer(out1);
-                    connect(lexer1, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)),
-                            Qt::DirectConnection);
-                    lexer1->initialize();
-                    QStringList *errorList1 = new QStringList();
+                    A2lLexer *lexer1 = 0;
+                    QStringList *errorList1 = 0;
 
+                    if (settings.value("lexer") == "Quex")
+                    {
+                        // create a new lexer
+                        std::istringstream out1(str1.toStdString());
+                        lexer1 = new A2lQuexLexer(out1);
+                        connect(lexer1, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)),
+                                Qt::DirectConnection);
+                        lexer1->initialize();
+                        errorList1 = new QStringList();
 
-                    // start parsing the file
-                    nodeA2l1 = new A2LFILE(0, lexer1, errorList1, fullA2lName);
+                        // start parsing the file
+                        nodeA2l1 = new A2LFILE(0, lexer1, errorList1, fullA2lName);
 
-                    // change the name
-                    nodeA2l1->name = new char[(QFileInfo(fullA2lName).fileName()).toLocal8Bit().count() + 1];
-                    strcpy(nodeA2l1->name, QFileInfo(fullA2lName).fileName().toLocal8Bit().data());
+                        // change the name
+                        nodeA2l1->name = new char[(QFileInfo(fullA2lName).fileName()).toLocal8Bit().count() + 1];
+                        strcpy(nodeA2l1->name, QFileInfo(fullA2lName).fileName().toLocal8Bit().data());
+                    }
+                    else if (settings.value("lexer") != "Quex")
+                    {
+                        // create a new lexer
+                        QTextStream out1(&str1);
+                        lexer1 = new A2lLexer(out1);
+                        connect(lexer1, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)),
+                                Qt::DirectConnection);
+                        lexer1->initialize();
+                        errorList1 = new QStringList();
+
+                        // start parsing the file
+                        nodeA2l1 = new A2LFILE(0, lexer1, errorList1, fullA2lName);
+
+                        // change the name
+                        nodeA2l1->name = new char[(QFileInfo(fullA2lName).fileName()).toLocal8Bit().count() + 1];
+                        strcpy(nodeA2l1->name, QFileInfo(fullA2lName).fileName().toLocal8Bit().data());
+                    }
 
                     // stop timer
                     t_final1 = omp_get_wtime();
@@ -299,19 +353,43 @@ bool A2l::parseOpenMPA2l()
                     // start timer
                     t_ref2 = omp_get_wtime();
 
-                    // create a new lexer
-//                    QTextStream out2(&str2);
-//                    A2lLexer *lexer2 = new A2lLexer(out2);
-                    std::istringstream out2(str2.toStdString());
-                    A2lQuexLexer *lexer2 = new A2lQuexLexer(out2);
-                    connect(lexer2, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)),
-                            Qt::DirectConnection);
-                    lexer2->initialize();
-                    QStringList *errorList2 = new QStringList();
+                    A2lLexer *lexer2 = 0;
+                    QStringList *errorList2 = 0;
 
+                    if (settings.value("lexer") == "Quex")
+                    {
+                        // create a new lexer
+                        std::istringstream out2(str2.toStdString());
+                        lexer2 = new A2lQuexLexer(out2);
+                        connect(lexer2, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)),
+                                Qt::DirectConnection);
+                        lexer2->initialize();
+                        errorList2 = new QStringList();
 
-                    // start parsing the file
-                    nodeA2l2 = new A2LFILE(0, lexer2, errorList2);
+                        // start parsing the file
+                        nodeA2l2 = new A2LFILE(0, lexer2, errorList2, fullA2lName);
+
+                        // change the name
+                        nodeA2l2->name = new char[(QFileInfo(fullA2lName).fileName()).toLocal8Bit().count() + 1];
+                        strcpy(nodeA2l2->name, QFileInfo(fullA2lName).fileName().toLocal8Bit().data());
+                    }
+                    else if (settings.value("lexer") != "Quex")
+                    {
+                        // create a new lexer
+                        QTextStream out2(&str2);
+                        lexer2 = new A2lLexer(out2);
+                        connect(lexer2, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)),
+                                Qt::DirectConnection);
+                        lexer2->initialize();
+                        errorList2 = new QStringList();
+
+                        // start parsing the file
+                        nodeA2l2 = new A2LFILE(0, lexer2, errorList2, fullA2lName);
+
+                        // change the name
+                        nodeA2l2->name = new char[(QFileInfo(fullA2lName).fileName()).toLocal8Bit().count() + 1];
+                        strcpy(nodeA2l2->name, QFileInfo(fullA2lName).fileName().toLocal8Bit().data());
+                    }
 
                     // stop timer
                     t_final2 = omp_get_wtime();
@@ -683,21 +761,24 @@ void A2l::readSubset()
 
 void A2l::checkProgressStream(int pos)
 {
-    omp_set_lock(&lockValue);
-    progressVal += pos;
-
-    double div = (double)progressVal/(double)progBarMaxValue;
-
-    if (div > 0.98)
+    if (progressVal != progBarMaxValue)
     {
-        emit incProgressBar(progBarMaxValue, progBarMaxValue);
-    }
-    else
-    {
-         emit incProgressBar(progressVal, progBarMaxValue);
-    }
+        omp_set_lock(&lockValue);
+        progressVal += pos * 2;
 
-    omp_unset_lock(&lockValue);
+        double div = (double)progressVal/(double)progBarMaxValue;
+
+        if (div > 0.98)
+        {
+            emit incProgressBar(progBarMaxValue, progBarMaxValue);
+        }
+        else
+        {
+             emit incProgressBar(progressVal, progBarMaxValue);
+        }
+
+        omp_unset_lock(&lockValue);
+    }
 }
 
 bool A2l::isOk()

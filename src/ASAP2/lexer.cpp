@@ -64,7 +64,7 @@ void Buffer::read(QTextStream *in)
     
 //    if (c != 0 && c.unicode() < 128)
 //    {
-//        value = c.toAscii();
+//        value = c.toLatin1();
 //        state = true;
 //    }
 //    else if (c.unicode() > 127)
@@ -933,6 +933,10 @@ TokenTyp A2lQuexLexer::myToken(quex::Token *token_p)
 
     switch (token_p->type_id())
     {
+    case  QUEX_TKN_UNKNOWN :
+        return myUnknown;
+        break;
+
     case  QUEX_TKN_MODE :
         return Mode;
         break;

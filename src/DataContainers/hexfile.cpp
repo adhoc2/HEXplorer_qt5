@@ -226,7 +226,7 @@ bool HexFile::parseFile()
     timer.restart();
 
     //save the buffer into a QStringList
-    QString strBuffer = QString::fromAscii(buffer, size);
+    QString strBuffer = QString::fromLatin1(buffer, size);
     QTextStream in;
     in.setString(&strBuffer);
     QStringList lines;

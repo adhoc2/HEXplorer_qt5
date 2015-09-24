@@ -65,7 +65,7 @@ QString DialogUpdate::getUserName()
         }
         return userName;
     #endif
-
+return "";
 }
 
 void DialogUpdate::readConfigFile(QString configFilePath, bool bl)

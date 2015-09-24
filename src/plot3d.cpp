@@ -22,8 +22,8 @@
 #include <qmainwindow.h>
 #include <qtoolbar.h>
 #include <qtoolbutton.h>
-#include <qprinter.h>
-#include <qprintdialog.h>
+#include <QtPrintSupport/QPrinter>
+#include <QtPrintSupport/QPrintdialog>
 #include "Nodes/axis_descr.h"
 #include "Nodes/compu_method.h"
 #include "qdebug.h"

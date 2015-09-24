@@ -25,7 +25,7 @@
 #include "Nodes/compu_vtab.h"
 #include "spreadsheetview.h"
 #include <typeinfo>
-#include <QtGui>
+#include <QtWidgets>
 
 
  ComboBoxDelegate::ComboBoxDelegate(QObject *parent)  : QItemDelegate(parent)

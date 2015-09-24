@@ -1,11 +1,9 @@
 #---------------- GENERAL settings ---------------#
-#test svn Github
-#test svn LMB
 
 TEMPLATE = app
 DEPENDPATH += .
 INCLUDEPATH += .
-QT       += core gui opengl network script xml xmlpatterns
+QT       += core gui opengl network script xml xmlpatterns widgets concurrent printsupport axcontainer
 contains(QT_CONFIG, scripttools): QT += scripttools
 RESOURCES += icones.qrc
 RC_FILE = myappicon.rc
@@ -19,18 +17,18 @@ equals( QMAKE_CXX, cl) {
 
     # --- common config --- #
 
-    QSCINTILLA_ROOT = ..\LIBS\QScintilla-gpl-2.5.1
+    QSCINTILLA_ROOT = ..\LIBS\QScintilla-gpl-2.9
     WINHOARD_ROOT = ..\LIBS\hoard-38\src
-    QWT_ROOT = ..\LIBS\qwt-6.0.1
+    QWT_ROOT = ..\LIBS\qwt-6.1.2
     QWT3D_ROOT = ..\LIBS\qwtplot3d
 
-    CONFIG += embed_manifest_exe qaxcontainer
+    CONFIG += embed_manifest_exe
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL CL_COMPILER
     INCLUDEPATH += . "C:\Program Files\quex\quex-0.62.1" \
      .\ASAP2 \
      .\DataContainers \
      .\Quex  \
-     $${QSCINTILLA_ROOT}\Qt4 \
+     $${QSCINTILLA_ROOT}\Qt4Qt5 \
      $${WINHOARD_ROOT}\src \
      $${QWT_ROOT}\src \
      $${QWT3D_ROOT}\include \
@@ -42,7 +40,7 @@ equals( QMAKE_CXX, cl) {
         MOC_DIR = debug\moc
         OBJECTS_DIR = debug\obj
         LIBS += -l$${WINHOARD_ROOT}\winhoard \
-        -l$${QSCINTILLA_ROOT}\Qt4\lib\qscintilla2d \
+        -l$${QSCINTILLA_ROOT}\Qt4Qt5\lib\qscintilla2d \
         -l$${QWT3D_ROOT}\lib\qwtplot3dd \
         -l$${QWT_ROOT}\lib\qwtd        
 
@@ -55,7 +53,7 @@ equals( QMAKE_CXX, cl) {
         MOC_DIR = release\moc
         OBJECTS_DIR = release\obj
         LIBS += -l$${WINHOARD_ROOT}\winhoard \
-        -l$${QSCINTILLA_ROOT}\Qt4\lib\qscintilla2 \
+        -l$${QSCINTILLA_ROOT}\Qt4Qt5\lib\qscintilla2 \
         -l$${QWT3D_ROOT}\lib\qwtplot3d \
         -l$${QWT_ROOT}\lib\qwt \
 
@@ -75,14 +73,22 @@ equals( QMAKE_CXX, cl) {
 
     # --- common config --- #
 
-    QSCINTILLA_ROOT = ../LIBS/QScintilla-gpl-2.5.1
-    QWT_ROOT = ../LIBS/qwt-6.0.1
+    QSCINTILLA_ROOT = ../LIBS/QScintilla-gpl-2.9
+    QWT_ROOT = ../LIBS/qwt-6.1.2
     QWT3D_ROOT = ../LIBS/qwtplot3d
-    QUEX_ROOT = /Applications/quex/quex-0.60.2
+   # QUEX_ROOT = /Applications/quex/quex-0.60.2
+    QUEX_ROOT = "C:\Quex\quex-0.65.4"
 
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
-    INCLUDEPATH += . ./ASAP2 $${QUEX_ROOT} ./Quex ./DataContainers $${QWT_ROOT}/src $${QWT3D_ROOT}/include $${QSCINTILLA_ROOT}/Qt4
-    LIBS += -L$${QSCINTILLA_ROOT}/Qt4/lib \
+
+    INCLUDEPATH += . ./ASAP2 $${QUEX_ROOT} \
+    ./Quex \
+    ./DataContainers \
+    $${QWT_ROOT}/src \
+    $${QWT3D_ROOT}/include \
+    $${QSCINTILLA_ROOT}/Qt4Qt5
+
+    LIBS += -L$${QSCINTILLA_ROOT}/Qt4Qt5/lib \
     -L$${QWT3D_ROOT}/lib \
     -L$${QWT_ROOT}/lib
 
@@ -92,7 +98,8 @@ equals( QMAKE_CXX, cl) {
         MOC_DIR = debug/moc
         OBJECTS_DIR = debug/obj
         DEFINES += MY_DEBUG
-        LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
+        #LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
+        LIBS += -lqwt -lgomp -lqscintilla2
         QMAKE_CXXFLAGS_DEBUG += -fopenmp
     }
     else {
@@ -101,7 +108,8 @@ equals( QMAKE_CXX, cl) {
         UI_DIR = release/ui
         MOC_DIR = release/moc
         OBJECTS_DIR = release/obj
-        LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
+        #LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
+        LIBS += -lqwt -lgomp -lqscintilla2
         QMAKE_CXXFLAGS_RELEASE += -O3 -fopenmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
 }
@@ -129,7 +137,6 @@ HEADERS += a2l.h \
     choosesubset.h \
     dialogcsv.h \
     mytreeview.h \
-    plot3d.h \
     plot.h \
     graph.h \
     graphmodel.h \
@@ -255,14 +262,12 @@ HEADERS += a2l.h \
     ASAP2/Items/matrix_dim.h \
     ASAP2/Items/fix_axis_par_dist.h \
     DataContainers/srecfile.h \
-    Quex/a2l_quex_lexer.qx \
-    Quex/a2l_quex_lexer-token_ids \
-    Quex/a2l_quex_lexer-token \
-    Quex/a2l_quex_lexer-configuration \
-    Quex/a2l_quex_lexer \
     ASAP2/Nodes/unit.h \
     ASAP2/Items/si_exponents.h \
-    ASAP2/Items/unit_conversion.h
+    ASAP2/Items/unit_conversion.h \
+    ASAP2/Nodes/compu_vtab_range.h \
+    ASAP2/Nodes/compu_tab.h \
+    ASAP2/Items/default_value_numeric.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -301,7 +306,6 @@ SOURCES += a2l.cpp \
     choosesubset.cpp \
     dialogcsv.cpp \
     mytreeview.cpp \
-    plot3d.cpp \
     plot.cpp \
     graph.cpp \
     graphmodel.cpp \
@@ -429,7 +433,10 @@ SOURCES += a2l.cpp \
     ASAP2/Nodes/unit.cpp \
     ASAP2/Items/si_exponents.cpp \
     ASAP2/Items/unit_conversion.cpp \
-    ASAP2/a2l_quex_lexer.cpp
+    ASAP2/Nodes/compu_vtab_range.cpp \
+    ASAP2/Nodes/compu_tab.cpp \
+    Quex/a2l_quex_lexer.cpp \
+    ASAP2/Items/default_value_numeric.cpp
 
 OTHER_FILES += \
     GNU_license.txt \

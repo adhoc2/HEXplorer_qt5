@@ -583,7 +583,7 @@ bool Csv::readFile()
                             {
                                 if (i < text.length() - 2)
                                 {
-                                    asciiVal = text.at(i + 1).toAscii();
+                                    asciiVal = text.at(i + 1).toLatin1();
                                     data->appendZ(QString::number(asciiVal));
                                 }
                                 else

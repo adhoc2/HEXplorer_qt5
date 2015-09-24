@@ -23,23 +23,27 @@
 #   define __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
 #endif
 
-#define QUEX_SETTING_VERSION           "0.62.1"
-#define QUEX_SETTING_BUILD_DATE        "Tue May 22 23:20:47 2012"
+#define QUEX_SETTING_VERSION           "0.65.4"
+#define QUEX_SETTING_BUILD_DATE        "Wed Sep 23 11:54:31 2015"
 #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 
 #ifndef    __QUEX_OPTION_PLAIN_C
 /* #define __QUEX_OPTION_PLAIN_C */
 #endif
 
-/* NOTE: The check for the 'C++/C' version and the Assert derivation
- *       are not to be located in 'quex/code_base/configuration/validation'
- *       or 'quex/code_base/configuration/derived' -- errors would be hard to find .*/ 
+/* Following checks are best done here:
+ *   -- Verification of the 'C++/C' version.
+ *   -- Assert control by this configuration file.
+ *
+ * Errors would be hard to find if the two checks were made in
+ *   -- 'quex/code_base/configuration/validation' or
+ *   -- 'quex/code_base/configuration/derived'.                              */ 
 #if ! defined(__QUEX_OPTION_PLAIN_C) && ! defined(__cplusplus)
 #   error "__QUEX_OPTION_PLAIN_C must be defined if no C++ compiler is used! Call quex with option '--language C'."
 #endif
 
 #if defined(__QUEX_INCLUDE_INDICATOR__ASSERTS)
-#   error "Asserts have been adapted before the inclusion of the configuration file."
+#   error "Asserts included before configuration file. However, the configuration file MUST control asserts!"
 #endif
 #
 #if           defined(QUEX_OPTION_ASSERTS_DISABLED) || defined(NDEBUG)
@@ -119,6 +123,8 @@
 #ifndef    QUEX_OPTION_COLUMN_NUMBER_COUNTING          
 #define    QUEX_OPTION_COLUMN_NUMBER_COUNTING       
 #endif
+
+#define    QUEX_IF_IS_NEWLINE(X)    if( X == '\n' )
 
 #ifndef QUEX_OPTION_POST_CATEGORIZER
 /* #define QUEX_OPTION_POST_CATEGORIZER */
@@ -270,6 +276,7 @@
  *       goal harder achievable.                                                            */
 #ifndef    QUEX_TYPE_CHARACTER
 #   define QUEX_TYPE_CHARACTER          uint8_t
+#   define QUEX_TYPE_CHARACTER_BACKUP   uint8_t
 #endif 
 #ifndef    QUEX_SETTING_CHARACTER_SIZE
     /* Size of a QUEX_TYPE_CHARACTER in bytes. A numeric value is required here!
@@ -280,6 +287,9 @@
 #ifndef    QUEX_SETTING_CHARACTER_CODEC   
 #   define QUEX_SETTING_CHARACTER_CODEC unicode
 #endif
+/* The following flag indicates that the engine is running on a specific
+ * codec. Thus no converter is necessary. Use the flag to detect misuse.                    */
+/* #define __QUEX_OPTION_ENGINE_RUNNING_ON_CODEC */
 
 #ifndef    QUEX_TYPE_ACCEPTANCE_ID
 #   define QUEX_TYPE_ACCEPTANCE_ID   int
@@ -308,6 +318,11 @@
 #   define QUEX_NAMESPACE_TOKEN   
 #   define QUEX_NAMESPACE_TOKEN_OPEN  
 #   define QUEX_NAMESPACE_TOKEN_CLOSE 
+
+#   define QUEX_NAMESPACE_LEXEME_NULL_OPEN     
+#   define QUEX_NAMESPACE_LEXEME_NULL_CLOSE    
+#   define QUEX_LEXEME_NULL_IN_ITS_NAMESPACE   quex_LexemeNullObject
+#   define QUEX_LEXEME_NULL                    quex_LexemeNullObject
 
 #   define QUEX_NAME(NAME)             quex_a2l_quex_lexer_ ## NAME
 #   define QUEX_NAME_TOKEN(NAME)       quex_Token_ ## NAME
@@ -346,6 +361,13 @@
 #   define QUEX_NAMESPACE_TOKEN_CLOSE  } /* Closing Namespace 'quex' */\
 
 
+#   define QUEX_NAMESPACE_LEXEME_NULL_OPEN     namespace quex {\
+
+#   define QUEX_NAMESPACE_LEXEME_NULL_CLOSE    } /* Closing Namespace 'quex' */\
+
+#   define QUEX_LEXEME_NULL_IN_ITS_NAMESPACE   LexemeNullObject
+#   define QUEX_LEXEME_NULL                    ::quex::LexemeNullObject
+
 #   define QUEX_NAME(NAME)             a2l_quex_lexer_ ## NAME
 #   define QUEX_NAME_TOKEN(NAME)       Token_ ## NAME
 #   define QUEX_MEMBER(NAME)           a2l_quex_lexer::NAME                
@@ -359,7 +381,6 @@
 #   define QUEX_FUNCTION_PREFIX_BACKUP        
 #   define QUEX_FUNCTION_DEF_PREFIX_BACKUP   ::quex::
 #endif
-
 
 #ifndef    QUEX_TYPE_TOKEN_ID
 #   define QUEX_TYPE_TOKEN_ID        uint32_t

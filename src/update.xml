@@ -1,6 +1,12 @@
 <HEXplorer application="HEXplorer">
-    <revision version="0.6.11">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
-    <details>revision 0.6.11 (02/09/2012) :
+    <revision version="0.6.12">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
+    <details>revision 0.6.12 (09/2015) :
+    - use of Qt 5.5.0
+    - add new keywords form ASAP2
+    - implement opnemMP and lexer as app propriety
+
+
+revision 0.6.11 (02/09/2012) :
     - use of Qt 4.8.2
     - A2L parser improvements (new keywords)
     - import/export Srec files

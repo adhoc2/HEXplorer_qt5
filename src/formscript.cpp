@@ -26,7 +26,7 @@
 #include <Qsci/qscilexerjavascript.h>
 #include <Qsci/qsciapis.h>
 #include <QScriptEngine>
-#include <QScriptEngineDebugger>
+#include <QtScriptTools/QScriptEngineDebugger>
 #include <QScriptValueIterator>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
@@ -276,7 +276,7 @@ QScriptValue plotFunction(QScriptContext *context, QScriptEngine *engine)
     if (gridOn)
     {
         QwtPlotGrid *grid = new QwtPlotGrid;
-        grid->setMajPen(QPen(Qt::gray, 0, Qt::DotLine));
+        grid->setMajorPen(QPen(Qt::gray, 0, Qt::DotLine));
         grid->attach(plot);
     }
 
@@ -553,18 +553,18 @@ void FormScript::runScript()
 
 void FormScript::debugScript()
 {
-    // create a new WorkProject and add it to the script engine
-    //WorkProject *wp = new WorkProject();
-    //QScriptValue wpValue = engine.newQObject(wp);
-    //engine.globalObject().setProperty("wp", wpValue);
+//    // create a new WorkProject and add it to the script engine
+//    //WorkProject *wp = new WorkProject();
+//    //QScriptValue wpValue = engine.newQObject(wp);
+//    //engine.globalObject().setProperty("wp", wpValue);
 
-    // add a debugger to the engine
-    QScriptEngineDebugger debugger;
-    debugger.attachTo(&engine);
-    debugger.action(QScriptEngineDebugger::InterruptAction)->trigger();
+//    // add a debugger to the engine
+//    QScriptEngineDebugger debugger;
+//    debugger.attachTo(&engine);
+//    debugger.action(QScriptEngineDebugger::InterruptAction)->trigger();
 
-    // evaluate the script
-    evaluateScript(textEdit->text());
+//    // evaluate the script
+//    evaluateScript(textEdit->text());
 
 }
 

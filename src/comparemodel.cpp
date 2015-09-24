@@ -1899,7 +1899,8 @@ void CompareModel::setList(QList<Data *> *labelList, QList<Data *> *labelList2)
     }
 
     //refresh model
-    reset();
+    beginResetModel();
+    endResetModel();
 }
 
 Data *CompareModel::getLabel(const QModelIndex &index, int role)

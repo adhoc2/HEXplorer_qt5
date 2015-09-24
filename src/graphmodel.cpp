@@ -501,6 +501,7 @@ bool GraphModel::setData(const QModelIndex &index, const QModelIndexList &indexL
 bool GraphModel::setData(int row, int col, const QVariant &value, int role)
 {
     QModelIndex index = getIndex(row, col);
+    emit dataChanged(index, index);
 
     return setData(index, value, role);
 }
@@ -718,7 +719,8 @@ void GraphModel::setVal(Data *data)
     dat = data;
     nRow = dat->size;
     nColumn = dat->xCount() + 2;
-    reset();
+    beginResetModel();
+    endResetModel();
 }
 
 Data *GraphModel::getLabel(const QModelIndex &index, int role)

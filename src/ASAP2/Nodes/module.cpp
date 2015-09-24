@@ -42,7 +42,9 @@ MODULE::MODULE(Node *parentNode)
     occOptPar->insert("FUNCTION", ZeroOrMore);
     occOptPar->insert("AXIS_PTS", ZeroOrMore);
     occOptPar->insert("COMPU_METHOD", ZeroOrMore);
+    occOptPar->insert("COMPU_TAB", ZeroOrMore);
     occOptPar->insert("COMPU_VTAB", ZeroOrMore);
+    occOptPar->insert("COMPU_VTAB_RANGE", ZeroOrMore);
     occOptPar->insert("RECORD_LAYOUT", ZeroOrMore);
     occOptPar->insert("A2ML", ZeroOrOne);
     occOptPar->insert("MOD_PAR", ZeroOrOne);
@@ -264,6 +266,19 @@ TokenTyp MODULE::parseOptPar(QMap<std::string, Occurence> *nameOptPar)
                                 instance = factoryOptNode->value(lexem)->createInstance(child("COMPU_METHOD", false));
                                 child("COMPU_METHOD", false)->addChildNode(instance);
                             }
+                            else if (lexem == "COMPU_TAB")
+                            {
+                                if (!this->isChild("COMPU_TAB"))
+                                {
+                                    Node *Comp_v = new Node(this, this->lex, this->errorList);
+                                    Comp_v->name = (char*)"COMPU_TAB";
+                                    this->addChildNode(Comp_v);
+                                    //Comp_v->_pixmap = ":/icones/COMPU_TAB.bmp";
+                                    Comp_v->_pixmap = "";
+                                }
+                                instance = factoryOptNode->value(lexem)->createInstance(child("COMPU_TAB", false));
+                                child("COMPU_TAB", false)->addChildNode(instance);
+                            }
                             else if (lexem == "COMPU_VTAB")
                             {
                                 if (!this->isChild("COMPU_VTAB"))
@@ -276,6 +291,19 @@ TokenTyp MODULE::parseOptPar(QMap<std::string, Occurence> *nameOptPar)
                                 }
                                 instance = factoryOptNode->value(lexem)->createInstance(child("COMPU_VTAB", false));
                                 child("COMPU_VTAB", false)->addChildNode(instance);
+                            }
+                            else if (lexem == "COMPU_VTAB_RANGE")
+                            {
+                                if (!this->isChild("COMPU_VTAB_RANGE"))
+                                {
+                                    Node *Comp_v = new Node(this, this->lex, this->errorList);
+                                    Comp_v->name = (char*)"COMPU_VTAB_RANGE";
+                                    this->addChildNode(Comp_v);
+                                    //Comp_v->_pixmap = ":/icones/COMPU_VTAB_RANGE.bmp";
+                                    Comp_v->_pixmap = "";
+                                }
+                                instance = factoryOptNode->value(lexem)->createInstance(child("COMPU_VTAB_RANGE", false));
+                                child("COMPU_VTAB_RANGE", false)->addChildNode(instance);
                             }
                             else if (lexem == "RECORD_LAYOUT")
                             {

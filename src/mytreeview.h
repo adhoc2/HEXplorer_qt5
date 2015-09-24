@@ -20,7 +20,7 @@
 #ifndef MYTREEVIEW_H
 #define MYTREEVIEW_H
 
-#include <QtGui>
+#include <QtWidgets>
 
 class MyTreeView : public QTreeView
 {

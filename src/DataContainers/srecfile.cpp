@@ -153,19 +153,22 @@ SrecFile::SrecFile(QString fullSrecFileName, WorkProject *parentWP, QString modu
 
     //get the memory_block used to store datas
     MOD_PAR *modePar = (MOD_PAR*)a2lProject->getNode("MODULE/" + getModuleName() + "/MOD_PAR");
-    foreach (Node* node, modePar->childNodes)
+    if (modePar)
     {
-        QString type = typeid(*node).name();
-        if (type.endsWith("MEMORY_SEGMENT"))
+        foreach (Node* node, modePar->childNodes)
         {
-            MEMORY_SEGMENT* mem_seg = (MEMORY_SEGMENT*)node;
-            QString _prgType = mem_seg->getPar("PrgType");
-            if (_prgType == "DATA")
+            QString type = typeid(*node).name();
+            if (type.endsWith("MEMORY_SEGMENT"))
             {
-                bool bl;
-                listMemSegData.append(QString(mem_seg->getPar("Address")).toUInt(&bl, 16));
-                listMemSegData.append(QString(mem_seg->getPar("Address")).toUInt(&bl, 16) +
-                                      (QString(mem_seg->getPar("Size")).toUInt(&bl, 16)));
+                MEMORY_SEGMENT* mem_seg = (MEMORY_SEGMENT*)node;
+                QString _prgType = mem_seg->getPar("PrgType");
+                if (_prgType == "DATA")
+                {
+                    bool bl;
+                    listMemSegData.append(QString(mem_seg->getPar("Address")).toUInt(&bl, 16));
+                    listMemSegData.append(QString(mem_seg->getPar("Address")).toUInt(&bl, 16) +
+                                          (QString(mem_seg->getPar("Size")).toUInt(&bl, 16)));
+                }
             }
         }
     }
@@ -221,7 +224,7 @@ bool SrecFile::parseFile()
     timer.restart();
 
     //save the buffer into a QStringList
-    QString strBuffer = QString::fromAscii(buffer, size);
+    QString strBuffer = QString::fromLatin1(buffer, size);
     QTextStream in;
     in.setString(&strBuffer);
     QStringList lines;
@@ -278,7 +281,10 @@ bool SrecFile::parseFile()
             cnt++;
             break;
 
-        case 3: //Data Sequence
+//        case 2: //Data Sequence(24 bit)
+//            break;
+
+        case 3: //Data Sequence (32 bit)
         {
 
             // create a new memory block
@@ -649,18 +655,18 @@ void SrecFile::readAllData()
                     {
                         found = true;
                         AXIS_PTS *axis = (AXIS_PTS*)label2;
-                        //QString add = axis->getPar("Adress");
+                        QString add = axis->getPar("Adress");
 
-                        //bool bl = isValidAddress(add);
-                        //if (bl)
-                        //{
+                        bool bl = isValidAddress(add);
+                        if (bl)
+                        {
                             Data *data = new Data(axis, a2lProject, this);
                             listData.append(data);
-                        //}
-                        //else
-                        //{
+                        }
+                        else
+                        {
 
-                        //}
+                        }
                     }
                 }
 
@@ -1357,39 +1363,6 @@ QList<double> SrecFile::getDecValues(double IAddr, int nByte, int count, std::st
 
 bool SrecFile::isValidAddress(QString address)
 {
-//    int length = listMemSegData.count();
-//    bool bl;
-//    unsigned int IAddr =address.toUInt(&bl, 16);
-
-//    if (length == 0)
-//    {
-//        int block = 0;
-//        while (block < blockList.count())
-//        {
-//            if ((blockList[block]->start <= IAddr) && (IAddr <= blockList[block]->end))
-//            {
-//                break;
-//            }
-//            block++;
-//        }
-
-//        if (block >=  blockList.count())
-//            return false;
-//        else
-//            return true;
-
-//    }
-//    else
-//    {
-//        for (int i = 0; i < length - 1; i+=2)
-//        {
-//            if (listMemSegData.at(i) <= IAddr && IAddr < listMemSegData.at(i + 1) )
-//                return true;
-//        }
-//    }
-
-
-//    return false;
 
     bool bl;
     unsigned int IAddr =address.toUInt(&bl, 16);

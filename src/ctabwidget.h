@@ -20,7 +20,7 @@
 #ifndef CTABWIDGET_H
 #define CTABWIDGET_H
 
-#include <QtGui>
+#include <QtWidgets>
 
 class CTabWidget : public QTabWidget
 {

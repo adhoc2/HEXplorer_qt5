@@ -45,7 +45,7 @@ Plot::Plot(GraphModel *mod, QString type) : QwtPlot()
     }
     else if (data->getSrecParent())
     {
-        setTitle(data->getName() + " " + data->getUnit() + " (" + QString(data->getSrecParent()->name) + ")");
+        //setTitle(data->getName() + " " + data->getUnit() + " (" + QString(data->getSrecParent()->name) + ")");
     }
     else if (data->getCsvParent())
     {
@@ -129,7 +129,7 @@ void Plot::plotXZ()
 
     // set Grid
     QwtPlotGrid *grid = new QwtPlotGrid;
-    grid->setMajPen(QPen(Qt::gray, 0, Qt::DotLine));
+    grid->setMajorPen(QPen(Qt::gray, 0, Qt::DotLine));
     grid->attach(this);
 
     // set background
@@ -250,7 +250,7 @@ void Plot::plotYZ()
 
     // set Grid
     QwtPlotGrid *grid = new QwtPlotGrid;
-    grid->setMajPen(QPen(Qt::gray, 0, Qt::DotLine));
+    grid->setMajorPen(QPen(Qt::gray, 0, Qt::DotLine));
     grid->attach(this);
 
     // set background

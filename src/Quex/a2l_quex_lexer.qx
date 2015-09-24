@@ -1,6 +1,7 @@
  //      -*- C++ -*-
-//     cd C:\Users\Christophe Hoël\Documents\hexplorer_svn\src\Quex
+//     cd C:\Users\lmbhoc2\Documents\PRIVATE\PROGRAMMING\hexplorer_550_Mingw\src\Quex
 //     quex -i a2l_quex_lexer.qx -o a2l_quex_lexer > toto.txt
+
 
 header
 {
@@ -18,9 +19,8 @@ define
    D_BLOCK_BEGIN 		\/begin
    D_BLOCK_END 			\/end
 //   D_STRING			\".*\"   
-   D_STRING			\"(\\\"|\"\"|\\'|\\[^"'\\]|[^\\"])*\"   
 //   D_STRING			\"([^\\\"]*((\\\"[^\\\"]*\\\"[^\"]*)+\"|(\"\"[^\"]*\"\"[^\"]*)+\"|(\\\\[^\"]*)+\"))   
-
+   D_STRING			\"(\\\"|\"\"|\\'|\\[^"'\\]|[^\\"]|\\\\)*\"   
    D_COMMENT			(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)
 
 }
@@ -51,10 +51,11 @@ token
    MEMORYTYPE;
    MEMATTRIBUTE;  
    UNITTYPE;
+   UNKNOWN;
 }
 
 mode ONE_AND_ONLY :
-<skip:       [ \r\n\t]>
+//<skip:       [ \r\n\t]>
 <skip_range: "/begin A2ML" "/end A2ML">
 <skip_range: "/begin IF_DATA" "/end IF_DATA">
 {
@@ -104,6 +105,7 @@ mode ONE_AND_ONLY :
 	COMPU_TAB 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	COMPU_TAB_REF 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	COMPU_VTAB 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
+	COMPU_VTAB_RANGE 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	CPU_TYPE 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	CUBE_4 	 { self_send1(QUEX_TKN_TYPE , Lexeme); RETURN; }
 	CUBE_5 	 { self_send1(QUEX_TKN_TYPE , Lexeme); RETURN; }
@@ -116,6 +118,7 @@ mode ONE_AND_ONLY :
         DATA_SIZE 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	DEF_CHARACTERISTIC 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	DEFAULT_VALUE 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
+	DEFAULT_VALUE_NUMERIC 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	DEPOSIT 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	DERIVED 	 { self_send1(QUEX_TKN_UNITTYPE , Lexeme); RETURN; }
 	DIRECT 	 { self_send1(QUEX_TKN_ADDRTYPE , Lexeme); RETURN; }
@@ -235,5 +238,12 @@ mode ONE_AND_ONLY :
 	{D_BLOCK_BEGIN} 						{ self_send1(QUEX_TKN_BLOCKBEGIN, Lexeme); RETURN; }
 	{D_BLOCK_END} 							{ self_send1(QUEX_TKN_BLOCKEND, Lexeme); RETURN; }
 	{D_HEX} 								{ self_send1(QUEX_TKN_HEX, Lexeme); RETURN; }
-       
+        
+
+        on_failure { self_send1(QUEX_TKN_UNKNOWN , Lexeme); RETURN; }
+
 }
+
+
+
+

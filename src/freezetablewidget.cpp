@@ -38,7 +38,7 @@
 **
 ****************************************************************************/
 
-#include <QtGui>
+#include <QtWidgets>
 
 #include "freezetablewidget.h"
 
@@ -76,7 +76,7 @@ void FreezeTableWidget::init()
       frozenTableView->setModel(model());
       frozenTableView->setFocusPolicy(Qt::NoFocus);
       frozenTableView->verticalHeader()->hide();
-      frozenTableView->horizontalHeader()->setResizeMode(QHeaderView::Fixed);
+      frozenTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
 
       viewport()->stackUnder(frozenTableView);
 

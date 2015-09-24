@@ -17,7 +17,7 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#include <QtGui>
+#include <QtWidgets>
 #include <typeinfo>
 #include "projectlistwidget.h"
 

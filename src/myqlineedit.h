@@ -20,7 +20,7 @@
 #ifndef MYQLINEEDIT_H
 #define MYQLINEEDIT_H
 
-#include <QtGui>
+#include <QtWidgets>
 
 
 class MyQLineEdit : public QLineEdit

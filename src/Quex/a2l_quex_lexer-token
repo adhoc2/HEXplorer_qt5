@@ -8,10 +8,16 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/asserts>
 #include <quex/code_base/compatibility/stdint.h>
+#include <quex/code_base/MemoryManager>
+
+/* LexemeNull object may be used for 'take_text'. */
+QUEX_NAMESPACE_LEXEME_NULL_OPEN
+extern QUEX_TYPE_CHARACTER   QUEX_LEXEME_NULL_IN_ITS_NAMESPACE;
+QUEX_NAMESPACE_LEXEME_NULL_CLOSE
 
 
 
-#   line 2 "C:/Program Files/quex/quex-0.62.1/quex/code_base/token/CppDefault.qx"
+#   line 7 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
 
 #       include <iostream>
 #       include <string>
@@ -19,15 +25,9 @@
 #include <quex/code_base/converter_helper/identity>
    
 
-#   line 23 "a2l_quex_lexer-token"
+#   line 29 "a2l_quex_lexer-token"
 
  
-/* LexemeNull object may be used for 'take_text'. */
-QUEX_NAMESPACE_MAIN_OPEN
-extern uint8_t  QUEX_NAME(LexemeNullObject);
-QUEX_NAMESPACE_MAIN_CLOSE
-
-
 namespace quex {
 
 
@@ -61,24 +61,29 @@ public:
     virtual ~Token();
 
 
-#   line 12 "C:/Program Files/quex/quex-0.62.1/quex/code_base/token/CppDefault.qx"
+#   line 14 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
     std::basic_string<QUEX_TYPE_CHARACTER> text;
-#   line 13 "C:/Program Files/quex/quex-0.62.1/quex/code_base/token/CppDefault.qx"
+
+#   line 68 "a2l_quex_lexer-token"
+
+#   line 15 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
     size_t                                 number;
-#   line 69 "a2l_quex_lexer-token"
+
+#   line 73 "a2l_quex_lexer-token"
 
 
 public:
 
-#   line 12 "C:/Program Files/quex/quex-0.62.1/quex/code_base/token/CppDefault.qx"
+#   line 14 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
     std::basic_string<QUEX_TYPE_CHARACTER> get_text() const                                         { return text; }
-#   line 12 "C:/Program Files/quex/quex-0.62.1/quex/code_base/token/CppDefault.qx"
+#   line 14 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
     void                                   set_text(std::basic_string<QUEX_TYPE_CHARACTER>& Value)  { text = Value; }
-#   line 13 "C:/Program Files/quex/quex-0.62.1/quex/code_base/token/CppDefault.qx"
+#   line 15 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
     size_t                                 get_number() const                                       { return number; }
-#   line 13 "C:/Program Files/quex/quex-0.62.1/quex/code_base/token/CppDefault.qx"
+#   line 15 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
     void                                   set_number(size_t Value)                                 { number = Value; }
-#   line 82 "a2l_quex_lexer-token"
+
+#   line 87 "a2l_quex_lexer-token"
 
     void set(const QUEX_TYPE_TOKEN_ID ID) { _id = ID; }
     void set(const QUEX_TYPE_TOKEN_ID ID, const std::basic_string<QUEX_TYPE_CHARACTER>& Value0)
@@ -116,7 +121,7 @@ public:
     public:
 #   define self (*this)
 
-#   line 32 "C:/Program Files/quex/quex-0.62.1/quex/code_base/token/CppDefault.qx"
+#   line 77 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
 
         typedef std::basic_string<QUEX_TYPE_CHARACTER> __string;
 
@@ -138,6 +143,7 @@ public:
     
         const std::string 
         pretty_char_text() const
+        /* Provides a somehow pretty-print of the text in the token. */
         {
             std::string             tmp = QUEX_CONVERTER_STRING(identical,char)(self.text);
             std::string::size_type  pos = 0;
@@ -165,7 +171,7 @@ public:
 #       endif
    
 
-#   line 169 "a2l_quex_lexer-token"
+#   line 175 "a2l_quex_lexer-token"
 
 #   undef  self
 
@@ -181,20 +187,18 @@ public:
 
 
 
-#   line 121 "C:/Program Files/quex/quex-0.62.1/quex/code_base/token/CppDefault.qx"
+#   line 129 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
 
         namespace quex {
-
         inline std::ostream&
         operator<<(std::ostream& ostr, const Token& Tok)
-        { ostr << std::string(Tok); return ostr; }
+        { ostr << Tok.get_string(); return ostr; }
         } /* Closing Namespace 'quex' */
-
 
 #include <quex/code_base/converter_helper/identity.i>
    
 
-#   line 198 "a2l_quex_lexer-token"
+#   line 202 "a2l_quex_lexer-token"
 
 
 
@@ -208,9 +212,11 @@ public:
 #ifndef __QUEX_INCLUDE_GUARD__TOKEN__GENERATED____QUEX____TOKEN_I
 #define __QUEX_INCLUDE_GUARD__TOKEN__GENERATED____QUEX____TOKEN_I
 
-QUEX_NAMESPACE_MAIN_OPEN
-extern uint8_t  QUEX_NAME(LexemeNullObject);
-QUEX_NAMESPACE_MAIN_CLOSE
+#include <quex/code_base/definitions>
+
+QUEX_NAMESPACE_LEXEME_NULL_OPEN
+extern QUEX_TYPE_CHARACTER   QUEX_LEXEME_NULL_IN_ITS_NAMESPACE;
+QUEX_NAMESPACE_LEXEME_NULL_CLOSE
 
 
 namespace quex {
@@ -262,20 +268,18 @@ QUEX_NAME_TOKEN(copy)(Token* __this, const Token* __That)
     (void)__this;
     (void)__That;
 
-#   line 20 "C:/Program Files/quex/quex-0.62.1/quex/code_base/token/CppDefault.qx"
+#   line 28 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
 
         self._id    = Other._id;
         self.text   = Other.text;
         self.number = Other.number;
-    #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
-    #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#       ifdef QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
         __QUEX_IF_COUNT_LINES(self._line_n     = Other._line_n);
         __QUEX_IF_COUNT_COLUMNS(self._column_n = Other._column_n);
-    #   endif
-    #   endif
+#       endif
    
 
-#   line 279 "a2l_quex_lexer-token"
+#   line 283 "a2l_quex_lexer-token"
 
 #   undef Other
 #   undef self
@@ -295,13 +299,15 @@ QUEX_NAME_TOKEN(take_text)(Token*              __this,
                            QUEX_TYPE_ANALYZER*        __analyzer, 
                            const QUEX_TYPE_CHARACTER* Begin, 
                            const QUEX_TYPE_CHARACTER* End)
+/* RETURNS: true -- if the token claims ownership over the given memory.
+ *          false -- if no ownership is claimed.                             */
 {
 #   define self      (*__this)
 #   define analyzer  (*__analyzer)
     (void)__this;
     (void)__analyzer;
 
-#   line 80 "C:/Program Files/quex/quex-0.62.1/quex/code_base/token/CppDefault.qx"
+#   line 111 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
 
 #       if 0
         {
@@ -318,7 +324,8 @@ QUEX_NAME_TOKEN(take_text)(Token*              __this,
 #       endif
 
         /* It cannot be assumed that the lexeme is zero terminated. */
-        self.text.assign(Begin, End-Begin);
+        __quex_assert(End >= Begin);
+        self.text.assign(Begin, (size_t)(End-Begin));
 
 #       if 0
         {
@@ -335,10 +342,12 @@ QUEX_NAME_TOKEN(take_text)(Token*              __this,
         return false;      
    
 
-#   line 339 "a2l_quex_lexer-token"
+#   line 346 "a2l_quex_lexer-token"
 
 #   undef analyzer
 #   undef self
+    /* Default: no ownership.                                                */
+    return false;
 }
 
 #ifdef QUEX_OPTION_TOKEN_REPETITION_SUPPORT
@@ -348,12 +357,12 @@ QUEX_NAME_TOKEN(repetition_n_get)(Token* __this)
 #   define self (*__this)
     (void)__this;
     
-#   line 117 "C:/Program Files/quex/quex-0.62.1/quex/code_base/token/CppDefault.qx"
+#   line 119 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
 
        return self.number;
    
 
-#   line 357 "a2l_quex_lexer-token"
+#   line 366 "a2l_quex_lexer-token"
 
 #   undef self
 }
@@ -365,12 +374,12 @@ QUEX_NAME_TOKEN(repetition_n_set)(Token* __this, size_t N)
     (void)__this;
     (void)N;
     
-#   line 113 "C:/Program Files/quex/quex-0.62.1/quex/code_base/token/CppDefault.qx"
+#   line 115 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
 
        self.number = N;
    
 
-#   line 374 "a2l_quex_lexer-token"
+#   line 383 "a2l_quex_lexer-token"
 
 #   undef  self
 }

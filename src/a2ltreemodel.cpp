@@ -55,7 +55,8 @@ void A2lTreeModel::addNode2RootNode(Node *node)
     rootNode->sortChildrensName();
 
     // update the model
-    reset();
+    beginResetModel();
+    endResetModel();
 }
 
 void A2lTreeModel::removeChildNode(Node *child)
@@ -244,7 +245,8 @@ QString A2lTreeModel::name(const QModelIndex &index)
 
 void A2lTreeModel::update()
 {
-    reset();
+    beginResetModel();
+    endResetModel();
 }
 
 Qt::DropActions A2lTreeModel::supportedDropActions() const

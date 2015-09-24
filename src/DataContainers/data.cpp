@@ -38,6 +38,7 @@
 #include <QScriptEngine>
 #include <QtCore/qmath.h>
 #include "qdebug.h"
+#include <stdint.h>
 
 // --- initialise static variables
 bool Data::showWeakBoundsExceeded = true;

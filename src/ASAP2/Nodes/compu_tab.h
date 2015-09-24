@@ -17,54 +17,47 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#ifndef MODULE_H
-#define MODULE_H
+#ifndef COMPU_TAB_H
+#define COMPU_TAB_H
 
 #include "node.h"
-#include "item.h"
-#include "lexer.h"
 #include "basefactory.h"
-#include "Nodes/axis_pts.h"
-#include "Nodes/a2ml.h"
-#include "Nodes/measurement.h"
-#include "Nodes/mod_par.h"
-#include "Nodes/if_data.h"
-#include "Nodes/function.h"
-#include "Nodes/mod_common.h"
-#include "Nodes/compu_method.h"
-#include "Nodes/compu_tab.h"
-#include "Nodes/compu_vtab.h"
-#include "Nodes/compu_vtab_range.h"
-#include "Nodes/record_layout.h"
-#include "Nodes/characteristic.h"
-#include "Nodes/group.h"
-#include "Nodes/unit.h"
+#include "Items/default_value.h"
+#include "Items/default_value_numeric.h"
 
-class MODULE : public Node
+
+class COMPU_TAB : public Node
 {
     public:
-        MODULE( Node *parentNode);
-        ~MODULE();
+        COMPU_TAB(Node *parentNode);
+        ~COMPU_TAB();
+        static Factory<Node, COMPU_TAB> nodeFactory;
+
         QMap<std::string, std::string> *getParameters();
-        static Factory<Node, MODULE> nodeFactory;
+        std::string pixmap();
+        QString getValue(int i);
+        QStringList getValueList();
+        int getPos(QString str);
         char* getPar(std::string str);
-        QStringList listChar;
 
     private:
         // Fix parameters
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;
+        QMap<int, std::string> valuePairs;
+        QList<int> listKeyPairs;
+        QList<std::string> listValuePairs;
 
         // Opt parameters
-        QMap<std::string, Occurence> *occOptPar;
         QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
         QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;
 
-      //  #pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
+        //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
 
+        void parsePairs();
         void parseFixPar(QList<TokenTyp> *typePar);
-        TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar);
+        TokenTyp parseOptPar();
 };
 
-#endif // MODULE_H
+#endif // COMPU_TAB_H

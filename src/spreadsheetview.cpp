@@ -17,7 +17,7 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QTableWidgetSelectionRange>
 #ifdef Q_WS_WIN32
     #include <QAxObject>
@@ -63,8 +63,11 @@ SpreadsheetView::~SpreadsheetView()
 
 void SpreadsheetView::createActions()
 {
+
     export2Excel = new QAction(tr("&export to Excel"), this);
-    connect(export2Excel, SIGNAL(triggered()), this, SLOT(exportToExcel()));
+    #ifdef Q_WS_WIN32
+        connect(export2Excel, SIGNAL(triggered()), this, SLOT(exportToExcel()));
+    #endif
     export2Excel->setIcon(QIcon(":/icones/excel"));
     this->addAction(export2Excel);
 

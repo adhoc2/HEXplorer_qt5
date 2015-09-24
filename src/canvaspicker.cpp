@@ -1,22 +1,3 @@
-// HEXplorer is an Asap and HEX file editor
-// Copyright (C) 2011  <Christophe Hoel>
-//
-// This file is part of HEXplorer.
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// please contact the author at : christophe.hoel@gmail.com
-
 #include <qapplication.h>
 #include <qevent.h>
 #include <qwhatsthis.h>
@@ -24,34 +5,53 @@
 #include <qwt_plot.h>
 #include <qwt_symbol.h>
 #include <qwt_scale_map.h>
+#include <qwt_scale_widget.h>
+#include <qwt_scale_draw.h>
 #include <qwt_plot_canvas.h>
 #include <qwt_plot_curve.h>
-#include <qwt_scale_widget.h>
+#include <qwt_plot_grid.h>
 #include <qwt_plot_directpainter.h>
+#include <qwt_plot_layout.h>
 #include "canvaspicker.h"
 #include "plot.h"
-#include "scrollzoomer.h"
 #include "graphmodel.h"
 #include "graph.h"
 #include "graphverify.h"
-
+#include <qglobal.h>
+#include <qtimer.h>
+#include "scrollzoomer.h"
+#include <qdebug.h>
 
 const unsigned int c_rangeMax = 1000;
 
 class Zoomer: public ScrollZoomer
 {
 public:
-    Zoomer(QwtPlotCanvas *canvas):
-        ScrollZoomer(canvas)
+    Zoomer( QWidget *canvas ):
+        ScrollZoomer( canvas )
     {
+#if 0
+        setRubberBandPen( QPen( Qt::red, 2, Qt::DotLine ) );
+#else
+        setRubberBandPen( QPen( Qt::red ) );
+#endif
+    }
+
+    virtual QwtText trackerTextF( const QPointF &pos ) const
+    {
+        QColor bg( Qt::white );
+
+        QwtText text = QwtPlotZoomer::trackerTextF( pos );
+        text.setBackgroundBrush( QBrush( bg ) );
+        return text;
     }
 
     virtual void rescale()
     {
-        QwtScaleWidget *scaleWidget = plot()->axisWidget(yAxis());
+        QwtScaleWidget *scaleWidget = plot()->axisWidget( yAxis() );
         QwtScaleDraw *sd = scaleWidget->scaleDraw();
 
-        int minExtent = 0;
+        double minExtent = 0.0;
         if ( zoomRectIndex() > 0 )
         {
             // When scrolling in vertical direction
@@ -61,21 +61,26 @@ public:
 
             minExtent = sd->spacing() + sd->maxTickLength() + 1;
             minExtent += sd->labelSize(
-                scaleWidget->font(), c_rangeMax).width();
+                scaleWidget->font(), c_rangeMax ).width();
         }
 
-        sd->setMinimumExtent(minExtent);
+        sd->setMinimumExtent( minExtent );
 
         ScrollZoomer::rescale();
+
+
     }
 };
 
-CanvasPicker::CanvasPicker(Graph *parent, Plot *plot, bool inverted):  QObject(plot), d_selectedCurve(NULL),  d_selectedPoint(-1)
+CanvasPicker::CanvasPicker(Graph *parent, Plot *plot, bool inverted ): QObject( plot ),
+    d_selectedCurve( NULL ),
+    d_selectedPoint( -1 )
 {
     parentGraph = parent;
     isInverted = inverted;
-    QwtPlotCanvas *canvas = plot->canvas();
-    canvas->installEventFilter(this);
+
+    QwtPlotCanvas *canvas = qobject_cast<QwtPlotCanvas *>( plot->canvas() );
+    canvas->installEventFilter( this );
 
     model = plot->getModel();
     if (model->getLabel()->yCount() > 0)
@@ -85,23 +90,32 @@ CanvasPicker::CanvasPicker(Graph *parent, Plot *plot, bool inverted):  QObject(p
 
     // We want the focus, but no focus rect. The
     // selected point will be highlighted instead.
-    canvas->setFocusPolicy(Qt::StrongFocus);
+
+    canvas->setFocusPolicy( Qt::StrongFocus );
 #ifndef QT_NO_CURSOR
-    canvas->setCursor(Qt::PointingHandCursor);
+    canvas->setCursor( Qt::PointingHandCursor );
 #endif
-    canvas->setFocusIndicator(QwtPlotCanvas::ItemFocusIndicator);
+    canvas->setFocusIndicator( QwtPlotCanvas::ItemFocusIndicator );
     canvas->setFocus();
-    //shiftCurveCursor(true);
+
+    const char *text =
+        "All points can be moved using the left mouse button "
+        "or with these keys:\n\n"
+        "- Up:\t\tSelect next curve\n"
+        "- Down:\t\tSelect previous curve\n"
+        "- Left, ´-´:\tSelect next point\n"
+        "- Right, ´+´:\tSelect previous point\n"
+        "- 7, 8, 9, 4, 6, 1, 2, 3:\tMove selected point";
+    canvas->setWhatsThis( text );
 
     // zooming
     d_zoomer = new Zoomer(canvas);
-    //d_zoomer->setSelectionFlags(QwtPicker::DragSelection | QwtPicker::CornerToCorner);
     d_zoomer->setRubberBandPen(QPen(Qt::red, 2, Qt::DotLine));
     d_zoomer->setTrackerPen(QPen(Qt::white));
     d_zoomer->setRubberBand(QwtPicker::RectRubberBand);
-//    d_zoomer->setTrackerMode(QwtPicker::AlwaysOff);
     enableZoomMode(false);
 
+    // to update the graph when data changed
     connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(reDraw(QModelIndex,QModelIndex)));
 }
 
@@ -110,114 +124,179 @@ CanvasPicker::CanvasPicker(GraphVerify *parent, Plot *plot, bool inverted):  QOb
 
 }
 
-bool CanvasPicker::event(QEvent *e)
+QwtPlot *CanvasPicker::plot()
 {
-    if ( e->type() == QEvent::User )
-    {
-        showCursor(true);
-        return true;
-    }
-    return QObject::event(e);
+    return qobject_cast<QwtPlot *>( parent() );
 }
 
-bool CanvasPicker::eventFilter(QObject *object, QEvent *e)
+const QwtPlot *CanvasPicker::plot() const
 {
-    if ( object != (QObject *)plot()->canvas() )
+    return qobject_cast<const QwtPlot *>( parent() );
+}
+
+bool CanvasPicker::event( QEvent *ev )
+{
+    if ( ev->type() == QEvent::User )
+    {
+        showCursor( true );
+        return true;
+    }
+    return QObject::event( ev );
+}
+
+bool CanvasPicker::eventFilter( QObject *object, QEvent *event )
+{
+    if ( plot() == NULL || object != plot()->canvas() )
         return false;
 
-    switch(e->type())
+    switch( event->type() )
     {
         case QEvent::FocusIn:
-            showCursor(true);
+        {
+            showCursor( true );
+            break;
+        }
         case QEvent::FocusOut:
-            showCursor(false);
+        {
+            showCursor( false );
+            break;
+        }
         case QEvent::Paint:
-        {   
-            QApplication::postEvent(this, new QEvent(QEvent::User));
+        {
+            QApplication::postEvent( this, new QEvent( QEvent::User ) );
             break;
         }
         case QEvent::MouseButtonPress:
         {
-            selectPoint(((QMouseEvent *)e)->pos());
-            return true; 
+            const QMouseEvent *mouseEvent = static_cast<QMouseEvent *>( event );
+            select( mouseEvent->pos() );
+            return true;
         }
         case QEvent::MouseMove:
         {
-            move(((QMouseEvent *)e)->pos());
-            return true; 
+            const QMouseEvent *mouseEvent = static_cast<QMouseEvent *>( event );
+            move( mouseEvent->pos() );
+            return true;
         }
         case QEvent::KeyPress:
         {
-            switch(((const QKeyEvent *)e)->key())
+            const QKeyEvent *keyEvent = static_cast<QKeyEvent *>( event );
+
+            const int delta = 5;
+            switch( keyEvent->key() )
             {
                 case Qt::Key_Up:
-                    shiftCurveCursor(true);
+                {
+                    shiftCurveCursor( true );
                     return true;
-                    
+                }
                 case Qt::Key_Down:
-                    shiftCurveCursor(false);
+                {
+                    shiftCurveCursor( false );
                     return true;
-
+                }
                 case Qt::Key_Right:
-                    if ( d_selectedCurve )
-                        shiftPointCursor(true);
-                    else
-                        shiftCurveCursor(true);
-                    return true;
-
-                case Qt::Key_Left:
-                    if ( d_selectedCurve )
-                        shiftPointCursor(false);
-                    else
-                        shiftCurveCursor(true);
-                    return true;
-
                 case Qt::Key_Plus:
-                        moveBy(0, -5);
-                        return true;
-
+                {
+                    if ( d_selectedCurve )
+                        shiftPointCursor( true );
+                    else
+                        shiftCurveCursor( true );
+                    return true;
+                }
+                case Qt::Key_Left:
                 case Qt::Key_Minus:
-                        moveBy(0, 5);
-                        return true;
+                {
+                    if ( d_selectedCurve )
+                        shiftPointCursor( false );
+                    else
+                        shiftCurveCursor( true );
+                    return true;
+                }
 
+                // The following keys represent a direction, they are
+                // organized on the keyboard.
+
+                case Qt::Key_1:
+                {
+                    moveBy( -delta, delta );
+                    break;
+                }
+                case Qt::Key_2:
+                {
+                    moveBy( 0, delta );
+                    break;
+                }
+                case Qt::Key_3:
+                {
+                    moveBy( delta, delta );
+                    break;
+                }
+                case Qt::Key_4:
+                {
+                    moveBy( -delta, 0 );
+                    break;
+                }
+                case Qt::Key_6:
+                {
+                    moveBy( delta, 0 );
+                    break;
+                }
+                case Qt::Key_7:
+                {
+                    moveBy( -delta, -delta );
+                    break;
+                }
+                case Qt::Key_8:
+                {
+                    moveBy( 0, -delta );
+                    break;
+                }
+                case Qt::Key_9:
+                {
+                    moveBy( delta, -delta );
+                    break;
+                }
                 default:
                     break;
             }
         }
-
-    default:
+        default:
             break;
     }
-    return QObject::eventFilter(object, e);
+
+    return QObject::eventFilter( object, event );
 }
 
 // Select the point at a position. If there is no point
 // deselect the selected point
-void CanvasPicker::selectPoint(const QPoint &pos)
+
+void CanvasPicker::select( const QPoint &pos )
 {
     QwtPlotCurve *curve = NULL;
     double dist = 10e10;
     int index = -1;
 
     const QwtPlotItemList& itmList = plot()->itemList();
-    for ( QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it )
+    for ( QwtPlotItemIterator it = itmList.begin();
+        it != itmList.end(); ++it )
     {
-        if ( (*it)->rtti() == QwtPlotItem::Rtti_PlotCurve )
+        if ( ( *it )->rtti() == QwtPlotItem::Rtti_PlotCurve )
         {
-            QwtPlotCurve *c = (QwtPlotCurve*)(*it);
+            QwtPlotCurve *c = static_cast<QwtPlotCurve *>( *it );
 
             double d;
-            int idx = c->closestPoint(pos, &d);
+            int idx = c->closestPoint( pos, &d );
             if ( d < dist )
             {
                 curve = c;
                 index = idx;
                 dist = d;
-            } 
+            }
         }
     }
 
-    showCursor(false);
+    showCursor( false );
     d_selectedCurve = NULL;
     d_selectedPoint = -1;
 
@@ -225,7 +304,7 @@ void CanvasPicker::selectPoint(const QPoint &pos)
     {
         d_selectedCurve = curve;
         d_selectedPoint = index;
-        showCursor(true);
+        showCursor( true );
 
         // show item in table
         int row = d_selectedCurve->title().text().toInt();
@@ -237,15 +316,14 @@ void CanvasPicker::selectPoint(const QPoint &pos)
         else
         {
             index = model->index(d_selectedPoint + isMap, row + 1);
-        }      
+        }
         if (parentGraph)
             parentGraph->selectIndexTable(index);
-
     }
 }
 
 // Move the selected point
-void CanvasPicker::moveBy(int dx, int dy)
+void CanvasPicker::moveBy( int dx, int dy )
 {
 //    if ( dx == 0 && dy == 0 )
 //        return;
@@ -253,12 +331,15 @@ void CanvasPicker::moveBy(int dx, int dy)
 //    if ( !d_selectedCurve )
 //        return;
 
-//    const int x = plot()->transform(d_selectedCurve->xAxis(),
-//       d_selectedCurve->x(d_selectedPoint)) + dx;
-//    const int y = plot()->transform(d_selectedCurve->yAxis(),
-//        d_selectedCurve->y(d_selectedPoint)) + dy;
+//    const QPointF sample =
+//        d_selectedCurve->sample( d_selectedPoint );
 
-//    move(QPoint(x, y));
+//    const double x = plot()->transform(
+//        d_selectedCurve->xAxis(), sample.x() );
+//    const double y = plot()->transform(
+//        d_selectedCurve->yAxis(), sample.y() );
+
+//    move( QPoint( qRound( x + dx ), qRound( y + dy ) ) );
 
     if ( dx == 0 && dy == 0 )
             return;
@@ -278,8 +359,46 @@ void CanvasPicker::moveBy(int dx, int dy)
 }
 
 // Move the selected point
-void CanvasPicker::move(const QPoint &pos)
+void CanvasPicker::move( const QPoint &pos )
 {
+//    if ( !d_selectedCurve )
+//        return;
+
+//    QVector<double> xData( d_selectedCurve->dataSize() );
+//    QVector<double> yData( d_selectedCurve->dataSize() );
+
+//    for ( int i = 0;
+//        i < static_cast<int>( d_selectedCurve->dataSize() ); i++ )
+//    {
+//        if ( i == d_selectedPoint )
+//        {
+//            xData[i] = plot()->invTransform(
+//                d_selectedCurve->xAxis(), pos.x() );
+//            yData[i] = plot()->invTransform(
+//                d_selectedCurve->yAxis(), pos.y() );
+//        }
+//        else
+//        {
+//            const QPointF sample = d_selectedCurve->sample( i );
+//            xData[i] = sample.x();
+//            yData[i] = sample.y();
+//        }
+//    }
+//    d_selectedCurve->setSamples( xData, yData );
+
+//    /*
+//       Enable QwtPlotCanvas::ImmediatePaint, so that the canvas has been
+//       updated before we paint the cursor on it.
+//     */
+//    QwtPlotCanvas *plotCanvas =
+//        qobject_cast<QwtPlotCanvas *>( plot()->canvas() );
+
+//    plotCanvas->setPaintAttribute( QwtPlotCanvas::ImmediatePaint, true );
+//    plot()->replot();
+//    plotCanvas->setPaintAttribute( QwtPlotCanvas::ImmediatePaint, false );
+
+//    showCursor( true );
+
     if ( !d_selectedCurve )
         return;
 
@@ -299,12 +418,12 @@ void CanvasPicker::move(const QPoint &pos)
 
     model->setData(row, col, plot()->invTransform(d_selectedCurve->yAxis(), pos.y()), Qt::EditRole);
 
+
 }
 
 // Hightlight the selected point
-void CanvasPicker::showCursor(bool showIt)
+void CanvasPicker::showCursor( bool showIt )
 {
-
     if ( !d_selectedCurve )
         return;
 
@@ -313,25 +432,19 @@ void CanvasPicker::showCursor(bool showIt)
     const QBrush brush = symbol->brush();
     if ( showIt )
     {
-        //symbol->setBrush(symbol->brush().color().dark(150));
+        //symbol->setBrush(symbol->brush().color().dark(180));
         symbol->setBrush(QColor(Qt::red));
     }
 
-    const bool doReplot = plot()->autoReplot();
-
-    plot()->setAutoReplot(false);
-
     QwtPlotDirectPainter directPainter;
-    directPainter.drawSeries(d_selectedCurve, d_selectedPoint, d_selectedPoint);
+    directPainter.drawSeries( d_selectedCurve, d_selectedPoint, d_selectedPoint );
 
     if ( showIt )
-        symbol->setBrush(brush); // reset brush
-
-    plot()->setAutoReplot(doReplot);
+        symbol->setBrush( brush ); // reset brush
 }
 
-// Select the next/previous curve 
-void CanvasPicker::shiftCurveCursor(bool up)
+// Select the next/previous curve
+void CanvasPicker::shiftCurveCursor( bool up )
 {
     QwtPlotItemIterator it;
 
@@ -340,7 +453,7 @@ void CanvasPicker::shiftCurveCursor(bool up)
     QwtPlotItemList curveList;
     for ( it = itemList.begin(); it != itemList.end(); ++it )
     {
-        if ( (*it)->rtti() == QwtPlotItem::Rtti_PlotCurve )
+        if ( ( *it )->rtti() == QwtPlotItem::Rtti_PlotCurve )
             curveList += *it;
     }
     if ( curveList.isEmpty() )
@@ -371,11 +484,11 @@ void CanvasPicker::shiftCurveCursor(bool up)
             --it;
         }
     }
-        
-    showCursor(false);
+
+    showCursor( false );
     //d_selectedPoint = 0;
-    d_selectedCurve = (QwtPlotCurve *)*it;
-    showCursor(true);
+    d_selectedCurve = static_cast<QwtPlotCurve *>( *it );
+    showCursor( true );
 
     // show item in table
     int row = d_selectedCurve->title().text().toInt();
@@ -393,19 +506,19 @@ void CanvasPicker::shiftCurveCursor(bool up)
 }
 
 // Select the next/previous neighbour of the selected point
-void CanvasPicker::shiftPointCursor(bool up)
+void CanvasPicker::shiftPointCursor( bool up )
 {
     if ( !d_selectedCurve )
         return;
 
-    int index = d_selectedPoint + (up ? 1 : -1);
-    index = (index + d_selectedCurve->dataSize()) % d_selectedCurve->dataSize();
+    int index = d_selectedPoint + ( up ? 1 : -1 );
+    index = ( index + d_selectedCurve->dataSize() ) % d_selectedCurve->dataSize();
 
     if ( index != d_selectedPoint )
     {
-        showCursor(false);
+        showCursor( false );
         d_selectedPoint = index;
-        showCursor(true);
+        showCursor( true );
 
         // show item in table
         int row = d_selectedCurve->title().text().toInt();
@@ -427,7 +540,6 @@ void CanvasPicker::shiftPointCursor(bool up)
 void CanvasPicker::enableZoomMode(bool on)
 {
     d_zoomer->setEnabled(on);
-    //d_zoomer->zoom(0);
 }
 
 // Update Graph after data in table changed
@@ -439,7 +551,7 @@ void CanvasPicker::reDraw(QModelIndex topLeft,QModelIndex bottomRight)
     int nYPts = model->getLabel()->yCount();
 
     if ( nYPts == 0) //Curve
-    {        
+    {
         QwtPlotCurve *d_selectedCurve = selectCurve(0);
 
         for (int j = 0; j < numRows; j++)

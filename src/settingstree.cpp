@@ -39,7 +39,7 @@
 **
 ****************************************************************************/
 
-#include <QtGui>
+#include <QtWidgets>
 
 #include "settingstree.h"
 #include "variantdelegate.h"
@@ -52,8 +52,8 @@ SettingsTree::SettingsTree(QWidget *parent)
     QStringList labels;
     labels << tr("Setting") << tr("Type") << tr("Value");
     setHeaderLabels(labels);
-    header()->setResizeMode(0, QHeaderView::Stretch);
-    header()->setResizeMode(2, QHeaderView::Stretch);
+    header()->setSectionResizeMode(0, QHeaderView::Stretch);
+    header()->setSectionResizeMode(2, QHeaderView::Stretch);
 
     settings = 0;
     refreshTimer.setInterval(2000);

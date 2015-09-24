@@ -54,6 +54,7 @@ AXIS_PTS::AXIS_PTS( Node *parentNode)
     occOptPar->insert("FUNCTION_LIST", ZeroOrOne);
     occOptPar->insert("ECU_ADDRESS_EXTENSION", ZeroOrOne);
     occOptPar->insert("BYTE_ORDER", ZeroOrOne);
+    occOptPar->insert("READ_ONLY", ZeroOrOne);
 
     //Set the line where the Node starts in ASAP file
     this->a2lLine = lex->getLine();

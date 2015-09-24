@@ -508,8 +508,8 @@ void GraphVerify::calculate()
 
     //PLOT : Grid
     QwtPlotGrid *grid = new QwtPlotGrid;
-    grid->setMajPen(QPen(Qt::gray, 0, Qt::DotLine));
-    grid->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
+    grid->setMajorPen(QPen(Qt::gray, 0, Qt::DotLine));
+    grid->setMinorPen(QPen(Qt::gray, 0 , Qt::DotLine));
     grid->attach(d_plot);
 
     //plot innerT curve
