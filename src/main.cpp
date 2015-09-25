@@ -18,9 +18,9 @@
 // please contact the author at : christophe.hoel@gmail.com
 
 #include <QApplication>
-#ifdef Q_WS_WIN32
+#ifdef Q_OS_WIN32
 #ifdef CL_COMPILER
-    #include "usewinhoard.cpp"
+    //#include "uselibhoard.cpp"
 #endif
 #endif
 #include "mdimain.h"

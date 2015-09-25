@@ -18,18 +18,18 @@ equals( QMAKE_CXX, cl) {
     # --- common config --- #
 
     QSCINTILLA_ROOT = ..\LIBS\QScintilla-gpl-2.9
-    WINHOARD_ROOT = ..\LIBS\hoard-38\src
+    WINHOARD_ROOT = ..\LIBS\Hoard-3.11.16\src
     QWT_ROOT = ..\LIBS\qwt-6.1.2
     QWT3D_ROOT = ..\LIBS\qwtplot3d
 
     CONFIG += embed_manifest_exe
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL CL_COMPILER
-    INCLUDEPATH += . "C:\Program Files\quex\quex-0.62.1" \
+    INCLUDEPATH += . "C:\Quex\quex-0.65.4" \
      .\ASAP2 \
      .\DataContainers \
      .\Quex  \
      $${QSCINTILLA_ROOT}\Qt4Qt5 \
-     $${WINHOARD_ROOT}\src \
+     $${WINHOARD_ROOT}\source \
      $${QWT_ROOT}\src \
      $${QWT3D_ROOT}\include \
 
@@ -39,10 +39,10 @@ equals( QMAKE_CXX, cl) {
         UI_DIR = debug\ui
         MOC_DIR = debug\moc
         OBJECTS_DIR = debug\obj
-        LIBS += -l$${WINHOARD_ROOT}\winhoard \
+        LIBS += -l$${WINHOARD_ROOT}\libhoard \
         -l$${QSCINTILLA_ROOT}\Qt4Qt5\lib\qscintilla2d \
-        -l$${QWT3D_ROOT}\lib\qwtplot3dd \
-        -l$${QWT_ROOT}\lib\qwtd        
+        #-l$${QWT3D_ROOT}\lib\qwtplot3dd \
+        -l$${QWT_ROOT}\lib\qwtd
 
         QMAKE_CXXFLAGS_DEBUG += -openmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
@@ -52,9 +52,9 @@ equals( QMAKE_CXX, cl) {
         UI_DIR = release\ui
         MOC_DIR = release\moc
         OBJECTS_DIR = release\obj
-        LIBS += -l$${WINHOARD_ROOT}\winhoard \
+        LIBS += -l$${WINHOARD_ROOT}\libhoard \
         -l$${QSCINTILLA_ROOT}\Qt4Qt5\lib\qscintilla2 \
-        -l$${QWT3D_ROOT}\lib\qwtplot3d \
+       # -l$${QWT3D_ROOT}\lib\qwtplot3d \
         -l$${QWT_ROOT}\lib\qwt \
 
         QMAKE_CXXFLAGS_RELEASE -= -O2
@@ -99,7 +99,7 @@ equals( QMAKE_CXX, cl) {
         OBJECTS_DIR = debug/obj
         DEFINES += MY_DEBUG
         #LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
-        LIBS += -lqwt -lgomp -lqscintilla2
+        LIBS += -lqwtd -lgomp -lqscintilla2d
         QMAKE_CXXFLAGS_DEBUG += -fopenmp
     }
     else {

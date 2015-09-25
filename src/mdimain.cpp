@@ -64,7 +64,7 @@
 #include <Qsci/qscilexerxml.h>
 #include "choosesubset.h"
 #include "dialogchooseexportformat.h"
-#ifdef Q_WS_WIN32
+#ifdef Q_OS_WIN32
     #include "LMCons.h"
     #include "windows.h"
 #endif
@@ -5182,7 +5182,7 @@ void MDImain::setValueProgressBar(int n, int max)
 
 QString MDImain::getUserName()
 {
-    #ifdef Q_WS_WIN32
+    #ifdef Q_OS_WIN32
         QString userName = "";
         #if defined(UNICODE)
         if ( QSysInfo::windowsVersion () ==  QSysInfo::WV_NT)
