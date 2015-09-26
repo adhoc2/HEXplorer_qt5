@@ -18,7 +18,7 @@
 // please contact the author at : christophe.hoel@gmail.com
 
 #include "graph.h"
-//#include "plot3d.h"
+#include "plot3d.h"
 #include "plot.h"
 #include <qtoolbar.h>
 #include <qtoolbutton.h>
@@ -119,9 +119,9 @@ void Graph::plot3D()
 {
     if (data->getY().count() > 0)
     {
-        //Plot3D *plot = new Plot3D(0, data);
-        //plot->resize(600, 400);
-        //plot->show();
+        Plot3D *plot = new Plot3D(0, data);
+        plot->resize(600, 400);
+        plot->show();
     }
 }
 

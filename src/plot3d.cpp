@@ -140,7 +140,7 @@ void Plot3D::setData()
     }
 
     //create surface
-    surface = new Qwt3D::SurfacePlot;
+    surface = new Qwt3D::SurfacePlot();
     setCentralWidget(surface);
     surface->setTitle(data->getName() + " [" + data->getUnit() + "]");
 

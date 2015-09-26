@@ -98,8 +98,8 @@ equals( QMAKE_CXX, cl) {
         MOC_DIR = debug/moc
         OBJECTS_DIR = debug/obj
         DEFINES += MY_DEBUG
-        #LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
-        LIBS += -lqwtd -lgomp -lqscintilla2d
+        LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
+        #LIBS += -lqwtd -lgomp -lqscintilla2d
         QMAKE_CXXFLAGS_DEBUG += -fopenmp
     }
     else {
@@ -108,8 +108,8 @@ equals( QMAKE_CXX, cl) {
         UI_DIR = release/ui
         MOC_DIR = release/moc
         OBJECTS_DIR = release/obj
-        #LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
-        LIBS += -lqwt -lgomp -lqscintilla2
+        LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
+        #LIBS += -lqwt -lgomp -lqscintilla2
         QMAKE_CXXFLAGS_RELEASE += -O3 -fopenmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
 }
@@ -267,7 +267,8 @@ HEADERS += a2l.h \
     ASAP2/Items/unit_conversion.h \
     ASAP2/Nodes/compu_vtab_range.h \
     ASAP2/Nodes/compu_tab.h \
-    ASAP2/Items/default_value_numeric.h
+    ASAP2/Items/default_value_numeric.h \
+    plot3d.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -436,7 +437,8 @@ SOURCES += a2l.cpp \
     ASAP2/Nodes/compu_vtab_range.cpp \
     ASAP2/Nodes/compu_tab.cpp \
     Quex/a2l_quex_lexer.cpp \
-    ASAP2/Items/default_value_numeric.cpp
+    ASAP2/Items/default_value_numeric.cpp \
+    plot3d.cpp
 
 OTHER_FILES += \
     GNU_license.txt \
