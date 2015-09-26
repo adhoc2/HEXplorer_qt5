@@ -18,7 +18,7 @@
 // please contact the author at : christophe.hoel@gmail.com
 
 #include "graph.h"
-#include "plot3d.h"
+//#include "plot3d.h"
 #include "plot.h"
 #include <qtoolbar.h>
 #include <qtoolbutton.h>
@@ -32,6 +32,7 @@
 
 Graph::Graph(QWidget *parent, Data *dat) :  QMainWindow(parent)
 {
+
     setupUi(this);
     setWindowTitle("HEXplorer :: plot");
 
@@ -117,12 +118,12 @@ void Graph::showInfo(QString text)
 
 void Graph::plot3D()
 {
-    if (data->getY().count() > 0)
-    {
-        Plot3D *plot = new Plot3D(0, data);
-        plot->resize(600, 400);
-        plot->show();
-    }
+//    if (data->getY().count() > 0)
+//    {
+//        Plot3D *plot = new Plot3D(0, data);
+//        plot->resize(600, 400);
+//        plot->show();
+//    }
 }
 
 void Graph::showData(bool on)

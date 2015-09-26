@@ -18,7 +18,7 @@
 // please contact the author at : christophe.hoel@gmail.com
 
 #include "graphverify.h"
-#include "plot3d.h"
+//#include "plot3d.h"
 #include "plot.h"
 #include <qtoolbar.h>
 #include <qtoolbutton.h>

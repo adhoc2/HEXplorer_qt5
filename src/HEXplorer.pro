@@ -40,9 +40,9 @@ equals( QMAKE_CXX, cl) {
         MOC_DIR = debug\moc
         OBJECTS_DIR = debug\obj
         LIBS += -l$${WINHOARD_ROOT}\libhoard \
-        -l$${QSCINTILLA_ROOT}\Qt4Qt5\lib\qscintilla2d \
-        #-l$${QWT3D_ROOT}\lib\qwtplot3dd \
-        -l$${QWT_ROOT}\lib\qwtd
+        -l$${QSCINTILLA_ROOT}\Qt4Qt5\lib_msvc2013\qscintilla2d \
+        #-l$${QWT3D_ROOT}\lib_msvc2013\qwtplot3dd \
+        -l$${QWT_ROOT}\lib_msvc2013\qwtd
 
         QMAKE_CXXFLAGS_DEBUG += -openmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
@@ -53,9 +53,9 @@ equals( QMAKE_CXX, cl) {
         MOC_DIR = release\moc
         OBJECTS_DIR = release\obj
         LIBS += -l$${WINHOARD_ROOT}\libhoard \
-        -l$${QSCINTILLA_ROOT}\Qt4Qt5\lib\qscintilla2 \
-       # -l$${QWT3D_ROOT}\lib\qwtplot3d \
-        -l$${QWT_ROOT}\lib\qwt \
+        -l$${QSCINTILLA_ROOT}\Qt4Qt5\lib_msvc2013\qscintilla2 \
+        #-l$${QWT3D_ROOT}\lib_msvc2013\qwtplot3d \
+        -l$${QWT_ROOT}\lib_msvc2013\qwt \
 
         QMAKE_CXXFLAGS_RELEASE -= -O2
         # only for file a2l_quex_lexer.cpp because microsoft compiler cannot compile with -Ox !!
@@ -98,8 +98,8 @@ equals( QMAKE_CXX, cl) {
         MOC_DIR = debug/moc
         OBJECTS_DIR = debug/obj
         DEFINES += MY_DEBUG
-        LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
-        #LIBS += -lqwtd -lgomp -lqscintilla2d
+        #LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
+        LIBS += -lqwtd -lgomp -lqscintilla2d
         QMAKE_CXXFLAGS_DEBUG += -fopenmp
     }
     else {
@@ -108,8 +108,8 @@ equals( QMAKE_CXX, cl) {
         UI_DIR = release/ui
         MOC_DIR = release/moc
         OBJECTS_DIR = release/obj
-        LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
-        #LIBS += -lqwt -lgomp -lqscintilla2
+        #LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
+        LIBS += -lqwt -lgomp -lqscintilla2
         QMAKE_CXXFLAGS_RELEASE += -O3 -fopenmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
 }
