@@ -267,8 +267,7 @@ HEADERS += a2l.h \
     ASAP2/Items/unit_conversion.h \
     ASAP2/Nodes/compu_vtab_range.h \
     ASAP2/Nodes/compu_tab.h \
-    ASAP2/Items/default_value_numeric.h \
-    plot3d.h
+    ASAP2/Items/default_value_numeric.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -437,8 +436,7 @@ SOURCES += a2l.cpp \
     ASAP2/Nodes/compu_vtab_range.cpp \
     ASAP2/Nodes/compu_tab.cpp \
     Quex/a2l_quex_lexer.cpp \
-    ASAP2/Items/default_value_numeric.cpp \
-    plot3d.cpp
+    ASAP2/Items/default_value_numeric.cpp
 
 OTHER_FILES += \
     GNU_license.txt \
