@@ -147,6 +147,7 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
 
     //connect the slots
     connect(ui->tabWidget, SIGNAL(hexDropped(QString)), this, SLOT(checkDroppedFile(QString)));
+    connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabWidget_currentChanged(int)));
     connect(ui->treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(nodeSelected()));
     connect(ui->tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(removeTab(int)));
 
@@ -4520,6 +4521,8 @@ void MDImain::editCompare()
 
     //get the data name
     Node *node = (Node*)((A2lTreeModel*)ui->treeView_2->model())->getNode(index);
+    qDebug() << node->name;
+    qDebug() << myWidget;
 
     QString name = typeid(*myWidget).name();
     if (name.toLower().endsWith("formcompare"))
@@ -4543,7 +4546,7 @@ void MDImain::editCompare()
         else if (hex1)
             data1 = hex1->getData(node->name);
         else if (csv1)
-            data1 = hex1->getData(node->name);
+            data1 = csv1->getData(node->name);
         else if (cdfx1)
             data1 = cdfx1->getData(node->name);
 
@@ -4552,7 +4555,7 @@ void MDImain::editCompare()
         else if (hex2)
             data2 = hex2->getData(node->name);
         else if (csv2)
-            data2 = hex2->getData(node->name);
+            data2 = csv2->getData(node->name);
         else if (cdfx2)
             data2 = cdfx2->getData(node->name);
 
@@ -4917,29 +4920,27 @@ void MDImain::resizeColumn0()
     ui->treeView->resizeColumnToContents(0);
 }
 
-void MDImain::on_tabWidget_currentChanged(QWidget* _widget)
+void MDImain::tabWidget_currentChanged(int index)
 {
-    if (_widget)
+
+    myWidget = this->ui->tabWidget->currentWidget();
+    QString name = typeid(*myWidget).name();
+    if (name.toLower().endsWith("formcompare"))
     {
-        myWidget = _widget;
-        QString name = typeid(*myWidget).name();
-        if (name.toLower().endsWith("formcompare"))
+        FormCompare *fComp = (FormCompare*)myWidget;
+        if (fComp->getDiffModel())
         {
-            FormCompare *fComp = (FormCompare*)myWidget;
-            if (fComp->getDiffModel())
-            {
-                ui->treeView_2->setModel(fComp->getDiffModel());
-                ui->treeView_2->setColumnHidden(1, true);
-            }
-            else
-            {
-                ui->treeView_2->setModel(0);
-            }
+            ui->treeView_2->setModel(fComp->getDiffModel());
+            ui->treeView_2->setColumnHidden(1, true);
         }
         else
         {
             ui->treeView_2->setModel(0);
         }
+    }
+    else
+    {
+        ui->treeView_2->setModel(0);
     }
 }
 

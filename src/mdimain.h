@@ -151,7 +151,7 @@ private slots:
      void on_actionSave_session_triggered();
      void fplotData();
      void on_listWidget_customContextMenuRequested();
-     void on_tabWidget_currentChanged(QWidget* _widget);
+     void tabWidget_currentChanged(int index);
      void quicklookFile();
      void compare_HexFile();
      bool save_File();
