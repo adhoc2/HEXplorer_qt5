@@ -76,8 +76,9 @@ equals( QMAKE_CXX, cl) {
     QSCINTILLA_ROOT = ../LIBS/QScintilla-gpl-2.9
     QWT_ROOT = ../LIBS/qwt-6.1.2
     QWT3D_ROOT = ../LIBS/qwtplot3d
-   # QUEX_ROOT = /Applications/quex/quex-0.60.2
-    QUEX_ROOT = "C:\Quex\quex-0.65.4"
+    unix:QUEX_ROOT = /Applications/quex/quex-0.60.2
+    win32:QUEX_ROOT = "C:\Quex\quex-0.65.4"
+    MATHGL_ROOT = ../LIBS/mathgl-2.3.3-mingw.i686
 
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
 
@@ -86,11 +87,13 @@ equals( QMAKE_CXX, cl) {
     ./DataContainers \
     $${QWT_ROOT}/src \
     $${QWT3D_ROOT}/include \
-    $${QSCINTILLA_ROOT}/Qt4Qt5
+    $${QSCINTILLA_ROOT}/Qt4Qt5 \
+    $${MATHGL_ROOT}/include
 
     LIBS += -L$${QSCINTILLA_ROOT}/Qt4Qt5/lib \
     -L$${QWT3D_ROOT}/lib \
-    -L$${QWT_ROOT}/lib
+    -L$${QWT_ROOT}/lib \
+    -L$${MATHGL_ROOT}/lib
 
     # --- debug config --- #
     CONFIG( debug, debug|release ) {
@@ -99,7 +102,7 @@ equals( QMAKE_CXX, cl) {
         OBJECTS_DIR = debug/obj
         DEFINES += MY_DEBUG
         #LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
-        LIBS += -lqwtd -lgomp -lqscintilla2d
+        LIBS += -lqwtd -lgomp -lqscintilla2d -lmgl -lmgl-qt5
         QMAKE_CXXFLAGS_DEBUG += -fopenmp
     }
     else {
@@ -109,7 +112,7 @@ equals( QMAKE_CXX, cl) {
         MOC_DIR = release/moc
         OBJECTS_DIR = release/obj
         #LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
-        LIBS += -lqwt -lgomp -lqscintilla2
+        LIBS += -lqwt -lgomp -lqscintilla2 -lmgl -lmgl-qt5
         QMAKE_CXXFLAGS_RELEASE += -O3 -fopenmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
 }
@@ -267,7 +270,9 @@ HEADERS += a2l.h \
     ASAP2/Items/unit_conversion.h \
     ASAP2/Nodes/compu_vtab_range.h \
     ASAP2/Nodes/compu_tab.h \
-    ASAP2/Items/default_value_numeric.h
+    ASAP2/Items/default_value_numeric.h \
+    foo.h \
+    plotmathgl.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -436,7 +441,9 @@ SOURCES += a2l.cpp \
     ASAP2/Nodes/compu_vtab_range.cpp \
     ASAP2/Nodes/compu_tab.cpp \
     Quex/a2l_quex_lexer.cpp \
-    ASAP2/Items/default_value_numeric.cpp
+    ASAP2/Items/default_value_numeric.cpp \
+    foo.cpp \
+    plotmathgl.cpp
 
 OTHER_FILES += \
     GNU_license.txt \

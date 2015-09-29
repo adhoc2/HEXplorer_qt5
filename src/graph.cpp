@@ -19,6 +19,7 @@
 
 #include "graph.h"
 //#include "plot3d.h"
+#include "plotmathgl.h"
 #include "plot.h"
 #include <qtoolbar.h>
 #include <qtoolbutton.h>
@@ -118,12 +119,15 @@ void Graph::showInfo(QString text)
 
 void Graph::plot3D()
 {
-//    if (data->getY().count() > 0)
-//    {
+    if (data->getY().count() > 0)
+    {
 //        Plot3D *plot = new Plot3D(0, data);
 //        plot->resize(600, 400);
 //        plot->show();
-//    }
+
+        PlotMathGL *plot = new PlotMathGL(0, data);
+        plot->show();
+    }
 }
 
 void Graph::showData(bool on)

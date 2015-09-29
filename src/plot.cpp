@@ -45,7 +45,7 @@ Plot::Plot(GraphModel *mod, QString type) : QwtPlot()
     }
     else if (data->getSrecParent())
     {
-        //setTitle(data->getName() + " " + data->getUnit() + " (" + QString(data->getSrecParent()->name) + ")");
+        setTitle(data->getName() + " " + data->getUnit() + " (" + QString(data->getSrecParent()->name) + ")");
     }
     else if (data->getCsvParent())
     {

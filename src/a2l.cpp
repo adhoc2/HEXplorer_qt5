@@ -144,7 +144,7 @@ void A2l::parseSTA2l()
     // open the file in binary mode "rb" to get the right file length
     // when openinig in ascci mode "r", the \r are cancelled when calling fread()
 
-    FILE* fid = fopen(fullA2lName.toStdString().c_str(),"r");
+    FILE* fid = fopen(fullA2lName.toLocal8Bit(),"r");
     if (!fid)
     {
         this->outputList.append("Cannot read file " + this->fullA2lName);
@@ -241,7 +241,7 @@ bool A2l::parseOpenMPA2l()
 //    file.close();
 
     //create a stream into the file (Merci Oscar...)
-    FILE* fid = fopen(fullA2lName.toStdString().c_str(),"rb");
+    FILE* fid = fopen(fullA2lName.toLocal8Bit(),"rb");
     if (!fid)
     {
         this->outputList.append("Cannot read file " + this->fullA2lName);
