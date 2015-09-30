@@ -20,14 +20,10 @@
 #include <QApplication>
 #ifdef Q_OS_WIN32
 #ifdef CL_COMPILER
-    //#include "uselibhoard.cpp"
+    #include "uselibhoard.cpp"
 #endif
 #endif
 #include "mdimain.h"
-#include <bitset>
-#include <stdlib.h>
-#include <stdint.h>
-#include "qdebug.h"
 
 
 int main(int argc, char *argv[])
@@ -35,7 +31,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setOrganizationName("Ch.Hoël");
     app.setApplicationName("HEXplorer");
-    app.setApplicationVersion("0.6.12");
+    app.setApplicationVersion("0.7.0");
 
     MDImain w;
     w.show();

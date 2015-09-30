@@ -972,21 +972,20 @@ void MDImain::on_actionSettings_triggered()
 
 void MDImain::on_actionAbout_triggered()
 {
-    QString text = "Christophe Hoël"
+    QString text = "Christophe HOEL"
                    "\n\n"
                    "special thanks to :\n"
                    "Oscar, Niklaus, Jimi, Zack, Eric, Oneyed Jack, lofofora\n"
-                   "M, Radio Tarifa, Al, John, Paco, Noir dez, et tous les autres...\n\n"
-                   "build " + qApp->applicationVersion() + " compiled with MSVC2010\n\n"
+                   "M, Radio Tarifa, Al, John, Paco, Noir dez, et tous les autres...pour le bon son.\n\n"
+                   "build " + qApp->applicationVersion() + " compiled with MinGW\n\n"
                    "This software uses external libraries :\n"
                    "   - Qt framework 5.5.0\n"
                    "   - Quex 0.65.4 (as efficient lexical analyser generator)\n"
                    "   - QScintilla 2.9 (as efficient text editor)\n"
                    "   - Qwt 6.1.2 (as 2D graph plotter)\n"
-                   "   - Qwtplot3D (as 3D graph plotter)\n"
-                   "   - Winhoard 38(as efficient malloc-replacement for windows)\n\n"
+                   "   - MathGL 2.3.3 (as 3D graph plotter)\n\n"
                    "Please visit the following link for more information :\n"
-            "http://code.google.com/p/hexplorer/";
+            "http://lmbhoc1.github.io/HEXplorer/";
     QMessageBox::about(this, tr("HEXplorer :: About"), tr(text.toLocal8Bit().data()));
 }
 

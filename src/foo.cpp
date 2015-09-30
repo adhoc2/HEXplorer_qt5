@@ -15,7 +15,6 @@ Foo::~Foo()
 
 int Foo::Draw(mglGraph *gr)
 {
-
     int dimX = data->getX().count();
     mglData x(dimX);
     int dimY = data->getY().count();
@@ -110,4 +109,5 @@ int Foo::Draw(mglGraph *gr)
 
      return 0;
 }
+
 

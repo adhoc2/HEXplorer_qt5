@@ -27,11 +27,11 @@ PlotMathGL::PlotMathGL(QWidget *parent, Data *data) : QMainWindow(parent)
     setWindowTitle("Display Label");
 
     foo = new Foo(data);
+    qmgl->setViewYZ(true);
     qmgl->setDraw(foo);
     qmgl->update();
     scroll->setWidget(qmgl);
     this->setCentralWidget(scroll);
-
 }
 
 PlotMathGL::~PlotMathGL()
@@ -205,3 +205,6 @@ void PlotMathGL::setMenus_Actions()
     exportMenu->addAction(actionMoveRight);
 
 }
+
+
+

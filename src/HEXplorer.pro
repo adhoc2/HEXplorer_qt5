@@ -79,6 +79,7 @@ equals( QMAKE_CXX, cl) {
     unix:QUEX_ROOT = /Applications/quex/quex-0.60.2
     win32:QUEX_ROOT = "C:\Quex\quex-0.65.4"
     MATHGL_ROOT = ../LIBS/mathgl-2.3.3-mingw.i686
+    WINHOARD_ROOT = ../LIBS/Hoard-3.11.16/src
 
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
 
@@ -88,11 +89,13 @@ equals( QMAKE_CXX, cl) {
     $${QWT_ROOT}/src \
     $${QWT3D_ROOT}/include \
     $${QSCINTILLA_ROOT}/Qt4Qt5 \
-    $${MATHGL_ROOT}/include
+    $${MATHGL_ROOT}/include \
+#    $${WINHOARD_ROOT}\source
 
     LIBS += -L$${QSCINTILLA_ROOT}/Qt4Qt5/lib \
     -L$${QWT3D_ROOT}/lib \
     -L$${QWT_ROOT}/lib \
+#    -L$${WINHOARD_ROOT}/lib_win32 \
     -L$${MATHGL_ROOT}/lib
 
     # --- debug config --- #

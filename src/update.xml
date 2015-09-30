@@ -1,9 +1,12 @@
 <HEXplorer application="HEXplorer">
-    <revision version="0.6.12">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
-    <details>revision 0.6.12 (09/2015) :
+    <revision version="0.7.0">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
+    <details>revision 0.7.0 (09/2015) :
     - use of Qt 5.5.0
-    - add new keywords form ASAP2
-    - implement opnemMP and lexer as app propriety
+    - compiled with MinGW
+    - add new keywords to be more compliant with ASAP2
+    - implement openMP and lexer as app propriety
+    - bug corected wuth Quex exceptions a token is unknown
+    - replaced Qwtplot3D lib with MathGL library
 
 
 revision 0.6.11 (02/09/2012) :

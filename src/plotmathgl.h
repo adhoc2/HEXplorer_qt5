@@ -35,10 +35,8 @@ private:
     QAction *actionZoomIn, *actionZoomOut;
     QMenu *fileMenu, *exportMenu;
     QToolBar *toolBarTop, *toolBarGraph;
-    QSpinBox *spinBox1;
-    QSpinBox *spinBox2;
+    QSpinBox *spinBox1, *spinBox2;
     QScrollArea *scroll;
-
 
 };
 
