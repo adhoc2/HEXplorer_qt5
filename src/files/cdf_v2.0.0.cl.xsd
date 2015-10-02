@@ -184,8 +184,10 @@
 	<xsd:element name="SDG-CAPTION" type="SDG-CAPTION"/>
 	<xsd:complexType name="SD" mixed="true">
 		<xsd:attribute name="C" type="xsd:anySimpleType"/>
-		<xsd:attribute name="GID" type="xsd:anySimpleType" use="required"/>
-		<xsd:attribute name="ID-CLASS" type="xsd:NMTOKEN"/>
+<!--   GID is not present in Creta CDFX export files => remove use="required"
+                <xsd:attribute name="GID" type="xsd:anySimpleType" use="required"/> -->
+                <xsd:attribute name="GID" type="xsd:anySimpleType"/>
+                <xsd:attribute name="ID-CLASS" type="xsd:NMTOKEN"/>
 		<xsd:attribute name="ID-REF" type="xsd:IDREF"/>
 		<xsd:attribute name="LC" type="xsd:anySimpleType"/>
 		<xsd:attribute name="S" type="xsd:anySimpleType"/>
@@ -331,6 +333,7 @@
 			<xsd:element ref="REVISION" minOccurs="0"/>
 			<xsd:element ref="SW-COLLECTION-REF" minOccurs="0"/>
 			<xsd:element ref="SW-CS-HISTORY" minOccurs="0"/>
+                        <xsd:element ref="SD" minOccurs="0"/>
 		</xsd:sequence>
 		<xsd:attribute name="C" type="xsd:anySimpleType"/>
 		<xsd:attribute name="LC" type="xsd:anySimpleType"/>

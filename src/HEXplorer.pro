@@ -17,48 +17,48 @@ equals( QMAKE_CXX, cl) {
 
     # --- common config --- #
 
-    QSCINTILLA_ROOT = ..\LIBS\QScintilla-gpl-2.9
-    WINHOARD_ROOT = ..\LIBS\Hoard-3.11.16\src
-    QWT_ROOT = ..\LIBS\qwt-6.1.2
-    QWT3D_ROOT = ..\LIBS\qwtplot3d
+    QSCINTILLA_ROOT = ../LIBS/QScintilla-gpl-2.9
+    WINHOARD_ROOT = ../LIBS/Hoard-3.11.16\src
+    QWT_ROOT = ../LIBS/qwt-6.1.2
+    MATHGL_ROOT = ../LIBS/mathgl-2.3.3-mingw.i686
 
     CONFIG += embed_manifest_exe
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL CL_COMPILER
     INCLUDEPATH += . "C:\Quex\quex-0.65.4" \
-     .\ASAP2 \
-     .\DataContainers \
-     .\Quex  \
-     $${QSCINTILLA_ROOT}\Qt4Qt5 \
-     $${WINHOARD_ROOT}\source \
-     $${QWT_ROOT}\src \
-     $${QWT3D_ROOT}\include \
+     ./ASAP2 \
+     ./DataContainers \
+     ./Quex  \
+     $${QSCINTILLA_ROOT}/Qt4Qt5 \
+     $${WINHOARD_ROOT}/source \
+     $${QWT_ROOT}/src \
+     $${MATHGL_ROOT}/include \
 
     # ---- debug ----- #
     CONFIG( debug, debug|release ) {
         DEFINES += MY_DEBUG
-        UI_DIR = debug\ui
-        MOC_DIR = debug\moc
-        OBJECTS_DIR = debug\obj
-        LIBS += -l$${WINHOARD_ROOT}\libhoard \
-        -l$${QSCINTILLA_ROOT}\Qt4Qt5\lib_msvc2013\qscintilla2d \
-        #-l$${QWT3D_ROOT}\lib_msvc2013\qwtplot3dd \
-        -l$${QWT_ROOT}\lib_msvc2013\qwtd
+        UI_DIR = debug/ui
+        MOC_DIR = debug/moc
+        OBJECTS_DIR = debug/obj
+        LIBS += -l$${WINHOARD_ROOT}/libhoard \
+        -l$${QSCINTILLA_ROOT}/Qt4Qt5/lib_msvc2013/qscintilla2d \
+        -l$${QWT_ROOT}/lib_msvc2013/qwtd \
+        -l$${MATHGL_ROOT}/lib
 
-        QMAKE_CXXFLAGS_DEBUG += -openmp -DQUEX_OPTION_ASSERTS_DISABLED
+        QMAKE_CXXFLAGS_DEBUG += -openmp
     }
     else {
 
     # ---- release ---- #
-        UI_DIR = release\ui
-        MOC_DIR = release\moc
-        OBJECTS_DIR = release\obj
-        LIBS += -l$${WINHOARD_ROOT}\libhoard \
-        -l$${QSCINTILLA_ROOT}\Qt4Qt5\lib_msvc2013\qscintilla2 \
-        #-l$${QWT3D_ROOT}\lib_msvc2013\qwtplot3d \
-        -l$${QWT_ROOT}\lib_msvc2013\qwt \
+        UI_DIR = release/ui
+        MOC_DIR = release/moc
+        OBJECTS_DIR = release/obj
+        LIBS += -l$${WINHOARD_ROOT}/libhoard \
+        -l$${QSCINTILLA_ROOT}/Qt4Qt5/lib_msvc2013/qscintilla2 \
+        -l$${QWT_ROOT}/lib_msvc2013/qwt \
+        -l$${MATHGL_ROOT}/lib/mgl \
+        -l$${MATHGL_ROOT}/lib/mgl-qt5 \
 
-        QMAKE_CXXFLAGS_RELEASE -= -O2
-        # only for file a2l_quex_lexer.cpp because microsoft compiler cannot compile with -Ox !!
+        # only for file a2l_quex_lexer.cpp because microsoft compiler cannot compile with -Ox
         #QMAKE_CXXFLAGS_RELEASE += -Osiy -Gs -openmp -DQUEX_OPTION_ASSERTS_DISABLED
         QMAKE_CXXFLAGS_RELEASE += -Ox -openmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
@@ -90,12 +90,10 @@ equals( QMAKE_CXX, cl) {
     $${QWT3D_ROOT}/include \
     $${QSCINTILLA_ROOT}/Qt4Qt5 \
     $${MATHGL_ROOT}/include \
-#    $${WINHOARD_ROOT}\source
 
     LIBS += -L$${QSCINTILLA_ROOT}/Qt4Qt5/lib \
     -L$${QWT3D_ROOT}/lib \
     -L$${QWT_ROOT}/lib \
-#    -L$${WINHOARD_ROOT}/lib_win32 \
     -L$${MATHGL_ROOT}/lib
 
     # --- debug config --- #
@@ -104,7 +102,6 @@ equals( QMAKE_CXX, cl) {
         MOC_DIR = debug/moc
         OBJECTS_DIR = debug/obj
         DEFINES += MY_DEBUG
-        #LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
         LIBS += -lqwtd -lgomp -lqscintilla2d -lmgl -lmgl-qt5
         QMAKE_CXXFLAGS_DEBUG += -fopenmp
     }

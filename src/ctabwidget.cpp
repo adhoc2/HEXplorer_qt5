@@ -43,5 +43,5 @@ void CTabWidget::dropEvent(QDropEvent *event)
 
     event->acceptProposedAction();
 
-    emit hexDropped(text);
+    emit textDropped(text);
 }

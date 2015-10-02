@@ -170,7 +170,6 @@ bool CdfxFile::readFile()
     {
         //check syntax conformity with .dtd file
         if (validate(&file))
-//        if (1)
         {
             file.seek(0);
             if (!document.setContent(&file))
@@ -186,6 +185,8 @@ bool CdfxFile::readFile()
         }
     }
 
+    qDebug() << "validated";
+
     //parse MSRSW
     QDomNodeList listMSRSW = document.elementsByTagName("MSRSW");
     QDomNode node = listMSRSW.at(0);
@@ -200,6 +201,7 @@ bool CdfxFile::readFile()
     else
     {
         parseMSRSW(node);
+        qDebug() << "parsed";
 
         if (errorList.isEmpty())
         {
@@ -270,9 +272,9 @@ void CdfxFile::parseMSRSW(QDomNode &node)
             QString category = node.firstChild().nodeValue();
             if (category != "CDF20")
             {
-                errorList.append("parser CDFX error :  MSRSW category unknown in "
+                errorList.append("parser CDFX error :  MSRSW category " + category + " unknown in "
                                  + QString(this->getParentWp()->a2lFile->name)
-                                 + " at line " + node.lineNumber());
+                                 + " at line " + QString::number(node.lineNumber()));
                 return;
             }
         }
@@ -310,6 +312,7 @@ void CdfxFile::parseSwSystem(QDomNode &node)
     QDomNodeList childSwSystem = node.childNodes();
     for (int i = 0; i < childSwSystem.count(); i++)
     {
+
         QDomNode node  = childSwSystem.at(i);
 
         //SHORT-NAME (1)
@@ -335,6 +338,7 @@ void CdfxFile::parseSwSystem(QDomNode &node)
             for (int i = 0; i < childSwInstanceSpec.count(); i++)
             {
                 QDomNode node  = childSwInstanceSpec.at(i);
+
 
                 //SW-INSTANCE-TREE (?)
                 if (node.nodeName() == "SW-INSTANCE-TREE")
@@ -371,9 +375,9 @@ void CdfxFile::parseSwInstanceTree(QDomNode &node)
             QString category = node.firstChild().nodeValue();
             if (category != "VCD" && category != "NO_VCD")
             {
-                errorList.append("parser CDFX error :  SW-INSTANCE-TREE category unknown in "
+                errorList.append("parser CDFX error :  SW-INSTANCE-TREE category " + category + " unknown in "
                                  + QString(this->getParentWp()->a2lFile->name)
-                                 + " at line " + node.lineNumber());
+                                 + " at line " + QString::number(node.lineNumber()));
                 return;
             }
         }
@@ -456,9 +460,9 @@ void CdfxFile::parseSwInstance(QDomNode &node)
             }
             else
             {
-                errorList.append("parser CDFX error :  SW-INSTANCE category unknown in "
+                errorList.append("parser CDFX error :  SW-INSTANCE category " + category + " unknown in "
                                  + QString(this->getParentWp()->a2lFile->name)
-                                 + " at line " + node.lineNumber());
+                                 + " at line " + QString::number(node.lineNumber()));
                 return;
             }
         }
@@ -612,9 +616,9 @@ void CdfxFile::parseSwAxisCont(QDomNode &node, SwInstance *instance, int index)
             }
             else
             {
-                errorList.append("parser CDFX error :  SW-AXIS-CONT category unknown in "
+                errorList.append("parser CDFX error :  SW-AXIS-CONT category" + category + " unknown in "
                                  + QString(this->getParentWp()->a2lFile->name)
-                                 + " at line " + node.lineNumber());
+                                 + " at line " + QString::number(node.lineNumber()));
                 return;
             }
         }

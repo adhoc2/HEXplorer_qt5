@@ -34,7 +34,7 @@ private:
     void dropEvent(QDropEvent *event);
 
 signals:
-  void hexDropped(QString );
+  void textDropped(QString );
 
 
 };

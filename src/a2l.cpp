@@ -87,7 +87,7 @@ void A2l::parse()
     //parse in 1 or 2 threads based on processor architecture
     bool myDebug = 0;
 #ifdef MY_DEBUG
-    myDebug = 1;
+    myDebug = 0;
 #endif
     QString multiThread = "";
     QString lexerType = "";
@@ -481,6 +481,8 @@ bool A2l::trunkA2l(QString &str, QString &str1, QString &str2)
                nodeType != "RECORD_LAYOUT")
         {
             lastBeginChar = str1.left(num).lastIndexOf(rxlen);
+            if (lastBeginChar < 0)
+                return false;
             nodeType = rxlen.cap(1);
             num = lastBeginChar;
         }

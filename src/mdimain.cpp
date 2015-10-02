@@ -146,7 +146,7 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
     tabList = new QMap<QString, QWidget*>;
 
     //connect the slots
-    connect(ui->tabWidget, SIGNAL(hexDropped(QString)), this, SLOT(checkDroppedFile(QString)));
+    connect(ui->tabWidget, SIGNAL(textDropped(QString)), this, SLOT(checkDroppedFile(QString)));
     connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabWidget_currentChanged(int)));
     connect(ui->treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(nodeSelected()));
     connect(ui->tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(removeTab(int)));
@@ -4855,13 +4855,15 @@ void MDImain::removeTab( int index )
     // get the name of the tab
     QString _name = ui->tabWidget->tabText(index);
 
-    //remove tab from tabWidget
+   //remove tab from tabWidget
+
     ui->tabWidget->removeTab(index);
 
     //delete the widget
     //if (_name.contains("quicklook"))
     //    compareTabs--;
 
+    //delete QScintilla pointer
     delete tabList->value(_name);
 
     //remove widget from tabList
@@ -4923,23 +4925,26 @@ void MDImain::tabWidget_currentChanged(int index)
 {
 
     myWidget = this->ui->tabWidget->currentWidget();
-    QString name = typeid(*myWidget).name();
-    if (name.toLower().endsWith("formcompare"))
+    if (myWidget)
     {
-        FormCompare *fComp = (FormCompare*)myWidget;
-        if (fComp->getDiffModel())
+        QString name = typeid(*myWidget).name();
+        if (name.toLower().endsWith("formcompare"))
         {
-            ui->treeView_2->setModel(fComp->getDiffModel());
-            ui->treeView_2->setColumnHidden(1, true);
+            FormCompare *fComp = (FormCompare*)myWidget;
+            if (fComp->getDiffModel())
+            {
+                ui->treeView_2->setModel(fComp->getDiffModel());
+                ui->treeView_2->setColumnHidden(1, true);
+            }
+            else
+            {
+                ui->treeView_2->setModel(0);
+            }
         }
         else
         {
             ui->treeView_2->setModel(0);
         }
-    }
-    else
-    {
-        ui->treeView_2->setModel(0);
     }
 }
 

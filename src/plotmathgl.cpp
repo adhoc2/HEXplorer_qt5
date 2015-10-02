@@ -29,6 +29,10 @@ PlotMathGL::PlotMathGL(QWidget *parent, Data *data) : QMainWindow(parent)
     foo = new Foo(data);
     qmgl->setViewYZ(true);
     qmgl->setDraw(foo);
+//    HMGL gr = qmgl->getGraph();
+//    mgl_rotate(gr ,50, 50, 50);
+//    qmgl->setGraph(gr);
+//    qmgl->refresh();
     qmgl->update();
     scroll->setWidget(qmgl);
     this->setCentralWidget(scroll);
@@ -205,6 +209,3 @@ void PlotMathGL::setMenus_Actions()
     exportMenu->addAction(actionMoveRight);
 
 }
-
-
-
