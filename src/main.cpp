@@ -20,7 +20,7 @@
 #include <QApplication>
 #ifdef Q_OS_WIN32
 #ifdef CL_COMPILER
-   // #include "uselibhoard.cpp"
+   //#include "usewinhoard.cpp"
 #endif
 #endif
 #include "mdimain.h"

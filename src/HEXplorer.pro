@@ -18,9 +18,9 @@ equals( QMAKE_CXX, cl) {
     # --- common config --- #
 
     QSCINTILLA_ROOT = ../LIBS/QScintilla-gpl-2.9
-    WINHOARD_ROOT = ../LIBS/Hoard-3.11.16\src
+    WINHOARD_ROOT = ../LIBS/Hoard-38/src
     QWT_ROOT = ../LIBS/qwt-6.1.2
-    MATHGL_ROOT = ../LIBS/mathgl-2.3.3-mingw.i686
+    MATHGL_ROOT = ../LIBS/mathgl_msvc2013
 
     CONFIG += embed_manifest_exe
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL CL_COMPILER
@@ -29,7 +29,7 @@ equals( QMAKE_CXX, cl) {
      ./DataContainers \
      ./Quex  \
      $${QSCINTILLA_ROOT}/Qt4Qt5 \
-     $${WINHOARD_ROOT}/source \
+     $${WINHOARD_ROOT} \
      $${QWT_ROOT}/src \
      $${MATHGL_ROOT}/include \
 
@@ -39,10 +39,12 @@ equals( QMAKE_CXX, cl) {
         UI_DIR = debug/ui
         MOC_DIR = debug/moc
         OBJECTS_DIR = debug/obj
-        LIBS += -l$${WINHOARD_ROOT}/libhoard \
-        -l$${QSCINTILLA_ROOT}/Qt4Qt5/lib_msvc2013/qscintilla2d \
+        LIBS += -l$${QSCINTILLA_ROOT}/Qt4Qt5/lib_msvc2013/qscintilla2d \
         -l$${QWT_ROOT}/lib_msvc2013/qwtd \
-        -l$${MATHGL_ROOT}/lib
+        -l$${MATHGL_ROOT}/lib/mgl \
+        -l$${MATHGL_ROOT}/lib/mgl-qt5 \
+        #-l$${WINHOARD_ROOT}/winhoard
+
 
         QMAKE_CXXFLAGS_DEBUG += -openmp
     }
@@ -52,15 +54,15 @@ equals( QMAKE_CXX, cl) {
         UI_DIR = release/ui
         MOC_DIR = release/moc
         OBJECTS_DIR = release/obj
-        LIBS += -l$${WINHOARD_ROOT}/libhoard \
-        -l$${QSCINTILLA_ROOT}/Qt4Qt5/lib_msvc2013/qscintilla2 \
+        LIBS += -l$${QSCINTILLA_ROOT}/Qt4Qt5/lib_msvc2013/qscintilla2 \
         -l$${QWT_ROOT}/lib_msvc2013/qwt \
         -l$${MATHGL_ROOT}/lib/mgl \
         -l$${MATHGL_ROOT}/lib/mgl-qt5 \
+        #-l$${WINHOARD_ROOT}/winhoard
 
         # only for file a2l_quex_lexer.cpp because microsoft compiler cannot compile with -Ox
-        #QMAKE_CXXFLAGS_RELEASE += -Osiy -Gs -openmp -DQUEX_OPTION_ASSERTS_DISABLED
-        QMAKE_CXXFLAGS_RELEASE += -Ox -openmp -DQUEX_OPTION_ASSERTS_DISABLED
+        #QMAKE_CXXFLAGS_RELEASE += -Osiy -Gs -MD -openmp -DQUEX_OPTION_ASSERTS_DISABLED
+        QMAKE_CXXFLAGS_RELEASE += -Ox -MD -openmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
 }
 
@@ -79,7 +81,6 @@ equals( QMAKE_CXX, cl) {
     unix:QUEX_ROOT = /Applications/quex/quex-0.60.2
     win32:QUEX_ROOT = "C:\Quex\quex-0.65.4"
     MATHGL_ROOT = ../LIBS/mathgl-2.3.3-mingw.i686
-    WINHOARD_ROOT = ../LIBS/Hoard-3.11.16/src
 
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
 

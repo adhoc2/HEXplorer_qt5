@@ -102,7 +102,8 @@ Node *Node::child(QString str, bool bin)
         Node node;
         node.name = new char[str.length() + 1];
         strcpy(node.name, str.toLocal8Bit().data());
-        QList<Node*>::iterator i =  qBinaryFind(childNodes.begin(), childNodes.end(), &node, nodeLessThan);
+        //QList<Node*>::iterator i =  qBinaryFind(childNodes.begin(), childNodes.end(), &node, nodeLessThan);
+        QList<Node*>::iterator i =  std::lower_bound(childNodes.begin(), childNodes.end(), &node, nodeLessThan);
 
         if (i == childNodes.end())
 //        Node* toto = interpolationSearch(childNodes, str);
@@ -202,7 +203,7 @@ bool Node::isChild(Node *data, bool sorted)
 {
     if (sorted)
     {
-        QList<Node*>::iterator i = qBinaryFind(childNodes.begin(), childNodes.end(), data, compareNode);
+        QList<Node*>::iterator i = std::lower_bound(childNodes.begin(), childNodes.end(), data, compareNode);
         if (i == childNodes.end())
             return false;
         else
@@ -244,7 +245,7 @@ void Node::setParentNode(Node *node)
 
 void Node::sortChildrensName()
 {
-    qSort(childNodes.begin(), childNodes.end(), nodeLessThan);
+    std::sort(childNodes.begin(), childNodes.end(), nodeLessThan);
 }
 
 Item *Node::getItem(QString str)
