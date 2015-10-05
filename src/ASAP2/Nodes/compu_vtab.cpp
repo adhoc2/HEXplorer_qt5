@@ -61,10 +61,10 @@ COMPU_VTAB::COMPU_VTAB(Node *parentNode)
         if (token == Keyword && lex->getLexem() == "COMPU_VTAB")
         {
             //Sort the childNodes
-            //qSort(this->childNodes.begin(), this->childNodes.end(), nodeLessThan);
+            //std::sort(this->childNodes.begin(), this->childNodes.end(), nodeLessThan);
 
             //Sort The childItems
-            //qSort(this->optItems.begin(), this->optItems.end(), itemLessThan);
+            //std::sort(this->optItems.begin(), this->optItems.end(), itemLessThan);
         }
         else
         {

@@ -347,7 +347,8 @@ void ChooseLabel::on_lineEdit_textChanged(QString str)
                     foreach(QString str, listLabelSubset)
                     {
                         //check if the labels are already chosen or not
-                        i = qBinaryFind(choosenList.begin(), choosenList.end(), str);
+                        //i = qBinaryFind(choosenList.begin(), choosenList.end(), str);
+                        i = std::lower_bound(choosenList.begin(), choosenList.end(), str);
                         if (i == choosenList.end())
                             strList.append(str);
                     }
@@ -610,7 +611,8 @@ void ChooseLabel::on_import_2_clicked()
                     if (module->listChar.contains(lines.at(i)))
                     {
                         //check if label already in chosenList
-                        QStringList::iterator it = qBinaryFind(choosenList.begin(), choosenList.end(), lines.at(i));
+                        //QStringList::iterator it = qBinaryFind(choosenList.begin(), choosenList.end(), lines.at(i));
+                        QStringList::iterator it = std::lower_bound(choosenList.begin(), choosenList.end(), lines.at(i));
                         if (it == choosenList.end())
                             strList.append(lines.at(i));
                     }
@@ -676,6 +678,10 @@ void ChooseLabel::selectedItem(QListWidgetItem* item,QListWidgetItem*)
     if (hex)
     {
         moduleName = hex->getModuleName();
+    }
+    else if (srec)
+    {
+        moduleName = srec->getModuleName();
     }
     else if (csv)
     {

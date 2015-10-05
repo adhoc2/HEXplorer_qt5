@@ -69,7 +69,7 @@ PROJECT::PROJECT(Node *parentNode, A2lLexer *lexer)
     }
     else if ((token == Eof || token == Identifier) && lex->getLexem() == "CHUNKend")
     {
-        qSort(this->childNodes.begin(), this->childNodes.end(), nodeLessThan);
+        std::sort(this->childNodes.begin(), this->childNodes.end(), nodeLessThan);
         stopped = true;
         //lexer->in->seek(lexer->in->pos() - 8);
         lexer->backward(8);
@@ -81,7 +81,7 @@ PROJECT::PROJECT(Node *parentNode, A2lLexer *lexer)
         this->showError("expected end PROJECT\nfind : " + s1 + " " + s2);
     }
 
-    qSort(this->childNodes.begin(), this->childNodes.end(), nodeLessThan);
+    std::sort(this->childNodes.begin(), this->childNodes.end(), nodeLessThan);
 }
 
 PROJECT::~PROJECT()

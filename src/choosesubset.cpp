@@ -150,7 +150,8 @@ void ChooseSubset::on_lineEdit_textChanged(QString )
             if (name.toLower().startsWith(ui->lineEdit->text().toLower()))
             {
                 //check if the labels are already chosen or not
-                i = qBinaryFind(choosenList.begin(), choosenList.end(), name);
+                //i = qBinaryFind(choosenList.begin(), choosenList.end(), name);
+                i = std::lower_bound(choosenList.begin(), choosenList.end(), name);
                 if (i == choosenList.end())
                     str.append(name);
             }
@@ -176,7 +177,8 @@ void ChooseSubset::on_lineEdit_textChanged(QString )
             if (name.toLower().endsWith(ui->lineEdit->text().mid(1).toLower()))
             {
                 //check if the labels are already chosen or not
-                i = qBinaryFind(choosenList.begin(), choosenList.end(), name);
+                //i = qBinaryFind(choosenList.begin(), choosenList.end(), name);
+                i = std::lower_bound(choosenList.begin(), choosenList.end(), name);
                 if (i == choosenList.end())
                     str.append(name);
             }
@@ -277,7 +279,8 @@ void ChooseSubset::on_import_2_clicked()
                     if (node->isChild(lines.at(i).toLocal8Bit().data()))
                     {
                         //check if label already in chosenList
-                        QStringList::iterator it = qBinaryFind(choosenList.begin(), choosenList.end(), lines.at(i));
+                        //QStringList::iterator it = qBinaryFind(choosenList.begin(), choosenList.end(), lines.at(i));
+                        QStringList::iterator it = std::lower_bound(choosenList.begin(), choosenList.end(), lines.at(i));
                         if (it == choosenList.end())
                             strList.append(lines.at(i));
                     }

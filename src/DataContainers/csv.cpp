@@ -201,7 +201,8 @@ bool Csv::readFile()
                         //create a data
                         data = new Data((CHARACTERISTIC*)label, a2lProject, this, false);
                         data->isSortedByRow = 1;
-                        QList<Data*>::iterator i = qLowerBound(listData.begin(), listData.end(), data, comp);
+                        //QList<Data*>::iterator i = qLowerBound(listData.begin(), listData.end(), data, comp);
+                        QList<Data*>::iterator i = std::lower_bound(listData.begin(), listData.end(), data, comp);
                         listData.insert(i, data);
                     }
                     else
@@ -211,7 +212,8 @@ bool Csv::readFile()
                         {
                             //create a data
                             data = new Data((AXIS_PTS*)label2, a2lProject, this, false);
-                            QList<Data*>::iterator i = qLowerBound(listData.begin(), listData.end(), data, comp);
+                            //QList<Data*>::iterator i = qLowerBound(listData.begin(), listData.end(), data, comp);
+                            QList<Data*>::iterator i = std::lower_bound(listData.begin(), listData.end(), data, comp);
                             listData.insert(i, data);
                         }
                         else

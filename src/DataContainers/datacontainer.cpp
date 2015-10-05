@@ -78,9 +78,10 @@ Data *DataContainer::getData(QString str)
 {
     Node node;
     node.name = new char[str.length() + 1];
-        strcpy(node.name, str.toLocal8Bit().data());
+    strcpy(node.name, str.toLocal8Bit().data());
     Data dat(&node);
-    QList<Data*>::iterator i = qBinaryFind(listData.begin(), listData.end(), &dat, dataCompare);
+    //QList<Data*>::iterator i = qBinaryFind(listData.begin(), listData.end(), &dat, dataCompare);
+    QList<Data*>::iterator i = std::lower_bound(listData.begin(), listData.end(), &dat, dataCompare);
 
     if (i == listData.end())
     {
@@ -205,7 +206,8 @@ void DataContainer::sortModifiedDataBySubset(bool subset)
 
 void DataContainer::addModifiedData(Data* data)
 {
-   QList<Data*>::iterator i = qLowerBound(modifiedData.begin(), modifiedData.end(), data, dataCompare);
+   //QList<Data*>::iterator i = qLowerBound(modifiedData.begin(), modifiedData.end(), data, dataCompare);
+   QList<Data*>::iterator i = std::lower_bound(modifiedData.begin(), modifiedData.end(), data, dataCompare);
    modifiedData.insert(i, data);
    updateChildNodes(data, true);
 }

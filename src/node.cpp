@@ -76,7 +76,8 @@ void Node::addChildNode(Node *child)
 
 void Node::insertChildNode(Node *child)
 {
-    QList<Node*>::iterator i = qLowerBound(childNodes.begin(), childNodes.end(), child, compareNode);
+    //QList<Node*>::iterator i = qLowerBound(childNodes.begin(), childNodes.end(), child, compareNode);
+    QList<Node*>::iterator i = std::lower_bound(childNodes.begin(), childNodes.end(), child, compareNode);
     childNodes.insert(i, child);
 }
 
@@ -203,6 +204,7 @@ bool Node::isChild(Node *data, bool sorted)
 {
     if (sorted)
     {
+        //QList<Node*>::iterator i = qBinaryFind(childNodes.begin(), childNodes.end(), data, compareNode);
         QList<Node*>::iterator i = std::lower_bound(childNodes.begin(), childNodes.end(), data, compareNode);
         if (i == childNodes.end())
             return false;

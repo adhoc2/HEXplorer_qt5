@@ -57,13 +57,13 @@ SUB_GROUP::SUB_GROUP(Node *parentNode)
         if (token == Keyword && lex->getLexem() == "SUB_GROUP")
         {
             //Sort the childNodes
-            //qSort(this->childNodes.begin(), this->childNodes.end(), nodeLessThan);
+            //std::sort(this->childNodes.begin(), this->childNodes.end(), nodeLessThan);
 
             //Sort The childItems
-            //qSort(this->optItems.begin(), this->optItems.end(), itemLessThan);
+            //std::sort(this->optItems.begin(), this->optItems.end(), itemLessThan);
 
             //sort the charList
-            qSort(subgroupList.begin(), subgroupList.end());
+            std::sort(subgroupList.begin(), subgroupList.end());
         }
         else
         {

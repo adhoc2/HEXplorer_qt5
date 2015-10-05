@@ -62,7 +62,7 @@ FUNCTION::FUNCTION( Node *parentNode)
                 node->sortChildrensName();
 
             //Sort The childItems
-            //qSort(this->optItems.begin(), this->optItems.end(), itemLessThan);
+            //std::sort(this->optItems.begin(), this->optItems.end(), itemLessThan);
         }
         else
         {

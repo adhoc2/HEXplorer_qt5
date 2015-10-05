@@ -76,10 +76,10 @@ AXIS_PTS::AXIS_PTS( Node *parentNode)
         if (token == Keyword && lex->getLexem() == "AXIS_PTS")
         {
             //Sort the childNodes
-            //qSort(this->childNodes.begin(), this->childNodes.end(), nodeLessThan);
+            //std::sort(this->childNodes.begin(), this->childNodes.end(), nodeLessThan);
 
             //Sort The childItems
-            //qSort(this->optItems.begin(), this->optItems.end(), itemLessThan);
+            //std::sort(this->optItems.begin(), this->optItems.end(), itemLessThan);
         }
         else
         {
@@ -92,7 +92,8 @@ AXIS_PTS::AXIS_PTS( Node *parentNode)
         QString s1(lex->toString(token).c_str());
         QString s2(lex->getLexem().c_str());
         this->showError("expected end AXIS_PTS\nfind : " + s1 + " " + s2 );
-    }    
+    }
+    this->sortChildrensName();
 }
 
 AXIS_PTS::~AXIS_PTS()

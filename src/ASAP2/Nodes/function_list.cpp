@@ -59,13 +59,13 @@ FUNCTION_LIST::FUNCTION_LIST(Node *parentNode)
         if (token == Keyword && lex->getLexem() == "FUNCTION_LIST")
         {
             //Sort the childNodes
-            //qSort(this->childNodes.begin(), this->childNodes.end(), nodeLessThan);
+            //std::sort(this->childNodes.begin(), this->childNodes.end(), nodeLessThan);
 
             //Sort The childItems
-            //qSort(this->optItems.begin(), this->optItems.end(), itemLessThan);
+            //std::sort(this->optItems.begin(), this->optItems.end(), itemLessThan);
 
             //sort the charList
-            qSort(subsetList.begin(), subsetList.end());
+            std::sort(subsetList.begin(), subsetList.end());
         }
         else
         {

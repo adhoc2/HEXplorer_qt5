@@ -1,6 +1,10 @@
 <HEXplorer application="HEXplorer">
-    <revision version="0.7.0">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
-    <details>revision 0.7.0 (09/2015) :
+    <revision version="0.7.1">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
+    <details>revision 0.7.1 (10/2015) :
+    - use of std::algorithms instead of qalgorithm
+
+
+revision 0.7.0 (09/2015) :
     - use of Qt 5.5.0
     - compiled with MinGW
     - add new keywords to be more compliant with ASAP2

@@ -519,7 +519,8 @@ void CdfxFile::parseSwInstance(QDomNode &node)
     }
 
     // add the swInstance to the list
-    QList<SwInstance*>::iterator i = qLowerBound(listSwInstance.begin(), listSwInstance.end(), instance, swInstanceCompar);
+    //QList<SwInstance*>::iterator i = qLowerBound(listSwInstance.begin(), listSwInstance.end(), instance, swInstanceCompar);
+    QList<SwInstance*>::iterator i = std::lower_bound(listSwInstance.begin(), listSwInstance.end(), instance, swInstanceCompar);
     listSwInstance.insert(i, instance);
 }
 
@@ -1083,7 +1084,8 @@ void CdfxFile::swInstance2Data()
                 if (swInstanceStatus)
                 {
                     data->updateSize();
-                    QList<Data*>::iterator i = qLowerBound(listData.begin(), listData.end(), data, compar);
+                    //QList<Data*>::iterator i = qLowerBound(listData.begin(), listData.end(), data, compar);
+                    QList<Data*>::iterator i = std::lower_bound(listData.begin(), listData.end(), data, compar);
                     listData.insert(i, data);
                 }
                 else
@@ -1277,7 +1279,8 @@ SwInstance *CdfxFile::getSwInstance(QString str)
 {
     SwInstance instance;
     instance.name = str;
-    QList<SwInstance*>::iterator i = qBinaryFind(listSwInstance.begin(), listSwInstance.end(), &instance, swInstanceCompar);
+    //QList<SwInstance*>::iterator i = qBinaryFind(listSwInstance.begin(), listSwInstance.end(), &instance, swInstanceCompar);
+    QList<SwInstance*>::iterator i = std::lower_bound(listSwInstance.begin(), listSwInstance.end(), &instance, swInstanceCompar);
 
     if (i == listSwInstance.end())
     {

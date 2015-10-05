@@ -2841,7 +2841,8 @@ void MDImain::compare_A2lFile()
         QStringList missingLabels;
         foreach (QString str, list1)
         {
-            QStringList::iterator i = qBinaryFind(list2.begin(), list2.end(), str);
+            //QStringList::iterator i = qBinaryFind(list2.begin(), list2.end(), str);
+            QStringList::iterator i = std::lower_bound(list2.begin(), list2.end(), str);
             if (i == list2.end())
             {
                 missingLabels.append(str);
@@ -2852,7 +2853,8 @@ void MDImain::compare_A2lFile()
         QStringList newLabels;
         foreach (QString str, list2)
         {
-            QStringList::iterator i = qBinaryFind(list1.begin(), list1.end(), str);
+            //QStringList::iterator i = qBinaryFind(list1.begin(), list1.end(), str);
+            QStringList::iterator i = std::lower_bound(list1.begin(), list1.end(), str);
             if (i == list1.end())
             {
                 newLabels.append(str);

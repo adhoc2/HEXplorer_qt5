@@ -20,6 +20,7 @@
 #include "module.h"
 #include <QMessageBox>
 #include "a2lgrammar.h"
+#include <QStringList>
 
 //initialise static variables
 Factory<Node,MODULE> MODULE::nodeFactory;
@@ -108,9 +109,12 @@ MODULE::MODULE(Node *parentNode)
     }
 
     //Sort The childItems and childNodes
-    qSort(optItems.begin(), optItems.end(), itemLessThan);
-    qSort(childNodes.begin(), childNodes.end(), nodeLessThan);
-    listChar.sort();
+    std::sort(optItems.begin(), optItems.end(), itemLessThan);
+    //std::sort(childNodes.begin(), childNodes.end(), nodeLessThan); remplaced by following line (same but nicer)
+    this->sortChildrensName();
+
+    //sort the list of characteristics including (characteristics or axis_pts or...)
+    this->listChar.sort();
 }
 
 MODULE::~MODULE()
