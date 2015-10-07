@@ -154,6 +154,13 @@ void ChooseSubset::on_lineEdit_textChanged(QString )
                 i = std::lower_bound(choosenList.begin(), choosenList.end(), name);
                 if (i == choosenList.end())
                     str.append(name);
+                else
+                {
+                    if (name.compare(*i) != 0)
+                    {
+                        str.append(name);
+                    }
+                }
             }
         }
 
@@ -181,6 +188,13 @@ void ChooseSubset::on_lineEdit_textChanged(QString )
                 i = std::lower_bound(choosenList.begin(), choosenList.end(), name);
                 if (i == choosenList.end())
                     str.append(name);
+                else
+                {
+                    if (name.compare(*i) != 0)
+                    {
+                        str.append(name);
+                    }
+                }
             }
         }       
 

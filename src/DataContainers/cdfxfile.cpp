@@ -1287,5 +1287,14 @@ SwInstance *CdfxFile::getSwInstance(QString str)
         return NULL;
     }
     else
-        return *i;
+    {
+        if (strcmp(((SwInstance*)*i)->name.toLocal8Bit(), instance.name.toLocal8Bit()) != 0)
+        {
+            return NULL;
+        }
+        else
+        {
+            return *i;
+        }
+    }
 }

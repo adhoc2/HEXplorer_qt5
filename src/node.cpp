@@ -99,7 +99,8 @@ Node *Node::child(int row)
 Node *Node::child(QString str, bool bin)
 {
    if (bin)
-    {
+   {
+
         Node node;
         node.name = new char[str.length() + 1];
         strcpy(node.name, str.toLocal8Bit().data());
@@ -107,17 +108,22 @@ Node *Node::child(QString str, bool bin)
         QList<Node*>::iterator i =  std::lower_bound(childNodes.begin(), childNodes.end(), &node, nodeLessThan);
 
         if (i == childNodes.end())
-//        Node* toto = interpolationSearch(childNodes, str);
-//        if (toto == 0)
         {
             delete[] node.name;
             return NULL;
         }
         else
         {
-            delete[] node.name;
-            return *i;
-            //return toto;
+            if (strcmp(((Node*)*i)->name, node.name) != 0)
+            {
+                delete[] node.name;
+                return NULL;
+            }
+            else
+            {
+                delete[] node.name;
+                return *i;
+            }
         }
     }
     else
@@ -205,11 +211,11 @@ bool Node::isChild(Node *data, bool sorted)
     if (sorted)
     {
         //QList<Node*>::iterator i = qBinaryFind(childNodes.begin(), childNodes.end(), data, compareNode);
-        QList<Node*>::iterator i = std::lower_bound(childNodes.begin(), childNodes.end(), data, compareNode);
-        if (i == childNodes.end())
-            return false;
-        else
-            return true;
+        return std::binary_search(childNodes.begin(), childNodes.end(), data, compareNode);
+//        if (i == childNodes.end())
+//            return false;
+//        else
+//            return true;
     }
     else
     {

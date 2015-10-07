@@ -649,7 +649,6 @@ void HexFile::readAllData()
 
             listNotValidData.append(listNotValid1);
             listNotValidData.append(listNotValid2);
-
         }
         else
         {
@@ -660,7 +659,7 @@ void HexFile::readAllData()
 
                 // search into CHARACTERISTIC
                 if (nodeChar)
-                {
+                {                  
                     Node *label = nodeChar->getNode(str);
                     if (label)
                     {

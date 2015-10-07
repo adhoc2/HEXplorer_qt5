@@ -32,7 +32,8 @@ bool dataCompare(Data *a, Data *b)
 {
    if (a->getName() < b->getName())
        return true;
-   else return false;
+   else
+       return false;
 }
 
 //_______________________________________________ //
@@ -85,10 +86,22 @@ Data *DataContainer::getData(QString str)
 
     if (i == listData.end())
     {
+        delete[] node.name;
         return NULL;
     }
     else
-        return *i;
+    {
+        if (strcmp(((Data*)*i)->name, node.name) != 0)
+        {
+            delete[] node.name;
+            return NULL;
+        }
+        else
+        {
+            delete[] node.name;
+            return *i;
+        }
+    }
 }
 
 QList<Data*> DataContainer::getModifiedData()

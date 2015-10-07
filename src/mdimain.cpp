@@ -972,12 +972,12 @@ void MDImain::on_actionSettings_triggered()
 
 void MDImain::on_actionAbout_triggered()
 {
-    QString text = "Christophe HOEL"
+    QByteArray encodedString = "Christophe Hoël"
                    "\n\n"
                    "special thanks to :\n"
                    "Oscar, Niklaus, Jimi, Zack, Eric, Oneyed Jack, lofofora\n"
                    "M, Radio Tarifa, Al, John, Paco, Noir dez, et tous les autres...pour le bon son.\n\n"
-                   "build " + qApp->applicationVersion() + " compiled with MinGW\n\n"
+                   "build " + qApp->applicationVersion().toLocal8Bit() + " compiled with MinGW\n\n"
                    "This software uses external libraries :\n"
                    "   - Qt framework 5.5.0\n"
                    "   - Quex 0.65.4 (as efficient lexical analyser generator)\n"
@@ -986,7 +986,11 @@ void MDImain::on_actionAbout_triggered()
                    "   - MathGL 2.3.3 (as 3D graph plotter)\n\n"
                    "Please visit the following link for more information :\n"
             "http://lmbhoc1.github.io/HEXplorer/";
-    QMessageBox::about(this, tr("HEXplorer :: About"), tr(text.toLocal8Bit().data()));
+
+    QTextCodec *codec = QTextCodec::codecForName("ISO 8859-1");
+    QString string = codec->toUnicode(encodedString);
+
+    QMessageBox::about(this, tr("HEXplorer :: About"), string);
 }
 
 void MDImain::on_actionCreate_database_triggered()
@@ -2847,19 +2851,38 @@ void MDImain::compare_A2lFile()
             {
                 missingLabels.append(str);
             }
+            else
+            {
+                if (str.compare(*i) != 0)
+                {
+                    missingLabels.append(str);
+                }
+            }
         }
 
         //New labels
-        QStringList newLabels;
+        QStringList newLabels;        
         foreach (QString str, list2)
         {
             //QStringList::iterator i = qBinaryFind(list1.begin(), list1.end(), str);
             QStringList::iterator i = std::lower_bound(list1.begin(), list1.end(), str);
+            //if (i == list1.end())
             if (i == list1.end())
             {
                 newLabels.append(str);
             }
+            else
+            {
+                if (str.compare(*i) != 0)
+                {
+                    newLabels.append(str);
+                }
+            }
         }
+        qDebug() << "list labels 1 : " << list1.count();
+        qDebug() << "list labels 2 : " << list2.count();
+        qDebug() << "missing into 1: " << missingLabels.count();
+        qDebug() << "new labels into 2: " << newLabels.count();
 
         //Missing, new, modified subsets
         Node *fun1 = wp1->a2lFile->getProject()->getNode("MODULE/" + moduleName1 + "/FUNCTION");

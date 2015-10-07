@@ -1220,7 +1220,6 @@ void FormCompare::on_compare_clicked()
         if (module1 && module2)
         {
             QStringList listDataName;
-            //if (module1 == module2)
             if (module2)
             {
                 Node *rootNode1 = diffModel->getRootNode();

@@ -28,6 +28,14 @@ int Foo::Draw(mglGraph *gr)
     double minX = data->getX().at(0).toDouble();
     double minY = data->getY().at(0).toDouble();
     double minZ = data->getZ().at(0).toDouble();
+
+    //added for flap map to be displayed
+    if (maxZ == minZ)
+    {
+        minZ -= 10;
+        maxZ += 10;
+    }
+
     double dblX, dblY, dblZ;
     for (int i = 0; i < dimX; i++)
     {

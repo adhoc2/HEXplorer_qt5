@@ -351,6 +351,13 @@ void ChooseLabel::on_lineEdit_textChanged(QString str)
                         i = std::lower_bound(choosenList.begin(), choosenList.end(), str);
                         if (i == choosenList.end())
                             strList.append(str);
+                        else
+                        {
+                            if (str.compare(*i) != 0)
+                            {
+                                strList.append(str);
+                            }
+                        }
                     }
 
                     // select the description
@@ -608,13 +615,21 @@ void ChooseLabel::on_import_2_clicked()
 
                 for (int i = 1;i < lines.count(); i++)
                 {
-                    if (module->listChar.contains(lines.at(i)))
+                    QString str = lines.at(i);
+                    if (module->listChar.contains(str))
                     {
                         //check if label already in chosenList
                         //QStringList::iterator it = qBinaryFind(choosenList.begin(), choosenList.end(), lines.at(i));
-                        QStringList::iterator it = std::lower_bound(choosenList.begin(), choosenList.end(), lines.at(i));
+                        QStringList::iterator it = std::lower_bound(choosenList.begin(), choosenList.end(), str);
                         if (it == choosenList.end())
-                            strList.append(lines.at(i));
+                            strList.append(str);
+                        else
+                        {
+                            if (str.compare(*it) != 0)
+                            {
+                                strList.append(str);
+                            }
+                        }
                     }
                 }
                 ui->listWidget_2->addItems(strList);

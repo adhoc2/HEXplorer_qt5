@@ -24,12 +24,15 @@
 #endif
 #endif
 #include "mdimain.h"
-
+#include <QTextCodec>
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    app.setOrganizationName("Ch.Hoël");
+    QByteArray encodedString = "Ch.Hoël";
+    QTextCodec *codec = QTextCodec::codecForName("ISO 8859-1");
+    QString string = codec->toUnicode(encodedString);
+    app.setOrganizationName(string);
     app.setApplicationName("HEXplorer");
     app.setApplicationVersion("0.7.1");
 
@@ -37,3 +40,4 @@ int main(int argc, char *argv[])
     w.show();
     return app.exec();
 }
+
