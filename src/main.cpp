@@ -30,9 +30,9 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     QByteArray encodedString = "Ch.Hoël";
-    QTextCodec *codec = QTextCodec::codecForName("ISO 8859-1");
-    QString string = codec->toUnicode(encodedString);
-    app.setOrganizationName(string);
+//    QTextCodec *codec = QTextCodec::codecForName("ISO 8859-1");
+//    QString string = codec->toUnicode(encodedString);
+    app.setOrganizationName(encodedString);
     app.setApplicationName("HEXplorer");
     app.setApplicationVersion("0.7.1");
 

@@ -49,6 +49,7 @@ class CHARACTERISTIC : public Node
         std::string pixmap();
         char* getPar(std::string str);
         char* getPar(int i);
+        // specific only for this node Characteristic
         QString getSubsetName();
         void setSubset(FUNCTION *fun);
 

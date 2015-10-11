@@ -21,6 +21,8 @@
 #include <QMessageBox>
 #include "a2lgrammar.h"
 #include <QStringList>
+#include <QTime>
+#include <qdebug.h>
 
 //initialise static variables
 Factory<Node,MODULE> MODULE::nodeFactory;
@@ -84,7 +86,14 @@ MODULE::MODULE(Node *parentNode)
         {
             //Sort the childNodes
             foreach (Node *node, childNodes)
+            {
+//                qDebug() << node->name;
+//                 QTime timer;
+//                 timer.start();
                 node->sortChildrensName();
+//                int toto = timer.elapsed();
+//                qDebug() << toto;
+            }
         }
 
         else
@@ -109,8 +118,8 @@ MODULE::MODULE(Node *parentNode)
     }
 
     //Sort The childItems and childNodes
-    std::sort(optItems.begin(), optItems.end(), itemLessThan);
     //std::sort(childNodes.begin(), childNodes.end(), nodeLessThan); remplaced by following line (same but nicer)
+    std::sort(optItems.begin(), optItems.end(), itemLessThan);
     this->sortChildrensName();
 
     //sort the list of characteristics including (characteristics or axis_pts or...)

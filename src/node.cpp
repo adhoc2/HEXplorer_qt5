@@ -254,6 +254,7 @@ void Node::setParentNode(Node *node)
 void Node::sortChildrensName()
 {
     std::sort(childNodes.begin(), childNodes.end(), nodeLessThan);
+    //std::sort(childNodes.begin(), childNodes.end());
 }
 
 Item *Node::getItem(QString str)

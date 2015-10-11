@@ -59,7 +59,6 @@ PROJECT::PROJECT(Node *parentNode, A2lLexer *lexer)
         token = nextToken();
         if (token == Keyword && lex->getLexem() == "PROJECT")
         {
-
         }
         else
         {			
@@ -70,6 +69,7 @@ PROJECT::PROJECT(Node *parentNode, A2lLexer *lexer)
     else if ((token == Eof || token == Identifier) && lex->getLexem() == "CHUNKend")
     {
         std::sort(this->childNodes.begin(), this->childNodes.end(), nodeLessThan);
+        //std::sort(this->childNodes.begin(), this->childNodes.end()); // class Node has operator < implemented
         stopped = true;
         //lexer->in->seek(lexer->in->pos() - 8);
         lexer->backward(8);
@@ -82,6 +82,7 @@ PROJECT::PROJECT(Node *parentNode, A2lLexer *lexer)
     }
 
     std::sort(this->childNodes.begin(), this->childNodes.end(), nodeLessThan);
+    //std::sort(this->childNodes.begin(), this->childNodes.end()); // class Node has operator < implemented
 }
 
 PROJECT::~PROJECT()

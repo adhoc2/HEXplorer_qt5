@@ -87,7 +87,7 @@ void A2l::parse()
     //parse in 1 or 2 threads based on processor architecture
     bool myDebug = 0;
 #ifdef MY_DEBUG
-    myDebug = 0;
+    myDebug = 1;
 #endif
     QString multiThread = "";
     QString lexerType = "";

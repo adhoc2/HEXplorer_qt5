@@ -474,8 +474,6 @@ void HexFile::readAllData()
     QTime timer;
     timer.start();
 
-    bool phys = true;
-
     //empty the list
     listData.clear();
 
@@ -653,32 +651,42 @@ void HexFile::readAllData()
         else
         {
             int i = 0;
+            int time1 = 0;
+            int time2 = 0;
+            int time3 = 0;
             foreach (QString str, module->listChar)
             {
                 bool found = false;
 
                 // search into CHARACTERISTIC
                 if (nodeChar)
-                {                  
+                {
+                    QTime timer;
+                    timer.start();
                     Node *label = nodeChar->getNode(str);
+                    time1 += timer.elapsed();
                     if (label)
                     {
                         found = true;
                         CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
-                        QString add = charac->getPar("Adress");
-                        bool bl = isValidAddress(add);
+//                        QString add = charac->getPar("Adress");
+//                        bool bl = isValidAddress(add);
 
-                        if(bl)
-                        {
+//                        if(bl)
+//                        {
+                            timer.restart();
                             Data *data = new Data(charac, a2lProject, this);
+                            time2 += timer.elapsed();
+                            timer.restart();
                             listData.append(data);
-                        }
-                        else
-                        {
+                            time3 += timer.elapsed();
+//                        }
+//                        else
+//                        {
 
-                        }
+//                        }
                     }
-                }
+                 }
 
                 // search into AXIS_PTS
                 if (nodeAxis && !found)
@@ -715,6 +723,10 @@ void HexFile::readAllData()
 
                 i++;
             }
+
+        qDebug() << "   - getNode : " << time1;
+        qDebug() << "   - create Data : " << time2;
+        qDebug() << "   - append data to list : " << time3;
         }
     }
 
