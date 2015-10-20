@@ -17,10 +17,11 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
+
 #include <QApplication>
 #ifdef Q_OS_WIN32
 #ifdef CL_COMPILER
-   //#include "usewinhoard.cpp"
+   //#include "uselibhoard.cpp"
 #endif
 #endif
 #include "mdimain.h"
@@ -34,7 +35,7 @@ int main(int argc, char *argv[])
 //    QString string = codec->toUnicode(encodedString);
     app.setOrganizationName(encodedString);
     app.setApplicationName("HEXplorer");
-    app.setApplicationVersion("0.7.1");
+    app.setApplicationVersion("0.7.2");
 
     MDImain w;
     w.show();

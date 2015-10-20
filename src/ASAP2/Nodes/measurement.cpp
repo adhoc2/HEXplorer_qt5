@@ -230,7 +230,7 @@ QMap<std::string, std::string> *MEASUREMENT::getParameters()
 
 std::string MEASUREMENT::pixmap()
 {
-    return ":/icones/MEAS.bmp";
+    return ":/icones/CHAR.bmp";
 }
 
 char* MEASUREMENT::getPar(std::string str)

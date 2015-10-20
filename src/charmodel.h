@@ -38,7 +38,7 @@ class CharModel : public QAbstractTableModel
         Qt::ItemFlags flags(const QModelIndex &index) const;
 
     private:
-        QList<Node*> listMeas;
+        QList<Node*> listChar;
         int nColumn;
         int nRow;
 

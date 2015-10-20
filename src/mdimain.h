@@ -23,6 +23,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QModelIndex>
 #include <QProgressBar>
+#include <QSqlDatabase>
 class Node;
 
 class QsciLexerXML;
@@ -67,6 +68,7 @@ protected:
 
 private:
     //bool boolCiao;
+    bool persitDB( QSqlDatabase memdb, QString filename, bool save );
     QString getUserName();
     QString strippedName(const QString &fullFileName);
     enum { MaxRecentFiles = 5};

@@ -3,7 +3,7 @@
 TEMPLATE = app
 DEPENDPATH += .
 INCLUDEPATH += .
-QT       += core gui opengl network script xml xmlpatterns widgets concurrent printsupport axcontainer
+QT       += core gui opengl network script xml xmlpatterns widgets concurrent printsupport axcontainer sql
 contains(QT_CONFIG, scripttools): QT += scripttools
 RESOURCES += icones.qrc
 RC_FILE = myappicon.rc
@@ -18,18 +18,18 @@ equals( QMAKE_CXX, cl) {
     # --- common config --- #
 
     QSCINTILLA_ROOT = ../LIBS/QScintilla-gpl-2.9
-    WINHOARD_ROOT = ../LIBS/Hoard-38/src
+    WINHOARD_ROOT = ../LIBS/Hoard-3.10
     QWT_ROOT = ../LIBS/qwt-6.1.2
     MATHGL_ROOT = ../LIBS/mathgl_msvc2013
 
     CONFIG += embed_manifest_exe
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL CL_COMPILER
     INCLUDEPATH += . "C:\Quex\quex-0.65.4" \
-     ./ASAP2 \
+     ./ASAP2 ./sqlite \
      ./DataContainers \
      ./Quex  \
      $${QSCINTILLA_ROOT}/Qt4Qt5 \
-     $${WINHOARD_ROOT} \
+     $${WINHOARD_ROOT}/src/source \
      $${QWT_ROOT}/src \
      $${MATHGL_ROOT}/include \
 
@@ -43,10 +43,10 @@ equals( QMAKE_CXX, cl) {
         -l$${QWT_ROOT}/lib_msvc2013/qwtd \
         -l$${MATHGL_ROOT}/lib/mgl \
         -l$${MATHGL_ROOT}/lib/mgl-qt5 \
-        #-l$${WINHOARD_ROOT}/winhoard
+        -l$${WINHOARD_ROOT}/win32/libhoard
 
 
-        QMAKE_CXXFLAGS_DEBUG += -openmp
+        QMAKE_CXXFLAGS_DEBUG += -Ox -openmp
     }
     else {
 
@@ -58,11 +58,11 @@ equals( QMAKE_CXX, cl) {
         -l$${QWT_ROOT}/lib_msvc2013/qwt \
         -l$${MATHGL_ROOT}/lib/mgl \
         -l$${MATHGL_ROOT}/lib/mgl-qt5 \
-        #-l$${WINHOARD_ROOT}/winhoard
+        -l$${WINHOARD_ROOT}/win32/libhoard
 
-        # only for file a2l_quex_lexer.cpp because microsoft compiler cannot compile with -Ox
-        #QMAKE_CXXFLAGS_RELEASE += -Osiy -Gs -MD -openmp -DQUEX_OPTION_ASSERTS_DISABLED
-        QMAKE_CXXFLAGS_RELEASE += -Ox -MD -openmp -DQUEX_OPTION_ASSERTS_DISABLED
+        # only for file a2l_quex_lexer.cpp because microsoft compiler cannot compile with -Ox (-Osiy -Gs instead)
+        #QMAKE_CXXFLAGS_RELEASE += -Osiy -Gs -openmp -DQUEX_OPTION_ASSERTS_DISABLED
+        QMAKE_CXXFLAGS_RELEASE += -Ox -openmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
 }
 
@@ -81,21 +81,24 @@ equals( QMAKE_CXX, cl) {
     unix:QUEX_ROOT = /Applications/quex/quex-0.60.2
     win32:QUEX_ROOT = "C:\Quex\quex-0.65.4"
     MATHGL_ROOT = ../LIBS/mathgl-2.3.3-mingw.i686
+    #QDJANGO_ROOT = ../LIBS/qdjango
 
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
 
-    INCLUDEPATH += . ./ASAP2 $${QUEX_ROOT} \
+    INCLUDEPATH += . ./ASAP2 ./sqlite $${QUEX_ROOT} \
     ./Quex \
     ./DataContainers \
     $${QWT_ROOT}/src \
     $${QWT3D_ROOT}/include \
     $${QSCINTILLA_ROOT}/Qt4Qt5 \
     $${MATHGL_ROOT}/include \
+    #$${QDJANGO_ROOT}/src/db \
 
     LIBS += -L$${QSCINTILLA_ROOT}/Qt4Qt5/lib \
     -L$${QWT3D_ROOT}/lib \
     -L$${QWT_ROOT}/lib \
-    -L$${MATHGL_ROOT}/lib
+    -L$${MATHGL_ROOT}/lib \
+    #-L$${QDJANGO_ROOT}/lib
 
     # --- debug config --- #
     CONFIG( debug, debug|release ) {
@@ -273,7 +276,8 @@ HEADERS += a2l.h \
     ASAP2/Nodes/compu_tab.h \
     ASAP2/Items/default_value_numeric.h \
     foo.h \
-    plotmathgl.h
+    plotmathgl.h \
+    sqlite/sqlite3.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -444,7 +448,8 @@ SOURCES += a2l.cpp \
     Quex/a2l_quex_lexer.cpp \
     ASAP2/Items/default_value_numeric.cpp \
     foo.cpp \
-    plotmathgl.cpp
+    plotmathgl.cpp \
+    sqlite/sqlite3.c
 
 OTHER_FILES += \
     GNU_license.txt \

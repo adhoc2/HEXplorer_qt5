@@ -313,8 +313,7 @@ bool A2l::parseOpenMPA2l()
                         // create a new lexer
                         std::istringstream out1(str1.toStdString());
                         lexer1 = new A2lQuexLexer(out1);
-                        connect(lexer1, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)),
-                                Qt::DirectConnection);
+                        connect(lexer1, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)),Qt::DirectConnection);
                         lexer1->initialize();
                         errorList1 = new QStringList();
 
@@ -330,8 +329,7 @@ bool A2l::parseOpenMPA2l()
                         // create a new lexer
                         QTextStream out1(&str1);
                         lexer1 = new A2lLexer(out1);
-                        connect(lexer1, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)),
-                                Qt::DirectConnection);
+                        connect(lexer1, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)), Qt::DirectConnection);
                         lexer1->initialize();
                         errorList1 = new QStringList();
 

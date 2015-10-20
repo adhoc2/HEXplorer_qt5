@@ -31,7 +31,7 @@ Factory<Node,CHARACTERISTIC> CHARACTERISTIC::nodeFactory;
 bool nodeLessThan( const Node *a, const Node *b );
 bool itemLessThan( const Item *a, const Item *b );
 
-CHARACTERISTIC::CHARACTERISTIC( Node *parentNode)
+CHARACTERISTIC::CHARACTERISTIC(Node *parentNode)
     : Node(parentNode, parentNode->lex, parentNode->errorList)
 {
     // specific for this node Characteristic
@@ -289,3 +289,5 @@ void CHARACTERISTIC::setSubset(FUNCTION *fun)
 {
     subset = fun;
 }
+
+

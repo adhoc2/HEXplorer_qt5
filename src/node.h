@@ -29,6 +29,8 @@
 #include "lexer.h"
 #include "item.h"
 #include "QMutex"
+
+
 class A2lGrammar;
 
 // Functions (Predicate)

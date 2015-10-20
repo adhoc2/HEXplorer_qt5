@@ -35,7 +35,7 @@ CharModel::~CharModel()
 void CharModel::setList(QList<Node *> labelList)
 {
 
-    listMeas = labelList;
+    listChar = labelList;
 
     nRow = labelList.count() + 1;
     nColumn = 10;
@@ -84,7 +84,7 @@ QVariant CharModel::data(const QModelIndex &index, int role) const
                 }
                 else if (column == 3)
                 {
-                    return "subset";
+                    return "fonction";
                 }
                 else if (column == 4)
                 {
@@ -171,7 +171,7 @@ QVariant CharModel::data(const QModelIndex &index, int role) const
     }
     else if (0 < row && row <= nRow)
     {
-        CHARACTERISTIC *label = (CHARACTERISTIC*)listMeas.at(row - 1);
+        CHARACTERISTIC *label = (CHARACTERISTIC*)listChar.at(row - 1);
 
         switch (role)
         {
@@ -194,7 +194,8 @@ QVariant CharModel::data(const QModelIndex &index, int role) const
                 }
                 else if (column == 2)
                 {
-                    return cmp->getPar("Unit");
+                    //return cmp->getPar("Unit");
+                    return cmp->fixPar("Unit").c_str();
                 }
                 else if (column == 3)
                 {

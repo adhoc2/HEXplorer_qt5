@@ -40,8 +40,9 @@
 
 class CHARACTERISTIC : public Node
 {
+
     public:
-        CHARACTERISTIC( Node *parentNode);
+        CHARACTERISTIC(Node *parentNode);
         ~CHARACTERISTIC();
 
         QMap<std::string, std::string> *getParameters();
