@@ -572,7 +572,7 @@ void HexFile::readAllData()
 
                             // increment valueProgBar
                             if (i % 6 == 1)
-                                incrementValueProgBar(6);
+                                incrementValueProgBar(12);
 
                             i++;
 
@@ -633,8 +633,8 @@ void HexFile::readAllData()
 
 
                             // increment valueProgBar
-                            if (i % 6 == 1)
-                                incrementValueProgBar(6);
+//                            if (i % 6 == 1)
+//                                incrementValueProgBar(6);
 
                             i++;
                         }
@@ -2208,7 +2208,10 @@ void HexFile::incrementValueProgBar(int n)
     omp_set_lock(&lock);
 
     valueProgBar += n;
-    emit progress(valueProgBar, maxValueProgbar);
+    if (valueProgBar / maxValueProgbar < 0.98)
+        emit progress(valueProgBar, maxValueProgbar);
+    else
+        emit progress(maxValueProgbar, maxValueProgbar);
 
     omp_unset_lock(&lock);
 }

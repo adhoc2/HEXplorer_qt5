@@ -459,7 +459,7 @@ void SrecFile::readAllData()
 #ifdef MY_DEBUG
     myDebug = 1;
 #endif
-        if (length > 5000 && omp_get_num_procs() > 1 && !myDebug)
+        if (length > 5000 && omp_get_num_procs() > 0 && !myDebug)
         {
             // split listChar into 2 lists
             int middle = 0;
@@ -540,7 +540,7 @@ void SrecFile::readAllData()
 
                             // increment valueProgBar
                             if (i % 6 == 1)
-                                incrementValueProgBar(6);
+                                incrementValueProgBar(12);
 
                             i++;
 
@@ -601,8 +601,8 @@ void SrecFile::readAllData()
 
 
                             // increment valueProgBar
-                            if (i % 6 == 1)
-                                incrementValueProgBar(6);
+//                            if (i % 6 == 1)
+//                                incrementValueProgBar(6);
 
                             i++;
                         }
@@ -2155,7 +2155,11 @@ void SrecFile::incrementValueProgBar(int n)
     omp_set_lock(&lock);
 
     valueProgBar += n;
-    emit progress(valueProgBar, maxValueProgbar);
+    if (valueProgBar / maxValueProgbar < 0.98)
+        emit progress(valueProgBar, maxValueProgbar);
+    else
+        emit progress(maxValueProgbar, maxValueProgbar);
+
 
     omp_unset_lock(&lock);
 }

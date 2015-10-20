@@ -975,20 +975,24 @@ void MDImain::on_actionSettings_triggered()
 
 void MDImain::on_actionAbout_triggered()
 {
+    QByteArray compiler = "GNU compiler.";
+    #ifdef CL_COMPILER
+        compiler = "msvc2013.";
+    #endif
     QByteArray encodedString = "Christophe Hoël"
                    "\n\n"
                    "special thanks to :\n"
                    "Oscar, Niklaus, Jimi, Zack, Eric, Oneyed Jack, lofofora\n"
                    "M, Radio Tarifa, Al, John, Paco, Noir dez, et tous les autres...pour le bon son.\n\n"
-                   "build " + qApp->applicationVersion().toLocal8Bit() + " compiled with MinGW\n\n"
+                   "build " + qApp->applicationVersion().toLocal8Bit() + " compiled with " + compiler + "\n\n"
                    "This software uses external libraries :\n"
-                   "   - Qt framework 5.5.0\n"
+                   "   - Qt framework " + QT_VERSION_STR + "\n"
                    "   - Quex 0.65.4 (as efficient lexical analyser generator)\n"
                    "   - QScintilla 2.9 (as efficient text editor)\n"
                    "   - Qwt 6.1.2 (as 2D graph plotter)\n"
                    "   - MathGL 2.3.3 (as 3D graph plotter)\n\n"
                    "Please visit the following link for more information :\n"
-            "http://lmbhoc1.github.io/HEXplorer/";
+                    "http://lmbhoc1.github.io/HEXplorer/";
 
     QTextCodec *codec = QTextCodec::codecForName("ISO 8859-1");
     QString string = codec->toUnicode(encodedString);
