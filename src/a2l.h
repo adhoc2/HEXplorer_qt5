@@ -25,6 +25,7 @@
 #include <QStringList>
 #include <QMap>
 #include <Nodes/a2lfile.h>
+#include <Nodes/dbfile.h>
 #include <omp.h>
 class HexFile;
 
@@ -39,6 +40,7 @@ class A2l : public QObject
         ~A2l();
 
         A2LFILE *a2lFile;
+        DBFILE *dbFile;
         string getFullA2lFileName();
         void setFullA2lFileName(string str);
         void setFullA2lFileName(QString str);

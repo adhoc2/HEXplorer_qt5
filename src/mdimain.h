@@ -67,8 +67,7 @@ protected:
     virtual void closeEvent(QCloseEvent *e);
 
 private:
-    //bool boolCiao;
-    bool persitDB( QSqlDatabase memdb, QString filename, bool save );
+    bool persistDB( QSqlDatabase memdb, QString filename, bool save );
     QString getUserName();
     QString strippedName(const QString &fullFileName);
     enum { MaxRecentFiles = 5};
@@ -121,6 +120,7 @@ private:
     QAction *editLabel;
     QAction *editLabelCompare;
     QAction *exportListData;
+    QAction *saveA2lDB;
     QMenu *toolsMenu;
     QMenu *recentProMenu;
     QWidget *myWidget;
@@ -133,6 +133,12 @@ private:
     bool checkChangedSrecFiles();
     bool checkChangedCsvFiles();
     bool checkChangedCdfxFiles();
+    void createDbTableCharacteristics(Node *dim);
+    void createDbTableAxisPts(Node *dim);
+    void createDbTableCompuMethod(Node *dim);
+    void createDbTableCompuVtab(Node *dim);
+    void createDbTableRecordLayout(Node *dim);
+    void createDbTableAxisDescr(Node *dim);
 
 private slots:
      void compare_A2lFile();
@@ -201,15 +207,17 @@ private slots:
      void editChangedLabels();
      void edit();
      void editCompare();
+     void exportA2lDb();
      void exception(int, const QString &, const QString &, const QString &);
      void doubleClicked(QModelIndex);
+     void on_actionLoad_DB_triggered();
+     void on_connectionWidget_tableActivated(const QString &table);
 
- public slots:
+public slots:
     void resetAllTableView();
 
 signals:
     void check();
-    //void adieu();
 
 };
 

@@ -26,7 +26,9 @@
 #include <QFutureWatcher>
 #include <sys/stat.h>
 #include <QSqlDriver>
-//#include "sqlite3.h"
+#include <QSqlTableModel>
+#include <QSqlQuery>
+#include "sqlite3.h"
 
 #ifdef Q_OS_WIN32
     #include <QAxObject>
@@ -41,6 +43,7 @@
 #include "a2ltreemodel.h"
 #include "lexer.h"
 #include "Nodes/a2lfile.h"
+#include "Nodes/dbfile.h"
 #include "Nodes/a2ml.h"
 #include "chtextedit.h"
 #include "treemodelcompleter.h"
@@ -73,8 +76,6 @@
 #include "freezetablewidget.h"
 #include "dialoghttpupdate.h"
 
-//#include "ciao.h"
-
 #include "qdebug.h"
 
 MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
@@ -95,7 +96,7 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
     ui->tabWidget->clear();
     ui->tabWidget->setAcceptDrops(true);
     this->readSettings();
-    ui->dockWidget->setVisible(false);
+    ui->Differentlabels_Dock->setVisible(false);
     showMaximized();
 
 
@@ -374,6 +375,11 @@ void MDImain::createActions()
     connect(editLabelCompare, SIGNAL(triggered()), this, SLOT(editCompare()));
     editLabelCompare->setDisabled(false);
 
+    saveA2lDB = new QAction(tr("save A2l into DB"), this);
+    saveA2lDB->setIcon(QIcon(":/icones/milky_exportBaril.png"));
+    connect(saveA2lDB, SIGNAL(triggered()), this, SLOT(exportA2lDb()));
+    saveA2lDB->setDisabled(true);
+
     toolsMenu = new QMenu();
     toolsMenu->setTitle("tools");
     toolsMenu->setIcon(QIcon(":/icones/ToolboxFolder.png"));
@@ -415,6 +421,7 @@ void MDImain::initToolBars()
 {
     // Project : A2l
     ui->toolBar_a2l->addAction(ui->actionNewA2lProject);
+    ui->toolBar_a2l->addAction(ui->actionLoad_DB);
     ui->toolBar_a2l->addAction(addHexFile);
     ui->toolBar_a2l->addAction(addSrecFile);
     ui->toolBar_a2l->addAction(addCsvFile);
@@ -493,6 +500,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         editMeasChannels->setEnabled(true);
         editCharacteristics->setEnabled(true);
         openJScript->setEnabled(true);
+        saveA2lDB->setEnabled(true);
     }
     else if (name.endsWith("HexFile"))
     {
@@ -518,6 +526,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         editMeasChannels->setEnabled(false);
         editCharacteristics->setEnabled(false);
         openJScript->setEnabled(false);
+        saveA2lDB->setEnabled(false);
 
         ui->toolBar_data->show();
 
@@ -546,6 +555,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         editMeasChannels->setEnabled(false);
         editCharacteristics->setEnabled(false);
         openJScript->setEnabled(false);
+        saveA2lDB->setEnabled(false);
 
         ui->toolBar_data->show();
 
@@ -574,6 +584,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         editMeasChannels->setEnabled(false);
         editCharacteristics->setEnabled(false);
         openJScript->setEnabled(false);
+        saveA2lDB->setEnabled(false);
 
         ui->toolBar_data->show();
     }
@@ -600,6 +611,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         editMeasChannels->setEnabled(false);
         editCharacteristics->setEnabled(false);
         openJScript->setEnabled(false);
+        saveA2lDB->setEnabled(false);
 
         ui->toolBar_data->show();
     }
@@ -610,6 +622,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         addCdfxFile->setEnabled(false);
         addCsvFile->setEnabled(false);
         addHexFile->setEnabled(false);
+        addSrecFile->setEnabled(false);
         deleteProject->setEnabled(false);
         deleteFile->setEnabled(false);
         editFile->setEnabled(false);
@@ -624,6 +637,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         editMeasChannels->setEnabled(false);
         editCharacteristics->setEnabled(false);
         openJScript->setEnabled(false);
+        saveA2lDB->setEnabled(false);
     }
 
     //get the full path of the index into treeView
@@ -650,6 +664,8 @@ void MDImain::showContextMenu(QPoint)
         }
         updateRecentFileActions();
         menu.addMenu(recentProMenu);
+        menu.addSeparator();
+        menu.addAction(ui->actionLoad_DB);
     }
     else
     {
@@ -806,8 +822,8 @@ void MDImain::showContextMenu(QPoint)
                     menu.addSeparator();
                     menu.addAction(editMeasChannels);
                     menu.addAction(editCharacteristics);
-                    //menu.addSeparator();
-                    //menu.addAction(showParam);
+                    menu.addSeparator();
+                    menu.addAction(saveA2lDB);
                     //menu.addAction(childCount);
                 }
                 else
@@ -2699,6 +2715,7 @@ void MDImain::editChar()
 
             //display the characterisitc channels in view
             CharModel *charModel = new CharModel();
+//            charModel->setHeaderData(0, Qt::Horizontal, tr("Name"));
             charModel->setList(list);
 
             //create a new spreadSheet
@@ -2716,15 +2733,6 @@ void MDImain::editChar()
             //set new FormCompare as activated
             ui->tabWidget->setCurrentWidget(view);
 
-            /* test QDJANGO */
-            //open DB
-            QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-            db.setDatabaseName(":memory:");
-            if (!db.open())
-            {
-                qWarning("Could not access database '%s'\n", qPrintable(":memory"));
-                return;
-            }
         }
 
         //write output
@@ -4676,7 +4684,7 @@ FormCompare *MDImain::on_actionCompare_dataset_triggered()
     tabList->insert(nameTab, fComp);
     ui->tabWidget->addTab(fComp, icon, nameTab);
 
-    ui->dockWidget->setVisible(true);
+    ui->Differentlabels_Dock->setVisible(true);
 
     compareTabs++;
 
@@ -4914,7 +4922,7 @@ void MDImain::removeTab( int index )
 
     if (tabList->count() == 0)
     {
-        ui->dockWidget->hide();
+        ui->Differentlabels_Dock->hide();
     }
 }
 
@@ -4966,7 +4974,6 @@ void MDImain::resizeColumn0()
 
 void MDImain::tabWidget_currentChanged(int index)
 {
-
     myWidget = this->ui->tabWidget->currentWidget();
     if (myWidget)
     {
@@ -5253,76 +5260,641 @@ QString MDImain::getUserName()
 
 }
 
-bool MDImain::persitDB( QSqlDatabase memdb, QString filename, bool save )
+//-------------------- DataBase ---------------------//
+
+void MDImain::exportA2lDb()
+{
+    // check if a file is selected in treeWidget
+    QModelIndex index  = ui->treeView->selectionModel()->currentIndex();
+
+    if (index.isValid())
+    {
+        //get a pointer on the selected item
+        Node *node =  model->getNode(index);
+        QString name = typeid(*node).name();
+
+        if (!name.endsWith("A2LFILE"))
+        {
+            QMessageBox::warning(this, "HEXplorer::edit measuring channels", "Please select first a project.",
+                                             QMessageBox::Ok);
+            return;
+        }
+
+        int row = index.row();
+        if ( row < 0)
+        {
+            QMessageBox::information(this,"HEXplorer","please first select a file to be edited");
+            writeOutput("action edit  file cancelled: no project first selected");
+            return;
+        }
+        else
+        {
+            //start a timer;
+            QTime timer;
+            timer.start();
+
+            //Get the selected file name
+            QString fullFileName = model->name(index);
+
+            //create a pointer on the WorkProject
+            WorkProject *wp = projectList->value(fullFileName);
+
+            // get the list of CHARACTERISTIC nodes            
+            Node *dim;
+            Node *module = wp->a2lFile->getProject()->getNode("MODULE");
+            if (module == NULL)
+            {
+                return;
+            }
+            else
+            {
+                QString _module;
+                QList<MODULE*> listModule = wp->a2lFile->getProject()->listModule();
+                if (listModule.count() == 0)
+                {
+                    writeOutput("action edit characteristics : no Module into A2l file !");
+                    return;
+                }
+                else if (listModule.count() == 1)
+                {
+                    _module = QString(listModule.at(0)->name);
+                }
+                else
+                {
+                    // select a module
+                    QString module;
+                    DialogChooseModule *diag = new DialogChooseModule(&module);
+                    QStringList listModuleName;
+                    foreach (MODULE* module, listModule)
+                    {
+                        listModuleName.append(module->name);
+                    }
+                    diag->setList(listModuleName);
+                    int ret = diag->exec();
+
+                    if (ret == QDialog::Accepted)
+                    {
+                         _module = module;
+                    }
+                    else
+                    {
+                        writeOutput("action open new dataset : no module chosen !");
+                        return;
+                    }
+                }
+
+                dim = module->getNode(_module);
+                if (dim == NULL)
+                {
+                    return;
+                }
+            }
+
+            //open DB
+            if (!QSqlDatabase::drivers().contains("QSQLITE"))
+            {
+                QMessageBox::critical(this, "Unable to load database", "SQL driver missing");
+                return;
+            }
+            QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+            db.setDatabaseName(":memory:");
+            if (!db.open())
+            {
+                qWarning("Could not access database '%s'\n", qPrintable(":memory"));
+                return;
+            }
+
+            //create tables into DB
+            createDbTableCharacteristics(dim);
+            createDbTableAxisPts(dim);
+            createDbTableCompuMethod(dim);
+            createDbTableCompuVtab(dim);
+            createDbTableRecordLayout(dim);
+
+            statusBar()->hide();
+
+            //write output
+            writeOutput("characteristics saved into DB in " + QString::number(timer.elapsed() / 1000) +  " sec.");
+
+            //persist database
+            int ret = QMessageBox::question(this, "HEXplorer :: save database on disk",
+                                  "Save database on disk?",
+                                  QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
+
+            if (ret == QMessageBox::Yes)
+            {
+                QSettings settings(qApp->organizationName(), qApp->applicationName());
+                QString currentDbPath = settings.value("currentDbPath").toString();
+                QString fileName = QFileDialog::getSaveFileName(this,"save database file", currentDbPath,
+                                                                "DB files (*.db);;all files (*.*)");
+                persistDB(db, fileName, 1);
+                currentDbPath = QFileInfo(fileName).absolutePath();
+                settings.setValue("currentDbPath", currentDbPath);
+
+            }
+        }
+    }
+}
+
+bool MDImain::persistDB(QSqlDatabase memdb, QString filename, bool save)
 {
 
-//    bool state = false;
+    bool state = false;
 
-//    QVariant v = memdb.driver()->handle();
-//    if( v.isValid() && qstrcmp(v.typeName(),"sqlite3*") == 0 )
-//    {
-//        // v.data() returns a pointer to the handle
-//        sqlite3 * handle = *static_cast<sqlite3 **>(v.data());
+    QVariant v = memdb.driver()->handle();
+    if( v.isValid() && qstrcmp(v.typeName(),"sqlite3*") == 0 )
+    {
+        // v.data() returns a pointer to the handle
+        sqlite3 * handle = *static_cast<sqlite3 **>(v.data());
 
-//        if( handle != 0 ) // check that it is not NULL
-//        {
-//            sqlite3 * pInMemory = handle;
-//            QByteArray array = filename.toLocal8Bit();
-//            const char * zFilename = array.data();
-//            int rc;                   /* Function return code */
-//            sqlite3 *pFile;           /* Database connection opened on zFilename */
-//            sqlite3_backup *pBackup;  /* Backup object used to copy data */
-//            sqlite3 *pTo;             /* Database to copy to (pFile or pInMemory) */
-//            sqlite3 *pFrom;           /* Database to copy from (pFile or pInMemory) */
+        if( handle != 0 ) // check that it is not NULL
+        {
+            sqlite3 * pInMemory = handle;
+            QByteArray array = filename.toLocal8Bit();
+            const char * zFilename = array.data();
+            int rc;                   /* Function return code */
+            sqlite3 *pFile;           /* Database connection opened on zFilename */
+            sqlite3_backup *pBackup;  /* Backup object used to copy data */
+            sqlite3 *pTo;             /* Database to copy to (pFile or pInMemory) */
+            sqlite3 *pFrom;           /* Database to copy from (pFile or pInMemory) */
 
-//            /* Open the database file identified by zFilename. Exit early if this fails
-//            ** for any reason. */
-//            rc = sqlite3_open( zFilename, &pFile );
+            /* Open the database file identified by zFilename. Exit early if this fails
+            ** for any reason. */
+            rc = sqlite3_open( zFilename, &pFile );
 
-//            if( rc == SQLITE_OK )
-//            {
-//              /* If this is a 'load' operation (isSave==0), then data is copied
-//              ** from the database file just opened to database pInMemory.
-//              ** Otherwise, if this is a 'save' operation (isSave==1), then data
-//              ** is copied from pInMemory to pFile.  Set the variables pFrom and
-//              ** pTo accordingly. */
+            if( rc == SQLITE_OK )
+            {
+              /* If this is a 'load' operation (isSave==0), then data is copied
+              ** from the database file just opened to database pInMemory.
+              ** Otherwise, if this is a 'save' operation (isSave==1), then data
+              ** is copied from pInMemory to pFile.  Set the variables pFrom and
+              ** pTo accordingly. */
 
-//              pFrom = ( save ? pInMemory : pFile);
-//              pTo   = ( save ? pFile     : pInMemory);
+              pFrom = ( save ? pInMemory : pFile);
+              pTo   = ( save ? pFile     : pInMemory);
 
-//              /* Set up the backup procedure to copy from the "main" database of
-//              ** connection pFile to the main database of connection pInMemory.
-//              ** If something goes wrong, pBackup will be set to NULL and an error
-//              ** code and  message left in connection pTo.
-//              **
-//              ** If the backup object is successfully created, call backup_step()
-//              ** to copy data from pFile to pInMemory. Then call backup_finish()
-//              ** to release resources associated with the pBackup object.  If an
-//              ** error occurred, then  an error code and message will be left in
-//              ** connection pTo. If no error occurred, then the error code belonging
-//              ** to pTo is set to SQLITE_OK.
-//              */
-//              pBackup = sqlite3_backup_init(pTo, "main", pFrom, "main");
-//              if( pBackup )
-//              {
-//                (void)sqlite3_backup_step(pBackup, -1);
-//                (void)sqlite3_backup_finish(pBackup);
-//              }
-//              rc = sqlite3_errcode(pTo);
-//            }
+              /* Set up the backup procedure to copy from the "main" database of
+              ** connection pFile to the main database of connection pInMemory.
+              ** If something goes wrong, pBackup will be set to NULL and an error
+              ** code and  message left in connection pTo.
+              **
+              ** If the backup object is successfully created, call backup_step()
+              ** to copy data from pFile to pInMemory. Then call backup_finish()
+              ** to release resources associated with the pBackup object.  If an
+              ** error occurred, then  an error code and message will be left in
+              ** connection pTo. If no error occurred, then the error code belonging
+              ** to pTo is set to SQLITE_OK.
+              */
+              pBackup = sqlite3_backup_init(pTo, "main", pFrom, "main");
+              if( pBackup )
+              {
+                (void)sqlite3_backup_step(pBackup, -1);
+                (void)sqlite3_backup_finish(pBackup);
+              }
+              rc = sqlite3_errcode(pTo);
+            }
 
-//            /* Close the database connection opened on database file zFilename
-//            ** and return the result of this function. */
-//            (void)sqlite3_close(pFile);
+            /* Close the database connection opened on database file zFilename
+            ** and return the result of this function. */
+            (void)sqlite3_close(pFile);
 
-//            if( rc == SQLITE_OK ) state = true;
+            if( rc == SQLITE_OK ) state = true;
 
-//        }
+        }
 
-//    }
+    }
 
-//    return state;
-    return 0;
+    return state;
 
 }
 
+void MDImain::on_actionLoad_DB_triggered()
+{
+    //check if SQL driver is available
+    if (!QSqlDatabase::drivers().contains("QSQLITE"))
+    {
+        QMessageBox::critical(this, "Unable to load database", "SQL driver missing");
+        return;
+    }
+
+    //create Sql connection
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(":memory:");
+    if (!db.open())
+    {
+        qWarning("Could not access database '%s'\n", qPrintable(":memory"));
+        return;
+    }
+
+    //select database file to open
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
+    QString currentDbPath = settings.value("currentDbPath").toString();
+    QString file = QFileDialog::getOpenFileName(this,
+                                      tr("select .db files"), currentDbPath,
+                                      tr(".db files (*.db)"));
+    if (file.isEmpty())
+        return;
+
+    settings.setValue("currentDbPath", QFileInfo(file).absolutePath());
+
+    //load the database in memory
+    persistDB(db, file, 0);
+
+    // create a new Wp
+    WorkProject *wp = new WorkProject(file, this->model, this);
+
+    // parse the a2l file
+    wp->attach(this);
+
+    //create an ASAP2 file Node to start parsing
+    DBFILE *nodeDB = new DBFILE(0, file);
+    nodeDB->name = new char[(QFileInfo(file).fileName()).toLocal8Bit().count() + 1];
+    strcpy(nodeDB->name, QFileInfo(file).fileName().toLocal8Bit().data());
+    wp->dbFile = nodeDB;
+
+    //update the ui->treeView
+    model->addNode2RootNode(wp->dbFile);
+    ui->treeView->setModel(model);
+    ui->treeView->setColumnHidden(1, true);
+
+    //set completer
+    completer->setModel(model);
+
+    //insert the new created project into the projectList
+    projectList->insert(file, wp);
+
+    //update output console
+    ui->listWidget->scrollToBottom();
+
+    //display in connectWidget
+    ui->connectionWidget->refresh();
+}
+
+void MDImain::on_connectionWidget_tableActivated(const QString &table)
+{
+    //open last connection
+    QSqlDatabase db = QSqlDatabase::database();
+
+    //create a model to edit the database
+    QSqlTableModel *model = new QSqlTableModel(this, db);
+    model->setTable(table);
+    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    model->select();
+
+    //create a new spreadSheet
+    SpreadsheetView *view = new SpreadsheetView();
+    view->setModel(model);
+    view->setAlternatingRowColors(true);
+    view->hideColumn(0); // don't show the ID
+
+    //add a new tab with the spreadsheet
+    QIcon icon;
+    icon.addFile(":/icones/milky_exportBaril.png");
+    ui->tabWidget->addTab(view, icon, "DB:" + table);
+
+    //set new FormCompare as activated
+    ui->tabWidget->setCurrentWidget(view);
+}
+
+void MDImain::createDbTableCharacteristics(Node *dim)
+{
+    //create Table Charatericts into db.
+    QSqlQuery q_Char;
+    q_Char.exec(QLatin1String("create table CHARACTERISTICS(id integer primary key, "
+                         "Name varchar, "
+                         "LongIdentifier varchar, "
+                         "Unit varchar, "
+                         "Fonction varchar, "
+                         "Adress varchar, "
+                         "Type varchar, "
+                         "Conversion varchar, "
+                         "Deposit varchar, "
+                         "MaxDiff varchar, "
+                         "LowerLimit varchar, "
+                         "UpperLimit varchar)"));
+
+    //populates table characteristics
+    q_Char.prepare(QLatin1String("insert into CHARACTERISTICS("
+                            "Name, LongIdentifier, Unit, Fonction, "
+                            "Adress, Type, Conversion, "
+                            "Deposit, MaxDiff, LowerLimit, "
+                            "UpperLimit) values(?,?,?,?,?,?,?,?,?,?,?)"));
+
+    //create Table AXIS_DESCR_X into db.
+    QSqlQuery q_AxisX;
+    q_AxisX.exec(QLatin1String("create table AXIS_DESCR_X(id integer primary key, "
+                         "Name varchar, "
+                         "Attribute varchar, "
+                         "InputQuantity varchar, "
+                         "Conversion varchar, "
+                         "MaxAxisPoints varchar, "
+                         "LowerLimit varchar, "
+                         "UpperLimit varchar)"));
+
+    //populates table axis_pts
+    q_AxisX.prepare(QLatin1String("insert into AXIS_DESCR_X("
+                            "Name, Attribute, InputQuantity, Conversion, "
+                            "MaxAxisPoints, LowerLimit, "
+                            "UpperLimit) values(?,?,?,?,?,?,?)"));
+
+    //create Table AXIS_DESCR_Y into db.
+    QSqlQuery q_AxisY;
+    q_AxisY.exec(QLatin1String("create table AXIS_DESCR_Y(id integer primary key, "
+                         "Name varchar, "
+                         "Attribute varchar, "
+                         "InputQuantity varchar, "
+                         "Conversion varchar, "
+                         "MaxAxisPoints varchar, "
+                         "LowerLimit varchar, "
+                         "UpperLimit varchar)"));
+
+    //populates table axis_pts
+    q_AxisY.prepare(QLatin1String("insert into AXIS_DESCR_Y("
+                            "Name, Attribute, InputQuantity, Conversion, "
+                            "MaxAxisPoints, LowerLimit, "
+                            "UpperLimit) values(?,?,?,?,?,?,?)"));
+
+    QList<Node*> list;
+    Node *charact = dim->getNode("CHARACTERISTIC");
+    if (charact)
+    {
+        list = charact->childNodes;
+    }
+    else return;
+
+    progBar->reset();
+    progBar->setMaximum(list.count());
+    progBar->setValue(0);
+    statusBar()->show();
+
+    for (int i = 0; i < list.count(); i++)
+    {
+        CHARACTERISTIC* myChar = (CHARACTERISTIC*)list.at(i);
+        QString compu_method = myChar->getPar("Conversion");
+        Node * node = myChar->getParentNode()->getParentNode();
+        COMPU_METHOD *cmp = (COMPU_METHOD*)node->getNode("COMPU_METHOD/" + compu_method);
+
+        q_Char.addBindValue(QLatin1String(myChar->name));
+        q_Char.addBindValue(QLatin1String(myChar->fixPar("LongIdentifier").c_str()));
+        q_Char.addBindValue(QLatin1String(cmp->fixPar("Unit").c_str()));
+        q_Char.addBindValue(myChar->getSubsetName());
+        q_Char.addBindValue(QLatin1String(myChar->fixPar("Adress").c_str()));
+        q_Char.addBindValue(QLatin1String(myChar->fixPar("Type").c_str()));
+        q_Char.addBindValue(QLatin1String(myChar->fixPar("Conversion").c_str()));
+        q_Char.addBindValue(QLatin1String(myChar->fixPar("Deposit").c_str()));
+        q_Char.addBindValue(QLatin1String(myChar->fixPar("MaxDiff").c_str()));
+        q_Char.addBindValue(QLatin1String(myChar->fixPar("LowerLimit").c_str()));
+        q_Char.addBindValue(QLatin1String(myChar->fixPar("UpperLimit").c_str()));
+        q_Char.exec();
+
+        //AXIS_DESCR_X
+        Node* nodeA = myChar->getNode("AXIS_DESCR");
+        if (nodeA)
+        {
+            for (int i = 0; i < nodeA->childCount(); i++)
+            {
+                AXIS_DESCR* axis = (AXIS_DESCR*)nodeA->child(i);
+                if (axis && i == 0)
+                {
+                    q_AxisX.addBindValue(QLatin1String(myChar->name));
+                    q_AxisX.addBindValue(QLatin1String(axis->fixPar("Attribute").c_str()));
+                    q_AxisX.addBindValue(QLatin1String(axis->fixPar("InputQuantity").c_str()));
+                    q_AxisX.addBindValue(QLatin1String(axis->fixPar("Conversion").c_str()));
+                    q_AxisX.addBindValue(QLatin1String(axis->fixPar("MaxAxisPoints").c_str()));
+                    q_AxisX.addBindValue(QLatin1String(axis->fixPar("LowerLimit").c_str()));
+                    q_AxisX.addBindValue(QLatin1String(axis->fixPar("UpperLimit").c_str()));
+                    q_AxisX.exec();
+                }
+
+                if (axis && i == 1)
+                {
+                    q_AxisY.addBindValue(QLatin1String(myChar->name));
+                    q_AxisY.addBindValue(QLatin1String(axis->fixPar("Attribute").c_str()));
+                    q_AxisY.addBindValue(QLatin1String(axis->fixPar("InputQuantity").c_str()));
+                    q_AxisY.addBindValue(QLatin1String(axis->fixPar("Conversion").c_str()));
+                    q_AxisY.addBindValue(QLatin1String(axis->fixPar("MaxAxisPoints").c_str()));
+                    q_AxisY.addBindValue(QLatin1String(axis->fixPar("LowerLimit").c_str()));
+                    q_AxisY.addBindValue(QLatin1String(axis->fixPar("UpperLimit").c_str()));
+                    q_AxisY.exec();
+                }
+            }
+        }
+
+        //AXIS_DESCR_Y
+
+
+        progBar->setValue(i+1);
+    }
+}
+
+void MDImain::createDbTableAxisPts(Node *dim)
+{
+    //create Table Charatericts into db.
+    QSqlQuery q;
+    q.exec(QLatin1String("create table AXIS_PTS(id integer primary key, "
+                         "Name varchar, "
+                         "LongIdentifier varchar, "
+                         "Adress varchar, "
+                         "InputQuantity varchar, "
+                         "Deposit varchar, "
+                         "Maxdiff varchar, "
+                         "Conversion varchar, "
+                         "MaxAxisPoints varchar, "
+                         "LowerLimit varchar, "
+                         "UpperLimit varchar)"));
+
+    //populates table axis_pts
+    q.prepare(QLatin1String("insert into AXIS_PTS("
+                            "Name, LongIdentifier, Adress, InputQuantity, "
+                            "Deposit, Maxdiff, Conversion, "
+                            "MaxAxisPoints, LowerLimit, "
+                            "UpperLimit) values(?,?,?,?,?,?,?,?,?,?)"));
+
+    QList<Node*> list;
+    Node *axisPts = dim->getNode("AXIS_PTS");
+    if (axisPts)
+    {
+        list = axisPts->childNodes;
+    }
+    else return;
+
+    progBar->reset();
+    progBar->setMaximum(list.count());
+    progBar->setValue(0);
+
+    for (int i = 0; i < list.count(); i++)
+    {
+        AXIS_PTS* myNode = (AXIS_PTS*)list.at(i);
+        q.addBindValue(QLatin1String(myNode->name));
+        q.addBindValue(QLatin1String(myNode->fixPar("LongIdentifier").c_str()));
+        q.addBindValue(QLatin1String(myNode->fixPar("Adress").c_str()));
+        q.addBindValue(QLatin1String(myNode->fixPar("InputQuantity").c_str()));
+        q.addBindValue(QLatin1String(myNode->fixPar("Deposit").c_str()));
+        q.addBindValue(QLatin1String(myNode->fixPar("MaxDiff").c_str()));
+        q.addBindValue(QLatin1String(myNode->fixPar("Conversion").c_str()));
+        q.addBindValue(QLatin1String(myNode->fixPar("MaxAxisPoints").c_str()));
+        q.addBindValue(QLatin1String(myNode->fixPar("LowerLimit").c_str()));
+        q.addBindValue(QLatin1String(myNode->fixPar("UpperLimit").c_str()));
+        q.exec();
+        progBar->setValue(i+1);
+    }
+}
+
+void MDImain::createDbTableCompuMethod(Node *dim)
+{
+    //create Table Charatericts into db.
+    QSqlQuery q;
+    q.exec(QLatin1String("create table COMPU_METHOD(id integer primary key, "
+                         "Name varchar, "
+                         "LongIdentifier varchar, "
+                         "ConversionType varchar, "
+                         "Format varchar, "
+                         "Unit varchar)"));
+
+    //populates table axis_pts
+    q.prepare(QLatin1String("insert into COMPU_METHOD("
+                            "Name, LongIdentifier, ConversionType, "
+                            "Format, Unit) values(?,?,?,?,?)"));
+
+    QList<Node*> list;
+    Node *compu = dim->getNode("COMPU_METHOD");
+    if (compu)
+    {
+        list = compu->childNodes;
+    }
+    else return;
+
+    progBar->reset();
+    progBar->setMaximum(list.count());
+    progBar->setValue(0);
+
+    for (int i = 0; i < list.count(); i++)
+    {
+        COMPU_METHOD* myNode = (COMPU_METHOD*)list.at(i);
+        q.addBindValue(QLatin1String(myNode->name));
+        q.addBindValue(QLatin1String(myNode->fixPar("LongIdentifier").c_str()));
+        q.addBindValue(QLatin1String(myNode->fixPar("ConversionType").c_str()));
+        q.addBindValue(QLatin1String(myNode->fixPar("Format").c_str()));
+        q.addBindValue(QLatin1String(myNode->fixPar("Unit").c_str()));
+        q.exec();
+        progBar->setValue(i+1);
+    }
+}
+
+void MDImain::createDbTableCompuVtab(Node *dim)
+{
+    //create Table Charatericts into db.
+    QSqlQuery q;
+    q.exec(QLatin1String("create table COMPU_VTAB(id integer primary key, "
+                         "Name varchar, "
+                         "LongIdentifier varchar, "
+                         "ConversionType varchar, "
+                         "NumberValuePairs varchar)"));
+
+    //populates table axis_pts
+    q.prepare(QLatin1String("insert into COMPU_VTAB("
+                            "Name, LongIdentifier, ConversionType, "
+                            "NumberValuePairs) values(?,?,?,?)"));
+
+    QList<Node*> list;
+    Node *compu = dim->getNode("COMPU_VTAB");
+    if (compu)
+    {
+        list = compu->childNodes;
+    }
+    else return;
+
+    progBar->reset();
+    progBar->setMaximum(list.count());
+    progBar->setValue(0);
+
+    for (int i = 0; i < list.count(); i++)
+    {
+        COMPU_VTAB* myNode = (COMPU_VTAB*)list.at(i);
+        q.addBindValue(QLatin1String(myNode->name));
+        q.addBindValue(QLatin1String(myNode->fixPar("LongIdentifier").c_str()));
+        q.addBindValue(QLatin1String(myNode->fixPar("ConversionType").c_str()));
+        q.addBindValue(QLatin1String(myNode->fixPar("NumberValuePairs").c_str()));
+        q.exec();
+        progBar->setValue(i+1);
+    }
+}
+
+void MDImain::createDbTableRecordLayout(Node *dim)
+{
+    //create Table Charatericts into db.
+    QSqlQuery q;
+    q.exec(QLatin1String("create table RECORD_LAYOUT(id integer primary key, "
+                         "Name varchar)"));
+
+    //populates table axis_pts
+    q.prepare(QLatin1String("insert into RECORD_LAYOUT("
+                            "Name) values(?)"));
+
+    QList<Node*> list;
+    Node *compu = dim->getNode("RECORD_LAYOUT");
+    if (compu)
+    {
+        list = compu->childNodes;
+    }
+    else return;
+
+    progBar->reset();
+    progBar->setMaximum(list.count());
+    progBar->setValue(0);
+
+    for (int i = 0; i < list.count(); i++)
+    {
+        RECORD_LAYOUT* myNode = (RECORD_LAYOUT*)list.at(i);
+        q.addBindValue(QLatin1String(myNode->name));
+        //q.addBindValue(QLatin1String(myNode->fixPar("LongIdentifier").c_str()));
+        q.exec();
+        progBar->setValue(i+1);
+    }
+}
+
+void MDImain::createDbTableAxisDescr(Node *dim)
+{
+    //create Table Charatericts into db.
+    QSqlQuery q;
+    q.exec(QLatin1String("create table AXIS_DESCR(id integer primary key, "
+                         "Name varchar, "
+                         "Attribute varchar, "
+                         "InputQuantity varchar, "
+                         "Conversion varchar, "
+                         "MaxAxisPoints varchar, "
+                         "LowerLimit varchar, "
+                         "UpperLimit varchar)"));
+
+    //populates table axis_pts
+    q.prepare(QLatin1String("insert into AXIS_DESCR("
+                            "Name, Attribute, InputQuantity, Conversion, "
+                            "MaxAxisPoints, LowerLimit, "
+                            "UpperLimit) values(?,?,?,?,?,?,?)"));
+
+    QList<Node*> list;
+    Node *axisPts = dim->getNode("AXIS_DESCR");
+    if (axisPts)
+    {
+        list = axisPts->childNodes;
+    }
+    else return;
+
+    progBar->reset();
+    progBar->setMaximum(list.count());
+    progBar->setValue(0);
+
+    for (int i = 0; i < list.count(); i++)
+    {
+        AXIS_DESCR* myNode = (AXIS_DESCR*)list.at(i);
+        q.addBindValue(QLatin1String(myNode->name));
+        q.addBindValue(QLatin1String(myNode->fixPar("Attribute").c_str()));
+        q.addBindValue(QLatin1String(myNode->fixPar("InputQuantity").c_str()));
+        q.addBindValue(QLatin1String(myNode->fixPar("Conversion").c_str()));
+        q.addBindValue(QLatin1String(myNode->fixPar("MaxAxisPoints").c_str()));
+        q.addBindValue(QLatin1String(myNode->fixPar("LowerLimit").c_str()));
+        q.addBindValue(QLatin1String(myNode->fixPar("UpperLimit").c_str()));
+        q.exec();
+        progBar->setValue(i+1);
+    }
+}

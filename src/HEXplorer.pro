@@ -277,7 +277,9 @@ HEADERS += a2l.h \
     ASAP2/Items/default_value_numeric.h \
     foo.h \
     plotmathgl.h \
-    sqlite/sqlite3.h
+    sqlite/sqlite3.h \
+    connectionwidget.h \
+    ASAP2/Nodes/dbfile.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -449,7 +451,9 @@ SOURCES += a2l.cpp \
     ASAP2/Items/default_value_numeric.cpp \
     foo.cpp \
     plotmathgl.cpp \
-    sqlite/sqlite3.c
+    sqlite/sqlite3.c \
+    connectionwidget.cpp \
+    ASAP2/Nodes/dbfile.cpp
 
 OTHER_FILES += \
     GNU_license.txt \
