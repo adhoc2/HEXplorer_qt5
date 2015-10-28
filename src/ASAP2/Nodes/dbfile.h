@@ -29,16 +29,18 @@
 class DBFILE : public Node
 {
     public:
-        DBFILE(Node *parentNode, QString fullFileName = "");
+        DBFILE(Node *parentNode, QString sqlConnection, QString fullFileName = "" );
         ~DBFILE();
 
         std::string pixmap();
         QString fullName();
+        QString getSqlConnection();
 
     private:
         QString fullA2lName;
         void getAsap2Version();
         void getA2mlVersion();
+        QString sqlConnection;
 
         QMap<std::string, std::string> *optParameters;
 

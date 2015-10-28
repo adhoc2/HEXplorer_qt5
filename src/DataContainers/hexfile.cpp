@@ -36,6 +36,10 @@
 #include <QSettings>
 #include <QDomDocument>
 #include <QTime>
+#include <QSqlRecord>
+#include <QSqlTableModel>
+#include <QSqlQuery>
+#include <QSqlField>
 
 #include "Nodes/characteristic.h"
 #include "Nodes/compu_method.h"
@@ -61,6 +65,7 @@ MemBlock::~MemBlock()
 
 int HexFile::asciiToByte[256*256];
 
+//--ctor in case of a2lFile---//
 HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QString module, QObject *parent)
     : QObject(parent) , DataContainer(parentWP, module)
 {
@@ -73,6 +78,7 @@ HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QString module,
     valueProgBar = 0;
     omp_init_lock(&lock);
 
+    //fill-in conversion table asciitoByte
     for(int i = 0; i < 16; i++)
     {
         uchar ii = (i<10)?i+48:i+55;
@@ -82,6 +88,7 @@ HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QString module,
             asciiToByte[ii*256 + jj] = j*16+i;
         }
     }
+
 
     //MOD_COMMON values (BYTE_ORDER, ALIGNEMENT_SWORD,...)
     MOD_COMMON *modCommon = (MOD_COMMON*)a2lProject->getNode("MODULE/" + getModuleName() + "/MOD_COMMON");
@@ -177,6 +184,33 @@ HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QString module,
 
 }
 
+//--ctor in case of dbFile---//
+HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QObject *parent)
+    : QObject(parent) , DataContainer(parentWP)
+{
+    //initialize
+    fullHexName = fullHexFileName;
+    name = new char[(QFileInfo(fullHexName).fileName()).toLocal8Bit().count() + 1];
+    strcpy(name, (QFileInfo(fullHexName).fileName()).toLocal8Bit().data());
+    //a2lProject = (PROJECT*)getParentWp()->a2lFile->getProject();
+    maxValueProgbar = 0;
+    valueProgBar = 0;
+    omp_init_lock(&lock);
+
+    //fill-in conversion table asciitoByte
+    for(int i = 0; i < 16; i++)
+    {
+        uchar ii = (i<10)?i+48:i+55;
+        for(int j = 0; j < 16; j++)
+        {
+            uchar jj = (j<10)?j+48:j+55;
+            asciiToByte[ii*256 + jj] = j*16+i;
+        }
+    }
+
+
+}
+
 HexFile::~HexFile()
 {
     omp_destroy_lock(&lock);
@@ -197,8 +231,26 @@ bool HexFile::read()
             readAllData();
             return true;
         }
+        return false;
     }
     return false;
+}
+
+bool HexFile::read_db()
+{
+    // parse the file
+    if (parseFile())
+    {
+        //check hex version before reading all datas
+        if (isDbCombined())
+        {
+            //readAllData();
+            return true;
+        }
+        return false;
+    }
+    return false;
+
 }
 
 bool HexFile::parseFile()
@@ -252,10 +304,31 @@ bool HexFile::parseFile()
     fileLinesNum = lines.count();
 
     //get the length for the progressBar
-    A2LFILE *a2l = (A2LFILE*)this->getParentNode();
-    MODULE *module = (MODULE*)a2l->getProject()->getNode("MODULE/" + getModuleName());
-    int length = module->listChar.count();
-    maxValueProgbar = fileLinesNum + length;
+    QString name = typeid(*this->getParentNode()).name();
+    if (name.toLower().endsWith("a2lfile"))
+    {
+        A2LFILE *a2l = (A2LFILE*)this->getParentNode();
+        MODULE *module = (MODULE*)a2l->getProject()->getNode("MODULE/" + getModuleName());
+        int length = module->listChar.count();
+        maxValueProgbar = fileLinesNum + length;
+        qDebug() << length;
+    }
+    else if (name.toLower().endsWith("dbfile"))
+    {
+        DBFILE *dbFile = (DBFILE*)this->getParentNode();
+        QString connectionName = dbFile->getSqlConnection();
+        QSqlDatabase db = QSqlDatabase::database(connectionName, true);
+        //create a model to work with the database
+        QSqlTableModel *model = new QSqlTableModel(this, db);
+        model->setTable("CHARACTERISTICS");
+        model->select();
+        while (model->canFetchMore())
+            model->fetchMore();
+        int length = model->rowCount();
+        maxValueProgbar = fileLinesNum + length;
+        qDebug() << length;
+
+    }
 
     // initialize variables
     int dataCnt = 0;
@@ -467,6 +540,11 @@ bool HexFile::isA2lCombined()
     }
     else
         return true;
+}
+
+bool HexFile::isDbCombined()
+{
+    return true;
 }
 
 void HexFile::readAllData()
@@ -2205,15 +2283,20 @@ void HexFile::setFullName(QString fullName)
 
 void HexFile::incrementValueProgBar(int n)
 {
-    omp_set_lock(&lock);
-
     valueProgBar += n;
-    if (valueProgBar / maxValueProgbar < 0.98)
-        emit progress(valueProgBar, maxValueProgbar);
-    else
-        emit progress(maxValueProgbar, maxValueProgbar);
 
-    omp_unset_lock(&lock);
+    if (valueProgBar < maxValueProgbar)
+    {
+        omp_set_lock(&lock);
+
+        if (valueProgBar / maxValueProgbar < 0.98)
+            emit progress(valueProgBar, maxValueProgbar);
+        else
+            emit progress(maxValueProgbar, maxValueProgbar);
+
+        omp_unset_lock(&lock);
+    }
+
 }
 
 unsigned int HexFile::tzn(unsigned int v)

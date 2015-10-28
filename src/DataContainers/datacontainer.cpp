@@ -45,6 +45,13 @@ DataContainer::DataContainer(WorkProject *parentWP, QString module) : Node(paren
     moduleName = module;
 }
 
+DataContainer::DataContainer(WorkProject *parentWP) : Node(parentWP->dbFile)
+{
+    parentWp = parentWP;
+    isSortedBySubset = false;
+    //moduleName = module;
+}
+
 DataContainer::~DataContainer()
 {
     foreach (Data *data, listData)

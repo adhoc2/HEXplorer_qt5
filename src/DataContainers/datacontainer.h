@@ -29,6 +29,7 @@ class DataContainer : public Node
 
 public:
     DataContainer(WorkProject *parentWP, QString module);
+    DataContainer(WorkProject *parentWP);
     ~DataContainer();
 
     WorkProject *getParentWp();

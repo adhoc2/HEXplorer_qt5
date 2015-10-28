@@ -48,6 +48,7 @@ A2l::A2l(QString fullFileName, QObject *parent): QObject(parent)
 {
     fullA2lName = fullFileName;
     a2lFile = 0;
+    dbFile = 0;
     progressVal = 0;
     progBarMaxValue = 0;
     omp_init_lock(&lockValue);
@@ -761,7 +762,7 @@ void A2l::readSubset()
 
 void A2l::checkProgressStream(int pos)
 {
-    if (progressVal != progBarMaxValue)
+    if (progressVal < progBarMaxValue)
     {
         omp_set_lock(&lockValue);
         progressVal += pos * 2;

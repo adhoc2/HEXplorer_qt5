@@ -502,6 +502,32 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         openJScript->setEnabled(true);
         saveA2lDB->setEnabled(true);
     }
+    else if (name.endsWith("DBFILE"))
+    {
+        importSubsets->setEnabled(false);
+        exportSubsets->setEnabled(false);
+        addCdfxFile->setEnabled(false);
+        addCsvFile->setEnabled(false);
+        editChanged->setEnabled(false);
+        addHexFile->setEnabled(false);
+        addSrecFile->setEnabled(false);
+        deleteProject->setEnabled(true);
+        deleteFile->setEnabled(false);
+        editFile->setEnabled(false);
+        childCount->setEnabled(true);
+        showParam->setEnabled(false);
+        resetAllChangedData->setEnabled(false);
+        sortBySubset->setEnabled(false);
+        saveFile->setEnabled(false);
+        saveAsFile->setEnabled(false);
+        quicklook->setEnabled(false);
+        readValuesFromCsv->setEnabled(false);
+        readValuesFromCdfx->setEnabled(false);
+        editMeasChannels->setEnabled(false);
+        editCharacteristics->setEnabled(false);
+        openJScript->setEnabled(false);
+        saveA2lDB->setEnabled(false);
+    }
     else if (name.endsWith("HexFile"))
     {
         importSubsets->setEnabled(true);
@@ -680,6 +706,9 @@ void MDImain::showContextMenu(QPoint)
             }
             updateRecentFileActions();
             menu.addMenu(recentProMenu);
+
+            menu.addSeparator();
+            menu.addAction(ui->actionLoad_DB);
         }
         else if (list.count() == 1)
         {
@@ -733,20 +762,23 @@ void MDImain::showContextMenu(QPoint)
                 }
 
                 //menu tools
-                A2LFILE *a2l = dynamic_cast<A2LFILE *> (hex->getParentNode());
-                QString projectName = ((PROJECT*)a2l->getProject())->getPar("name");
-                projectName = projectName.toLower();
+//                A2LFILE *a2l = dynamic_cast<A2LFILE *> (hex->getParentNode());
+//                QString projectName = ((PROJECT*)a2l->getProject())->getPar("name");
+//                projectName = projectName.toLower();
 
-                if (projectName == "c340" || projectName == "c342" || projectName == "p_662")
-                {
-                    verify->setDisabled(false);
-                    checkFmtc->setDisabled(false);
-                }
-                else
-                {
-                    verify->setDisabled(true);
-                    checkFmtc->setDisabled(true);
-                }
+//                if (projectName == "c340" || projectName == "c342" || projectName == "p_662")
+//                {
+//                    verify->setDisabled(false);
+//                    checkFmtc->setDisabled(false);
+//                }
+//                else
+//                {
+//                    verify->setDisabled(true);
+//                    checkFmtc->setDisabled(true);
+//                }
+
+                verify->setDisabled(true);
+                checkFmtc->setDisabled(true);
 
             }
             else if (name.toLower().endsWith("srecfile"))
@@ -810,6 +842,7 @@ void MDImain::showContextMenu(QPoint)
                 if (a2lFile->isConform())
                 {
                     menu.addAction(ui->actionNewA2lProject);
+                    menu.addAction(ui->actionLoad_DB);
                     menu.addAction(deleteProject);
                     menu.addAction(editFile);
                     menu.addSeparator();
@@ -833,6 +866,25 @@ void MDImain::showContextMenu(QPoint)
                     menu.addSeparator();
                     menu.addAction(editFile);
                 }
+            }
+            else if (name.toLower().endsWith("dbfile"))
+            {
+                menu.addAction(ui->actionNewA2lProject);
+                menu.addAction(ui->actionLoad_DB);
+                menu.addAction(deleteProject);
+                //menu.addAction(editFile);
+                menu.addSeparator();
+                menu.addAction(addHexFile);
+                menu.addAction(addSrecFile);
+                menu.addAction(addCsvFile);
+                menu.addAction(addCdfxFile);
+                menu.addSeparator();
+                menu.addAction(openJScript);
+                //menu.addSeparator();
+                //menu.addAction(editMeasChannels);
+                //menu.addAction(editCharacteristics);
+                //menu.addSeparator();
+                //menu.addAction(saveA2lDB);
             }
             else if (name.toLower().endsWith("csv"))
             {
@@ -1290,7 +1342,7 @@ void MDImain::addHexFile2Project()
         Node *node =  model->getNode(index);
         QString name = typeid(*node).name();
 
-        if (!name.endsWith("A2LFILE"))
+        if (!name.endsWith("A2LFILE") && !name.endsWith("DBFILE"))
         {
             QMessageBox::warning(this, "HEXplorer::add hex file to project", "Please select first a project.",
                                              QMessageBox::Ok);
@@ -1309,8 +1361,7 @@ void MDImain::addHexFile2Project()
             QSettings settings(qApp->organizationName(), qApp->applicationName());
             QString path = settings.value("currentHexPath").toString();
 
-            QStringList files =
-                    QFileDialog::getOpenFileNames(this,
+            QStringList files = QFileDialog::getOpenFileNames(this,
                                               tr("select a dataset (HEX)"), path,
                                               tr("HEX files (*.hex | *.hex_trimmed);;all files (*.*)"));
 
@@ -1329,7 +1380,7 @@ void MDImain::addHexFile2Project()
                 //create a pointer on the WorkProject
                 WorkProject *wp = projectList->value(fullA2lName);
 
-                if (wp)  //to prevent any crash of the aplication
+                if (wp && name.endsWith("A2LFILE"))
                 {
                     // if no MOD_COMMON in ASAP file
                     if (wp->a2lFile->getProject()->getNode("MODULE") == NULL)
@@ -1406,6 +1457,65 @@ void MDImain::addHexFile2Project()
                         connect(hex, SIGNAL(progress(int,int)), this, SLOT(setValueProgressBar(int,int)), Qt::DirectConnection);
 
                         if (hex->read())
+                        {
+                            wp->addHex(hex);
+                        }
+                        else
+                            delete hex;
+
+                        // hide the statusbar
+                        statusBar()->hide();
+                        progBar->reset();
+
+                        //stop timer
+                        double tf = omp_get_wtime();
+
+                        //update the treeView model
+                        ui->treeView->expand(index);
+                        ui->treeView->resizeColumnToContents(0);
+
+                        writeOutput("action open new dataset : HEX file add to project in " + QString::number(tf-ti) + " sec");
+
+                    }
+                }
+                else if (wp && name.endsWith("DBFILE"))
+                {
+                    //TBD : perform a check of the DB to ensure contains everything to open Hexfile
+
+                    // check if Hexfile already in project
+                    foreach (QString fullHexName, files)
+                    {
+                        //if the selected Hex file is already into the project => exit
+                        if (wp->hexFiles().contains(fullHexName))
+                        {
+                            QMessageBox::information(this, "HEXplorer", "HEX file : " + fullHexName
+                                                     + "\nalready included into the selected project");
+                            writeOutput("action open new dataset : HEX file already in project");
+                            files.removeOne(fullHexName);
+                        }
+                    }
+
+                    //Open hex files
+                    foreach (QString fullHexName, files)
+                    {
+                        //update currentHexPath
+                        QSettings settings(qApp->organizationName(), qApp->applicationName());
+                        QString currentHexPath = QFileInfo(fullHexName).absolutePath();
+                        settings.setValue("currentHexPath", currentHexPath);
+
+                        //start a timer
+                        double ti = omp_get_wtime();
+
+                        //add the file to the project (module)
+                        HexFile *hex = new HexFile(fullHexName, wp);
+
+                        // display status bar
+                        statusBar()->show();
+                        progBar->reset();
+                        connect(hex, SIGNAL(progress(int,int)), this, SLOT(setValueProgressBar(int,int)), Qt::DirectConnection);
+
+                        //read hexFile and add node to parent Node
+                        if (hex->read_db())
                             wp->addHex(hex);
                         else
                             delete hex;
@@ -2341,7 +2451,7 @@ bool MDImain::editTextFile(QString &text)
        return true;
 }
 
-void MDImain::removeWorkProjects()
+void MDImain:: removeWorkProjects()
 {
     int n = ui->treeView->selectionModel()->selectedIndexes().count();
 
@@ -2355,7 +2465,7 @@ void MDImain::removeWorkProjects()
             Node *node =  model->getNode(index);
             QString name = typeid(*node).name();
 
-            if (!name.endsWith("A2LFILE"))
+            if (!name.endsWith("A2LFILE") && !name.endsWith("DBFILE"))
             {
                 QMessageBox::warning(this, "HEXplorer::remove project", "Please select first a project.",
                                                  QMessageBox::Ok);
@@ -2392,75 +2502,201 @@ void MDImain::removeWorkProjects()
 
 void MDImain::removeWorkProject(QModelIndex index)
 {
-
     if (index.isValid())
     {
         //get a pointer on the selected item
         Node *node =  model->getNode(index);
         QString name = typeid(*node).name();
 
-        if (!name.endsWith("A2LFILE"))
+        if (!name.endsWith("A2LFILE") && !name.endsWith("DBFILE"))
         {
             QMessageBox::warning(this, "HEXplorer::remove project", "Please select first a project.",
                                              QMessageBox::Ok);
             return;
         }
 
-        //As the selected node is an A2l file we can cast the node into its real type : A2LFILE
-        A2LFILE *a2lfile = dynamic_cast<A2LFILE *> (node);
-
-        //ask to save the modified nodes (hex or Csv)
-        foreach (Node *node, a2lfile->childNodes)
+        if (name.endsWith("A2LFILE"))
         {
-            QString name = typeid(*node).name();
-            if (name.endsWith("HexFile"))
+            //As the selected node is an A2l file we can cast the node into its real type : A2LFILE
+            A2LFILE *a2lfile = dynamic_cast<A2LFILE *> (node);
+
+            //ask to save the modified nodes (hex or Csv)
+            foreach (Node *node, a2lfile->childNodes)
             {
-                HexFile *hex = (HexFile*)node;
-                if (!hex->getModifiedData().isEmpty())
+                QString name = typeid(*node).name();
+                if (name.toLower().endsWith("hexfile"))
                 {
-                      int r = QMessageBox::question(this, "HEXplorer::question",
-                                                    "Save changes in " + QString(hex->name) + "?",
-                                                    QMessageBox::Yes, QMessageBox::No);
-                      if (r == QMessageBox::Yes)
-                      {
-                          QModelIndex hexIndex = model->getIndex(hex);
-                          save_HexFile(hexIndex);
-                      }
-                }
-            }
-            else if (name.endsWith("Csv"))
-            {
-                Csv *csv = (Csv*)node;
-                if (!csv->getModifiedData().isEmpty())
-                {
-                    int r = QMessageBox::question(this, "HEXplorer::question",
-                                                  "Save changes in " + QString(csv->name) + "?",
-                                                  QMessageBox::Yes, QMessageBox::No);
-                    if (r == QMessageBox::Yes)
+                    HexFile *hex = (HexFile*)node;
+                    if (!hex->getModifiedData().isEmpty())
                     {
-                      QModelIndex csvIndex = model->getIndex(csv);
-                      save_CsvFile(csvIndex);
+                          int r = QMessageBox::question(this, "HEXplorer::question",
+                                                        "Save changes in " + QString(hex->name) + "?",
+                                                        QMessageBox::Yes, QMessageBox::No);
+                          if (r == QMessageBox::Yes)
+                          {
+                              QModelIndex hexIndex = model->getIndex(hex);
+                              save_HexFile(hexIndex);
+                          }
+                    }
+                }
+                else if (name.toLower().endsWith("srecfile"))
+                {
+                    SrecFile *srec = (SrecFile*)node;
+                    if (!srec->getModifiedData().isEmpty())
+                    {
+                        int r = QMessageBox::question(this, "HEXplorer::question",
+                                                      "Save changes in " + QString(srec->name) + "?",
+                                                      QMessageBox::Yes, QMessageBox::No);
+                        if (r == QMessageBox::Yes)
+                        {
+                          QModelIndex srecIndex = model->getIndex(srec);
+                          save_SrecFile(srecIndex);
+                        }
+                    }
+                }
+                else if (name.toLower().endsWith("csv"))
+                {
+                    Csv *csv = (Csv*)node;
+                    if (!csv->getModifiedData().isEmpty())
+                    {
+                        int r = QMessageBox::question(this, "HEXplorer::question",
+                                                      "Save changes in " + QString(csv->name) + "?",
+                                                      QMessageBox::Yes, QMessageBox::No);
+                        if (r == QMessageBox::Yes)
+                        {
+                          QModelIndex csvIndex = model->getIndex(csv);
+                          save_CsvFile(csvIndex);
+                        }
+                    }
+                }
+                else if (name.toLower().endsWith("cdfxfile"))
+                {
+                    CdfxFile *cdfx = (CdfxFile*)node;
+                    if (!cdfx->getModifiedData().isEmpty())
+                    {
+                        int r = QMessageBox::question(this, "HEXplorer::question",
+                                                      "Save changes in " + QString(cdfx->name) + "?",
+                                                      QMessageBox::Yes, QMessageBox::No);
+                        if (r == QMessageBox::Yes)
+                        {
+                          QModelIndex cdfxIndex = model->getIndex(cdfx);
+                          save_CdfxFile(cdfxIndex);
+                        }
                     }
                 }
             }
+
+            //remove the node from treeView model
+            model->removeChildNode(node);
+
+
+            //update the treeView
+            model->update();
+            ui->treeView->resizeColumnToContents(0);
+
+            //get the project
+            WorkProject *wp = projectList->value(a2lfile->fullName());
+
+            //remove the project from the this->projectList
+            projectList->remove(a2lfile->fullName());
+
+            //delete the selected project
+            //delete wp;
+            wp->detach(this);
         }
+        else if (name.endsWith("DBFILE"))
+        {
+            //As the selected node is an A2l file we can cast the node into its real type : A2LFILE
+            DBFILE *dbfile = dynamic_cast<DBFILE *> (node);
 
-        //remove the node from treeView model
-        model->removeChildNode(node);
+            //ask to save the modified nodes (hex or Csv)
+            foreach (Node *node, dbfile->childNodes)
+            {
+                QString name = typeid(*node).name();
+                if (name.toLower().endsWith("hexfile"))
+                {
+                    HexFile *hex = (HexFile*)node;
+                    if (!hex->getModifiedData().isEmpty())
+                    {
+                          int r = QMessageBox::question(this, "HEXplorer::question",
+                                                        "Save changes in " + QString(hex->name) + "?",
+                                                        QMessageBox::Yes, QMessageBox::No);
+                          if (r == QMessageBox::Yes)
+                          {
+                              QModelIndex hexIndex = model->getIndex(hex);
+                              save_HexFile(hexIndex);
+                          }
+                    }
+                }
+                else if (name.toLower().endsWith("srecfile"))
+                {
+                    SrecFile *srec = (SrecFile*)node;
+                    if (!srec->getModifiedData().isEmpty())
+                    {
+                        int r = QMessageBox::question(this, "HEXplorer::question",
+                                                      "Save changes in " + QString(srec->name) + "?",
+                                                      QMessageBox::Yes, QMessageBox::No);
+                        if (r == QMessageBox::Yes)
+                        {
+                          QModelIndex srecIndex = model->getIndex(srec);
+                          save_SrecFile(srecIndex);
+                        }
+                    }
+                }
+                else if (name.toLower().endsWith("csv"))
+                {
+                    Csv *csv = (Csv*)node;
+                    if (!csv->getModifiedData().isEmpty())
+                    {
+                        int r = QMessageBox::question(this, "HEXplorer::question",
+                                                      "Save changes in " + QString(csv->name) + "?",
+                                                      QMessageBox::Yes, QMessageBox::No);
+                        if (r == QMessageBox::Yes)
+                        {
+                          QModelIndex csvIndex = model->getIndex(csv);
+                          save_CsvFile(csvIndex);
+                        }
+                    }
+                }
+                else if (name.toLower().endsWith("cdfxfile"))
+                {
+                    CdfxFile *cdfx = (CdfxFile*)node;
+                    if (!cdfx->getModifiedData().isEmpty())
+                    {
+                        int r = QMessageBox::question(this, "HEXplorer::question",
+                                                      "Save changes in " + QString(cdfx->name) + "?",
+                                                      QMessageBox::Yes, QMessageBox::No);
+                        if (r == QMessageBox::Yes)
+                        {
+                          QModelIndex cdfxIndex = model->getIndex(cdfx);
+                          save_CdfxFile(cdfxIndex);
+                        }
+                    }
+                }
+            }
 
-        //update the treeView
-        model->update();
-        ui->treeView->resizeColumnToContents(0);
+            //remove the node from treeView model
+            model->removeChildNode(node);
 
-        //get the project
-        WorkProject *wp = projectList->value(a2lfile->fullName());
+            //update the treeView
+            model->update();
+            ui->treeView->resizeColumnToContents(0);
 
-        //remove the project from the this->projectList
-        projectList->remove(a2lfile->fullName());
+            //get the project
+            WorkProject *wp = projectList->value(dbfile->fullName());
 
-        //delete the selected project
-        //delete wp;
-        wp->detach(this);
+            //remove the project from the this->projectList
+            projectList->remove(dbfile->fullName());
+
+            //remove connection to database and close the DB
+            QSqlDatabase::database(dbfile->getSqlConnection(), true).close();
+            QSqlDatabase::removeDatabase(dbfile->getSqlConnection());
+            ui->connectionWidget->refresh();
+
+            //delete the selected project
+            //delete wp;
+            wp->detach(this);
+        }
     }
 }
 
@@ -5470,22 +5706,6 @@ bool MDImain::persistDB(QSqlDatabase memdb, QString filename, bool save)
 
 void MDImain::on_actionLoad_DB_triggered()
 {
-    //check if SQL driver is available
-    if (!QSqlDatabase::drivers().contains("QSQLITE"))
-    {
-        QMessageBox::critical(this, "Unable to load database", "SQL driver missing");
-        return;
-    }
-
-    //create Sql connection
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(":memory:");
-    if (!db.open())
-    {
-        qWarning("Could not access database '%s'\n", qPrintable(":memory"));
-        return;
-    }
-
     //select database file to open
     QSettings settings(qApp->organizationName(), qApp->applicationName());
     QString currentDbPath = settings.value("currentDbPath").toString();
@@ -5494,6 +5714,30 @@ void MDImain::on_actionLoad_DB_triggered()
                                       tr(".db files (*.db)"));
     if (file.isEmpty())
         return;
+
+    if (projectList->contains(file))
+    {
+        QMessageBox::information(this, "HEXplorer", file + " already open !");
+        return;
+    }
+
+    //check if SQL driver is available
+    if (!QSqlDatabase::drivers().contains("QSQLITE"))
+    {
+        QMessageBox::critical(this, "Unable to load database", "SQL driver missing");
+        return;
+    }
+
+    //create Sql connection
+    //QSqlDatabase::database("in_mem_db", false).close();
+    //QSqlDatabase::removeDatabase("in_mem_db");
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", QFileInfo(file).fileName());
+    db.setDatabaseName(":memory:");
+    if (!db.open())
+    {
+        qWarning("Could not access database '%s'\n", qPrintable(":memory"));
+        return;
+    }
 
     settings.setValue("currentDbPath", QFileInfo(file).absolutePath());
 
@@ -5507,7 +5751,7 @@ void MDImain::on_actionLoad_DB_triggered()
     wp->attach(this);
 
     //create an ASAP2 file Node to start parsing
-    DBFILE *nodeDB = new DBFILE(0, file);
+    DBFILE *nodeDB = new DBFILE(0,QFileInfo(file).fileName(), file);
     nodeDB->name = new char[(QFileInfo(file).fileName()).toLocal8Bit().count() + 1];
     strcpy(nodeDB->name, QFileInfo(file).fileName().toLocal8Bit().data());
     wp->dbFile = nodeDB;
@@ -5532,14 +5776,16 @@ void MDImain::on_actionLoad_DB_triggered()
 
 void MDImain::on_connectionWidget_tableActivated(const QString &table)
 {
-    //open last connection
-    QSqlDatabase db = QSqlDatabase::database();
+    //open current connection
+    QSqlDatabase db = ui->connectionWidget->currentDatabase();
 
     //create a model to edit the database
     QSqlTableModel *model = new QSqlTableModel(this, db);
     model->setTable(table);
     model->setEditStrategy(QSqlTableModel::OnManualSubmit);
     model->select();
+    while (model->canFetchMore())
+        model->fetchMore();
 
     //create a new spreadSheet
     SpreadsheetView *view = new SpreadsheetView();
@@ -5550,7 +5796,7 @@ void MDImain::on_connectionWidget_tableActivated(const QString &table)
     //add a new tab with the spreadsheet
     QIcon icon;
     icon.addFile(":/icones/milky_exportBaril.png");
-    ui->tabWidget->addTab(view, icon, "DB:" + table);
+    ui->tabWidget->addTab(view, icon, db.connectionName() + "::" + table);
 
     //set new FormCompare as activated
     ui->tabWidget->setCurrentWidget(view);

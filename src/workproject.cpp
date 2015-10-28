@@ -81,18 +81,36 @@ QMap<QString, CdfxFile*> WorkProject::cdfxFiles()
 
 void WorkProject::addHex(HexFile *hex )
 {
-    // add hex to a2lfile childrenslist
-    a2lFile->addChildNode(hex);
-    a2lFile->sortChildrensName();
+    if (a2lFile)
+    {
+        // add hex to a2lfile childrenslist
+        a2lFile->addChildNode(hex);
+        a2lFile->sortChildrensName();
 
-    // update treeView
-    treeModel->dataInserted(a2lFile, a2lFile->childNodes.indexOf(hex));
+        // update treeView
+        treeModel->dataInserted(a2lFile, a2lFile->childNodes.indexOf(hex));
 
-    // add hex to this hexList
-    hexList.insert(hex->fullName(), hex);
+        // add hex to this hexList
+        hexList.insert(hex->fullName(), hex);
 
-    // add this to the hex owners (pseudo garbage collector)
-    hex->attach(this);
+        // add this to the hex owners (pseudo garbage collector)
+        hex->attach(this);
+    }
+    else if (dbFile)
+    {
+        // add hex to a2lfile childrenslist
+        dbFile->addChildNode(hex);
+        dbFile->sortChildrensName();
+
+        // update treeView
+        treeModel->dataInserted(dbFile, dbFile->childNodes.indexOf(hex));
+
+        // add hex to this hexList
+        hexList.insert(hex->fullName(), hex);
+
+        // add this to the hex owners (pseudo garbage collector)
+        hex->attach(this);
+    }
 }
 
 void WorkProject::addSrec(SrecFile *srec )
@@ -239,9 +257,27 @@ HexFile* WorkProject::getHex(QString str)
     return NULL;
 }
 
+SrecFile* WorkProject::getSrec(QString str)
+{
+    foreach (SrecFile* srec, srecList.values())
+    {
+        if (srec->fullName() == str)
+        {
+            return srec;
+        }
+    }
+
+    return NULL;
+}
+
 QStringList WorkProject::getHexList()
 {
     return hexList.keys();
+}
+
+QStringList WorkProject::getSrecList()
+{
+    return srecList.keys();
 }
 
 QString WorkProject::toString()

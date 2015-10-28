@@ -64,12 +64,13 @@ ConnectionWidget::~ConnectionWidget()
 
 static QString qDBCaption(const QSqlDatabase &db)
 {
-    QString nm = "HEXplorerDB";
-    //nm.append(db.driverName());
-    nm.append(QLatin1Char(':'));
-    if (!db.userName().isEmpty())
-        nm.append(db.userName()).append(QLatin1Char('@'));
-    nm.append(db.databaseName());
+//    QString nm = "DB:";
+//    nm.append(db.connectionName());
+//    nm.append(QLatin1Char(':'));
+//    if (!db.userName().isEmpty())
+//        nm.append(db.userName()).append(QLatin1Char('@'));
+//    nm.append(db.databaseName());
+    QString nm = db.connectionName();
     return nm;
 }
 

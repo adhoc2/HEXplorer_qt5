@@ -24,12 +24,13 @@
 bool nodeLessThan( const Node *a, const Node *b );
 bool itemLessThan( const Item *a, const Item *b );
 
-DBFILE::DBFILE(Node *parentNode, QString fullFileName)
+DBFILE::DBFILE(Node *parentNode, QString sqlConnection, QString fullFileName)
     : Node()
 {
     //initialize
     optParameters = new QMap<std::string, std::string>;
     fullA2lName = fullFileName;
+    this->sqlConnection = sqlConnection;
 
 
 }
@@ -116,4 +117,9 @@ std::string DBFILE::pixmap()
 QString DBFILE::fullName()
 {
     return fullA2lName;
+}
+
+QString DBFILE::getSqlConnection()
+{
+    return sqlConnection;
 }

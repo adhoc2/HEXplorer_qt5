@@ -76,6 +76,8 @@ class WorkProject :  public A2l
         void detach(QObject*o);
         HexFile* getHex(QString str);
         QStringList getHexList();
+        SrecFile* getSrec(QString str);
+        QStringList getSrecList();
         QString toString();
 
 };

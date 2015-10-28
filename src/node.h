@@ -40,7 +40,7 @@ bool itemLessThan( const Item *a, const Item *b );
 class Node
 {
     public:
-        Node(Node *parent, A2lLexer *lexer, QStringList *error);
+        Node(Node *parent, A2lLexer *lexer = 0, QStringList *error = 0);
         Node(char* nodeName = NULL);
         bool operator < (const Node & node);
         virtual ~Node();

@@ -54,6 +54,7 @@ class HexFile : public QObject, public DataContainer
 
     public:
         HexFile(QString fullHexFileName, WorkProject *parentWP, QString module, QObject *parent = 0);
+        HexFile(QString fullHexFileName, WorkProject *parentWP, QObject *parent = 0);
         ~HexFile();
 
         // members
@@ -69,6 +70,7 @@ class HexFile : public QObject, public DataContainer
         void exportSubsetList2Cdf(QStringList subsetList);
         bool isValidAddress(QString address);
         bool read();
+        bool read_db();
         void verify();
         void checkDisplay();
         void setFullName(QString fullName);
@@ -111,6 +113,7 @@ class HexFile : public QObject, public DataContainer
         bool parseFile();
         void readAllData();
         bool isA2lCombined();
+        bool isDbCombined();
         void hex2MemBlock(Data* data);
         bool data2block();
         QStringList block2list();

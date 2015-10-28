@@ -2152,16 +2152,19 @@ void SrecFile::setFullName(QString fullName)
 
 void SrecFile::incrementValueProgBar(int n)
 {
-    omp_set_lock(&lock);
-
     valueProgBar += n;
-    if (valueProgBar / maxValueProgbar < 0.98)
-        emit progress(valueProgBar, maxValueProgbar);
-    else
-        emit progress(maxValueProgbar, maxValueProgbar);
 
+    if (valueProgBar < maxValueProgbar)
+    {
+        omp_set_lock(&lock);
 
-    omp_unset_lock(&lock);
+        if (valueProgBar / maxValueProgbar < 0.98)
+            emit progress(valueProgBar, maxValueProgbar);
+        else
+            emit progress(maxValueProgbar, maxValueProgbar);
+
+        omp_unset_lock(&lock);
+    };
 }
 
 unsigned int SrecFile::tzn(unsigned int v)
