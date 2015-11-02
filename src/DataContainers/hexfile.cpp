@@ -40,6 +40,7 @@
 #include <QSqlTableModel>
 #include <QSqlQuery>
 #include <QSqlField>
+#include <QSqlQueryModel>
 
 #include "Nodes/characteristic.h"
 #include "Nodes/compu_method.h"
@@ -244,7 +245,7 @@ bool HexFile::read_db()
         //check hex version before reading all datas
         if (isDbCombined())
         {
-            //readAllData();
+            readAllData_db();
             return true;
         }
         return false;
@@ -315,19 +316,24 @@ bool HexFile::parseFile()
     }
     else if (name.toLower().endsWith("dbfile"))
     {
+        //connect to the correct Database
         DBFILE *dbFile = (DBFILE*)this->getParentNode();
         QString connectionName = dbFile->getSqlConnection();
         QSqlDatabase db = QSqlDatabase::database(connectionName, true);
-        //create a model to work with the database
-        QSqlTableModel *model = new QSqlTableModel(this, db);
-        model->setTable("CHARACTERISTICS");
-        model->select();
-        while (model->canFetchMore())
-            model->fetchMore();
-        int length = model->rowCount();
-        maxValueProgbar = fileLinesNum + length;
-        qDebug() << length;
 
+        //getthe number of characteristics into database
+        int length = 0;
+        QSqlQuery query("select count(*) from CHARACTERISTICS", db);
+        while (query.next())
+        {
+            length += query.value(0).toInt();
+        }
+        query.exec("select count(*) from AXIS_PTS");
+        while (query.next())
+        {
+            length += query.value(0).toInt();
+        }
+        maxValueProgbar = fileLinesNum + length;
     }
 
     // initialize variables
@@ -729,9 +735,6 @@ void HexFile::readAllData()
         else
         {
             int i = 0;
-            int time1 = 0;
-            int time2 = 0;
-            int time3 = 0;
             foreach (QString str, module->listChar)
             {
                 bool found = false;
@@ -739,10 +742,7 @@ void HexFile::readAllData()
                 // search into CHARACTERISTIC
                 if (nodeChar)
                 {
-                    QTime timer;
-                    timer.start();
                     Node *label = nodeChar->getNode(str);
-                    time1 += timer.elapsed();
                     if (label)
                     {
                         found = true;
@@ -752,12 +752,8 @@ void HexFile::readAllData()
 
 //                        if(bl)
 //                        {
-                            timer.restart();
                             Data *data = new Data(charac, a2lProject, this);
-                            time2 += timer.elapsed();
-                            timer.restart();
                             listData.append(data);
-                            time3 += timer.elapsed();
 //                        }
 //                        else
 //                        {
@@ -801,11 +797,60 @@ void HexFile::readAllData()
 
                 i++;
             }
-
-        qDebug() << "   - getNode : " << time1;
-        qDebug() << "   - create Data : " << time2;
-        qDebug() << "   - append data to list : " << time3;
         }
+    }
+
+    qDebug() << "3- readAllData " << timer.elapsed();
+}
+
+void HexFile::readAllData_db()
+{
+    QTime timer;
+    timer.start();
+
+    //empty the list
+    listData.clear();
+
+    //create list
+    DBFILE *dbFile = (DBFILE*)this->getParentNode();
+    QString connectionName = dbFile->getSqlConnection();
+    QSqlDatabase db = QSqlDatabase::database(connectionName, true);
+
+    //read labels names : create a list of all the CHARACTERISTIC names
+    QStringList listChar;
+    if (db.isOpen())
+    {
+        int length = 0;
+        QSqlQuery query("select Name from CHARACTERISTICS", db);
+        while (query.next())
+        {
+            listChar.append(query.value(0).toString());
+        }
+        query.exec("select Name from AXIS_PTS");
+        while (query.next())
+        {
+            listChar.append(query.value(0).toString());
+        }
+        listChar.sort();
+
+        //create a Data for each CHAARCTERISTIC into DB
+        query.exec("SELECT * FROM CHARACTERISTICS");
+
+        int i= 0;
+        while (query.next())
+        {
+            QSqlRecord record = query.record();
+
+            Data *data = new Data(record, db, this);
+            listData.append(data);
+
+             // increment valueProgBar
+             if (i % 6 == 1)
+                incrementValueProgBar(6);
+
+            i++;
+        }
+
     }
 
     qDebug() << "3- readAllData " << timer.elapsed();

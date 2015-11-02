@@ -112,6 +112,7 @@ class HexFile : public QObject, public DataContainer
         void incrementValueProgBar(int n);
         bool parseFile();
         void readAllData();
+        void readAllData_db();
         bool isA2lCombined();
         bool isDbCombined();
         void hex2MemBlock(Data* data);

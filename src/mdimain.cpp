@@ -509,7 +509,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         addCdfxFile->setEnabled(false);
         addCsvFile->setEnabled(false);
         editChanged->setEnabled(false);
-        addHexFile->setEnabled(false);
+        addHexFile->setEnabled(true);
         addSrecFile->setEnabled(false);
         deleteProject->setEnabled(true);
         deleteFile->setEnabled(false);
@@ -5732,7 +5732,8 @@ void MDImain::on_actionLoad_DB_triggered()
     //QSqlDatabase::database("in_mem_db", false).close();
     //QSqlDatabase::removeDatabase("in_mem_db");
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", QFileInfo(file).fileName());
-    db.setDatabaseName(":memory:");
+    //db.setDatabaseName(":memory:");
+    db.setDatabaseName(file);
     if (!db.open())
     {
         qWarning("Could not access database '%s'\n", qPrintable(":memory"));
@@ -5742,7 +5743,7 @@ void MDImain::on_actionLoad_DB_triggered()
     settings.setValue("currentDbPath", QFileInfo(file).absolutePath());
 
     //load the database in memory
-    persistDB(db, file, 0);
+    //persistDB(db, file, 0);
 
     // create a new Wp
     WorkProject *wp = new WorkProject(file, this->model, this);

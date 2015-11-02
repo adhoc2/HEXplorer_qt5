@@ -24,6 +24,8 @@
 #include <QStringList>
 #include <QScriptValue>
 #include <QDomElement>
+#include <QSqlRecord>
+#include <QSqlDatabase>
 #include "node.h"
 class WorkProject;
 class FUNCTION;
@@ -51,6 +53,7 @@ class Data : public QObject, public Node
         Data();
         Data(Node *node);
         Data(CHARACTERISTIC *node, PROJECT  *pro, HexFile *hexFile, bool modif = true);
+        Data(QSqlRecord record, QSqlDatabase db, HexFile *hexFile, bool modif = true);
         Data(CHARACTERISTIC *node, PROJECT  *pro, SrecFile *srecFile, bool modif = true);
         Data(CHARACTERISTIC *node, PROJECT *pro,  Csv *csv, bool modif = true);
         Data(CHARACTERISTIC *node, PROJECT *pro,  CdfxFile *cdfx, bool modif = true);
@@ -200,7 +203,9 @@ class Data : public QObject, public Node
         bool sizeChanged;
         QString moduleName;
         PROJECT *project;
+        QSqlDatabase db;
         Node *label;
+        QSqlRecord record;
         HexFile *hexParent;
         SrecFile *srecParent;
         Csv *csvParent;

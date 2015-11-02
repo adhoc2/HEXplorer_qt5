@@ -723,6 +723,53 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
     size += nPtsY;
 }
 
+Data::Data(QSqlRecord record, QSqlDatabase database,  HexFile *hexFile, bool modif) : Node(), QObject()
+{
+    //set node name
+    this->name = (char*)record.value(1).toString().toStdString().c_str();
+
+    //initialize settings
+    xOrgSize = 0;
+    yOrgSize = 0;
+    isAxisXComparable = true;
+    isAxisYComparable = true;
+    sizeChanged = false;
+    modifiable = modif;
+    this->record = record;
+    db = database;
+    hexParent = hexFile;
+    csvParent = NULL;
+    cdfxParent = NULL;
+    if (hexParent)
+    {
+        moduleName = hexParent->getModuleName();
+    }
+    axisDescrX = NULL;
+    axisDescrY = NULL;
+    compuTabAxisX = NULL;
+    compuTabAxisY = NULL;
+    compuTabAxisZ = NULL;
+    compu_methodZ = NULL;
+    byteOrderX = "";
+    byteOrderY = "";
+    byteOrderZ = "";
+    displayed = false;
+    precisionX = 0;
+    precisionY = 0;
+    precisionZ = 0;
+    isSortedByRow = 0;
+    uint nPtsX = 1;
+    uint nPtsY = 1;
+
+    //initialize the display number of rows of the CHARACTERISTIC
+    type = record.value("Type").toString();
+    if (type.compare("VALUE") == 0)
+    {
+        size = 3;
+    }
+
+}
+
 Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) : Node(node->name), QObject()
 {
     //initialize settings
