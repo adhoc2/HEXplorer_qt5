@@ -47,8 +47,6 @@ class HEADER : public Node
         QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
         QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;
 
-        //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
-
         void parseFixPar(QList<TokenTyp> *typePar);
         TokenTyp parseOptPar(QMap<std::string, Occurence> *nameOptPar);
 };

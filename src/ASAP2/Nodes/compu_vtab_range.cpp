@@ -294,20 +294,6 @@ void COMPU_VTAB_RANGE::parsePairs()
 
 QString COMPU_VTAB_RANGE::getValue(int i)
 {
-    /*
-    if (valuePairs.keys().contains(i))
-    {
-        QString str = "";
-        #pragma omp critical
-        str = valuePairs.value(i).c_str();
-
-        return str;
-    }
-    else
-    {
-        return "ERROR";
-    }
-    */
 
     int ind = listKeyPairs.indexOf(i);
     if (ind >= 0)

@@ -53,7 +53,6 @@ class COMPU_TAB : public Node
         QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
         QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;
 
-        //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
 
         void parsePairs();
         void parseFixPar(QList<TokenTyp> *typePar);

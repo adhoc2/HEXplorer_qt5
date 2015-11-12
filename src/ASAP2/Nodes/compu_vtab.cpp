@@ -269,21 +269,6 @@ void COMPU_VTAB::parsePairs()
 
 QString COMPU_VTAB::getValue(int i)
 {
-    /*
-    if (valuePairs.keys().contains(i))
-    {
-        QString str = "";
-        #pragma omp critical
-        str = valuePairs.value(i).c_str();
-
-        return str;
-    }
-    else
-    {
-        return "ERROR";
-    }
-    */
-
     int ind = listKeyPairs.indexOf(i);
     if (ind >= 0)
         return listValuePairs.at(ind).c_str();

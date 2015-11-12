@@ -22,7 +22,7 @@ equals( QMAKE_CXX, cl) {
     QWT_ROOT = ../LIBS/qwt-6.1.2
     MATHGL_ROOT = ../LIBS/mathgl_msvc2013
 
-    CONFIG += embed_manifest_exe
+    CONFIG += embed_manifest_exe c++11
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL CL_COMPILER
     INCLUDEPATH += . "C:\Quex\quex-0.65.4" \
      ./ASAP2 ./sqlite \
@@ -84,6 +84,7 @@ equals( QMAKE_CXX, cl) {
     #QDJANGO_ROOT = ../LIBS/qdjango
 
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
+    CONFIG +=  c++11
 
     INCLUDEPATH += . ./ASAP2 ./sqlite $${QUEX_ROOT} \
     ./Quex \

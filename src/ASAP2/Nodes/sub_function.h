@@ -48,8 +48,6 @@ class SUB_FUNCTION : public Node
         QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
         QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;
 
-        //#pragma omp threadprivate(typePar, namePar, factoryOptNode, factoryOptItem)
-
         // CHARACTERISTICS list
         QList<std::string> charList;
 

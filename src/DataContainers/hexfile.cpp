@@ -29,8 +29,6 @@
 #include <typeinfo>
 #include <math.h>
 #include <limits.h>
-#include <qtconcurrentrun.h>
-#include <QFutureWatcher>
 #include <QProgressDialog>
 #include <QFileDialog>
 #include <QSettings>
@@ -41,6 +39,12 @@
 #include <QSqlQuery>
 #include <QSqlField>
 #include <QSqlQueryModel>
+
+#include <qtconcurrentrun.h>
+#include <QFutureWatcher>
+#include <QtConcurrentMap>
+#include <functional>
+
 
 #include "Nodes/characteristic.h"
 #include "Nodes/compu_method.h"
@@ -308,11 +312,10 @@ bool HexFile::parseFile()
     QString name = typeid(*this->getParentNode()).name();
     if (name.toLower().endsWith("a2lfile"))
     {
-        A2LFILE *a2l = (A2LFILE*)this->getParentNode();
-        MODULE *module = (MODULE*)a2l->getProject()->getNode("MODULE/" + getModuleName());
-        int length = module->listChar.count();
-        maxValueProgbar = fileLinesNum + length;
-        qDebug() << length;
+//        A2LFILE *a2l = (A2LFILE*)this->getParentNode();
+//        MODULE *module = (MODULE*)a2l->getProject()->getNode("MODULE/" + getModuleName());
+//        int length = module->listChar.count();
+        maxValueProgbar = fileLinesNum;// + length;
     }
     else if (name.toLower().endsWith("dbfile"))
     {
@@ -566,239 +569,21 @@ void HexFile::readAllData()
     MODULE *module = (MODULE*)a2l->getProject()->getNode("MODULE/" + getModuleName());
 
     //read labels
-    Node *nodeChar = a2l->getProject()->getNode("MODULE/" + getModuleName() + "/CHARACTERISTIC");
-    Node *nodeAxis = a2l->getProject()->getNode("MODULE/" + getModuleName() + "/AXIS_PTS");
-    if (nodeChar)
-    {
-        int length = module->listChar.count();
-        bool myDebug = 0;
-#ifdef MY_DEBUG
-    myDebug = 1;
-#endif
-        if (length > 5000 && omp_get_num_procs() > 1 && !myDebug)
-        {
-            // split listChar into 2 lists
-            int middle = 0;
-            if (length % 2 == 0)
-                middle = length / 2;
-            else
-                middle = (int)(length/2);
+    QProgressDialog dialog;
+    dialog.setLabelText(QString("Progressing using %1 thread(s)...").arg(QThread::idealThreadCount()));
 
-            QStringList list1 = module->listChar.mid(0, middle);
-            QStringList list2 = module->listChar.mid(middle, length - middle);
+    QFutureWatcher<Data*> futureWatcher;
+    QObject::connect(&futureWatcher, SIGNAL(finished()), &dialog, SLOT(reset()));
+    QObject::connect(&futureWatcher, SIGNAL(progressRangeChanged(int,int)), &dialog, SLOT(setRange(int,int)));
+    QObject::connect(&futureWatcher, SIGNAL(progressValueChanged(int)), &dialog, SLOT(setValue(int)));
 
+    // Start the computation
+    futureWatcher.setFuture(QtConcurrent::mapped(module->listChar, std::bind(&HexFile::runCreateDataMapped, this, std::placeholders::_1)));
+    dialog.exec();
+    futureWatcher.waitForFinished();
 
-            // read datas
-            QList<Data*> listData1;
-            QList<Data*> listData2;
-
-            // not valid address Data
-            QStringList listNotValid1;
-            QStringList listNotValid2;
-
-            omp_set_num_threads(2);
-            #pragma omp parallel
-            {
-                #pragma omp sections
-                {
-                    #pragma omp section
-                    {
-                        int i = 0;
-                        foreach (QString str, list1)
-                        {
-                            bool found = false;
-
-                            // search into CHARACTERISTIC
-                            if (nodeChar)
-                            {
-                                Node *label = nodeChar->getNode(str);
-                                if (label)
-                                {
-                                    found = true;
-                                    CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
-//                                    QString add = charac->getPar("Adress");
-//                                    bool bl = isValidAddress(add);
-
-//                                    if(bl)
-//                                    {
-                                        Data *data = new Data(charac, a2lProject, this);
-                                        listData1.append(data);
-//                                    }
-//                                    else
-//                                    {
-//                                        listNotValid1.append(str + " : " + add);
-//                                    }
-                                }
-                            }
-
-                            // search into AXIS_PTS
-                            if (nodeAxis && !found)
-                            {
-                                Node *label2 = nodeAxis->getNode(str);
-                                if (label2)
-                                {
-                                    found = true;
-                                    AXIS_PTS *axis = (AXIS_PTS*)label2;
-//                                    QString add = axis->getPar("Adress");
-//                                    bool bl = isValidAddress(add);
-
-//                                    if (bl)
-//                                    {
-                                        Data *data = new Data(axis, a2lProject, this);
-                                        listData1.append(data);
-//                                    }
-//                                    else
-//                                    {
-//                                        listNotValid1.append(str + " : " + add);
-//                                    }
-                                }
-                            }
-
-                            // increment valueProgBar
-                            if (i % 6 == 1)
-                                incrementValueProgBar(12);
-
-                            i++;
-
-                        }
-                    }
-                    #pragma omp section
-                    {
-                        int i = 0;
-                        foreach (QString str, list2)
-                        {
-
-                            bool found = false;
-                            // search into CHARACTERISTIC
-                            if (nodeChar)
-                            {
-                                Node *label = nodeChar->getNode(str);
-                                if (label)
-                                {
-                                    found = true;
-                                    CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
-//                                    QString add = charac->getPar("Adress");
-//                                    bool bl = isValidAddress(add);
-
-//                                    if(bl)
-//                                    {
-                                        Data *data = new Data(charac, a2lProject, this);
-                                        listData2.append(data);
-//                                    }
-//                                    else
-//                                    {
-//                                        listNotValid2.append(str + " : " + add);
-//                                    }
-                                }
-                            }
-
-                            // search into AXIS_PTS
-                            if (nodeAxis && !found)
-                            {
-                                Node *label2 = nodeAxis->getNode(str);
-                                if (label2)
-                                {
-                                    found = true;
-                                    AXIS_PTS *axis = (AXIS_PTS*)label2;
-//                                    QString add = axis->getPar("Adress");
-//                                    bool bl = isValidAddress(add);
-
-//                                    if (bl)
-//                                    {
-                                        Data *data = new Data(axis, a2lProject, this);
-                                        listData2.append(data);
-//                                    }
-//                                    else
-//                                    {
-//                                        listNotValid2.append(str + " : " + add);
-//                                    }
-                                }
-                            }
-
-
-                            // increment valueProgBar
-//                            if (i % 6 == 1)
-//                                incrementValueProgBar(6);
-
-                            i++;
-                        }
-                    }
-                }
-            }
-
-            listData.append(listData1);
-            listData.append(listData2);
-
-            listNotValidData.append(listNotValid1);
-            listNotValidData.append(listNotValid2);
-        }
-        else
-        {
-            int i = 0;
-            foreach (QString str, module->listChar)
-            {
-                bool found = false;
-
-                // search into CHARACTERISTIC
-                if (nodeChar)
-                {
-                    Node *label = nodeChar->getNode(str);
-                    if (label)
-                    {
-                        found = true;
-                        CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
-//                        QString add = charac->getPar("Adress");
-//                        bool bl = isValidAddress(add);
-
-//                        if(bl)
-//                        {
-                            Data *data = new Data(charac, a2lProject, this);
-                            listData.append(data);
-//                        }
-//                        else
-//                        {
-
-//                        }
-                    }
-                 }
-
-                // search into AXIS_PTS
-                if (nodeAxis && !found)
-                {
-                    Node *label2 = nodeAxis->getNode(str);
-                    if (label2)
-                    {
-                        found = true;
-                        AXIS_PTS *axis = (AXIS_PTS*)label2;
-                        //QString add = axis->getPar("Adress");
-
-                        //bool bl = isValidAddress(add);
-                        //if (bl)
-                        //{
-                            Data *data = new Data(axis, a2lProject, this);
-                            listData.append(data);
-                        //}
-                        //else
-                        //{
-
-                        //}
-                    }
-                }
-
-                // display not found
-                if (!found)
-                {
-
-                }
-
-                // increment valueProgBar
-                if (i % 6 == 1)
-                    incrementValueProgBar(6);
-
-                i++;
-            }
-        }
-    }
+    //fill-in listData
+    listData = futureWatcher.future().results();
 
     qDebug() << "3- readAllData " << timer.elapsed();
 }
@@ -855,6 +640,76 @@ void HexFile::readAllData_db()
 
     qDebug() << "3- readAllData " << timer.elapsed();
 }
+
+Data* HexFile::runCreateDataMapped(const QString &str)
+{
+    A2LFILE *a2l = (A2LFILE*)this->getParentNode();
+    Node *nodeChar = a2l->getProject()->getNode("MODULE/" + getModuleName() + "/CHARACTERISTIC");
+    Node *nodeAxis = a2l->getProject()->getNode("MODULE/" + getModuleName() + "/AXIS_PTS");
+
+    bool found = false;
+
+    // search into CHARACTERISTIC
+    if (nodeChar)
+    {
+        //rwLock.lockForRead();
+        Node *label = nodeChar->getNode(str);
+        //rwLock.unlock();
+        if (label)
+        {
+            found = true;
+            CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
+            QString add = charac->getPar("Adress");
+            bool bl = isValidAddress(add);
+            if(bl)
+            {
+                //rwLock.lockForRead();
+                Data *data = new Data(charac, a2lProject, this);
+                //rwLock.unlock();
+                return data;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+
+    // search into AXIS_PTS
+    if (nodeAxis && !found)
+    {
+        //rwLock.lockForRead();
+        Node *label2 = nodeAxis->getNode(str);
+        //rwLock.unlock();
+        if (label2)
+        {
+            found = true;
+            AXIS_PTS *axis = (AXIS_PTS*)label2;
+            QString add = axis->getPar("Adress");
+
+            bool bl = isValidAddress(add);
+            if (bl)
+            {
+                //rwLock.lockForRead();
+                Data *data = new Data(axis, a2lProject, this);
+                //rwLock.unlock();
+                return data;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+
+    // display not found
+    if (!found)
+    {
+        return 0;
+    }
+
+}
+
 
 // ________________ read Hex values___________________ //
 

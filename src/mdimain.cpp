@@ -30,6 +30,7 @@
 #include <QSqlQuery>
 #include "sqlite3.h"
 
+
 #ifdef Q_OS_WIN32
     #include <QAxObject>
 #endif
@@ -509,7 +510,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         addCdfxFile->setEnabled(false);
         addCsvFile->setEnabled(false);
         editChanged->setEnabled(false);
-        addHexFile->setEnabled(true);
+        addHexFile->setEnabled(false);
         addSrecFile->setEnabled(false);
         deleteProject->setEnabled(true);
         deleteFile->setEnabled(false);
@@ -4602,12 +4603,52 @@ void MDImain::compare_HexFile()
         ui->tabWidget->setCurrentWidget(fComp);
 
         //set fComp as one of the hexfile owner
-        HexFile *hex1 = (HexFile*)model->getNode(list.at(0));
-        hex1->attach(fComp);
+        Node *node =  model->getNode(list.at(0));
+        QString name = typeid(*node).name();
+        if (name.toLower().endsWith("hexfile"))
+        {
+            HexFile *hex1 = (HexFile*)node;
+            hex1->attach(fComp);
+        }
+        else if (name.toLower().endsWith("srecfile"))
+        {
+            SrecFile *srec1 = (SrecFile*)node;
+            srec1->attach(fComp);
+        }
+        else if (name.toLower().endsWith("cdfxfile"))
+        {
+            CdfxFile *cdfx1 = (CdfxFile*)node;
+            cdfx1->attach(fComp);
+        }
+        else if (name.toLower().endsWith("csvfile"))
+        {
+            Csv *csv1 = (Csv*)node;
+            csv1->attach(fComp);
+        }
 
         //set fComp as one of the hexfile owner
-        HexFile *hex2 = (HexFile*)model->getNode(list.at(1));
-        hex2->attach(fComp);
+        node =  model->getNode(list.at(1));
+        name = typeid(*node).name();
+        if (name.toLower().endsWith("hexfile"))
+        {
+            HexFile *hex2 = (HexFile*)node;
+            hex2->attach(fComp);
+        }
+        else if (name.toLower().endsWith("srecfile"))
+        {
+            SrecFile *srec2 = (SrecFile*)node;
+            srec2->attach(fComp);
+        }
+        else if (name.toLower().endsWith("cdfxfile"))
+        {
+            CdfxFile *cdfx2 = (CdfxFile*)node;
+            cdfx2->attach(fComp);
+        }
+        else if (name.toLower().endsWith("csvfile"))
+        {
+            Csv *csv2 = (Csv*)node;
+            csv2->attach(fComp);
+        }
     }
 }
 

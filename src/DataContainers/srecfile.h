@@ -25,6 +25,7 @@
 #include <omp.h>
 #include "node.h"
 #include "datacontainer.h"
+#include <QReadWriteLock>
 class WorkProject;
 class CHARACTERISTIC;
 class AXIS_PTS;
@@ -32,6 +33,7 @@ class MODULE;
 class Data;
 class PROJECT;
 class MEMORY_SEGMENT;
+class QReadWriteLock;
 
 class MemBlock;
 
@@ -73,13 +75,18 @@ class SrecFile : public QObject, public DataContainer
     public slots:
         void detach(QObject*o);
         Data* getData(QString str);
-        QString toString();
+        QString toString();        
 
 
     private:
 
-        // members
+        //QtConcurrent members
+        void runCreateData(QStringList list, QList<Data *> *listData, Node *nodeChar, Node *nodeAxis);
+        Data* runCreateDataMapped(const QString &str);
+
+        //members
         omp_lock_t lock;
+        QReadWriteLock rwLock;
         int fileLinesNum;
         int maxValueProgbar;
         int valueProgBar;

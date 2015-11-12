@@ -90,6 +90,8 @@ class HexFile : public QObject, public DataContainer
 
 
     private:
+        //QtConcurrent members
+        Data* runCreateDataMapped(const QString &str);
 
         // members
         omp_lock_t lock;
