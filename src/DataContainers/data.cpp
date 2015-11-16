@@ -44,6 +44,14 @@
 bool Data::showWeakBoundsExceeded = true;
 bool Data::allowExceedWeakBounds = false;
 
+bool myCompare(QString a, QString b)
+{
+   if (a.toDouble() < b.toDouble())
+       return true;
+   else
+       return false;
+}
+
 // --- CONSTRUCTORS --- //
 
 Data::Data() : Node(), QObject()
@@ -60,9 +68,9 @@ Data::Data(Node *node) : Node(node->name), QObject()
     csvParent = NULL;
     axisDescrX = NULL;
     axisDescrY = NULL;
-    compuTabAxisX = NULL;
-    compuTabAxisY = NULL;
-    compuTabAxisZ = NULL;
+    compuVTabAxisX = NULL;
+    compuVTabAxisY = NULL;
+    compuVTabAxisZ = NULL;
     displayed = false;
     precisionX = 0;
     precisionY = 0;
@@ -95,9 +103,12 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
     }
     axisDescrX = NULL;
     axisDescrY = NULL;
-    compuTabAxisX = NULL;
+    compuVTabAxisX = NULL;
+    compuVTabAxisY = NULL;
+    compuVTabAxisZ = NULL;
     compuTabAxisY = NULL;
     compuTabAxisZ = NULL;
+    compu_methodZ = NULL;
     compu_methodZ = NULL;
     byteOrderX = "";
     byteOrderY = "";
@@ -746,9 +757,12 @@ Data::Data(QSqlRecord record, QSqlDatabase database,  HexFile *hexFile, bool mod
     }
     axisDescrX = NULL;
     axisDescrY = NULL;
-    compuTabAxisX = NULL;
+    compuVTabAxisX = NULL;
+    compuVTabAxisY = NULL;
+    compuVTabAxisZ = NULL;
     compuTabAxisY = NULL;
     compuTabAxisZ = NULL;
+    compu_methodZ = NULL;
     compu_methodZ = NULL;
     byteOrderX = "";
     byteOrderY = "";
@@ -791,6 +805,9 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
     }
     axisDescrX = NULL;
     axisDescrY = NULL;
+    compuVTabAxisX = NULL;
+    compuVTabAxisY = NULL;
+    compuVTabAxisZ = NULL;
     compuTabAxisX = NULL;
     compuTabAxisY = NULL;
     compuTabAxisZ = NULL;
@@ -1384,9 +1401,12 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, Csv *csv, bool modif) : Node(node
     }
     axisDescrX = NULL;
     axisDescrY = NULL;
-    compuTabAxisX = NULL;
+    compuVTabAxisX = NULL;
+    compuVTabAxisY = NULL;
+    compuVTabAxisZ = NULL;
     compuTabAxisY = NULL;
     compuTabAxisZ = NULL;
+    compu_methodZ = NULL;
     compu_methodZ = NULL;
     displayed = false;
     precisionX = 0;
@@ -1582,9 +1602,12 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, CdfxFile *cdfx, bool modif) : Nod
     }
     axisDescrX = NULL;
     axisDescrY = NULL;
-    compuTabAxisX = NULL;
+    compuVTabAxisX = NULL;
+    compuVTabAxisY = NULL;
+    compuVTabAxisZ = NULL;
     compuTabAxisY = NULL;
     compuTabAxisZ = NULL;
+    compu_methodZ = NULL;
     compu_methodZ = NULL;
     displayed = false;
     precisionX = 0;
@@ -1783,9 +1806,12 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, HexFile *hexFile, bool modif) : Node(no
     axisDescrX = NULL;
     axisDescrY = NULL;
     compu_methodZ = NULL;
-    compuTabAxisX = NULL;
+    compuVTabAxisX = NULL;
+    compuVTabAxisY = NULL;
+    compuVTabAxisZ = NULL;
     compuTabAxisY = NULL;
     compuTabAxisZ = NULL;
+    compu_methodZ = NULL;
     byteOrderX = "";
     byteOrderY = "";
     byteOrderZ = "";
@@ -1910,9 +1936,12 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, SrecFile *srecFile, bool modif) : Node(
     axisDescrX = NULL;
     axisDescrY = NULL;
     compu_methodZ = NULL;
-    compuTabAxisX = NULL;
+    compuVTabAxisX = NULL;
+    compuVTabAxisY = NULL;
+    compuVTabAxisZ = NULL;
     compuTabAxisY = NULL;
     compuTabAxisZ = NULL;
+    compu_methodZ = NULL;
     byteOrderX = "";
     byteOrderY = "";
     byteOrderZ = "";
@@ -2034,9 +2063,12 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, Csv *csv, bool modif) : Node(node->name
     }
     axisDescrX = NULL;
     axisDescrY = NULL;
-    compuTabAxisX = NULL;
+    compuVTabAxisX = NULL;
+    compuVTabAxisY = NULL;
+    compuVTabAxisZ = NULL;
     compuTabAxisY = NULL;
     compuTabAxisZ = NULL;
+    compu_methodZ = NULL;
     compu_methodZ = NULL;
     displayed = false;
     precisionX = 0;
@@ -2099,9 +2131,12 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, CdfxFile *cdfx, bool modif) : Node(node
     }
     axisDescrX = NULL;
     axisDescrY = NULL;
-    compuTabAxisX = NULL;
+    compuVTabAxisX = NULL;
+    compuVTabAxisY = NULL;
+    compuVTabAxisZ = NULL;
     compuTabAxisY = NULL;
     compuTabAxisZ = NULL;
+    compu_methodZ = NULL;
     compu_methodZ = NULL;
     displayed = false;
     precisionX = 0;
@@ -2322,6 +2357,7 @@ Node *Data::getA2lNode()
 
 void Data::hex2phys()
 {
+
     //axis X
     if (listX.count() > 0)
     {
@@ -2375,13 +2411,69 @@ void Data::hex2phys()
             {
                 COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
                 QString compuTabRef = item->getPar("ConversionTable");
-                compuTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+                compuVTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
                 for (int i = 0; i < listX.count(); i++)
                 {
                     dec = decX.at(i);
-                    listX[i] = compuTabAxisX->getValue(dec);
+                    listX[i] = compuVTabAxisX->getValue(dec);
                 }
+            }
+            else if (convType.toLower() == "identical")
+            {
+
+            }
+            else if (convType.toLower() == "form")
+            {
+
+            }
+            else if (convType.toLower() == "linear")
+            {
+
+            }
+            else if (convType.toLower() == "tab_intp")
+            {
+                COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+                QString compuTabRef = item->getPar("ConversionTable");
+                compuTabAxisX = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPUTAB/" + compuTabRef);
+
+                QList<float> list = compuTabAxisX->getKeys();
+                for (int i = 0; i < listX.count(); i++)
+                {
+                    //get the decimal value to be calculated
+                    dec = decX.at(i);
+
+                    //get the position of the decimal into the keys
+                    QList<float>::iterator pos = std::lower_bound(list.begin(), list.end(), dec);
+
+                    //if dec is not included into the keys
+                    if (pos == list.end())
+                        listX[i] = compuTabAxisX->getValueList().last();
+                    else if (pos == list.begin())
+                        listX[i] = compuTabAxisX->getValueList().first();
+                    else
+                    {
+                        //interpolate (checking that denominator is difefrent to 0)
+                        float x1,x2,y1,y2 = 0;
+                        x1 = *(pos - 1);
+                        x2 = *pos;
+                        y1 = compuTabAxisX->getValue(x1).toFloat();
+                        y2 = compuTabAxisX->getValue(x2).toFloat();
+                        float denom = (x2 - x1);
+                        if (denom)
+                            listX[i] = QString::number(y1 + (dec - x1)*(y2 - y1)/denom, 'f', precisionX);
+                        else
+                            listX[i] = QString::number(0, 'f', precisionX);
+                    }
+                }
+            }
+            else if (convType.toLower() == "tab_nointp")
+            {
+
+            }
+            else
+            {
+
             }
         }
     }
@@ -2439,12 +2531,12 @@ void Data::hex2phys()
             {
                 COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
                 QString compuTabRef = item->getPar("ConversionTable");
-                compuTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+                compuVTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
                 for (int i = 0; i < listY.count(); i++)
                 {
                     dec = decY.at(i);
-                    listY[i] = compuTabAxisY->getValue(dec);
+                    listY[i] = compuVTabAxisY->getValue(dec);
                 }
             }
             else if (convType.toLower() == "identical")
@@ -2461,7 +2553,39 @@ void Data::hex2phys()
             }
             else if (convType.toLower() == "tab_intp")
             {
+                COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+                QString compuTabRef = item->getPar("ConversionTable");
+                compuTabAxisY = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPUTAB/" + compuTabRef);
 
+                QList<float> list = compuTabAxisY->getKeys();
+                for (int i = 0; i < listY.count(); i++)
+                {
+                    //get the decimal value to be calculated
+                    dec = decY.at(i);
+
+                    //get the position of the decimal into the keys
+                    QList<float>::iterator pos = std::lower_bound(list.begin(), list.end(), dec);
+
+                    //if dec is not included into the keys
+                    if (pos == list.end())
+                        listY[i] = compuTabAxisY->getValueList().last();
+                    else if (pos == list.begin())
+                        listY[i] = compuTabAxisY->getValueList().first();
+                    else
+                    {
+                        //interpolate (checking that denominator is difefrent to 0)
+                        float x1,x2,y1,y2 = 0;
+                        x1 = *(pos - 1);
+                        x2 = *pos;
+                        y1 = compuTabAxisY->getValue(x1).toFloat();
+                        y2 = compuTabAxisY->getValue(x2).toFloat();
+                        float denom = (x2 - x1);
+                        if (denom)
+                            listY[i] = QString::number(y1 + (dec - x1)*(y2 - y1)/denom, 'f', precisionY);
+                        else
+                            listY[i] = QString::number(0, 'f', precisionY);
+                    }
+                }
             }
             else if (convType.toLower() == "tab_nointp")
             {
@@ -2534,12 +2658,12 @@ void Data::hex2phys()
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmpZ->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisZ = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+            compuVTabAxisZ = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
             for (int i = 0; i < listZ.count(); i++)
             {
                 dec = decZ.at(i);
-                listZ[i] = compuTabAxisZ->getValue((int)dec);
+                listZ[i] = compuVTabAxisZ->getValue((int)dec);
             }
 
         }
@@ -2557,7 +2681,39 @@ void Data::hex2phys()
         }
         else if (convType.toLower() == "tab_intp")
         {
+            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmpZ->getItem("COMPU_TAB_REF");
+            QString compuTabRef = item->getPar("ConversionTable");
+            compuTabAxisZ = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPUTAB/" + compuTabRef);
 
+            QList<float> list = compuTabAxisZ->getKeys();
+            for (int i = 0; i < listZ.count(); i++)
+            {
+                //get the decimal value to be calculated
+                dec = decZ.at(i);
+
+                //get the position of the decimal into the keys
+                QList<float>::iterator pos = std::lower_bound(list.begin(), list.end(), dec);
+
+                //if dec is not included into the keys
+                if (pos == list.end())
+                    listZ[i] = compuTabAxisZ->getValueList().last();
+                else if (pos == list.begin())
+                    listZ[i] = compuTabAxisZ->getValueList().first();
+                else
+                {
+                    //interpolate (checking that denominator is difefrent to 0)
+                    float x1,x2,y1,y2 = 0;
+                    x1 = *(pos - 1);
+                    x2 = *pos;
+                    y1 = compuTabAxisZ->getValue(x1).toFloat();
+                    y2 = compuTabAxisZ->getValue(x2).toFloat();
+                    float denom = (x2 - x1);
+                    if (denom)
+                        listZ[i] = QString::number(y1 + (dec - x1)*(y2 - y1)/denom, 'f', precisionZ);
+                    else
+                        listZ[i] = QString::number(0, 'f', precisionZ);
+                }
+            }
         }
         else if (convType.toLower() == "tab_nointp")
         {
@@ -2617,11 +2773,42 @@ QString Data::hex2phys(QString hex, QString axis)
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+            compuVTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
-            phys = compuTabAxisX->getValue(dec);
+            phys = compuVTabAxisX->getValue(dec);
             return phys;
 
+        }
+        else if (convType.toLower() == "tab_intp")
+        {
+            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+            QString compuTabRef = item->getPar("ConversionTable");
+            compuTabAxisX = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPUTAB/" + compuTabRef);
+
+            QList<float> list = compuTabAxisX->getKeys();
+
+            //get the position of the decimal into the keys
+            QList<float>::iterator pos = std::lower_bound(list.begin(), list.end(), dec);
+
+            //if dec is not included into the keys
+            if (pos == list.end())
+                return compuTabAxisX->getValueList().last();
+            else if (pos == list.begin())
+                return compuTabAxisX->getValueList().first();
+            else
+            {
+                //interpolate (checking that denominator is difefrent to 0)
+                float x1,x2,y1,y2 = 0;
+                x1 = *(pos - 1);
+                x2 = *pos;
+                y1 = compuTabAxisX->getValue(x1).toFloat();
+                y2 = compuTabAxisX->getValue(x2).toFloat();
+                float denom = (x2 - x1);
+                if (denom)
+                    return QString::number(y1 + (dec - x1)*(y2 - y1)/denom, 'f', precisionX);
+                else
+                    return QString::number(0, 'f', precisionX);
+            }
         }
         else
             return hex;
@@ -2670,11 +2857,42 @@ QString Data::hex2phys(QString hex, QString axis)
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+            compuVTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
-            phys = compuTabAxisY->getValue(dec);
+            phys = compuVTabAxisY->getValue(dec);
             return phys;
 
+        }
+        else if (convType.toLower() == "tab_intp")
+        {
+            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+            QString compuTabRef = item->getPar("ConversionTable");
+            compuTabAxisY = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPUTAB/" + compuTabRef);
+
+            QList<float> list = compuTabAxisY->getKeys();
+
+            //get the position of the decimal into the keys
+            QList<float>::iterator pos = std::lower_bound(list.begin(), list.end(), dec);
+
+            //if dec is not included into the keys
+            if (pos == list.end())
+                return compuTabAxisY->getValueList().last();
+            else if (pos == list.begin())
+                return compuTabAxisY->getValueList().first();
+            else
+            {
+                //interpolate (checking that denominator is difefrent to 0)
+                float x1,x2,y1,y2 = 0;
+                x1 = *(pos - 1);
+                x2 = *pos;
+                y1 = compuTabAxisY->getValue(x1).toFloat();
+                y2 = compuTabAxisY->getValue(x2).toFloat();
+                float denom = (x2 - x1);
+                if (denom)
+                    return QString::number(y1 + (dec - x1)*(y2 - y1)/denom, 'f', precisionY);
+                else
+                    return QString::number(0, 'f', precisionY);
+            }
         }
         else
             return hex;
@@ -2732,9 +2950,40 @@ QString Data::hex2phys(QString hex, QString axis)
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmpZ->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisZ = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+            compuVTabAxisZ = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
-            return compuTabAxisZ->getValue(dec);
+            return compuVTabAxisZ->getValue(dec);
+        }
+        else if (convType.toLower() == "tab_intp")
+        {
+            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmpZ->getItem("COMPU_TAB_REF");
+            QString compuTabRef = item->getPar("ConversionTable");
+            compuTabAxisZ = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPU_TAB/" + compuTabRef);
+
+            QList<float> list = compuTabAxisZ->getKeys();
+
+            //get the position of the decimal into the keys
+            QList<float>::iterator pos = std::lower_bound(list.begin(), list.end(), dec);
+
+            //if dec is not included into the keys
+            if (pos == list.end())
+                return compuTabAxisZ->getValueList().last();
+            else if (pos == list.begin())
+                return compuTabAxisZ->getValueList().first();
+            else
+            {
+                //interpolate (checking that denominator is difefrent to 0)
+                float x1,x2,y1,y2 = 0;
+                x1 = *(pos - 1);
+                x2 = *pos;
+                y1 = compuTabAxisZ->getValue(x1).toFloat();
+                y2 = compuTabAxisZ->getValue(x2).toFloat();
+                float denom = (x2 - x1);
+                if (denom)
+                    return QString::number(y1 + (dec - x1)*(y2 - y1)/denom, 'f', precisionZ);
+                else
+                    return QString::number(0, 'f', precisionZ);
+            }
         }
         return hex;
     }
@@ -2794,14 +3043,47 @@ QStringList Data::hex2phys(QStringList list, QString axis)
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+            compuVTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
             foreach (double dec, decList)
             {
-                phys.append(compuTabAxisX->getValue(dec));
+                phys.append(compuVTabAxisX->getValue(dec));
             }
             return phys;
 
+        }
+        else if (convType.toLower() == "tab_intp")
+        {
+            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+            QString compuTabRef = item->getPar("ConversionTable");
+            compuTabAxisX = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPUTAB/" + compuTabRef);
+
+            QList<float> list = compuTabAxisX->getKeys();
+            foreach (double dec, decList)
+            {
+                //get the position of the decimal into the keys
+                QList<float>::iterator pos = std::lower_bound(list.begin(), list.end(), dec);
+
+                //if dec is not included into the keys
+                if (pos == list.end())
+                    phys.append(compuTabAxisX->getValueList().last());
+                else if (pos == list.begin())
+                    phys.append(compuTabAxisX->getValueList().first());
+                else
+                {
+                    //interpolate (checking that denominator is difefrent to 0)
+                    float x1,x2,y1,y2 = 0;
+                    x1 = *(pos - 1);
+                    x2 = *pos;
+                    y1 = compuTabAxisX->getValue(x1).toFloat();
+                    y2 = compuTabAxisX->getValue(x2).toFloat();
+                    float denom = (x2 - x1);
+                    if (denom)
+                        phys.append(QString::number(y1 + (dec - x1)*(y2 - y1)/denom, 'f', precisionX));
+                    else
+                        phys.append(QString::number(0, 'f', precisionX));
+                }
+            }
         }
         else
             return list;
@@ -2856,15 +3138,48 @@ QStringList Data::hex2phys(QStringList list, QString axis)
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+            compuVTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
             foreach (double dec, decList)
             {
-                phys.append(compuTabAxisY->getValue(dec));
+                phys.append(compuVTabAxisY->getValue(dec));
             }
 
             return phys;
 
+        }
+        else if (convType.toLower() == "tab_intp")
+        {
+            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+            QString compuTabRef = item->getPar("ConversionTable");
+            compuTabAxisY = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPUTAB/" + compuTabRef);
+
+            QList<float> list = compuTabAxisY->getKeys();
+            foreach (double dec, decList)
+            {
+                //get the position of the decimal into the keys
+                QList<float>::iterator pos = std::lower_bound(list.begin(), list.end(), dec);
+
+                //if dec is not included into the keys
+                if (pos == list.end())
+                    phys.append(compuTabAxisY->getValueList().last());
+                else if (pos == list.begin())
+                    phys.append(compuTabAxisY->getValueList().first());
+                else
+                {
+                    //interpolate (checking that denominator is difefrent to 0)
+                    float x1,x2,y1,y2 = 0;
+                    x1 = *(pos - 1);
+                    x2 = *pos;
+                    y1 = compuTabAxisY->getValue(x1).toFloat();
+                    y2 = compuTabAxisY->getValue(x2).toFloat();
+                    float denom = (x2 - x1);
+                    if (denom)
+                        phys.append(QString::number(y1 + (dec - x1)*(y2 - y1)/denom, 'f', precisionY));
+                    else
+                        phys.append(QString::number(0, 'f', precisionY));
+                }
+            }
         }
         else
             return list;
@@ -2928,14 +3243,50 @@ QStringList Data::hex2phys(QStringList list, QString axis)
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmpZ->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisZ = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+            compuVTabAxisZ = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
             foreach (double dec, decList)
             {
-                phys.append(compuTabAxisZ->getValue(dec));
+                phys.append(compuVTabAxisZ->getValue(dec));
             }
 
             return phys;
+        }
+        else if (convType.toLower() == "tab_intp")
+        {
+            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmpZ->getItem("COMPU_TAB_REF");
+            QString compuTabRef = item->getPar("ConversionTable");
+            compuTabAxisZ = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPUTAB/" + compuTabRef);
+
+            QList<float> list = compuTabAxisZ->getKeys();
+
+            foreach (double dec, decList)
+            {
+                //get the position of the decimal into the keys
+                QList<float>::iterator pos = std::lower_bound(list.begin(), list.end(), dec);
+
+                //if dec is not included into the keys
+                if (pos == list.end())
+                    phys.append(compuTabAxisZ->getValueList().last());
+                else if (pos == list.begin())
+                    phys.append(compuTabAxisZ->getValueList().first());
+                else
+                {
+                    //interpolate (checking that denominator is difefrent to 0)
+                    float x1,x2,y1,y2 = 0;
+                    x1 = *(pos - 1);
+                    x2 = *pos;
+                    y1 = compuTabAxisZ->getValue(x1).toFloat();
+                    y2 = compuTabAxisZ->getValue(x2).toFloat();
+                    float denom = (x2 - x1);
+                    if (denom)
+                        phys.append(QString::number(y1 + (dec - x1)*(y2 - y1)/denom, 'f', precisionZ));
+                    else
+                        phys.append(QString::number(0, 'f', precisionZ));
+                }
+
+                return phys;
+            }
         }
         else
             return list;
@@ -3126,15 +3477,47 @@ QStringList Data::dec2Phys(QList<double> decValues, QString axis)
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+            compuVTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
             for (int i = 0; i < decValues.count(); i++)
             {
                 dec = decValues.at(i);
-                list.append(compuTabAxisX->getValue(dec));
+                list.append(compuVTabAxisX->getValue(dec));
             }
         }
+        else if (convType.toLower() == "tab_intp")
+        {
+            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+            QString compuTabRef = item->getPar("ConversionTable");
+            compuTabAxisX = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPUTAB/" + compuTabRef);
 
+            QList<float> listKeys = compuTabAxisX->getKeys();
+            foreach (double dec, decValues)
+            {
+                //get the position of the decimal into the keys
+                QList<float>::iterator pos = std::lower_bound(listKeys.begin(), listKeys.end(), dec);
+
+                //if dec is not included into the keys
+                if (pos == listKeys.end())
+                    list.append(compuTabAxisX->getValueList().last());
+                else if (pos == listKeys.begin())
+                    list.append(compuTabAxisX->getValueList().first());
+                else
+                {
+                    //interpolate (checking that denominator is difefrent to 0)
+                    float x1,x2,y1,y2 = 0;
+                    x1 = *(pos - 1);
+                    x2 = *pos;
+                    y1 = compuTabAxisX->getValue(x1).toFloat();
+                    y2 = compuTabAxisX->getValue(x2).toFloat();
+                    float denom = (x2 - x1);
+                    if (denom)
+                        list.append(QString::number(y1 + (dec - x1)*(y2 - y1)/denom, 'f', precisionX));
+                    else
+                        list.append(QString::number(0, 'f', precisionX));
+                }
+            }
+        }
     }
     else if (axis == "y" && axisDescrY)
     {
@@ -3182,12 +3565,45 @@ QStringList Data::dec2Phys(QList<double> decValues, QString axis)
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+            compuVTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
             for (int i = 0; i < decValues.count(); i++)
             {
                 dec = decValues.at(i);
-                list.append(compuTabAxisY->getValue(dec));
+                list.append(compuVTabAxisY->getValue(dec));
+            }
+        }
+        else if (convType.toLower() == "tab_intp")
+        {
+            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+            QString compuTabRef = item->getPar("ConversionTable");
+            compuTabAxisY = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPUTAB/" + compuTabRef);
+
+            QList<float> listKeys = compuTabAxisY->getKeys();
+            foreach (double dec, decValues)
+            {
+                //get the position of the decimal into the keys
+                QList<float>::iterator pos = std::lower_bound(listKeys.begin(), listKeys.end(), dec);
+
+                //if dec is not included into the keys
+                if (pos == listKeys.end())
+                    list.append(compuTabAxisY->getValueList().last());
+                else if (pos == listKeys.begin())
+                    list.append(compuTabAxisY->getValueList().first());
+                else
+                {
+                    //interpolate (checking that denominator is difefrent to 0)
+                    float x1,x2,y1,y2 = 0;
+                    x1 = *(pos - 1);
+                    x2 = *pos;
+                    y1 = compuTabAxisY->getValue(x1).toFloat();
+                    y2 = compuTabAxisY->getValue(x2).toFloat();
+                    float denom = (x2 - x1);
+                    if (denom)
+                        list.append(QString::number(y1 + (dec - x1)*(y2 - y1)/denom, 'f', precisionY));
+                    else
+                        list.append(QString::number(0, 'f', precisionY));
+                }
             }
         }
     }
@@ -3236,16 +3652,53 @@ QStringList Data::dec2Phys(QList<double> decValues, QString axis)
                 COMPU_TAB_REF *item = (COMPU_TAB_REF*)compu_methodZ->getItem("COMPU_TAB_REF");
                 QString compuTabRef = item->getPar("ConversionTable");
                 if (hexParent)
-                    compuTabAxisZ = (COMPU_VTAB*)hexParent->compu_vtab->getNode(compuTabRef);
+                    compuVTabAxisZ = (COMPU_VTAB*)hexParent->compu_vtab->getNode(compuTabRef);
                 else if (srecParent)
-                    compuTabAxisZ = (COMPU_VTAB*)srecParent->compu_vtab->getNode(compuTabRef);
+                    compuVTabAxisZ = (COMPU_VTAB*)srecParent->compu_vtab->getNode(compuTabRef);
 
                 for (int i = 0; i < decValues.count(); i++)
                 {
                     double dec = decValues.at(i);
-                    list.append(compuTabAxisZ->getValue((int)dec));
+                    list.append(compuVTabAxisZ->getValue((int)dec));
                 }
 
+            }
+            else if (convType.toLower() == "tab_intp")
+            {
+                COMPU_TAB_REF *item = (COMPU_TAB_REF*)compu_methodZ->getItem("COMPU_TAB_REF");
+                QString compuTabRef = item->getPar("ConversionTable");
+                if (hexParent)
+                {
+                    compuTabAxisZ = (COMPU_TAB*)hexParent->compu_tab->getNode(compuTabRef);
+                }
+                else if (srecParent)
+                    compuTabAxisZ = (COMPU_TAB*)srecParent->compu_tab->getNode(compuTabRef);
+
+                QList<float> listKeys = compuTabAxisZ->getKeys();
+                for (int i = 0; i < decValues.count(); i++)
+                {
+
+                    //get the position of the decimal into the keys
+                    QList<float>::iterator pos = std::lower_bound(listKeys.begin(), listKeys.end(), decValues.at(i));
+
+                    //if dec is not included into the keys
+                    if (pos == listKeys.end())
+                        list.append( compuTabAxisZ->getValueList().last());
+                    else if (pos == listKeys.begin())
+                        list.append(compuTabAxisZ->getValueList().first());
+                    else
+                    {
+                        //interpolate (checking that denominator is difefrent to 0)
+                        float x1,x2,y1,y2 = 0;
+                        x1 = *(pos - 1);
+                        x2 = *pos;
+                        y1 = compuTabAxisZ->getValue(x1).toFloat();
+                        y2 = compuTabAxisZ->getValue(x2).toFloat();
+                        float denom = (x2 - x1);
+                        if (denom)
+                            list.append(QString::number(y1 + (decValues.at(i) - x1)*(y2 - y1)/denom , 'f', precisionZ));
+                    }
+                }
             }
         }
         else
@@ -3300,12 +3753,12 @@ void Data::phys2hex()
             {
                 COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
                 QString compuTabRef = item->getPar("ConversionTable");
-                compuTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+                compuVTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
                 for (int i = 0; i < listX.count(); i++)
                 {
                     QString str  = listX.at(i);
-                    double dec = compuTabAxisX->getPos(str);
+                    double dec = compuVTabAxisX->getPos(str);
                     decX.append(dec);
                 }
             }
@@ -3375,12 +3828,12 @@ void Data::phys2hex()
             {
                 COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
                 QString compuTabRef = item->getPar("ConversionTable");
-                compuTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+                compuVTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
                 for (int i = 0; i < listY.count(); i++)
                 {
                     QString str  = listY.at(i);
-                    double dec = compuTabAxisY->getPos(str);
+                    double dec = compuVTabAxisY->getPos(str);
                     decY.append(dec);
                 }
             }
@@ -3455,12 +3908,12 @@ void Data::phys2hex()
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmpZ->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisZ = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+            compuVTabAxisZ = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
             for (int i = 0; i < listZ.count(); i++)
             {
                 QString str  = listZ.at(i);
-                double dec = compuTabAxisZ->getPos(str);
+                double dec = compuVTabAxisZ->getPos(str);
                 decZ.append(dec);
             }
         }
@@ -3478,7 +3931,39 @@ void Data::phys2hex()
         }
         else if (convType.toLower() == "tab_intp")
         {
+            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmpZ->getItem("COMPU_TAB_REF");
+            QString compuTabRef = item->getPar("ConversionTable");
+            compuTabAxisZ = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPU_TAB/" + compuTabRef);
 
+            QStringList list = compuTabAxisZ->getValueList();
+            for (int i = 0; i < listZ.count(); i++)
+            {
+                //str to convert from QString to hex
+                QString str  = listZ.at(i);
+
+                //get the position of the decimal into the keys
+                QStringList::iterator pos = std::lower_bound(list.begin(), list.end(), str, myCompare);
+
+                //if dec is not included into the keys
+                if (pos == list.end())
+                    decZ.append(compuTabAxisZ->getKeys().last());
+                else if (pos == list.begin())
+                    decZ.append(compuTabAxisZ->getKeys().first());
+                else
+                {
+                    //interpolate (checking that denominator is difefrent to 0)
+                    float x1,x2,y1,y2 = 0;
+                    x1 = (*(pos - 1)).toFloat();
+                    x2 = (*pos).toFloat();
+                    y1 = compuTabAxisZ->getValue(x1).toFloat();
+                    y2 = compuTabAxisZ->getValue(x2).toFloat();
+                    float denom = (y2 - y1);
+                    if (denom)
+                        decZ.append(x1 + (str.toFloat() - y1)*(x2 - x1)/denom);
+                    else
+                        decZ.append(0);
+                }
+            }
         }
         else if (convType.toLower() == "tab_nointp")
         {
@@ -3525,9 +4010,9 @@ QString Data::phys2hex(QString phys, QString axis)
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+            compuVTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
-            dec = compuTabAxisX->getPos(phys);
+            dec = compuVTabAxisX->getPos(phys);
 
         }
         else if (convType.toLower() == "identical")
@@ -3584,9 +4069,9 @@ QString Data::phys2hex(QString phys, QString axis)
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+            compuVTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
-            dec = compuTabAxisY->getPos(phys);
+            dec = compuVTabAxisY->getPos(phys);
 
         }
         else if (convType.toLower() == "identical")
@@ -3651,9 +4136,9 @@ QString Data::phys2hex(QString phys, QString axis)
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmpZ->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisZ = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+            compuVTabAxisZ = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
-            dec = compuTabAxisZ->getPos(phys);
+            dec = compuVTabAxisZ->getPos(phys);
         }
         else if (convType.toLower() == "identical")
         {
@@ -3669,7 +4154,35 @@ QString Data::phys2hex(QString phys, QString axis)
         }
         else if (convType.toLower() == "tab_intp")
         {
+            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmpZ->getItem("COMPU_TAB_REF");
+            QString compuTabRef = item->getPar("ConversionTable");
+            compuTabAxisZ = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPU_TAB/" + compuTabRef);
 
+            QStringList list = compuTabAxisZ->getValueList();
+
+
+            //get the position of the decimal into the keys
+            QStringList::iterator pos = std::lower_bound(list.begin(), list.end(), phys, myCompare);
+
+            //if dec is not included into the keys
+            if (pos == list.end())
+                dec = compuTabAxisZ->getKeys().last();
+            else if (pos == list.begin())
+                dec = compuTabAxisZ->getKeys().first();
+            else
+            {
+                //interpolate (checking that denominator is difefrent to 0)
+                float x1,x2,y1,y2 = 0;
+                x1 = (*(pos - 1)).toFloat();
+                x2 = (*pos).toFloat();
+                y1 = compuTabAxisZ->getValue(x1).toFloat();
+                y2 = compuTabAxisZ->getValue(x2).toFloat();
+                float denom = (y2 - y1);
+                if (denom)
+                    dec = x1 + (phys.toFloat() - y1)*(x2 - x1)/denom;
+                else
+                    dec = 0;
+            }
         }
         else if (convType.toLower() == "tab_nointp")
         {
@@ -3718,11 +4231,11 @@ QStringList Data::phys2hex(QStringList list, QString axis)
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+            compuVTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
             foreach (QString phys, list)
             {
-                listDec.append(compuTabAxisX->getPos(phys));
+                listDec.append(compuVTabAxisX->getPos(phys));
             }
 
         }
@@ -3783,11 +4296,11 @@ QStringList Data::phys2hex(QStringList list, QString axis)
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+            compuVTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
             foreach (QString phys, list)
             {
-                listDec.append(compuTabAxisY->getPos(phys));
+                listDec.append(compuVTabAxisY->getPos(phys));
             }
 
         }
@@ -3856,11 +4369,11 @@ QStringList Data::phys2hex(QStringList list, QString axis)
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmpZ->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisZ = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+            compuVTabAxisZ = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
             foreach (QString phys, list)
             {
-                listDec.append(compuTabAxisZ->getPos(phys));
+                listDec.append(compuVTabAxisZ->getPos(phys));
             }
         }
         else if (convType.toLower() == "identical")
@@ -3877,7 +4390,37 @@ QStringList Data::phys2hex(QStringList list, QString axis)
         }
         else if (convType.toLower() == "tab_intp")
         {
+            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmpZ->getItem("COMPU_TAB_REF");
+            QString compuTabRef = item->getPar("ConversionTable");
+            compuTabAxisZ = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPU_TAB/" + compuTabRef);
 
+            QStringList listKeys = compuTabAxisZ->getValueList();
+            foreach (QString phys, list)
+            {
+
+                //get the position of the decimal into the keys
+                QStringList::iterator pos = std::lower_bound(listKeys.begin(), listKeys.end(), phys, myCompare);
+
+                //if dec is not included into the keys
+                if (pos == listKeys.end())
+                    listDec.append(compuTabAxisZ->getKeys().last());
+                else if (pos == listKeys.begin())
+                    listDec.append(compuTabAxisZ->getKeys().first());
+                else
+                {
+                    //interpolate (checking that denominator is difefrent to 0)
+                    float x1,x2,y1,y2 = 0;
+                    x1 = (*(pos - 1)).toFloat();
+                    x2 = (*pos).toFloat();
+                    y1 = compuTabAxisZ->getValue(x1).toFloat();
+                    y2 = compuTabAxisZ->getValue(x2).toFloat();
+                    float denom = (y2 - y1);
+                    if (denom)
+                        listDec.append(x1 + (phys.toFloat() - y1)*(x2 - x1)/denom);
+                    else
+                        listDec.append(0);
+                }
+            }
         }
         else if (convType.toLower() == "tab_nointp")
         {
@@ -4892,17 +5435,17 @@ AXIS_DESCR *Data::getAxisDescrY()
 
 COMPU_VTAB *Data::getCompuTabAxisX()
 {
-    return compuTabAxisX;
+    return compuVTabAxisX;
 }
 
 COMPU_VTAB *Data::getCompuTabAxisY()
 {
-    return compuTabAxisY;
+    return compuVTabAxisY;
 }
 
 COMPU_VTAB *Data::getCompuTabAxisZ()
 {
-    return compuTabAxisZ;
+    return compuVTabAxisZ;
 }
 
 // --- set VALUES --- //
@@ -4936,9 +5479,9 @@ void Data::setX(int i, QString str)
         }
         else if (typeAxisX == "STD_AXIS")
         {
-            if (compuTabAxisX)
+            if (compuVTabAxisX)
             {
-                if (compuTabAxisX->getValueList().contains(str))
+                if (compuVTabAxisX->getValueList().contains(str))
                 {
                     //PHYS -> HEX -> PHYS
                     QString hex = phys2hex(str, "x");
@@ -5085,7 +5628,7 @@ void Data::setX(QStringList list)
         }
         else if (typeAxisX == "STD_AXIS")
         {
-            if (compuTabAxisX)
+            if (compuVTabAxisX)
             {
                 //PHYS -> HEX -> PHYS
                 QStringList hexList = phys2hex(list, "x");
@@ -5291,9 +5834,9 @@ void Data::setY(int i, QString str)
         }
         else if (typeAxisY == "STD_AXIS")
         {
-            if (compuTabAxisY)
+            if (compuVTabAxisY)
             {
-                if (compuTabAxisY->getValueList().contains(str))
+                if (compuVTabAxisY->getValueList().contains(str))
                 {
                     //PHYS -> HEX -> PHYS
                     QString hex = phys2hex(str, "y");
@@ -5437,7 +5980,7 @@ void Data::setY(QStringList list)
         }
         else if (typeAxisY == "STD_AXIS")
         {
-            if (compuTabAxisY)
+            if (compuVTabAxisY)
             {
                 //PHYS -> HEX -> PHYS
                 QStringList hexList = phys2hex(list, "y");
@@ -5615,9 +6158,9 @@ void Data::setY(QScriptValue value)
 
 void Data::setZ(int i, QString str)
 {
-    if (compuTabAxisZ)
+    if (compuVTabAxisZ)
     {
-        if (compuTabAxisZ->getValueList().contains(str))
+        if (compuVTabAxisZ->getValueList().contains(str))
         {
             //PHYS -> HEX -> PHYS
             QString hex = phys2hex(str, "z");
@@ -5669,7 +6212,7 @@ void Data::setHexZ(int i, QString str)
 
 void Data::setZ(QStringList list)
 {
-    if (compuTabAxisZ)
+    if (compuVTabAxisZ)
     {
         //PHYS -> HEX -> PHYS
         QStringList hexList = phys2hex(list, "z");
@@ -7107,7 +7650,7 @@ void Data::writeValue2Csv(FUNCTION *subset, QTextStream &out)
         out << ";";
         foreach (QString str, listZ)
         {
-            if (!compuTabAxisZ)
+            if (!compuVTabAxisZ)
                 out << ";" << str;
             else
                 out << ";" << "\"" << str << "\"";
@@ -7126,7 +7669,7 @@ void Data::writeValue2Csv(FUNCTION *subset, QTextStream &out)
                 out << ";";
                 for (int i = 0; i < dimX; i++)
                 {
-                    if (!compuTabAxisZ)
+                    if (!compuVTabAxisZ)
                        out << ";" << listZ.at(i * dimY + j);
                     else
                        out << ";" << "\"" << listZ.at(i * dimY + j) << "\"";
@@ -7142,7 +7685,7 @@ void Data::writeValue2Csv(FUNCTION *subset, QTextStream &out)
                 out << ";";
                 for (int j = 0; j < dimX; j++)
                 {
-                    if (!compuTabAxisZ)
+                    if (!compuVTabAxisZ)
                        out << ";" << listZ.at(i * dimX + j);
                     else
                        out << ";" << "\"" << listZ.at(i * dimX + j) << "\"";
@@ -7193,7 +7736,7 @@ void Data::writeValue2Csv(FUNCTION *subset, QTextStream &out)
             out << ";";
             foreach (QString str, listX)
             {
-                if (!compuTabAxisX)
+                if (!compuVTabAxisX)
                     out << ";" << str;
                 else
                     out << ";" << "\"" << str << "\"";
@@ -7214,7 +7757,7 @@ void Data::writeValue2Csv(FUNCTION *subset, QTextStream &out)
             out << ";";
             foreach (QString str, listY)
             {
-                if (!compuTabAxisY)
+                if (!compuVTabAxisY)
                     out << ";" << str;
                 else
                     out << ";" << "\"" << str << "\"";

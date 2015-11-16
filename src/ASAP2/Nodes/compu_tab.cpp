@@ -235,21 +235,21 @@ void COMPU_TAB::parsePairs()
     int count = str.toInt(&bl, 10);
 
     TokenTyp token;
-    int key = 0;
+    float key = 0;
     for (int i = 0; i < count; i++)
     {
         token = lex->getNextToken();
         if ((token == Integer) || (token == Float))
         {
            QString str = lex->getLexem().c_str();
-           //key = str.toInt(&bl,10);
-           //listKeyPairs.append(key);
+           key = str.toFloat();
+           listKeyPairs.append(key);
            token = lex->getNextToken();
            if ((token == Integer) || (token == Float))
            {
-               //QString value = lex->getLexem().c_str();
-               //valuePairs.insert(key, value.toStdString());
-               //listValuePairs.append(value.toStdString());
+               QString value = lex->getLexem().c_str();
+               valuePairs.insert(key, value.toStdString());
+               listValuePairs.append(value.toStdString());
            }
            else
            {
@@ -265,7 +265,7 @@ void COMPU_TAB::parsePairs()
     }
 }
 
-QString COMPU_TAB::getValue(int i)
+QString COMPU_TAB::getValue(float i)
 {
     int ind = listKeyPairs.indexOf(i);
     if (ind >= 0)
@@ -288,6 +288,11 @@ char* COMPU_TAB::getPar(std::string str)
 {
     int i = namePar->indexOf(str);
     return parameters.at(i);
+}
+
+QList<float> COMPU_TAB::getKeys()
+{
+    return valuePairs.keys();
 }
 
 QStringList COMPU_TAB::getValueList()

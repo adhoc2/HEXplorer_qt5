@@ -35,18 +35,21 @@ class COMPU_TAB : public Node
 
         QMap<std::string, std::string> *getParameters();
         std::string pixmap();
-        QString getValue(int i);
-        QStringList getValueList();
         int getPos(QString str);
         char* getPar(std::string str);
+
+        //to access data Pairs data
+        QString getValue(float i);
+        QList<float> getKeys();
+        QStringList getValueList();
 
     private:
         // Fix parameters
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;
-        QMap<int, std::string> valuePairs;
-        QList<int> listKeyPairs;
+        QMap<float, std::string> valuePairs;
+        QList<float> listKeyPairs;
         QList<std::string> listValuePairs;
 
         // Opt parameters

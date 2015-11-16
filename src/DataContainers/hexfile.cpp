@@ -167,6 +167,7 @@ HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QString module,
     compu_method = a2lProject->getNode("MODULE/" + module + "/COMPU_METHOD");
     record_layout = a2lProject->getNode("MODULE/" + module + "/RECORD_LAYOUT");
     compu_vtab = a2lProject->getNode("MODULE/" + module + "/COMPU_VTAB");
+    compu_tab = a2lProject->getNode("MODULE/" + module + "/COMPU_TAB");
 
     //get the memory_block used to store datas
     MOD_PAR *modePar = (MOD_PAR*)a2lProject->getNode("MODULE/" + getModuleName() + "/MOD_PAR");
