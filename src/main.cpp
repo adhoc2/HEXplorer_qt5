@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 //    QString string = codec->toUnicode(encodedString);
     app.setOrganizationName(encodedString);
     app.setApplicationName("HEXplorer");
-    app.setApplicationVersion("0.7.4");
+    app.setApplicationVersion("0.7.5");
 
     MDImain w;
     w.show();

@@ -45,6 +45,7 @@ class A2l : public QObject
         void setFullA2lFileName(string str);
         void setFullA2lFileName(QString str);
         QStringList _outputList();
+        void init();
         void parse();
         void merge(A2LFILE *src, A2LFILE *trg);
         bool isOk();

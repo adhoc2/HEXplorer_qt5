@@ -459,7 +459,10 @@ void SrecFile:: readAllData()
     Node *nodeChar = a2l->getProject()->getNode("MODULE/" + getModuleName() + "/CHARACTERISTIC");
     Node *nodeAxis = a2l->getProject()->getNode("MODULE/" + getModuleName() + "/AXIS_PTS");
 
-    //QtConcurrent::run
+
+
+
+    //using QtConcurrent::run
     if (0)
     {
         int length = module->listChar.count();
@@ -493,11 +496,11 @@ void SrecFile:: readAllData()
         }
     }
 
-    //QtConcurrent::mapped
+    //using QtConcurrent::mapped
     if (1)
     {        
         QProgressDialog dialog;
-        dialog.setLabelText(QString("Progressing using %1 thread(s)...").arg(QThread::idealThreadCount()));
+        dialog.setLabelText(QString("Reading SREC file : progressing using %1 thread(s)...").arg(QThread::idealThreadCount()));
 
         QFutureWatcher<Data*> futureWatcher;
         QObject::connect(&futureWatcher, SIGNAL(finished()), &dialog, SLOT(reset()));

@@ -545,10 +545,21 @@ void ChooseLabel::on_leftButton_clicked()
 void ChooseLabel::on_buttonBox_accepted()
 {
     FormCompare *fc = (FormCompare*)mainWidget;
-    fc->charList.clear();
-    ui->listWidget_2->selectAll();
-    foreach(QListWidgetItem *item, ui->listWidget_2->selectedItems())
-        fc->charList.append(item->text());
+
+//    if((ui->listWidget->count() != 0) && (ui->listWidget_2->count() == 0))
+//    {
+//        fc->charList.clear();
+//        ui->listWidget->selectAll();
+//        foreach(QListWidgetItem *item, ui->listWidget->selectedItems())
+//            fc->charList.append(item->text());
+//    }
+//    else
+//    {
+        fc->charList.clear();
+        ui->listWidget_2->selectAll();
+        foreach(QListWidgetItem *item, ui->listWidget_2->selectedItems())
+            fc->charList.append(item->text());
+//    }
 }
 
 void ChooseLabel::on_import_2_clicked()

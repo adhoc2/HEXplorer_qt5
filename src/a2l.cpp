@@ -76,6 +76,14 @@ void A2l::setFullA2lFileName(QString str)
     fullA2lName = str;
 }
 
+void A2l::init()
+{
+    A2LFILE *nodeA2l = new A2LFILE(fullA2lName);
+    nodeA2l->name = new char[(QFileInfo(fullA2lName).fileName()).toLocal8Bit().count() + 1];
+    strcpy(nodeA2l->name, QFileInfo(fullA2lName).fileName().toLocal8Bit().data());
+    a2lFile = nodeA2l;
+}
+
 void A2l::parse()
 {
     //start a timer
@@ -208,7 +216,7 @@ void A2l::parseSTA2l()
     }
 
     //free memory from the char* buffer
-    delete buffer;
+    free(buffer);
 
     // show error
     if (errorList->isEmpty())
@@ -508,6 +516,10 @@ void A2l::merge(A2LFILE *src, A2LFILE *trg)
 {
     //find Module i stopped in source file
     Node *pro = src->getProject();
+
+    if (!pro)
+        return;
+
     pro->sortChildrensName();
     Node *srcModule = pro->getNode("MODULE");
     if (srcModule == NULL)

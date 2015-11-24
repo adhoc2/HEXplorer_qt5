@@ -571,7 +571,7 @@ void HexFile::readAllData()
 
     //read labels
     QProgressDialog dialog;
-    dialog.setLabelText(QString("Progressing using %1 thread(s)...").arg(QThread::idealThreadCount()));
+    dialog.setLabelText(QString("Reading HEX file : progressing using %1 thread(s)...").arg(QThread::idealThreadCount()));
 
     QFutureWatcher<Data*> futureWatcher;
     QObject::connect(&futureWatcher, SIGNAL(finished()), &dialog, SLOT(reset()));

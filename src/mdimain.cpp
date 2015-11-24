@@ -100,7 +100,6 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
     ui->Differentlabels_Dock->setVisible(false);
     showMaximized();
 
-
     // menus / toolbars / statusbar
     createActions();
     createMenus();
@@ -167,6 +166,16 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
         settings.setValue("openMP", 1);
     if (!settings.contains("lexer"))
         settings.setValue("lexer", "Quex");
+
+    // initialize working directory
+    int autoWD = settings.value("autoWD").toInt();
+    if (autoWD == 1)
+    {
+        workingDirectory = settings.value("currentWDPath").toString();
+        openWorkingDirectory(workingDirectory);
+    }
+    else
+        workingDirectory = "";
 
 }
 
@@ -421,6 +430,7 @@ void MDImain::on_listWidget_customContextMenuRequested()
 void MDImain::initToolBars()
 {
     // Project : A2l
+    ui->toolBar_a2l->addAction(ui->actionOpen_Working_Directory);
     ui->toolBar_a2l->addAction(ui->actionNewA2lProject);
     ui->toolBar_a2l->addAction(ui->actionLoad_DB);
     ui->toolBar_a2l->addAction(addHexFile);
@@ -840,7 +850,37 @@ void MDImain::showContextMenu(QPoint)
             else if (name.toLower().endsWith("a2lfile"))
             {
                 A2LFILE *a2lFile = (A2LFILE*)node;
-                if (a2lFile->isConform())
+                if (a2lFile->isParsed())
+                {
+                    if (a2lFile->isConform())
+                    {
+                        menu.addAction(ui->actionNewA2lProject);
+                        menu.addAction(ui->actionLoad_DB);
+                        menu.addAction(deleteProject);
+                        menu.addAction(editFile);
+                        menu.addSeparator();
+                        menu.addAction(addHexFile);
+                        menu.addAction(addSrecFile);
+                        menu.addAction(addCsvFile);
+                        menu.addAction(addCdfxFile);
+                        menu.addSeparator();
+                        menu.addAction(openJScript);
+                        menu.addSeparator();
+                        menu.addAction(editMeasChannels);
+                        menu.addAction(editCharacteristics);
+                        menu.addSeparator();
+                        menu.addAction(saveA2lDB);
+                        //menu.addAction(childCount);
+                    }
+                    else
+                    {
+                        menu.addAction(ui->actionNewA2lProject);
+                        menu.addAction(deleteProject);
+                        menu.addSeparator();
+                        menu.addAction(editFile);
+                    }
+                }
+                else
                 {
                     menu.addAction(ui->actionNewA2lProject);
                     menu.addAction(ui->actionLoad_DB);
@@ -858,16 +898,8 @@ void MDImain::showContextMenu(QPoint)
                     menu.addAction(editCharacteristics);
                     menu.addSeparator();
                     menu.addAction(saveA2lDB);
-                    //menu.addAction(childCount);
                 }
-                else
-                {
-                    menu.addAction(ui->actionNewA2lProject);
-                    menu.addAction(deleteProject);
-                    menu.addSeparator();
-                    menu.addAction(editFile);
-                }
-            }
+             }
             else if (name.toLower().endsWith("dbfile"))
             {
                 menu.addAction(ui->actionNewA2lProject);
@@ -1332,6 +1364,118 @@ void MDImain::openProject(QString &fullFileName)
     setCurrentFile(fullFileName);
 }
 
+void MDImain::on_actionOpen_Working_Directory_triggered()
+{
+    //path
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
+    QString path = settings.value("currentWDPath").toString();
+
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+                                                    path,
+                                                    QFileDialog::ShowDirsOnly
+                                                    | QFileDialog::DontResolveSymlinks);;
+
+    if (dir.isEmpty())
+    {
+       statusBar()->showMessage(tr("no Working Directory selected"), 2000);
+       writeOutput("action open working directory : no folder selected");
+       return;
+    }
+    else if (dir == workingDirectory)
+    {
+        statusBar()->showMessage(tr("Working Directory already open"), 2000);
+        writeOutput("action open working directory : Working Directory already open");
+        return;
+    }
+    else
+    {
+        //update currentWDPath
+        QSettings settings(qApp->organizationName(), qApp->applicationName());
+        settings.setValue("currentWDPath", dir);
+        workingDirectory = dir;
+
+        int ret = QMessageBox::question(this, "HEXplorer :: Working Directory",
+                              "Do you want HEXplorer to automatically open this direcory at application launch?",
+                              QMessageBox::Yes, QMessageBox::No);
+
+        if (ret == QMessageBox::Yes)
+        {
+               settings.setValue("autoWD", 1);
+        }
+        else if (ret == QMessageBox::No)
+        {
+                settings.setValue("autoWD", 0);
+        }
+
+        openWorkingDirectory(dir);
+
+    }
+}
+
+void MDImain::openWorkingDirectory(QString rootPath)
+{
+
+    //model
+    fmodel = new QFileSystemModel(this);
+    fmodel->setRootPath(QDir::cleanPath(rootPath));
+    QStringList filters;
+    filters << "*.a2l" << "*.hex" << "*.s19";
+    fmodel->setNameFilters(filters);
+    fmodel->setNameFilterDisables(false);
+
+    //connect a slot to populate the treeView
+    connect(fmodel, SIGNAL(directoryLoaded(QString)), this, SLOT(populateNodeTreeview(QString)));
+
+}
+
+void MDImain::populateNodeTreeview(QString str)
+{
+    //index of selected folder in model
+    QModelIndex parentIndex = fmodel->index(str);
+    int numRows = fmodel->rowCount(parentIndex);
+
+    //create a pointer to  WP
+    WorkProject *wp = nullptr;
+
+    //foreach file under selected folder do something
+    for (int row = 0; row < numRows; ++row)
+    {
+       QModelIndex index = fmodel->index(row, 0, parentIndex);
+
+       QFileInfo file = fmodel->fileInfo(index);
+       //qDebug() << file.absoluteFilePath();
+
+       if (file.isFile())
+       {
+           if (file.suffix().toLower() == "a2l")
+           {
+               // create a new Wp
+               wp = new WorkProject(file.absoluteFilePath(), this->model, this);
+               wp->init(); //do not parse the file
+               wp->attach(this);
+
+               //update the ui->treeView
+               model->addNode2RootNode(wp->a2lFile);
+               ui->treeView->setModel(model);
+               ui->treeView->setColumnHidden(1, true);
+
+               //set completer
+               completer->setModel(model);
+
+               //insert the new created project into the projectList
+               projectList->insert(file.absoluteFilePath(), wp);
+
+           }
+//           else if (file.suffix().toLower() == "hex")
+//           {
+//               HexFile* hex = new HexFile(file.absoluteFilePath(), wp);
+//               wp->addHex(hex);
+//           }
+       }
+       fmodel->fetchMore(index);
+    }
+}
+
 void MDImain::addHexFile2Project()
 {
     // check if a project is selected in treeView
@@ -1383,7 +1527,36 @@ void MDImain::addHexFile2Project()
 
                 if (wp && name.endsWith("A2LFILE"))
                 {
-                    // if no MOD_COMMON in ASAP file
+                    //if the a2lFile is not yet parsed, parse.
+                    if (!wp->a2lFile->isParsed())
+                    {
+                        //get a pointer on old a2lFile
+                        A2LFILE *a2lfile = wp->a2lFile;
+
+                        //remove old a2lFile from childnodes                        
+                        model->removeChildNode(wp->a2lFile);
+
+                        // display status bar
+                        statusBar()->show();
+                        progBar->reset();
+                        connect(wp, SIGNAL(incProgressBar(int,int)), this, SLOT(setValueProgressBar(int,int)), Qt::DirectConnection);
+
+                        // parse the a2l file
+                        wp->parse();
+                        wp->attach(this);
+
+                        // hide the statusbar
+                        statusBar()->hide();
+                        progBar->reset();
+
+                        //add to treemodel
+                        model->addNode2RootNode(wp->a2lFile);
+
+                        //finally delete previous/old a2lFile
+                        //delete a2lfile;
+                    }
+
+                    //if no MOD_COMMON in ASAP file
                     if (wp->a2lFile->getProject()->getNode("MODULE") == NULL)
                     {
                         QMessageBox::information(this, "HEXplorer", tr("no MOD_COMMON in ASAP file"));
@@ -1391,7 +1564,7 @@ void MDImain::addHexFile2Project()
                         return;
                     }
 
-                    // check if Hexfile already in project
+                    //check if Hexfile already in project
                     foreach (QString fullHexName, files)
                     {
                         //if the selected Hex file is already into the project => exit
@@ -1593,6 +1766,36 @@ void MDImain::addSrecFile2Project()
 
                 if (wp)  //to prevent any crash of the aplication
                 {
+                    //if the a2lFile is not yet parsed, parse.
+                    if (!wp->a2lFile->isParsed())
+                    {
+                        //get a pointer on old a2lFile
+                        A2LFILE *a2lfile = wp->a2lFile;
+
+                        //remove old a2lFile from childnodes
+                        model->removeChildNode(wp->a2lFile);
+
+
+                         // display status bar
+                         statusBar()->show();
+                         progBar->reset();
+                         connect(wp, SIGNAL(incProgressBar(int,int)), this, SLOT(setValueProgressBar(int,int)), Qt::DirectConnection);
+
+                         // parse the a2l file
+                         wp->parse();
+                         wp->attach(this);
+
+                         // hide the statusbar
+                         statusBar()->hide();
+                         progBar->reset();
+
+                        //add to treemodel
+                        model->addNode2RootNode(wp->a2lFile);
+
+                        //finally delete previous/old a2lFile
+                        //delete a2lfile;
+                    }
+
                     // if no MOD_COMMON in ASAP file
                     if (wp->a2lFile->getProject()->getNode("MODULE") == NULL)
                     {
@@ -2590,9 +2793,8 @@ void MDImain::removeWorkProject(QModelIndex index)
             //remove the node from treeView model
             model->removeChildNode(node);
 
-
             //update the treeView
-            model->update();
+            //model->update();
             ui->treeView->resizeColumnToContents(0);
 
             //get the project
@@ -2765,6 +2967,37 @@ void MDImain::editMeasuringChannels()
             //create a pointer on the WorkProject
             WorkProject *wp = projectList->value(fullFileName);
 
+
+            //if the a2lFile is not yet parsed, parse.
+            if (!wp->a2lFile->isParsed())
+            {
+                //get a pointer on old a2lFile
+                A2LFILE *a2lfile = wp->a2lFile;
+
+                //remove old a2lFile from childnodes
+                model->removeChildNode(wp->a2lFile);
+
+                // display status bar
+                statusBar()->show();
+                progBar->reset();
+                connect(wp, SIGNAL(incProgressBar(int,int)), this, SLOT(setValueProgressBar(int,int)), Qt::DirectConnection);
+
+                // parse the a2l file
+                wp->parse();
+                wp->attach(this);
+
+                // hide the statusbar
+                statusBar()->hide();
+                progBar->reset();
+
+                //add to treemodel
+                model->addNode2RootNode(wp->a2lFile);
+
+                //finally delete previous/old a2lFile
+                //delete a2lfile;
+            }
+
+
             // get the list of MEASUREMET
             QList<Node*> list;
             Node *module = wp->a2lFile->getProject()->getNode("MODULE");
@@ -2886,6 +3119,35 @@ void MDImain::editChar()
 
             //create a pointer on the WorkProject
             WorkProject *wp = projectList->value(fullFileName);
+
+            //if the a2lFile is not yet parsed, parse.
+            if (!wp->a2lFile->isParsed())
+            {
+                //get a pointer on old a2lFile
+                A2LFILE *a2lfile = wp->a2lFile;
+
+                //remove old a2lFile from childnodes
+                model->removeChildNode(wp->a2lFile);
+
+                // display status bar
+                statusBar()->show();
+                progBar->reset();
+                connect(wp, SIGNAL(incProgressBar(int,int)), this, SLOT(setValueProgressBar(int,int)), Qt::DirectConnection);
+
+                // parse the a2l file
+                wp->parse();
+                wp->attach(this);
+
+                // hide the statusbar
+                statusBar()->hide();
+                progBar->reset();
+
+                //add to treemodel
+                model->addNode2RootNode(wp->a2lFile);
+
+                //finally delete previous/old a2lFile
+                //delete a2lfile;
+            }
 
             // get the list of MEASUREMET
             QList<Node*> list;

@@ -26,16 +26,26 @@
 bool nodeLessThan( const Node *a, const Node *b );
 bool itemLessThan( const Item *a, const Item *b );
 
+A2LFILE::A2LFILE(QString fullFileName) : Node()
+{
+    project = NULL;
+    optParameters = new QMap<std::string, std::string>;
+    fullA2lName = fullFileName;
+    parsed = false;
+}
+
 A2LFILE::A2LFILE(Node *parentNode, A2lLexer *lexer, QStringList *errorList, QString fullFileName)
     : Node(parentNode, lexer, errorList)
 {
     //initialize
+    parsed = false;
     project = NULL;
     optParameters = new QMap<std::string, std::string>;
     fullA2lName = fullFileName;
 
     //call the parser
     parser();
+    parsed = true;
 }
 
 A2LFILE::~A2LFILE()
@@ -183,6 +193,11 @@ bool A2LFILE::isConform()
     {
         return false;
     }
+}
+
+bool A2LFILE::isParsed()
+{
+    return parsed;
 }
 
 std::string A2LFILE::pixmap()

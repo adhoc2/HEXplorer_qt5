@@ -33,6 +33,7 @@ class A2lGrammar;
 class A2LFILE : public Node
 {
     public:
+        A2LFILE(QString fullFileName);
         A2LFILE(Node *parentNode, A2lLexer *lexer,
                 QStringList *errorList, QString fullFileName = "");       
         ~A2LFILE();
@@ -41,6 +42,7 @@ class A2LFILE : public Node
         QString fullName();
         PROJECT *getProject();
         bool isConform();
+        bool isParsed();
 
     private:
         PROJECT *project; //ASAP2 file must contain exactly one PROJECT
@@ -48,6 +50,7 @@ class A2LFILE : public Node
         void parser();
         void getAsap2Version();
         void getA2mlVersion();
+        bool parsed;
 
         QMap<std::string, std::string> *optParameters;
 

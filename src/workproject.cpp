@@ -88,7 +88,8 @@ void WorkProject::addHex(HexFile *hex )
         a2lFile->sortChildrensName();
 
         // update treeView
-        treeModel->dataInserted(a2lFile, a2lFile->childNodes.indexOf(hex));
+        int pos = a2lFile->childNodes.indexOf(hex);
+        treeModel->dataInserted(a2lFile, pos );
 
         // add hex to this hexList
         hexList.insert(hex->fullName(), hex);

@@ -3489,7 +3489,7 @@ QStringList Data::dec2Phys(QList<double> decValues, QString axis)
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisX = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPUTAB/" + compuTabRef);
+            compuTabAxisX = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPU_TAB/" + compuTabRef);
 
             QList<float> listKeys = compuTabAxisX->getKeys();
             foreach (double dec, decValues)
@@ -3577,7 +3577,7 @@ QStringList Data::dec2Phys(QList<double> decValues, QString axis)
         {
             COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
             QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisY = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPUTAB/" + compuTabRef);
+            compuTabAxisY = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPU_TAB/" + compuTabRef);
 
             QList<float> listKeys = compuTabAxisY->getKeys();
             foreach (double dec, decValues)

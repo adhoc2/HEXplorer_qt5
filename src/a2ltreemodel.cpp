@@ -62,6 +62,10 @@ void A2lTreeModel::addNode2RootNode(Node *node)
 void A2lTreeModel::removeChildNode(Node *child)
 {
     rootNode->removeChildNode(child);
+
+    // update the model
+    beginResetModel();
+    endResetModel();
 }
 
 QModelIndex A2lTreeModel::index(int row, int column, const QModelIndex &parentIndex) const
@@ -293,15 +297,20 @@ Node *A2lTreeModel::getRootNode()
 
 void A2lTreeModel::dataInserted(Node *parent, int position)
 {
-    int pos = parent->getParentNode()->childNodes.indexOf(parent);
-    QModelIndex indexParent = createIndex(pos, 0, parent);
+    // Create an index of the parent node
+    QModelIndex indexParent = getIndex(parent);
+
+    // insert a row into parent node at position position
     insertRows(position, 1, indexParent);
 }
 
 void A2lTreeModel::dataRemoved(Node *parent, int position, int rows)
 {
-    int pos = parent->getParentNode()->childNodes.indexOf(parent);
-    QModelIndex indexParent = createIndex(pos, 0, parent);
+    // Create an index of the parent node
+    QModelIndex indexParent = getIndex(parent);
+
+
+    // create rows into parent node at position position
     removeRows(position, rows, indexParent);
 }
 

@@ -39,6 +39,7 @@ class A2lTreeModel;
 class CompleterModel;
 class WorkProject;
 class FormCompare;
+class QFileSystemModel;
 
 
 namespace Ui
@@ -67,6 +68,8 @@ protected:
     virtual void closeEvent(QCloseEvent *e);
 
 private:
+    QString workingDirectory;
+    QFileSystemModel *fmodel;
     bool persistDB( QSqlDatabase memdb, QString filename, bool save );
     QString getUserName();
     QString strippedName(const QString &fullFileName);
@@ -139,6 +142,7 @@ private:
     void createDbTableCompuVtab(Node *dim);
     void createDbTableRecordLayout(Node *dim);
     void createDbTableAxisDescr(Node *dim);
+    void openWorkingDirectory(QString rootPath);
 
 private slots:
      void compare_A2lFile();
@@ -212,6 +216,9 @@ private slots:
      void doubleClicked(QModelIndex);
      void on_actionLoad_DB_triggered();
      void on_connectionWidget_tableActivated(const QString &table);
+
+     void on_actionOpen_Working_Directory_triggered();
+     void populateNodeTreeview(QString str);
 
 public slots:
     void resetAllTableView();
