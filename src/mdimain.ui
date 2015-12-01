@@ -99,6 +99,7 @@
      </property>
     </widget>
     <addaction name="actionOpen_Working_Directory"/>
+    <addaction name="actionClose_Working_Directory"/>
     <addaction name="separator"/>
     <addaction name="actionNewA2lProject"/>
     <addaction name="menuRecent_Files"/>
@@ -534,6 +535,11 @@
    </property>
    <property name="text">
     <string>Open Working Directory</string>
+   </property>
+  </action>
+  <action name="actionClose_Working_Directory">
+   <property name="text">
+    <string>Close Working Directory</string>
    </property>
   </action>
  </widget>

@@ -45,6 +45,7 @@ class SrecFile : public QObject, public DataContainer
 
     public:
         SrecFile(QString fullSrecFileName, WorkProject *parentWP, QString module, QObject *parent = 0);
+        SrecFile(QString fullSrecFileName, WorkProject *parentWP, QObject *parent = 0);
         ~SrecFile();
 
         // members

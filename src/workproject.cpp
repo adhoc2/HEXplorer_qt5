@@ -96,6 +96,7 @@ void WorkProject::addHex(HexFile *hex )
 
         // add this to the hex owners (pseudo garbage collector)
         hex->attach(this);
+
     }
     else if (dbFile)
     {

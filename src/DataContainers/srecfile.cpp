@@ -180,6 +180,30 @@ SrecFile::SrecFile(QString fullSrecFileName, WorkProject *parentWP, QString modu
 
 }
 
+SrecFile::SrecFile(QString fullSrecFileName, WorkProject *parentWP, QObject *parent)
+    : QObject(parent) , DataContainer(parentWP)
+{
+    //initialize
+    fullSrecName = fullSrecFileName;
+    name = new char[(QFileInfo(fullSrecName).fileName()).toLocal8Bit().count() + 1];
+    strcpy(name, (QFileInfo(fullSrecName).fileName()).toLocal8Bit().data());
+    a2lProject = (PROJECT*)getParentWp()->a2lFile->getProject();
+    maxValueProgbar = 0;
+    valueProgBar = 0;
+    omp_init_lock(&lock);
+
+    for(int i = 0; i < 16; i++)
+    {
+        uchar ii = (i<10)?i+48:i+55;
+        for(int j = 0; j < 16; j++)
+        {
+            uchar jj = (j<10)?j+48:j+55;
+            asciiToByte[ii*256 + jj] = j*16+i;
+        }
+    }
+}
+
+
 SrecFile::~SrecFile()
 {
     omp_destroy_lock(&lock);

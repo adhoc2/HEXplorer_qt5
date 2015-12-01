@@ -224,17 +224,20 @@ void FormCompare::on_quicklook_clicked()
     QList<Data*> *list = new QList<Data*>;
     if (hex)
     {
-        foreach (QString str, charList)
+        if (hex->isRead())
         {
-            Data *data = hex->getData(str);
-            if (data)
+            foreach (QString str, charList)
             {
-                list->append(data);
-            }
-            else
-            {
-                outList.append("Action quicklook : " + str + " not an adjustable into "
-                               + QString(hex->name));
+                Data *data = hex->getData(str);
+                if (data)
+                {
+                    list->append(data);
+                }
+                else
+                {
+                    outList.append("Action quicklook : " + str + " not an adjustable into "
+                                   + QString(hex->name));
+                }
             }
         }
     }

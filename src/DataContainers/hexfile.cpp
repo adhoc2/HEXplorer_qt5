@@ -188,6 +188,8 @@ HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QString module,
         }
     }
 
+    _read = true;
+
 }
 
 //--ctor in case of dbFile---//
@@ -214,7 +216,7 @@ HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QObject *parent
         }
     }
 
-
+    _read = false;
 }
 
 HexFile::~HexFile()
@@ -240,6 +242,11 @@ bool HexFile::read()
         return false;
     }
     return false;
+}
+
+bool HexFile::isRead()
+{
+    return _read;
 }
 
 bool HexFile::read_db()

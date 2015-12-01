@@ -70,6 +70,7 @@ class HexFile : public QObject, public DataContainer
         void exportSubsetList2Csv(QStringList subsetList);
         void exportSubsetList2Cdf(QStringList subsetList);
         bool isValidAddress(QString address);
+        bool isRead();
         bool read();
         bool read_db();
         void verify();
@@ -95,6 +96,7 @@ class HexFile : public QObject, public DataContainer
         Data* runCreateDataMapped(const QString &str);
 
         // members
+        bool _read;
         omp_lock_t lock;
         int fileLinesNum;
         int maxValueProgbar;

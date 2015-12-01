@@ -35,6 +35,8 @@ public:
     void removeChildNode(Node *child);
     void update();
     void dataInserted(Node *node, int position);
+    void beginReset();
+    void endReset();
     void dataRemoved(Node *node, int position, int count = 1);
     void renameNode(QModelIndex index, QString name);
 

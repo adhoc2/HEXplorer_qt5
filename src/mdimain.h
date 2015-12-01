@@ -218,7 +218,9 @@ private slots:
      void on_connectionWidget_tableActivated(const QString &table);
 
      void on_actionOpen_Working_Directory_triggered();
-     void populateNodeTreeview(QString str);
+     void populateNodeTreeview(QString str, Node *node);
+
+     void on_actionClose_Working_Directory_triggered();
 
 public slots:
     void resetAllTableView();

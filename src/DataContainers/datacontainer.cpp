@@ -45,7 +45,7 @@ DataContainer::DataContainer(WorkProject *parentWP, QString module) : Node(paren
     moduleName = module;
 }
 
-DataContainer::DataContainer(WorkProject *parentWP) : Node(parentWP->dbFile)
+DataContainer::DataContainer(WorkProject *parentWP) : Node(parentWP->a2lFile)
 {
     parentWp = parentWP;
     isSortedBySubset = false;

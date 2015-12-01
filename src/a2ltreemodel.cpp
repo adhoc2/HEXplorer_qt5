@@ -61,10 +61,8 @@ void A2lTreeModel::addNode2RootNode(Node *node)
 
 void A2lTreeModel::removeChildNode(Node *child)
 {
-    rootNode->removeChildNode(child);
-
-    // update the model
     beginResetModel();
+    rootNode->removeChildNode(child);
     endResetModel();
 }
 
@@ -293,6 +291,16 @@ QMimeData *A2lTreeModel::mimeData(const QModelIndexList &indexes) const
 Node *A2lTreeModel::getRootNode()
 {
     return rootNode;
+}
+
+void A2lTreeModel::beginReset()
+{
+    beginResetModel();
+}
+
+void A2lTreeModel::endReset()
+{
+    endResetModel();
 }
 
 void A2lTreeModel::dataInserted(Node *parent, int position)
