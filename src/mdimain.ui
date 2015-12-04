@@ -508,7 +508,7 @@
    </property>
    <property name="icon">
     <iconset resource="icones.qrc">
-     <normaloff>:/icones/milky_classeur.png</normaloff>:/icones/milky_classeur.png</iconset>
+     <normaloff>:/icones/milky_exportBaril.png</normaloff>:/icones/milky_exportBaril.png</iconset>
    </property>
    <property name="text">
     <string>Open database</string>
@@ -531,7 +531,7 @@
   <action name="actionOpen_Working_Directory">
    <property name="icon">
     <iconset resource="icones.qrc">
-     <normaloff>:/icones/milky_ecran.png</normaloff>:/icones/milky_ecran.png</iconset>
+     <normaloff>:/icones/milky_classeur.png</normaloff>:/icones/milky_classeur.png</iconset>
    </property>
    <property name="text">
     <string>Open Working Directory</string>

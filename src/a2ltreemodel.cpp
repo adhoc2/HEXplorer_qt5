@@ -59,7 +59,7 @@ void A2lTreeModel::addNode2RootNode(Node *node)
     endResetModel();
 }
 
-void A2lTreeModel::removeChildNode(Node *child)
+void A2lTreeModel::removeChildNodeFromRoot(Node *child)
 {
     beginResetModel();
     rootNode->removeChildNode(child);

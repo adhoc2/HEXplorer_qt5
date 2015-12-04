@@ -398,6 +398,7 @@ void FormCompare::checkDroppedFile(QString oldText)
 {
     Node *rootNode = treeModel->getRootNode();
     Node *node = rootNode->getNode(ui->lineEdit->text());
+    MDImain *mdiMain = (MDImain*)mainWidget;
 
     if (node == NULL)
     {
@@ -445,23 +446,39 @@ void FormCompare::checkDroppedFile(QString oldText)
         // attach this to the new dropped hex, csv or cdfx file
         if (name.toLower().endsWith("hexfile"))
         {
+            //check if hex is read
+            HexFile* hex = dynamic_cast<HexFile*>(node);
+            if (!hex->isRead())
+            {
+                hex1 = mdiMain->readHexFile(hex);
+            }
+            else
+                hex1 = hex;
+
             csv1 = NULL;
             cdfx1 = NULL;
             srec1 = NULL;
-            hex1 = (HexFile*)node;
             hex1->attach(this);
             hex1->getParentWp()->attach(this);
-            a2l1 = (A2LFILE*)node->getParentNode();
+            a2l1 = (A2LFILE*)hex1->getParentNode();
         }
         if (name.toLower().endsWith("srecfile"))
         {
+            //check if srec is read
+            SrecFile* srec = dynamic_cast<SrecFile*>(node);
+            if (!srec->isRead())
+            {
+                srec1 = mdiMain->readSrecFile(srec);
+            }
+            else
+                srec1 = srec;
+
             csv1 = NULL;
             cdfx1 = NULL;
             hex1 = NULL;
-            srec1 = (SrecFile*)node;
             srec1->attach(this);
             srec1->getParentWp()->attach(this);
-            a2l1 = (A2LFILE*)node->getParentNode();
+            a2l1 = (A2LFILE*)srec1->getParentNode();
         }
         else if(name.toLower().endsWith("csv"))
         {
@@ -493,6 +510,8 @@ void FormCompare::checkDroppedFile_2(QString str)
 {
     Node *rootNode = treeModel->getRootNode();
     Node *node = rootNode->getNode(ui->lineEdit_2->text());
+    MDImain *mdiMain = (MDImain*)mainWidget;
+
 
     if (node == NULL)
     {
@@ -537,20 +556,36 @@ void FormCompare::checkDroppedFile_2(QString str)
         // attach this to the new dropped hex file
         if (name.toLower().endsWith("hexfile"))
         {
+            //check if hex is read
+            HexFile* hex = dynamic_cast<HexFile*>(node);
+            if (!hex->isRead())
+            {
+                hex2 = mdiMain->readHexFile(hex);
+            }
+            else
+                hex2 = hex;
+
             csv2 = NULL;
             cdfx2 = NULL;
             srec2 = NULL;
-            hex2 = (HexFile*)node;
             hex2->attach(this);
             hex2->getParentWp()->attach(this);
             a2l2 = (A2LFILE*)hex2->getParentNode();
         }
         if (name.toLower().endsWith("srecfile"))
         {
+            //check if srec is read
+            SrecFile* srec = dynamic_cast<SrecFile*>(node);
+            if (!srec->isRead())
+            {
+                srec2 = mdiMain->readSrecFile(srec);
+            }
+            else
+                srec2 = srec;
+
             csv2 = NULL;
             cdfx2 = NULL;
             hex2 = NULL;
-            srec2 = (SrecFile*)node;
             srec2->attach(this);
             srec2->getParentWp()->attach(this);
             a2l2 = (A2LFILE*)srec2->getParentNode();

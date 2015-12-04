@@ -178,6 +178,7 @@ SrecFile::SrecFile(QString fullSrecFileName, WorkProject *parentWP, QString modu
         }
     }
 
+    this->_read = true;
 }
 
 SrecFile::SrecFile(QString fullSrecFileName, WorkProject *parentWP, QObject *parent)
@@ -201,6 +202,8 @@ SrecFile::SrecFile(QString fullSrecFileName, WorkProject *parentWP, QObject *par
             asciiToByte[ii*256 + jj] = j*16+i;
         }
     }
+
+    this->_read = false;
 }
 
 
@@ -226,6 +229,11 @@ bool SrecFile::read()
         }
     }
     return false;
+}
+
+bool SrecFile::isRead()
+{
+    return this->_read;
 }
 
 bool SrecFile::parseFile()

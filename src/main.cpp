@@ -26,6 +26,8 @@
 #endif
 #include "mdimain.h"
 #include <QTextCodec>
+#include "qdebug.h"
+
 
 int main(int argc, char *argv[])
 {

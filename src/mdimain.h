@@ -29,7 +29,9 @@ class Node;
 class QsciLexerXML;
 class QsciLexer;
 class A2l;
-class Hex;
+class A2LFILE;
+class HexFile;
+class SrecFile;
 class QFile;
 class QTextStream;
 class QTextEdit;
@@ -62,6 +64,9 @@ public:
      void updateRecentFileActions();
      void expandNode(Node *node);
      void reAppendProject(WorkProject *wp);
+     HexFile *readHexFile(HexFile* hex);
+     SrecFile *readSrecFile(SrecFile* srec);
+     void readA2l(WorkProject *wp);
 
 protected:
     virtual void changeEvent(QEvent *e);
@@ -143,6 +148,7 @@ private:
     void createDbTableRecordLayout(Node *dim);
     void createDbTableAxisDescr(Node *dim);
     void openWorkingDirectory(QString rootPath);
+
 
 private slots:
      void compare_A2lFile();

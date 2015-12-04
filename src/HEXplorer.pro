@@ -280,7 +280,8 @@ HEADERS += a2l.h \
     plotmathgl.h \
     sqlite/sqlite3.h \
     connectionwidget.h \
-    ASAP2/Nodes/dbfile.h
+    ASAP2/Nodes/dbfile.h \
+    workingdirectory.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -454,7 +455,8 @@ SOURCES += a2l.cpp \
     plotmathgl.cpp \
     sqlite/sqlite3.c \
     connectionwidget.cpp \
-    ASAP2/Nodes/dbfile.cpp
+    ASAP2/Nodes/dbfile.cpp \
+    workingdirectory.cpp
 
 OTHER_FILES += \
     GNU_license.txt \

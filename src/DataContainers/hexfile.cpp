@@ -2137,6 +2137,11 @@ void HexFile::detach(QObject *o)
     }
 }
 
+QList<QObject*> HexFile::getOwners()
+{
+    return owners;
+}
+
 std::string HexFile::pixmap()
 {
     return ":/icones/ram.png";

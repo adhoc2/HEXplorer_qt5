@@ -84,6 +84,7 @@ class HexFile : public QObject, public DataContainer
         QList<int> checkFmtcMonotony(bool *bl);
         std::string pixmap();
         PROJECT *getA2lFileProject();
+        QList<QObject*> getOwners();
 
     public slots:
         void detach(QObject*o);

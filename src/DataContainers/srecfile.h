@@ -62,6 +62,7 @@ class SrecFile : public QObject, public DataContainer
         void exportSubsetList2Cdf(QStringList subsetList);
         bool isValidAddress(QString address);
         bool read();
+        bool isRead();
         void verify();
         void checkDisplay();
         void setFullName(QString fullName);
@@ -87,6 +88,7 @@ class SrecFile : public QObject, public DataContainer
         Data* runCreateDataMapped(const QString &str);
 
         //members
+        bool _read;
         omp_lock_t lock;
         QReadWriteLock rwLock;
         int fileLinesNum;

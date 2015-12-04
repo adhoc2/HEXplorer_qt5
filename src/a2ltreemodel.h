@@ -32,7 +32,7 @@ public:
 
     void createRootNode();
     void addNode2RootNode(Node *node);
-    void removeChildNode(Node *child);
+    void removeChildNodeFromRoot(Node *child);
     void update();
     void dataInserted(Node *node, int position);
     void beginReset();
