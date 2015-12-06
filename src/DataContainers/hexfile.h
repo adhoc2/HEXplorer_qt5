@@ -71,6 +71,7 @@ class HexFile : public QObject, public DataContainer
         void exportSubsetList2Cdf(QStringList subsetList);
         bool isValidAddress(QString address);
         bool isRead();
+        void setRead(bool on);
         bool read();
         bool read_db();
         void verify();

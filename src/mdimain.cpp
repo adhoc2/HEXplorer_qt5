@@ -434,7 +434,7 @@ void MDImain::initToolBars()
     // Project : A2l
     ui->toolBar_a2l->addAction(ui->actionOpen_Working_Directory);
     ui->toolBar_a2l->addAction(ui->actionNewA2lProject);
-    ui->toolBar_a2l->addAction(ui->actionLoad_DB);
+    //ui->toolBar_a2l->addAction(ui->actionLoad_DB);
     ui->toolBar_a2l->addAction(addHexFile);
     ui->toolBar_a2l->addAction(addSrecFile);
     ui->toolBar_a2l->addAction(addCsvFile);
@@ -653,6 +653,33 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         saveA2lDB->setEnabled(false);
 
         ui->toolBar_data->show();
+    }
+    else if (name.toLower().endsWith("workingdirectory"))
+    {
+        importSubsets->setEnabled(false);
+        exportSubsets->setEnabled(false);
+        addCdfxFile->setEnabled(false);
+        addCsvFile->setEnabled(false);
+        editChanged->setEnabled(false);
+        addHexFile->setEnabled(false);
+        addSrecFile->setEnabled(false);
+        deleteProject->setEnabled(false);
+        deleteFile->setEnabled(false);
+        editFile->setEnabled(false);
+        childCount->setEnabled(false);
+        showParam->setEnabled(false);
+        resetAllChangedData->setEnabled(false);
+        sortBySubset->setEnabled(false);
+        saveFile->setEnabled(false);
+        saveAsFile->setEnabled(false);
+        quicklook->setEnabled(false);
+        readValuesFromCsv->setEnabled(false);
+        readValuesFromCdfx->setEnabled(false);
+        editMeasChannels->setEnabled(false);
+        editCharacteristics->setEnabled(false);
+        openJScript->setEnabled(false);
+        saveA2lDB->setEnabled(false);
+
     }
     else
     {
@@ -947,6 +974,10 @@ void MDImain::showContextMenu(QPoint)
                     editChanged->setDisabled(true);
                 else
                     editChanged->setDisabled(false);
+            }
+            else if (name.toLower().endsWith("workingdirectory"))
+            {
+
             }
             else
             {
@@ -1560,26 +1591,7 @@ void MDImain::addHexFile2Project()
                     //if the a2lFile is not yet parsed, parse.
                     if (!wp->a2lFile->isParsed())
                     {
-                        //remove old a2lFile from childnodes                        
-                        model->removeChildNodeFromRoot(wp->a2lFile);
-
-                        // display status bar
-                        statusBar()->show();
-                        progBar->reset();
-                        connect(wp, SIGNAL(incProgressBar(int,int)), this, SLOT(setValueProgressBar(int,int)), Qt::DirectConnection);
-
-                        // parse the a2l file
-                        wp->parse();
-                        wp->attach(this);
-
-                        // hide the statusbar
-                        statusBar()->hide();
-                        progBar->reset();
-
-                        //add to treemodel
-                        model->addNode2RootNode(wp->a2lFile);
-
-
+                        readA2l(wp);
                     }
 
                     //if no MOD_COMMON in ASAP file
@@ -2521,9 +2533,19 @@ void MDImain::reAppendProject(WorkProject *wp)
     //insert the new created project into the projectList
     projectList->insert(wp->getFullA2lFileName().c_str(), wp);
 
-    //update the ui->treeView
-    model->addNode2RootNode(wp->a2lFile);
-    ui->treeView->setModel(model);
+    //update model
+    Node* parentNode = wp->a2lFile->getParentNode();
+    model->beginReset();
+    parentNode->addChildNode(wp->a2lFile);
+    parentNode->sortChildrensName();
+    wp->a2lFile->setParentNode(parentNode);
+    model->endReset();
+
+    //update treeView
+    QModelIndex parentIndex = model->getIndex(parentNode);
+    ui->treeView->expand(parentIndex);
+    QModelIndex index = model->getIndex(wp->a2lFile);
+    ui->treeView->expand(index);
     ui->treeView->setColumnHidden(1, true);
 }
 
@@ -3620,7 +3642,7 @@ void MDImain::readA2l(WorkProject* wp)
 
     // parse the a2l file
     wp->parse();
-    wp->attach(this);
+    //wp->attach(this); alredy attached
 
     // hide the statusbar
     statusBar()->hide();
@@ -4820,10 +4842,6 @@ void MDImain::saveAs_HexFile(QModelIndex index)
     {
         fileName.append(".hex");
     }
-
-    //check if the file is already open in HEXplorer
-    qDebug() << hex->getParentWp()->hexFiles();
-    qDebug() << fileName;
 
     if (hex->getParentWp()->containsHex(fileName))
     {

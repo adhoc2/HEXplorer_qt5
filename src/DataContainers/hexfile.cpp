@@ -249,6 +249,15 @@ bool HexFile::isRead()
     return _read;
 }
 
+void HexFile::setRead(bool on)
+{
+    if (on)
+        _read = true;
+    else
+        _read = false;
+
+}
+
 bool HexFile::read_db()
 {
     // parse the file
@@ -2144,7 +2153,10 @@ QList<QObject*> HexFile::getOwners()
 
 std::string HexFile::pixmap()
 {
-    return ":/icones/ram.png";
+    if (isRead())
+        return ":/icones/ram.png";
+    else
+        return ":/icones/content-download.png";
 }
 
 QString HexFile::fullName()

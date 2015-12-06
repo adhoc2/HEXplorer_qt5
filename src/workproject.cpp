@@ -43,6 +43,7 @@ void WorkProject::attach(QObject *o)
 
     //register
     owners.append(o);
+
     connect(o,SIGNAL(destroyed(QObject*)),this,SLOT(detach(QObject*)));
 
 }
@@ -55,6 +56,7 @@ void WorkProject::detach(QObject *o)
     //remove self after last one
     if(owners.size()==0)
     {
+        qDebug() << "WP : " << this->a2lFile->name << " deleted";
         delete this;
     }
 }

@@ -2111,7 +2111,10 @@ void SrecFile::detach(QObject *o)
 
 std::string SrecFile::pixmap()
 {
-    return ":/icones/ram.png";
+    if (isRead())
+        return ":/icones/ram.png";
+    else
+        return ":/icones/content-download.png";
 }
 
 QString SrecFile::fullName()
