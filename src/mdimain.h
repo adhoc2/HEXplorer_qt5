@@ -67,6 +67,7 @@ public:
      HexFile *readHexFile(HexFile* hex);
      SrecFile *readSrecFile(SrecFile* srec);
      void readA2l(WorkProject *wp);
+     void insertWp(WorkProject *wp);
 
 protected:
     virtual void changeEvent(QEvent *e);
@@ -222,9 +223,8 @@ private slots:
      void doubleClicked(QModelIndex);
      void on_actionLoad_DB_triggered();
      void on_connectionWidget_tableActivated(const QString &table);
-
      void on_actionOpen_Working_Directory_triggered();
-     void populateNodeTreeview(QString str, Node *node);
+
 
      void on_actionClose_Working_Directory_triggered();
 

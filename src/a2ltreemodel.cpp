@@ -43,6 +43,9 @@ void A2lTreeModel::createRootNode()
 
 void A2lTreeModel::addNode2RootNode(Node *node)
 {
+    // update the model
+    beginResetModel();
+
     // create a new rootNode if NULL
     if (rootNode == 0)
         rootNode = new Node();
@@ -54,8 +57,6 @@ void A2lTreeModel::addNode2RootNode(Node *node)
     // sort the childNodes
     rootNode->sortChildrensName();
 
-    // update the model
-    beginResetModel();
     endResetModel();
 }
 

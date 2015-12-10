@@ -678,7 +678,7 @@ Data* HexFile::runCreateDataMapped(const QString &str)
             CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
             QString add = charac->getPar("Adress");
             bool bl = isValidAddress(add);
-            if(bl)
+            if(1)
             {
                 //rwLock.lockForRead();
                 Data *data = new Data(charac, a2lProject, this);
@@ -705,7 +705,7 @@ Data* HexFile::runCreateDataMapped(const QString &str)
             QString add = axis->getPar("Adress");
 
             bool bl = isValidAddress(add);
-            if (bl)
+            if (1)
             {
                 //rwLock.lockForRead();
                 Data *data = new Data(axis, a2lProject, this);

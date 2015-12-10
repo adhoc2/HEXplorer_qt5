@@ -173,11 +173,23 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
     if (autoWD == 1)
     {
         workingDirectory = settings.value("currentWDPath").toString();
-        openWorkingDirectory(workingDirectory);
-    }
-    else
+        QStringList list = workingDirectory.split(";");
         workingDirectory = "";
+        foreach (QString _str, list)
+        {
+            if (!_str.isEmpty())
+            {
+                QDir dir(_str);
+                if (dir.exists())
+                {
+                    openWorkingDirectory(_str);
+                    workingDirectory.append(_str + ";");
+                }
 
+            }
+        }
+        settings.setValue("currentWDPath", workingDirectory);
+    }
 }
 
 MDImain::~MDImain()
@@ -722,6 +734,9 @@ void MDImain::showContextMenu(QPoint)
 
     if (model->getRootNode() == 0)
     {
+
+        menu.addAction(ui->actionOpen_Working_Directory);
+        menu.addSeparator();
         menu.addAction(ui->actionNewA2lProject);
 
         for (int i = 0; i < MaxRecentFiles; ++i)
@@ -738,6 +753,8 @@ void MDImain::showContextMenu(QPoint)
         QModelIndexList list = ui->treeView->selectionModel()->selectedIndexes();
         if (list.count() < 1)
         {
+            menu.addAction(ui->actionOpen_Working_Directory);
+            menu.addSeparator();
             menu.addAction(ui->actionNewA2lProject);
 
             for (int i = 0; i < MaxRecentFiles; ++i)
@@ -1380,6 +1397,11 @@ void MDImain::openProject(QString &fullFileName)
     setCurrentFile(fullFileName);
 }
 
+void MDImain::insertWp(WorkProject *wp)
+{
+    this->projectList->insert(QString(wp->getFullA2lFileName().c_str()), wp);
+}
+
 void MDImain::on_actionOpen_Working_Directory_triggered()
 {
     //path
@@ -1406,23 +1428,23 @@ void MDImain::on_actionOpen_Working_Directory_triggered()
     else
     {
         //update currentWDPath
-        QSettings settings(qApp->organizationName(), qApp->applicationName());
-        settings.setValue("currentWDPath", dir);
-        workingDirectory = dir;
-
         int ret = QMessageBox::question(this, "HEXplorer :: Working Directory",
-                              "Do you want HEXplorer to automatically open this direcory at application launch?",
+                              "Do you want HEXplorer to automatically open this directory at application launch?",
                               QMessageBox::Yes, QMessageBox::No);
 
         if (ret == QMessageBox::Yes)
         {
                settings.setValue("autoWD", 1);
+               workingDirectory.append(dir + ";");
+               settings.setValue("currentWDPath", workingDirectory);
+
         }
         else if (ret == QMessageBox::No)
         {
-                settings.setValue("autoWD", 0);
+               // settings.setValue("autoWD", 0);
         }
 
+        //open the working directory in treeView
         openWorkingDirectory(dir);
 
     }
@@ -1430,111 +1452,23 @@ void MDImain::on_actionOpen_Working_Directory_triggered()
 
 void MDImain::openWorkingDirectory(QString rootPath)
 {
+    //create a new WorkingDirectory instance
+    WorkingDirectory* nodeWd = new WorkingDirectory(rootPath, model, this);
 
-    //model
-    fmodel = new QFileSystemModel(this);
-    fmodel->setRootPath(QDir::cleanPath(rootPath));
-    QStringList filters;
-    filters << "*.a2l" << "*.hex" << "*.s19";
-    fmodel->setNameFilters(filters);
-    fmodel->setNameFilterDisables(false);
-
-    //create a node where all files are attached
-    char* name = new char[(QFileInfo(rootPath).fileName()).toLocal8Bit().count() + 1];
-    strcpy(name, (QFileInfo(rootPath).fileName()).toLocal8Bit().data());
-    WorkingDirectory* nodeWd = new WorkingDirectory(name);
+    //update the model and treeview
     model->addNode2RootNode(nodeWd);
-    ui->treeView->setModel(model);
-    ui->treeView->setColumnHidden(1, true);
 
-    //connect a slot to populate the treeView
-    connect(fmodel, &QFileSystemModel::directoryLoaded, [=](const QString &newValue) {
-     this->populateNodeTreeview(newValue, nodeWd);
-     } );
+    //expand node in treeView
+    ui->treeView->setModel(model);
+    completer->setModel(model);
+    ui->treeView->setColumnHidden(1, true);
+    ui->treeView->setExpanded(model->getIndex(nodeWd), true);
+
 }
 
 void MDImain::on_actionClose_Working_Directory_triggered()
 {
 
-}
-
-void MDImain::populateNodeTreeview(QString str, Node *node)
-{
-    //index of selected folder in model
-    QModelIndex parentIndex = fmodel->index(str);
-    int numRows = fmodel->rowCount(parentIndex);
-
-    //create a pointer to  WP
-    WorkProject *wp = nullptr;
-
-    //foreach file under selected folder do something
-    bool hasA2l = false;
-    for (int row = 0; row < numRows; ++row)
-    {
-       QModelIndex index = fmodel->index(row, 0, parentIndex);
-
-       QFileInfo file = fmodel->fileInfo(index);
-       if (file.isFile())
-       {
-           if (file.suffix().toLower() == "a2l" && !hasA2l)
-           {
-               // create a new Wp
-               wp = new WorkProject(file.absoluteFilePath(), this->model, this);
-               wp->init(); //init but do not parse the file
-               wp->attach(this);
-
-               //update the ui->treeView
-               //model->addNode2RootNode(wp->a2lFile);
-               model->beginReset();
-               node->addChildNode(wp->a2lFile);
-               wp->a2lFile->setParentNode(node);
-               node->sortChildrensName();
-               model->endReset();
-
-               //insert the new created project into the projectList
-               projectList->insert(file.absoluteFilePath(), wp);
-
-               hasA2l = true;
-           }
-       }
-       else
-       {
-           fmodel->fetchMore(index);
-       }
-    }
-
-    //foreach file under selected folder do something
-    if (hasA2l)
-    {
-        for (int row = 0; row < numRows; ++row)
-        {
-           QModelIndex index = fmodel->index(row, 0, parentIndex);
-
-           QFileInfo file = fmodel->fileInfo(index);
-           if (file.isFile())
-           {
-               if (file.suffix().toLower() == "hex")
-               {
-                   HexFile* hex = new HexFile(file.absoluteFilePath(), wp);
-                   model->beginReset();
-                   wp->addHex(hex);
-                   model->endReset();
-               }
-               else if (file.suffix().toLower() == "s19")
-               {
-                   SrecFile* srec = new SrecFile(file.absoluteFilePath(), wp);
-                   model->beginReset();
-                   wp->addSrec(srec);
-                   model->endReset();
-               }
-           }
-        }
-    }
-
-    ui->treeView->setModel(model);
-    ui->treeView->setColumnHidden(1, true);
-    completer->setModel(model);
-    ui->treeView->expand(model->getIndex(node));
 }
 
 void MDImain::addHexFile2Project()
@@ -1983,6 +1917,12 @@ void MDImain::addCsvFile2Project()
 
                 if (wp)  //to prevent any crash of the aplication
                 {
+                    //if the a2lFile is not yet parsed, parse.
+                    if (!wp->a2lFile->isParsed())
+                    {
+                        readA2l(wp);
+                    }
+
                     // if no MOD_COMMON in ASAP file
                     if (wp->a2lFile->getProject()->getNode("MODULE") == NULL)
                     {
@@ -2141,6 +2081,12 @@ void MDImain::addCdfxFile2Project()
 
                 if (wp)  //to prevent any chrash of the aplication
                 {
+                    //if the a2lFile is not yet parsed, parse.
+                    if (!wp->a2lFile->isParsed())
+                    {
+                        readA2l(wp);
+                    }
+
                     // if no MOD_COMMON in ASAP file
                     if (wp->a2lFile->getProject()->getNode("MODULE") == NULL)
                     {
@@ -3295,6 +3241,12 @@ void MDImain::compare_A2lFile()
         QStringList list1;
         if (wp1)  //to prevent any crash of the aplication
         {
+            //if the a2lFile is not yet parsed, parse.
+            if (!wp1->a2lFile->isParsed())
+            {
+                readA2l(wp1);
+            }
+
             // if MODULE in ASAP file
             if (wp1->a2lFile->getProject()->getNode("MODULE") != NULL)
             {
@@ -3343,6 +3295,12 @@ void MDImain::compare_A2lFile()
         QStringList list2;
         if (wp2)  //to prevent any crash of the aplication
         {
+            //if the a2lFile is not yet parsed, parse.
+            if (!wp2->a2lFile->isParsed())
+            {
+                readA2l(wp2);
+            }
+
             // if MODULE in ASAP file
             if (wp2->a2lFile->getProject()->getNode("MODULE") != NULL)
             {
