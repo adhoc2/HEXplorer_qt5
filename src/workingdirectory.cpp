@@ -11,6 +11,7 @@ WorkingDirectory::WorkingDirectory(QString rootPath, A2lTreeModel *model = NULL,
     char* name = new char[(QFileInfo(rootPath).fileName()).toLocal8Bit().count() + 1];
     strcpy(name, (QFileInfo(rootPath).fileName()).toLocal8Bit().data());
     this->name = name;
+    this->rootPath = rootPath;
 
     //fmodel
     fmodel = new QFileSystemModel();
@@ -107,4 +108,9 @@ void WorkingDirectory::populateNodeTreeview(QString str, Node *node)
         }
     }
 
+}
+
+QString WorkingDirectory::getFullPath()
+{
+    return rootPath;
 }

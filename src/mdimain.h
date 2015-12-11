@@ -206,6 +206,7 @@ private slots:
      void deleteFileFromProject(QModelIndex index);
      void removeWorkProjects();
      void removeWorkProject(QModelIndex index);
+     void removeWorkingDirectory(QModelIndex index);
      void export_ListData();
      void removeTab ( int index );
      void on_actionNewA2lProject_triggered();

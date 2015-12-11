@@ -11,11 +11,13 @@ class WorkingDirectory : public Node
     public:
         WorkingDirectory(QString rootPath, A2lTreeModel *model, MDImain *parent);
         ~WorkingDirectory();
+        QString getFullPath();
 
 private:
         QFileSystemModel *fmodel;
         A2lTreeModel *model;
         MDImain *mdimain;
+        QString rootPath;
 
         void populateNodeTreeview(QString str, Node *node);
 };

@@ -39,6 +39,7 @@ int main(int argc, char *argv[])
     app.setApplicationName("HEXplorer");
     app.setApplicationVersion("0.7.5");
 
+
     MDImain w;
     w.show();
     return app.exec();

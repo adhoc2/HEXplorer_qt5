@@ -526,6 +526,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         editCharacteristics->setEnabled(true);
         openJScript->setEnabled(true);
         saveA2lDB->setEnabled(true);
+        ui->actionClose_Working_Directory->setEnabled(false);
     }
     else if (name.endsWith("DBFILE"))
     {
@@ -552,6 +553,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         editCharacteristics->setEnabled(false);
         openJScript->setEnabled(false);
         saveA2lDB->setEnabled(false);
+        ui->actionClose_Working_Directory->setEnabled(false);
     }
     else if (name.endsWith("HexFile"))
     {
@@ -578,6 +580,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         editCharacteristics->setEnabled(false);
         openJScript->setEnabled(false);
         saveA2lDB->setEnabled(false);
+        ui->actionClose_Working_Directory->setEnabled(false);
 
         ui->toolBar_data->show();
 
@@ -607,6 +610,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         editCharacteristics->setEnabled(false);
         openJScript->setEnabled(false);
         saveA2lDB->setEnabled(false);
+        ui->actionClose_Working_Directory->setEnabled(false);
 
         ui->toolBar_data->show();
 
@@ -636,6 +640,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         editCharacteristics->setEnabled(false);
         openJScript->setEnabled(false);
         saveA2lDB->setEnabled(false);
+        ui->actionClose_Working_Directory->setEnabled(false);
 
         ui->toolBar_data->show();
     }
@@ -663,11 +668,12 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         editCharacteristics->setEnabled(false);
         openJScript->setEnabled(false);
         saveA2lDB->setEnabled(false);
+        ui->actionClose_Working_Directory->setEnabled(false);
 
         ui->toolBar_data->show();
     }
     else if (name.toLower().endsWith("workingdirectory"))
-    {
+    {        
         importSubsets->setEnabled(false);
         exportSubsets->setEnabled(false);
         addCdfxFile->setEnabled(false);
@@ -691,6 +697,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         editCharacteristics->setEnabled(false);
         openJScript->setEnabled(false);
         saveA2lDB->setEnabled(false);
+        ui->actionClose_Working_Directory->setEnabled(true);
 
     }
     else
@@ -994,7 +1001,7 @@ void MDImain::showContextMenu(QPoint)
             }
             else if (name.toLower().endsWith("workingdirectory"))
             {
-
+                menu.addAction(ui->actionClose_Working_Directory);
             }
             else
             {
@@ -1012,6 +1019,7 @@ void MDImain::showContextMenu(QPoint)
             int weiterData = 0;
             int weiterHex = 0;
             int weiterA2l = 0;
+            int weiterWD = 0;
             foreach (QModelIndex index, list)
             {
                 Node *node = model->getNode(index);
@@ -1027,6 +1035,10 @@ void MDImain::showContextMenu(QPoint)
                 else if (name.toLower().endsWith("a2lfile"))
                 {
                     weiterA2l++;
+                }
+                else if (name.toLower().endsWith("workingdirectory"))
+                {
+                    weiterWD++;
                 }
             }
 
@@ -1047,6 +1059,10 @@ void MDImain::showContextMenu(QPoint)
                 menu.addAction(deleteProject);
                 if (weiterA2l == 2)
                     menu.addAction(compareA2lFile);
+            }
+            else if (weiterWD == list.count())
+            {
+                menu.addAction(ui->actionClose_Working_Directory);
             }
         }
     }
@@ -1408,22 +1424,38 @@ void MDImain::on_actionOpen_Working_Directory_triggered()
     QSettings settings(qApp->organizationName(), qApp->applicationName());
     QString path = settings.value("currentWDPath").toString();
 
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-                                                    path,
-                                                    QFileDialog::ShowDirsOnly
-                                                    | QFileDialog::DontResolveSymlinks);;
+    //QFileDialog to select multiple directories
+    QFileDialog w;
+    w.setFileMode(QFileDialog::Directory);
+    w.setOption(QFileDialog::DontUseNativeDialog,true);
+    w.setOption(QFileDialog::ShowDirsOnly, true);
+    w.setDirectory(QDir(path));
+    QListView *l = w.findChild<QListView*>("listView");
+    if (l)
+    {
+        l->setSelectionMode(QAbstractItemView::MultiSelection);
+    }
+    QTreeView *t = w.findChild<QTreeView*>();
+    if (t)
+    {
+        t->setSelectionMode(QAbstractItemView::MultiSelection);
+    }
+    QStringList pathList;
+    if (w.exec())
+        pathList = w.selectedFiles();
 
-    if (dir.isEmpty())
+
+//    QString dir = QFileDialog::getExistingDirectory(this, tr("please select directories"),
+//                                                    path,
+//                                                    QFileDialog::ShowDirsOnly
+//                                                    | QFileDialog::DontResolveSymlinks);
+
+
+    if (pathList.isEmpty())
     {
        statusBar()->showMessage(tr("no Working Directory selected"), 2000);
        writeOutput("action open working directory : no folder selected");
        return;
-    }
-    else if (dir == workingDirectory)
-    {
-        statusBar()->showMessage(tr("Working Directory already open"), 2000);
-        writeOutput("action open working directory : Working Directory already open");
-        return;
     }
     else
     {
@@ -1435,18 +1467,29 @@ void MDImain::on_actionOpen_Working_Directory_triggered()
         if (ret == QMessageBox::Yes)
         {
                settings.setValue("autoWD", 1);
-               workingDirectory.append(dir + ";");
-               settings.setValue("currentWDPath", workingDirectory);
 
+               QStringList currentPathList = workingDirectory.split(";");
+               foreach (QString str, pathList)
+               {
+                   if (!currentPathList.contains(str))
+                   {
+                        workingDirectory.append(str + ";");
+                        openWorkingDirectory(str);
+                   }
+               }
+               settings.setValue("currentWDPath", workingDirectory);
         }
         else if (ret == QMessageBox::No)
         {
-               // settings.setValue("autoWD", 0);
+            QStringList currentPathList = workingDirectory.split(";");
+            foreach (QString str, pathList)
+            {
+                if (!currentPathList.contains(str))
+                {
+                     openWorkingDirectory(str);
+                }
+            }
         }
-
-        //open the working directory in treeView
-        openWorkingDirectory(dir);
-
     }
 }
 
@@ -1468,7 +1511,51 @@ void MDImain::openWorkingDirectory(QString rootPath)
 
 void MDImain::on_actionClose_Working_Directory_triggered()
 {
+    int n = ui->treeView->selectionModel()->selectedIndexes().count();
 
+    if (n == 1)
+    {
+        QModelIndex index = ui->treeView->selectionModel()->selectedIndexes().at(0);
+
+        if (index.isValid())
+        {
+            //get a pointer on the selected item
+            Node *node =  model->getNode(index);
+            QString name = typeid(*node).name();
+
+            if (!name.toLower().endsWith("workingdirectory"))
+            {
+                QMessageBox::warning(this, "HEXplorer::remove project", "Please select first a working directory.",
+                                                 QMessageBox::Ok);
+                return;
+            }
+
+
+            int r = QMessageBox::question(this, "HEXplorer::question", "Are you sure you want to remove the working directory " +
+                                          QString(node->name)  + " ?",
+                                  QMessageBox::Yes, QMessageBox::No);
+
+            if (r ==  QMessageBox::Yes)
+            {
+                    removeWorkingDirectory(index);
+            }
+        }
+    }
+    else
+    {
+        int r = QMessageBox::question(this, "HEXplorer::question",
+                                      "Remove all the selected working directories ?",
+                                       QMessageBox::Yes, QMessageBox::No);
+
+        if (r ==  QMessageBox::Yes)
+        {
+            foreach (QModelIndex index, ui->treeView->selectionModel()->selectedIndexes())
+            {
+
+                removeWorkingDirectory(index);
+            }
+        }
+    }
 }
 
 void MDImain::addHexFile2Project()
@@ -2912,6 +2999,55 @@ void MDImain::removeWorkProject(QModelIndex index)
 
         ui->treeView->expand(indexParent);
 
+    }
+}
+
+void MDImain::removeWorkingDirectory(QModelIndex index)
+{
+    if (index.isValid())
+    {
+        //get a pointer on the selected item
+        Node *node =  model->getNode(index);
+        QString name = typeid(*node).name();
+
+        if (!name.toLower().endsWith("workingdirectory"))
+        {
+            QMessageBox::warning(this, "HEXplorer::remove project", "Please select first a working directory.",
+                                             QMessageBox::Ok);
+            return;
+        }
+        else
+        {
+            //As the selected node is an A2l file we can cast the node into its real type
+            WorkingDirectory *wd = dynamic_cast<WorkingDirectory *> (node);
+
+            //remove all wprk projects into working directory
+            foreach (Node *_node, wd->childNodes)
+            {
+                QString name = typeid(*_node).name();
+                if (name.toLower().endsWith("a2lfile"))
+                {
+                    removeWorkProject(model->getIndex(_node));
+                }
+            }
+
+            //remove the node from treeView model
+            model->beginReset();
+            Node* nodeParent = node->getParentNode();
+            nodeParent->removeChildNode(node);
+            model->endReset();
+
+            //remove working directory from list
+            QStringList listPath  = workingDirectory.split(";");
+            listPath.removeAll(wd->getFullPath());
+            workingDirectory = "";
+            foreach (QString str, listPath)
+            {
+                workingDirectory.append(str + ";");
+            }
+            QSettings settings(qApp->organizationName(), qApp->applicationName());
+            settings.setValue("currentWDPath", workingDirectory);
+        }
     }
 }
 
