@@ -2290,7 +2290,6 @@ void MDImain::deleteFilesFromProject()
     QStringList list;
     foreach (QModelIndex index, ui->treeView->selectionModel()->selectedIndexes())
     {
-
         list.append( model->getNode(index)->fullName());
     }
 

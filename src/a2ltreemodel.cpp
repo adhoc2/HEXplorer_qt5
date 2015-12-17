@@ -285,16 +285,6 @@ Node *A2lTreeModel::getRootNode()
     return rootNode;
 }
 
-void A2lTreeModel::beginReset()
-{
-    beginResetModel();
-}
-
-void A2lTreeModel::endReset()
-{
-    endResetModel();
-}
-
 void A2lTreeModel::dataInserted(Node *parentNode, int position)
 {
     // Create an index of the parent node

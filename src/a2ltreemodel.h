@@ -33,8 +33,6 @@ public:
     void createRootNode();
     void addNode2RootNode(Node *node);
     void dataInserted(Node *parentNode, int position);
-    void beginReset();
-    void endReset();
     void dataRemoved(Node *nodeParent, int position, int count = 1);
     void renameNode(QModelIndex index, QString name);
 
