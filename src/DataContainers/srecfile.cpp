@@ -571,7 +571,7 @@ void SrecFile::runCreateData(QStringList list, QList<Data*> *listData, Node *nod
                 CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
                 QString add = charac->getPar("Adress");
                 bool bl = isValidAddress(add);
-                if(bl)
+                if(1)
                 {
                     //rwLock.lockForRead();
                     Data *data = new Data(charac, a2lProject, this);
@@ -598,7 +598,7 @@ void SrecFile::runCreateData(QStringList list, QList<Data*> *listData, Node *nod
                 QString add = axis->getPar("Adress");
 
                 bool bl = isValidAddress(add);
-                if (bl)
+                if (1)
                 {
                     //rwLock.lockForRead();
                     Data *data = new Data(axis, a2lProject, this);
@@ -650,7 +650,7 @@ Data* SrecFile::runCreateDataMapped(const QString &str)
             CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
             QString add = charac->getPar("Adress");
             bool bl = isValidAddress(add);
-            if(bl)
+            if(1)
             {
                 //rwLock.lockForRead();
                 Data *data = new Data(charac, a2lProject, this);
@@ -677,7 +677,7 @@ Data* SrecFile::runCreateDataMapped(const QString &str)
             QString add = axis->getPar("Adress");
 
             bool bl = isValidAddress(add);
-            if (bl)
+            if (1)
             {
                 //rwLock.lockForRead();
                 Data *data = new Data(axis, a2lProject, this);

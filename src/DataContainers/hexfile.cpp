@@ -1945,7 +1945,7 @@ void HexFile::checkDisplay()
         {
             WorkProject *wp = getParentWp();
             wp->addHex(this);
-            this->attach(wp);
+            //this->attach(wp);
         }
     }
 }
@@ -2142,6 +2142,7 @@ void HexFile::detach(QObject *o)
     //remove self after last one
     if(owners.size() == 0)
     {
+        qDebug() << "HEX : " << this->name << " deleted";
         delete this;
     }
 }
@@ -2181,7 +2182,7 @@ void HexFile::setFullName(QString fullName)
     WorkProject *wp = getParentWp();
     wp->rename(this);
 
-    // change the name displayed into owners
+    // change the name displayed into owners formcompare
     foreach(QObject *obj, owners)
     {
         QString type = typeid(*obj).name();
@@ -2190,14 +2191,14 @@ void HexFile::setFullName(QString fullName)
             FormCompare *fcomp = (FormCompare*)obj;
             if (fcomp->getHex1() == this)
             {
-                 QString str = QFileInfo(getParentWp()->getFullA2lFileName().c_str()).fileName()
+                 QString str = wp->getFullNodeName()
                                + "/"
-                               + QFileInfo(fullHexName).fileName();
+                               + QFileInfo(fullHexName).fileName();                
                  fcomp->setDataset1(str);
             }
             else if (fcomp->getHex2() == this)
             {
-                QString str = QFileInfo(getParentWp()->getFullA2lFileName().c_str()).fileName()
+                QString str = wp->getFullNodeName()
                               + "/"
                               + QFileInfo(fullHexName).fileName();
                  fcomp->setDataset2(str);

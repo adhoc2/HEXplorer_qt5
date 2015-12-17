@@ -87,7 +87,7 @@ QWidget *VariantDelegate::createEditor(QWidget *parent,
         const QStyleOptionViewItem & /* option */,
         const QModelIndex &index) const
 {
-    if (index.column() != 2)
+    if (index.column() < 0)
         return 0;
 
     QVariant originalValue = index.model()->data(index, Qt::UserRole);

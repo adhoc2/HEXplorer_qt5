@@ -23,6 +23,9 @@
 
 #include "a2ltreemodel.h"
 #include "node.h"
+#include "hexfile.h"
+#include "srecfile.h"
+#include <typeinfo>
 
 using namespace std;
 
@@ -43,9 +46,6 @@ void A2lTreeModel::createRootNode()
 
 void A2lTreeModel::addNode2RootNode(Node *node)
 {
-    // update the model
-    beginResetModel();
-
     // create a new rootNode if NULL
     if (rootNode == 0)
         rootNode = new Node();
@@ -53,18 +53,10 @@ void A2lTreeModel::addNode2RootNode(Node *node)
     // add the node as childNode
     rootNode->addChildNode(node);
     node->setParentNode(rootNode);
-
-    // sort the childNodes
     rootNode->sortChildrensName();
 
-    endResetModel();
-}
-
-void A2lTreeModel::removeChildNodeFromRoot(Node *child)
-{
-    beginResetModel();
-    rootNode->removeChildNode(child);
-    endResetModel();
+    //update model
+    dataInserted(rootNode, rootNode->childNodes.indexOf(node));
 }
 
 QModelIndex A2lTreeModel::index(int row, int column, const QModelIndex &parentIndex) const
@@ -82,6 +74,11 @@ QModelIndex A2lTreeModel::index(int row, int column, const QModelIndex &parentIn
 
 QModelIndex A2lTreeModel::getIndex(Node *node)
 {
+    if (node == rootNode)
+    {
+        return QModelIndex();
+    }
+
     int pos = node->getParentNode()->childNodes.indexOf(node);
     return createIndex(pos, 0, node);
 }
@@ -246,12 +243,6 @@ QString A2lTreeModel::name(const QModelIndex &index)
     }
 }
 
-void A2lTreeModel::update()
-{
-    beginResetModel();
-    endResetModel();
-}
-
 Qt::DropActions A2lTreeModel::supportedDropActions() const
 {
     return Qt::CopyAction | Qt::MoveAction;
@@ -262,7 +253,7 @@ Qt::ItemFlags A2lTreeModel::flags(const QModelIndex &index) const
     Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
 
     if (index.isValid())
-        return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
+        return Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
     else
         return Qt::ItemIsDropEnabled | defaultFlags;
 }
@@ -304,35 +295,40 @@ void A2lTreeModel::endReset()
     endResetModel();
 }
 
-void A2lTreeModel::dataInserted(Node *parent, int position)
+void A2lTreeModel::dataInserted(Node *parentNode, int position)
 {
     // Create an index of the parent node
-    QModelIndex indexParent = getIndex(parent);
+    QModelIndex indexParent = getIndex(parentNode);
 
     // insert a row into parent node at position position
     insertRows(position, 1, indexParent);
 }
 
-void A2lTreeModel::dataRemoved(Node *parent, int position, int rows)
+void A2lTreeModel::dataRemoved(Node *nodeParent, int position, int rows)
 {
-    // Create an index of the parent node
-    QModelIndex indexParent = getIndex(parent);
+    if (nodeParent == rootNode)
+    {
+        removeRows(position, rows, QModelIndex());
+        return;
+    }
 
+    // Create an index of the parent node
+    QModelIndex indexParent = getIndex(nodeParent);
 
     // create rows into parent node at position position
     removeRows(position, rows, indexParent);
 }
 
-bool A2lTreeModel::insertRows(int position, int rows, const QModelIndex &parent)
+bool A2lTreeModel::insertRows(int position, int rows, const QModelIndex &parentIndex)
 {
-    beginInsertRows(parent, position, position + rows - 1);
+    beginInsertRows(parentIndex, position, position + rows - 1);
     endInsertRows();
     return true;
 }
 
-bool A2lTreeModel::removeRows(int position, int rows, const QModelIndex &indexParent)
+bool A2lTreeModel::removeRows(int position, int rows, const QModelIndex &parentIndex)
 {
-    Node *nodeParent = getNode(indexParent);
+    Node *nodeParent = getNode(parentIndex);
 
     // list the node to be deleted
     QList<Node*> list;
@@ -343,12 +339,12 @@ bool A2lTreeModel::removeRows(int position, int rows, const QModelIndex &indexPa
     }
 
     //important to prevent view error (like freeze view)
-    beginRemoveRows(indexParent, position, position + rows - 1);
+    beginRemoveRows(parentIndex, position, position + rows - 1);
 
     foreach (Node *node, list)
     {
         nodeParent->removeChildNode(node);
-        node->setParentNode(NULL);
+        //node->setParentNode(NULL);
     }
 
     //enable view
@@ -388,4 +384,67 @@ void A2lTreeModel::setListDataName(QStringList list)
 QStringList A2lTreeModel::getListDataName()
 {
     return listDataName;
+}
+
+bool A2lTreeModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (index.isValid() && role == Qt::EditRole)
+    {
+        QString oldFullName = this->name(index);
+        QString oldSuffix = QFileInfo(oldFullName).suffix();
+
+        Node *node = getNode(index);
+        QString newName = value.toString();
+        QString newSuffix = QFileInfo(newName).suffix();
+        QString newFullName = "";
+        if (newSuffix == oldSuffix)
+        {
+            newFullName = QFileInfo(oldFullName).absolutePath() + "/" + newName;
+        }
+        else
+        {
+            newFullName = QFileInfo(oldFullName).absolutePath() +  "/" + newName + "." + oldSuffix;
+            newName += "." + oldSuffix;
+        }
+
+        QString name = typeid(*node).name();
+
+        if (name.toLower().endsWith("hexfile"))
+        {
+            HexFile* hex = dynamic_cast<HexFile*>(node);
+
+            if (QFile::rename(oldFullName, newFullName))
+            {
+                renameNode(index, newName);
+                hex->setFullName(newFullName);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else if(name.toLower().endsWith("srecfile"))
+        {
+            SrecFile* srec = dynamic_cast<SrecFile*>(node);
+
+            if (QFile::rename(oldFullName, newFullName))
+            {
+                renameNode(index, newName);
+                srec->setFullName(newFullName);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+        else
+            return false;
+    }
+    else
+    {
+        return false;
+    }
 }

@@ -1,5 +1,6 @@
 #include "workingdirectory.h"
 #include "workproject.h"
+#include "qdebug.h"
 
 
 WorkingDirectory::WorkingDirectory(QString rootPath, A2lTreeModel *model = NULL, MDImain *parent = 0 ) : Node()
@@ -12,6 +13,7 @@ WorkingDirectory::WorkingDirectory(QString rootPath, A2lTreeModel *model = NULL,
     strcpy(name, (QFileInfo(rootPath).fileName()).toLocal8Bit().data());
     this->name = name;
     this->rootPath = rootPath;
+
 
     //fmodel
     fmodel = new QFileSystemModel();
@@ -35,11 +37,16 @@ WorkingDirectory::WorkingDirectory(QString rootPath, A2lTreeModel *model = NULL,
 
 WorkingDirectory::~WorkingDirectory()
 {
-
+    delete name;
+    delete fmodel;
 }
 
 void WorkingDirectory::populateNodeTreeview(QString str, Node *node)
 {
+    if (listWorkProjects.contains(str))
+        return;
+
+
     //index of selected folder in model
     QModelIndex parentIndex = fmodel->index(str);
     int numRows = fmodel->rowCount(parentIndex);
@@ -65,13 +72,16 @@ void WorkingDirectory::populateNodeTreeview(QString str, Node *node)
                mdimain->insertWp(wp);
 
                //update the ui->treeView
-               model->beginReset();
+               //model->beginReset();
                node->addChildNode(wp->a2lFile);
                wp->a2lFile->setParentNode(node);
                node->sortChildrensName();
-               model->endReset();
+               model->dataInserted(node, node->childNodes.indexOf(wp->a2lFile));
+               //model->endReset();
 
                hasA2l = true;
+
+               listWorkProjects.append(str);
            }
        }
        else
@@ -93,21 +103,20 @@ void WorkingDirectory::populateNodeTreeview(QString str, Node *node)
                if (file.suffix().toLower() == "hex")
                {
                    HexFile* hex = new HexFile(file.absoluteFilePath(), wp);
-                   model->beginReset();
+                   //model->beginReset();
                    wp->addHex(hex);
-                   model->endReset();
+                   //model->endReset();
                }
                else if (file.suffix().toLower() == "s19")
                {
                    SrecFile* srec = new SrecFile(file.absoluteFilePath(), wp);
-                   model->beginReset();
+                   //model->beginReset();
                    wp->addSrec(srec);
-                   model->endReset();
+                   //model->endReset();
                }
            }
         }
     }
-
 }
 
 QString WorkingDirectory::getFullPath()

@@ -61,8 +61,8 @@ equals( QMAKE_CXX, cl) {
         -l$${WINHOARD_ROOT}/win32/libhoard
 
         # only for file a2l_quex_lexer.cpp because microsoft compiler cannot compile with -Ox (-Osiy -Gs instead)
-        #QMAKE_CXXFLAGS_RELEASE += -Osiy -Gs -openmp -DQUEX_OPTION_ASSERTS_DISABLED
-        QMAKE_CXXFLAGS_RELEASE += -Ox -openmp -DQUEX_OPTION_ASSERTS_DISABLED
+        QMAKE_CXXFLAGS_RELEASE += -Osiy -Gs -openmp -DQUEX_OPTION_ASSERTS_DISABLED
+        #QMAKE_CXXFLAGS_RELEASE += -Ox -openmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
 }
 
@@ -281,7 +281,8 @@ HEADERS += a2l.h \
     sqlite/sqlite3.h \
     connectionwidget.h \
     ASAP2/Nodes/dbfile.h \
-    workingdirectory.h
+    workingdirectory.h \
+    deletefiledialog.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -298,7 +299,8 @@ FORMS += formeditor.ui \
     formscript.ui \
     dialogchooseexportformat.ui \
     dialogdatadimension.ui \
-    dialogprogressdownload.ui
+    dialogprogressdownload.ui \
+    deletefiledialog.ui
 SOURCES += a2l.cpp \
     formeditor.cpp \
     main.cpp \
@@ -456,7 +458,8 @@ SOURCES += a2l.cpp \
     sqlite/sqlite3.c \
     connectionwidget.cpp \
     ASAP2/Nodes/dbfile.cpp \
-    workingdirectory.cpp
+    workingdirectory.cpp \
+    deletefiledialog.cpp
 
 OTHER_FILES += \
     GNU_license.txt \

@@ -32,12 +32,10 @@ public:
 
     void createRootNode();
     void addNode2RootNode(Node *node);
-    void removeChildNodeFromRoot(Node *child);
-    void update();
-    void dataInserted(Node *node, int position);
+    void dataInserted(Node *parentNode, int position);
     void beginReset();
     void endReset();
-    void dataRemoved(Node *node, int position, int count = 1);
+    void dataRemoved(Node *nodeParent, int position, int count = 1);
     void renameNode(QModelIndex index, QString name);
 
     QModelIndex index(int row, int column, const QModelIndex &parent) const;
@@ -48,6 +46,7 @@ public:
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;
     QVariant data(const QModelIndex &index, int role) const;
+    bool setData(const QModelIndex &index, const QVariant &value, int role);
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     QVariant line(const QModelIndex &index) const;
     QMap<std::string, std::string> *getPar(const QModelIndex &index) const;
@@ -57,9 +56,9 @@ public:
     Node *getNode(const QModelIndex &index);
     Node *getRootNode();
     bool insertRows(int position, int rows,
-                    const QModelIndex &parent = QModelIndex());
+                    const QModelIndex &parentIndex = QModelIndex());
     bool removeRows(int position, int rows,
-                    const QModelIndex &parent = QModelIndex());
+                    const QModelIndex &parentIndex = QModelIndex());
     QModelIndex getIndex(Node *node);
     void setListDataName(QStringList list);
     QStringList getListDataName();

@@ -40,8 +40,10 @@ class TreeModelCompleter;
 class A2lTreeModel;
 class CompleterModel;
 class WorkProject;
+class WorkingDirectory;
 class FormCompare;
 class QFileSystemModel;
+class TreeviewDelegate;
 
 
 namespace Ui
@@ -60,7 +62,6 @@ public:
 
      void writeOutput(QString str);
      void writeOutput(QStringList list);
-     void modelUpdate();
      void updateRecentFileActions();
      void expandNode(Node *node);
      void reAppendProject(WorkProject *wp);
@@ -74,6 +75,7 @@ protected:
     virtual void closeEvent(QCloseEvent *e);
 
 private:
+    TreeviewDelegate *treeViewDelegate;
     QString workingDirectory;
     QFileSystemModel *fmodel;
     bool persistDB( QSqlDatabase memdb, QString filename, bool save );
@@ -148,7 +150,7 @@ private:
     void createDbTableCompuVtab(Node *dim);
     void createDbTableRecordLayout(Node *dim);
     void createDbTableAxisDescr(Node *dim);
-    void openWorkingDirectory(QString rootPath);
+    WorkingDirectory *openWorkingDirectory(QString rootPath);
 
 
 private slots:
@@ -160,7 +162,6 @@ private slots:
      void checkDroppedFile(QString str);
      void editMeasuringChannels();
      void editChar();
-     void on_actionOpen_Saphir_file_triggered();
      void on_actionSettings_triggered();
      void on_actionCheck_for_updates_triggered();
      void initCheckHttpUpdates();
@@ -186,7 +187,6 @@ private slots:
      void clear_Output();
      void reset_Data();
      void sort_BySubset();
-     void clone_HexFile();
      void reset_AllChangedData();
      FormCompare *on_actionCompare_dataset_triggered();
      void countChild();
@@ -203,7 +203,7 @@ private slots:
      void addCsvFile2Project();
      void addCdfxFile2Project();
      void deleteFilesFromProject();
-     void deleteFileFromProject(QModelIndex index);
+     void deleteFileFromProject(QModelIndex index, bool bl = 0);
      void removeWorkProjects();
      void removeWorkProject(QModelIndex index);
      void removeWorkingDirectory(QModelIndex index);
@@ -225,9 +225,10 @@ private slots:
      void on_actionLoad_DB_triggered();
      void on_connectionWidget_tableActivated(const QString &table);
      void on_actionOpen_Working_Directory_triggered();
-
-
      void on_actionClose_Working_Directory_triggered();
+     void on_actionUpdateWorkingDirectory_triggered();
+     void on_actionDuplicate_DataContainer_triggered();
+     void on_actionRename_file_triggered();
 
 public slots:
     void resetAllTableView();

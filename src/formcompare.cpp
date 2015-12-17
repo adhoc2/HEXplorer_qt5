@@ -32,7 +32,6 @@
 #include "sptablemodel.h"
 #include <typeinfo>
 #include "mdimain.h"
-#include "comboboxdelegate.h"
 #include "omp.h"
 #include "data.h"
 #include "comparemodel.h"

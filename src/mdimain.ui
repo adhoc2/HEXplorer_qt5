@@ -257,10 +257,19 @@
      </item>
      <item>
       <widget class="QTreeView" name="treeView">
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+       <property name="tabKeyNavigation">
+        <bool>true</bool>
+       </property>
        <property name="dragEnabled">
         <bool>false</bool>
        </property>
        <property name="sortingEnabled">
+        <bool>false</bool>
+       </property>
+       <property name="animated">
         <bool>false</bool>
        </property>
       </widget>
@@ -515,6 +524,10 @@
    </property>
   </action>
   <action name="actionOpen_script">
+   <property name="icon">
+    <iconset resource="icones.qrc">
+     <normaloff>:/icones/binary.png</normaloff>:/icones/binary.png</iconset>
+   </property>
    <property name="text">
     <string>open script</string>
    </property>
@@ -538,8 +551,42 @@
    </property>
   </action>
   <action name="actionClose_Working_Directory">
+   <property name="icon">
+    <iconset resource="icones.qrc">
+     <normaloff>:/icones/milky_ciseau.png</normaloff>:/icones/milky_ciseau.png</iconset>
+   </property>
    <property name="text">
     <string>Close Working Directory</string>
+   </property>
+  </action>
+  <action name="actionUpdateWorkingDirectory">
+   <property name="icon">
+    <iconset resource="icones.qrc">
+     <normaloff>:/icones/milky_resetAll.png</normaloff>:/icones/milky_resetAll.png</iconset>
+   </property>
+   <property name="text">
+    <string>Reload WorkingDirectory</string>
+   </property>
+   <property name="toolTip">
+    <string>reload the directory</string>
+   </property>
+  </action>
+  <action name="actionDuplicate_DataContainer">
+   <property name="icon">
+    <iconset resource="icones.qrc">
+     <normaloff>:/icones/copy.png</normaloff>:/icones/copy.png</iconset>
+   </property>
+   <property name="text">
+    <string>duplicate file</string>
+   </property>
+  </action>
+  <action name="actionRename_file">
+   <property name="icon">
+    <iconset resource="icones.qrc">
+     <normaloff>:/icones/milky_pinceau.png</normaloff>:/icones/milky_pinceau.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rename file</string>
    </property>
   </action>
  </widget>

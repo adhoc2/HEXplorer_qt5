@@ -289,3 +289,14 @@ QString WorkProject::toString()
     QString str = "WorkProject* (" + QString(a2lFile->name) + " )" ;
     return str;
 }
+
+QString WorkProject::getFullNodeName()
+{
+    if (treeModel)
+    {
+        QModelIndex index = treeModel->getIndex(this->a2lFile);
+        return treeModel->getFullNodeName(index);
+    }
+    else
+        return "xxx";
+}

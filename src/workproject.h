@@ -64,6 +64,7 @@ class WorkProject :  public A2l
 
         A2lTreeModel *treeModel;
         MDImain *parentWidget;
+        QString getFullNodeName();
 
     private:
         QList<QObject*> owners;

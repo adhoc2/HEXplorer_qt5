@@ -18,6 +18,7 @@ private:
         A2lTreeModel *model;
         MDImain *mdimain;
         QString rootPath;
+        QStringList listWorkProjects;
 
         void populateNodeTreeview(QString str, Node *node);
 };
