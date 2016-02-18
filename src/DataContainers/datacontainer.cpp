@@ -322,10 +322,13 @@ bool DataContainer::exportDataList2Csv(QStringList dataList, QString fileName)
             data = getData(label);
 
             FUNCTION *subset = (FUNCTION*)fun->getNode(data->getSubset());
-            QString subsetName = subset->name;
-            if (!listSubset.contains(subsetName))
+            if (subset)
             {
-                listSubset.append(subsetName);
+                QString subsetName = subset->name;
+                if (!listSubset.contains(subsetName))
+                {
+                    listSubset.append(subsetName);
+                }
             }
         }
         listSubset.sort();

@@ -244,7 +244,7 @@ bool CdfxFile::validate(QFile *file)
 
     if (errorOccurred)
     {
-        errorList.append("CDFX file is not valid  at line " + QString::number(messageHandler.line()));
+        errorList.append("CDFX file is not valid  at line " + QString::number(messageHandler.line()) + " /column : " + QString::number(messageHandler.column()));
         errorList.append(messageHandler.statusMessage());
         QMessageBox::warning(0,"check Cdf file syntax","Cdf file not consistent with the schema");
         return false;

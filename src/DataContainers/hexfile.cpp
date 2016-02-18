@@ -1613,22 +1613,22 @@ void HexFile::hex2MemBlock(Data *data)
         {
             //BIT_MASK
             BIT_MASK *_bitmask = (BIT_MASK*)node->getItem("BIT_MASK");
-            uint32_t mask = 0;
+            uint16_t mask = 0;
             bool bl;
             if (_bitmask)
             {
                 // get the mask into uint
                 mask = QString(_bitmask->getPar("Mask")).toUInt(&bl, 16);
                 // calculate the decalage
-                uint32_t decalage = tzn(mask);
-                // get the original Value into uint
+                uint16_t decalage = tzn(mask);
+                // get the original Value into int
                 int nbyte = data->getZ(0).count() / 2;
-                uint32_t orgValue = getDecValues(data->getAddressZ(), nbyte, 1, data->getDatatypeZ(), data->getByteOrderZ()).at(0);
-                // get the value to be set into uint
-                uint32_t _setValue = data->getZ(0).toUInt(&bl,16);
+                int16_t orgValue = getDecValues(data->getAddressZ(), nbyte, 1, data->getDatatypeZ(), data->getByteOrderZ()).at(0);
+                // get the value to be set into int
+                int16_t _setValue = data->getZ(0).toInt(&bl,16);
                 _setValue = _setValue << decalage;
                 // set the bits into orgValue according to the mask
-                int n = 32;
+                int n = 16;
                 for (int i = 0; i < n; i++)
                 {
                     if (mask & (1 << i))

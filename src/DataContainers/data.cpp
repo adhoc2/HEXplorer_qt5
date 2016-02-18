@@ -39,6 +39,7 @@
 #include <QtCore/qmath.h>
 #include "qdebug.h"
 #include <stdint.h>
+#include <QTextCodec>
 
 // --- initialise static variables
 bool Data::showWeakBoundsExceeded = true;
@@ -632,11 +633,11 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             BIT_MASK *_bitmask = (BIT_MASK*)node->getItem("BIT_MASK");
             if (_bitmask)
             {
-                uint32_t mask = QString(_bitmask->getPar("Mask")).toUInt(&bl, 16);
+                uint16_t mask = QString(_bitmask->getPar("Mask")).toUInt(&bl, 16);
                 for (int i = 0; i < decZ.count(); i++ )
                 {
-                    uint32_t _result = (uint32_t)decZ.at(i) & mask;
-                    uint32_t _decalage =  tzn(mask);
+                    int16_t _result = (int16_t)decZ.at(i) & mask;
+                    int16_t _decalage =  tzn(mask);
                     _result = _result >> _decalage;
                     decZ[i] = _result;
                 }
@@ -1281,14 +1282,18 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
             BIT_MASK *_bitmask = (BIT_MASK*)node->getItem("BIT_MASK");
             if (_bitmask)
             {
-                uint32_t mask = QString(_bitmask->getPar("Mask")).toUInt(&bl, 16);
+                uint16_t mask = QString(_bitmask->getPar("Mask")).toUInt(&bl, 16);
                 for (int i = 0; i < decZ.count(); i++ )
                 {
-                    uint32_t _result = (uint32_t)decZ.at(i) & mask;
-                    uint32_t _decalage =  tzn(mask);
-                    _result = _result >> _decalage;
-                    decZ[i] = _result;
+                    if (QString::compare("DOC_rTemp_P", this->name) == 0)
+                    {
+                        int16_t _result = (int16_t)decZ.at(i) & mask;
+                        int16_t _decalage =  tzn(mask);
+                        _result = _result >> _decalage;
+                        decZ[i] = _result;
+                    }
                 }
+
             }
 
             //dec2phys
@@ -2221,7 +2226,9 @@ QString Data::getUnit()
         Node *node = label->getParentNode()->getParentNode();
         COMPU_METHOD *cmp = (COMPU_METHOD*)node->getNode("COMPU_METHOD/" + compu_method);
         if (cmp)
+        {
             return cmp->getPar("Unit");
+        }
         else
             return "";
     }
@@ -7331,9 +7338,21 @@ QDomElement Data::writeValue2Node(QDomDocument &doc)
         unit.remove(0, 1);
     if (unit.endsWith('\"'))
         unit.chop(1);
-    text = doc.createTextNode(unit);
+
+    //added for \u00B0 unicode for °  when unit is "°C"
+    QChar *data = unit.data();
+    QString str;
+    while (!data->isNull())
+    {
+        str.append(data->toLatin1());
+        ++data;
+    }
+
+    text = doc.createTextNode(str);
     unitDisplayName.appendChild(text);
     swValueCont.appendChild(unitDisplayName);
+
+
 
     // node SW-VALUE-CONT\SW-VALUES-PHYS
     QDomElement swValuePhys = doc.createElement("SW-VALUES-PHYS");

@@ -20,6 +20,7 @@
 #include "Nodes/compu_method.h"
 #include "lexer.h"
 #include "a2lgrammar.h"
+#include "qdebug.h"
 
 //initialise static variables
 Factory<Node,COMPU_METHOD> COMPU_METHOD::nodeFactory;

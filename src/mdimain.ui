@@ -253,7 +253,18 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QLineEdit" name="lineEdit"/>
+      <widget class="QLineEdit" name="lineEdit">
+       <property name="styleSheet">
+        <string notr="true">QLineEdit{
+	border: 1px solid gray;
+	border-radius: 10px;
+	padding: 0 8px;
+	background: white;
+	selection-background-color: darkgray;
+}
+	</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QTreeView" name="treeView">
@@ -265,6 +276,9 @@
        </property>
        <property name="dragEnabled">
         <bool>false</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::NoDragDrop</enum>
        </property>
        <property name="sortingEnabled">
         <bool>false</bool>
@@ -475,7 +489,7 @@
      <normaloff>:/icones/find.png</normaloff>:/icones/find.png</iconset>
    </property>
    <property name="text">
-    <string>labels</string>
+    <string>ChooseLabels</string>
    </property>
    <property name="toolTip">
     <string>choose labels</string>
@@ -570,14 +584,8 @@
    <property name="toolTip">
     <string>reload the directory</string>
    </property>
-  </action>
-  <action name="actionDuplicate_DataContainer">
-   <property name="icon">
-    <iconset resource="icones.qrc">
-     <normaloff>:/icones/copy.png</normaloff>:/icones/copy.png</iconset>
-   </property>
-   <property name="text">
-    <string>duplicate file</string>
+   <property name="visible">
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionRename_file">
@@ -587,6 +595,15 @@
    </property>
    <property name="text">
     <string>Rename file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
  </widget>

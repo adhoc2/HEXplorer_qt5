@@ -95,7 +95,6 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
                  "}"
 
                  );
-
     ui->tabWidget->clear();
     ui->tabWidget->setAcceptDrops(true);
     this->readSettings();
@@ -191,6 +190,9 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
         }
         settings.setValue("currentWDPath", workingDirectory);
     }
+
+    //QApplication::setStyle(QStyleFactory::create("fusion"));
+    //QApplication::setStyle(new ManhattanStyle(baseName));
 }
 
 MDImain::~MDImain()
@@ -323,11 +325,13 @@ void MDImain::createActions()
 
     saveFile = new QAction(tr("Save"), this);
     saveFile->setIcon(QIcon(":/icones/milky_save.png"));
+    saveFile->setShortcut(Qt::CTRL + Qt::Key_S);
     connect(saveFile, SIGNAL(triggered()), this, SLOT(save_File()));
     saveFile->setDisabled(true);
 
     saveAsFile = new QAction(tr("Save as ..."), this);
     saveAsFile->setIcon(QIcon(":/icones/milky_saveas.png"));
+    saveAsFile->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_S);
     connect(saveAsFile, SIGNAL(triggered()), this, SLOT(saveAs_File()));
     saveAsFile->setDisabled(true);
 
@@ -343,6 +347,7 @@ void MDImain::createActions()
 
     quicklook = new QAction(tr("quicklook"), this);
     quicklook->setIcon(QIcon(":/icones/milky_loopHex.png"));
+    quicklook->setShortcut(Qt::Key_Space);
     connect(quicklook, SIGNAL(triggered()), this, SLOT(quicklookFile()));
     quicklook->setDisabled(true);
 
@@ -405,6 +410,12 @@ void MDImain::createActions()
     connect(saveA2lDB, SIGNAL(triggered()), this, SLOT(exportA2lDb()));
     saveA2lDB->setDisabled(true);
 
+    duplicateDatacontainer = new QAction(tr("Duplicate"), this);
+    duplicateDatacontainer->setIcon(QIcon(":/icones/copy.png"));
+    duplicateDatacontainer->setShortcut(Qt::CTRL + Qt::Key_D);
+    connect(duplicateDatacontainer, SIGNAL(triggered()), this, SLOT(on_actionDuplicate_DataContainer_triggered()));
+    duplicateDatacontainer->setDisabled(true);
+
     toolsMenu = new QMenu();
     toolsMenu->setTitle("tools");
     toolsMenu->setIcon(QIcon(":/icones/ToolboxFolder.png"));
@@ -461,13 +472,17 @@ void MDImain::initToolBars()
 
     // Data : Hex or Csv or Cdf file
     ui->toolBar_data->addAction(quicklook);
+    ui->toolBar_data->addAction(readValuesFromCsv);
+    ui->toolBar_data->addAction(readValuesFromCdfx);
+    ui->toolBar_data->addAction(resetAllChangedData);
+    ui->toolBar_data->addAction(sortBySubset);
+    ui->toolBar_data->addSeparator();
+    ui->toolBar_data->addAction(duplicateDatacontainer);
+    ui->toolBar_data->addAction(ui->actionRename_file);
     ui->toolBar_data->addAction(saveFile);
     ui->toolBar_data->addAction(saveAsFile);
     ui->toolBar_data->addAction(deleteFile);
-    ui->toolBar_data->addSeparator();
-    ui->toolBar_data->addAction(readValuesFromCsv);
-    ui->toolBar_data->addAction(resetAllChangedData);
-    ui->toolBar_data->addAction(sortBySubset);
+
     ui->toolBar_data->hide();
 }
 
@@ -504,6 +519,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
     //update the context menu
     if (name.endsWith("A2LFILE"))
     {
+        ui->toolBar_data->hide();
+
         importSubsets->setEnabled(false);
         exportSubsets->setEnabled(false);
         addCdfxFile->setEnabled(true);
@@ -528,9 +545,12 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         openJScript->setEnabled(true);
         saveA2lDB->setEnabled(true);
         ui->actionClose_Working_Directory->setEnabled(false);
+        ui->actionRename_file->setEnabled(false);
     }
     else if (name.endsWith("DBFILE"))
     {
+        ui->toolBar_data->hide();
+
         importSubsets->setEnabled(false);
         exportSubsets->setEnabled(false);
         addCdfxFile->setEnabled(false);
@@ -555,6 +575,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         openJScript->setEnabled(false);
         saveA2lDB->setEnabled(false);
         ui->actionClose_Working_Directory->setEnabled(false);
+        ui->actionRename_file->setEnabled(false);
     }
     else if (name.endsWith("HexFile"))
     {
@@ -582,7 +603,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         openJScript->setEnabled(false);
         saveA2lDB->setEnabled(false);
         ui->actionClose_Working_Directory->setEnabled(false);
-        ui->actionDuplicate_DataContainer->setEnabled(true);
+        duplicateDatacontainer->setEnabled(true);
+        ui->actionRename_file->setEnabled(true);
 
         ui->toolBar_data->show();
 
@@ -613,7 +635,9 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         openJScript->setEnabled(false);
         saveA2lDB->setEnabled(false);
         ui->actionClose_Working_Directory->setEnabled(false);
-        ui->actionDuplicate_DataContainer->setEnabled(true);
+        ui->actionRename_file->setEnabled(true);
+        duplicateDatacontainer->setEnabled(true);
+
 
         ui->toolBar_data->show();
 
@@ -644,7 +668,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         openJScript->setEnabled(false);
         saveA2lDB->setEnabled(false);
         ui->actionClose_Working_Directory->setEnabled(false);
-        ui->actionDuplicate_DataContainer->setEnabled(false);
+        ui->actionRename_file->setEnabled(false);
+        duplicateDatacontainer->setEnabled(false);
 
         ui->toolBar_data->show();
     }
@@ -673,12 +698,15 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         openJScript->setEnabled(false);
         saveA2lDB->setEnabled(false);
         ui->actionClose_Working_Directory->setEnabled(false);
-        ui->actionDuplicate_DataContainer->setEnabled(false);
+        ui->actionRename_file->setEnabled(false);
+        duplicateDatacontainer->setEnabled(false);
 
         ui->toolBar_data->show();
     }
     else if (name.toLower().endsWith("workingdirectory"))
-    {        
+    {
+        ui->toolBar_data->hide();
+
         importSubsets->setEnabled(false);
         exportSubsets->setEnabled(false);
         addCdfxFile->setEnabled(false);
@@ -703,11 +731,14 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         openJScript->setEnabled(false);
         saveA2lDB->setEnabled(false);
         ui->actionClose_Working_Directory->setEnabled(true);
-        ui->actionDuplicate_DataContainer->setEnabled(false);
+        ui->actionRename_file->setEnabled(false);
+        duplicateDatacontainer->setEnabled(false);
 
     }
     else
     {
+        ui->toolBar_data->hide();
+
         importSubsets->setEnabled(false);
         exportSubsets->setEnabled(false);
         addCdfxFile->setEnabled(false);
@@ -730,7 +761,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         openJScript->setEnabled(false);
         saveA2lDB->setEnabled(false);
         ui->actionClose_Working_Directory->setEnabled(false);
-        ui->actionDuplicate_DataContainer->setEnabled(false);
+        ui->actionRename_file->setEnabled(false);
+        duplicateDatacontainer->setEnabled(false);
     }
 
     //get the full path of the index into treeView
@@ -812,7 +844,8 @@ void MDImain::showContextMenu(QPoint)
                 menu.addAction(sortBySubset);
                 menu.addMenu(toolsMenu);
                 menu.addSeparator();
-                menu.addAction(ui->actionDuplicate_DataContainer);
+                //menu.addAction(ui->actionDuplicate_DataContainer);
+                menu.addAction(duplicateDatacontainer);
                 menu.addAction(ui->actionRename_file);
                 menu.addAction(saveFile);
                 menu.addAction(saveAsFile);
@@ -873,7 +906,7 @@ void MDImain::showContextMenu(QPoint)
                 menu.addAction(sortBySubset);
                 menu.addMenu(toolsMenu);
                 menu.addSeparator();
-                menu.addAction(ui->actionDuplicate_DataContainer);
+                menu.addAction(duplicateDatacontainer);
                 menu.addAction(ui->actionRename_file);
                 menu.addAction(saveFile);
                 menu.addAction(saveAsFile);
@@ -2286,6 +2319,13 @@ void MDImain::addCdfxFile2Project()
 
 void MDImain::deleteFilesFromProject()
 {
+    //get a pointer on the selected items
+    QList<Node*> listNodes;
+    foreach (QModelIndex index, ui->treeView->selectionModel()->selectedIndexes())
+    {
+        Node *node =  model->getNode(index);
+        listNodes.append(node);
+    }
 
     QStringList list;
     foreach (QModelIndex index, ui->treeView->selectionModel()->selectedIndexes())
@@ -2301,8 +2341,9 @@ void MDImain::deleteFilesFromProject()
     {
           case 1:
               // Save was clicked
-            foreach (QModelIndex index, ui->treeView->selectionModel()->selectedIndexes())
+            foreach (Node* node, listNodes)
             {
+                QModelIndex index = model->getIndex(node);
                 deleteFileFromProject(index, msg->deletePermanently());
             }
               break;
@@ -2501,7 +2542,6 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
             return;
         }
     }
-
 }
 
 void MDImain::reAppendProject(WorkProject *wp)
@@ -2731,11 +2771,12 @@ void MDImain::removeWorkProjects()
 
         if (r ==  QMessageBox::Yes)
         {
-            foreach (QModelIndex index, ui->treeView->selectionModel()->selectedIndexes())
-            {
+//            foreach (QModelIndex index, ui->treeView->selectionModel()->selectedIndexes())
+//            {
 
-                removeWorkProject(index);
-            }
+//                removeWorkProject(index);
+//            }
+            removeWorkProject(ui->treeView->selectionModel()->selectedIndexes());
         }
     }
 }
@@ -2748,6 +2789,7 @@ void MDImain::removeWorkProject(QModelIndex index)
         Node *node =  model->getNode(index);
         QString name = typeid(*node).name();
 
+        //ensire a correct file is selected
         if (!name.endsWith("A2LFILE") && !name.endsWith("DBFILE"))
         {
             QMessageBox::warning(this, "HEXplorer::remove project", "Please select first a project.",
@@ -2755,6 +2797,7 @@ void MDImain::removeWorkProject(QModelIndex index)
             return;
         }
 
+        //remove file
         if (name.endsWith("A2LFILE"))
         {
             //As the selected node is an A2l file we can cast the node into its real type : A2LFILE
@@ -2937,6 +2980,122 @@ void MDImain::removeWorkProject(QModelIndex index)
             wp->detach(this);
         }
     }
+}
+
+void MDImain::removeWorkProject(QModelIndexList indexList)
+{
+    //get a pointer on the selected items
+    QList<A2LFILE*> listNodes;
+    foreach (QModelIndex index, indexList)
+    {
+        Node *node =  model->getNode(index);
+        QString name = typeid(*node).name();
+
+        //ensure a correct file is selected
+        if (!name.endsWith("A2LFILE"))
+        {
+            QMessageBox::warning(this, "HEXplorer::remove project", "Please select first a project.",
+                                             QMessageBox::Ok);
+        }
+        else
+        {
+            //As the selected node is an A2l file we can cast the node into its real type : A2LFILE
+            A2LFILE *a2lfile = dynamic_cast<A2LFILE *> (node);
+
+            //ask to save the modified nodes (hex or Csv)
+            foreach (Node *node, a2lfile->childNodes)
+            {
+                QString name = typeid(*node).name();
+                if (name.toLower().endsWith("hexfile"))
+                {
+                    HexFile *hex = (HexFile*)node;
+                    if (!hex->getModifiedData().isEmpty())
+                    {
+                          int r = QMessageBox::question(this, "HEXplorer::question",
+                                                        "Save changes in " + QString(hex->name) + "?",
+                                                        QMessageBox::Yes, QMessageBox::No);
+                          if (r == QMessageBox::Yes)
+                          {
+                              QModelIndex hexIndex = model->getIndex(hex);
+                              save_HexFile(hexIndex);
+                          }
+                    }
+                }
+                else if (name.toLower().endsWith("srecfile"))
+                {
+                    SrecFile *srec = (SrecFile*)node;
+                    if (!srec->getModifiedData().isEmpty())
+                    {
+                        int r = QMessageBox::question(this, "HEXplorer::question",
+                                                      "Save changes in " + QString(srec->name) + "?",
+                                                      QMessageBox::Yes, QMessageBox::No);
+                        if (r == QMessageBox::Yes)
+                        {
+                          QModelIndex srecIndex = model->getIndex(srec);
+                          save_SrecFile(srecIndex);
+                        }
+                    }
+                }
+                else if (name.toLower().endsWith("csv"))
+                {
+                    Csv *csv = (Csv*)node;
+                    if (!csv->getModifiedData().isEmpty())
+                    {
+                        int r = QMessageBox::question(this, "HEXplorer::question",
+                                                      "Save changes in " + QString(csv->name) + "?",
+                                                      QMessageBox::Yes, QMessageBox::No);
+                        if (r == QMessageBox::Yes)
+                        {
+                          QModelIndex csvIndex = model->getIndex(csv);
+                          save_CsvFile(csvIndex);
+                        }
+                    }
+                }
+                else if (name.toLower().endsWith("cdfxfile"))
+                {
+                    CdfxFile *cdfx = (CdfxFile*)node;
+                    if (!cdfx->getModifiedData().isEmpty())
+                    {
+                        int r = QMessageBox::question(this, "HEXplorer::question",
+                                                      "Save changes in " + QString(cdfx->name) + "?",
+                                                      QMessageBox::Yes, QMessageBox::No);
+                        if (r == QMessageBox::Yes)
+                        {
+                          QModelIndex cdfxIndex = model->getIndex(cdfx);
+                          save_CdfxFile(cdfxIndex);
+                        }
+                    }
+                }
+            }
+
+            //remove the node from treeView model
+            listNodes.append(a2lfile);
+        }
+    }
+
+    //remove datas from tree
+    foreach (A2LFILE* node, listNodes)
+    {
+        Node* parentNode = node->getParentNode();
+        if (parentNode)
+        {
+            QModelIndex index = model->getIndex(node);
+            if (index.isValid())
+                model->dataRemoved(parentNode, index.row(), 1);
+
+            //get the project
+            WorkProject *wp = projectList->value(node->fullName());
+
+            //remove the project from the this->projectList
+            projectList->remove(node->fullName());
+
+            //delete the selected project
+            wp->detach(this);
+        }
+    }
+
+    ui->treeView->resizeColumnToContents(0);
+
 }
 
 void MDImain::removeWorkingDirectory(QModelIndex index)

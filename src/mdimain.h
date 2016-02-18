@@ -132,6 +132,7 @@ private:
     QAction *editLabelCompare;
     QAction *exportListData;
     QAction *saveA2lDB;
+    QAction *duplicateDatacontainer;
     QMenu *toolsMenu;
     QMenu *recentProMenu;
     QWidget *myWidget;
@@ -206,6 +207,7 @@ private slots:
      void deleteFileFromProject(QModelIndex index, bool bl = 0);
      void removeWorkProjects();
      void removeWorkProject(QModelIndex index);
+     void removeWorkProject(QModelIndexList indexList);
      void removeWorkingDirectory(QModelIndex index);
      void export_ListData();
      void removeTab ( int index );
