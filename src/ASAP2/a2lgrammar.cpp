@@ -403,6 +403,7 @@ void A2lGrammar::initMeasurement()
             << "LowerLimit" << "UpperLimit";
 
     measurement.factoryOptNode.insert("IF_DATA", &IF_DATA::nodeFactory);
+    measurement.factoryOptNode.insert("ANNOTATION", &ANNOTATION::nodeFactory);
 
     measurement.factoryOptItem.insert("FORMAT", &FORMAT::itemFactory);
     measurement.factoryOptItem.insert("ECU_ADDRESS", &ECU_ADDRESS::itemFactory);

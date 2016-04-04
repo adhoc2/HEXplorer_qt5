@@ -125,6 +125,7 @@ TokenTyp MEASUREMENT::parseOptPar()
     nameOptPar.insert("BIT_MASK", ZeroOrOne);
     nameOptPar.insert("BYTE_ORDER", ZeroOrOne);
     nameOptPar.insert("IF_DATA", ZeroOrMore);
+    nameOptPar.insert("ANNOTATION", ZeroOrMore);
     nameOptPar.insert("ARRAY_SIZE", ZeroOrOne);
     nameOptPar.insert("DISPLAY_IDENTIFIER", ZeroOrOne);
     nameOptPar.insert("ECU_ADDRESS_EXTENSION", ZeroOrOne);

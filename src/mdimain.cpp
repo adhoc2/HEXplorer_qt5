@@ -1771,7 +1771,7 @@ void MDImain::addHexFile2Project()
                         ui->treeView->expand(index);
                         ui->treeView->resizeColumnToContents(0);
 
-                        writeOutput("action open new dataset : HEX file add to project in " + QString::number(tf-ti) + " sec");
+                        writeOutput("action open new dataset : HEX file "  + fullHexName + " add to project in " + QString::number(tf-ti) + " sec");
 
                     }
                 }
@@ -1828,7 +1828,7 @@ void MDImain::addHexFile2Project()
                         ui->treeView->expand(index);
                         ui->treeView->resizeColumnToContents(0);
 
-                        writeOutput("action open new dataset : HEX file add to project in " + QString::number(tf-ti) + " sec");
+                        writeOutput("action open new dataset into database : HEX file " + fullHexName + " add to project in " + QString::number(tf-ti) + " sec");
 
                     }
                 }
@@ -1986,7 +1986,7 @@ void MDImain::addSrecFile2Project()
                         ui->treeView->expand(index);
                         ui->treeView->resizeColumnToContents(0);
 
-                        writeOutput("action open new dataset : Srec file add to project in " + QString::number(tf-ti) + " sec");
+                        writeOutput("action open new dataset : Srec file "  + fullSrecName +" add to project in " + QString::number(tf-ti) + " sec");
 
                     }
                 }

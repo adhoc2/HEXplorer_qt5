@@ -261,16 +261,16 @@ void HexFile::setRead(bool on)
 bool HexFile::read_db()
 {
     // parse the file
-    if (parseFile())
-    {
-        //check hex version before reading all datas
-        if (isDbCombined())
-        {
-            readAllData_db();
-            return true;
-        }
-        return false;
-    }
+//    if (parseFile())
+//    {
+//        //check hex version before reading all datas
+//        if (isDbCombined())
+//        {
+//            readAllData_db();
+//            return true;
+//        }
+//        return false;
+//    }
     return false;
 
 }
