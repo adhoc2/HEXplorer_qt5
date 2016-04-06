@@ -1,6 +1,10 @@
 <HEXplorer application="HEXplorer">
-    <revision version="0.7.1">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
-    <details>revision 0.7.1 (10/2015) :
+    <revision version="0.7.6">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
+    <details>revision 0.7.6 (Q2/2016) :
+    - STATIC_RECORD_LAYOUT keyword added
+
+
+revision 0.7.1 (10/2015) :
     - use of std::algorithms instead of qalgorithm
 
 
