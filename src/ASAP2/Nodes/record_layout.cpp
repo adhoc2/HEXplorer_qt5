@@ -126,6 +126,7 @@ TokenTyp RECORD_LAYOUT::parseOptPar()
     nameOptPar.insert("ALIGNMENT_LONG", ZeroOrOne);
     nameOptPar.insert("ALIGNMENT_FLOAT32_IEEE", ZeroOrOne);
     nameOptPar.insert("ALIGNMENT_FLOAT64_IEEE", ZeroOrOne);
+    nameOptPar.insert("STATIC_RECORD_LAYOUT", ZeroOrOne);
 
 
     if (nameOptPar.isEmpty())

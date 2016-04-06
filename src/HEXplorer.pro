@@ -282,7 +282,8 @@ HEADERS += a2l.h \
     connectionwidget.h \
     ASAP2/Nodes/dbfile.h \
     workingdirectory.h \
-    deletefiledialog.h
+    deletefiledialog.h \
+    ASAP2/Items/static_record_layout.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -459,7 +460,8 @@ SOURCES += a2l.cpp \
     connectionwidget.cpp \
     ASAP2/Nodes/dbfile.cpp \
     workingdirectory.cpp \
-    deletefiledialog.cpp
+    deletefiledialog.cpp \
+    ASAP2/Items/static_record_layout.cpp
 
 OTHER_FILES += \
     GNU_license.txt \

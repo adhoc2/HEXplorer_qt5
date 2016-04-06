@@ -17,44 +17,27 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#ifndef RECORD_LAYOUT_H
-#define RECORD_LAYOUT_H
+#ifndef STATIC_RECORD_LAYOUT_H
+#define STATIC_RECORD_LAYOUT_H
 
-#include "node.h"
+#include "item.h"
+#include "lexer.h"
 #include "basefactory.h"
-#include "Items/no_axis_pts_x.h"
-#include "Items/no_axis_pts_y.h"
-#include "Items/axis_pts_x.h"
-#include "Items/axis_pts_y.h"
-#include "Items/fnc_values.h"
-#include "Items/src_addr_x.h"
-#include "Items/src_addr_y.h"
-#include "Items/static_record_layout.h"
 
-
-class RECORD_LAYOUT : public Node
+class STATIC_RECORD_LAYOUT : public Item
 {
     public:
-        RECORD_LAYOUT( Node *parentNode);
-        ~RECORD_LAYOUT();
-
-        QMap<std::string, std::string> *getParameters();
-        static Factory<Node,RECORD_LAYOUT> nodeFactory;
-        std::string pixmap();
+        STATIC_RECORD_LAYOUT( Node *parentNode);
+        ~STATIC_RECORD_LAYOUT();
+        QMap<std::string, std::string> getParameters();
+        static Factory<Item, STATIC_RECORD_LAYOUT> itemFactory;
         char* getPar(std::string str);
 
     private:
-        // Fix parameters
+        void parseFixPar(QList<TokenTyp> *typePar);
         QList<TokenTyp> *typePar;
         QList<std::string> *namePar;
         QList<char*> parameters;
-
-        // Opt parameters
-        QMap<std::string, FactoryPlant<Node> *>  *factoryOptNode;
-        QMap<std::string, FactoryPlant<Item> *>  *factoryOptItem;
-
-        void parseFixPar(QList<TokenTyp> *typePar);
-        TokenTyp parseOptPar();
 };
 
-#endif // RECORD_LAYOUT_H
+#endif // STATIC_RECORD_LAYOUT_H

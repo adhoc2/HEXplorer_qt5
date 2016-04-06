@@ -205,6 +205,7 @@ mode ONE_AND_ONLY :
 	SLONG 	 { self_send1(QUEX_TKN_DATATYPE , Lexeme); RETURN; }
 	SRC_ADDR_X 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	SRC_ADDR_Y 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
+	STATIC_RECORD_LAYOUT 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	STATUS_STRING_REF 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }
 	STD_AXIS 	 { self_send1(QUEX_TKN_ATTRIBUTE , Lexeme); RETURN; }
 	SUB_FUNCTION 	 { self_send1(QUEX_TKN_KEYWORD , Lexeme); RETURN; }

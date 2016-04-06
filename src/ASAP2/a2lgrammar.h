@@ -135,6 +135,7 @@ class A2lGrammar
         ElementItem s_rec_layout;
         ElementItem src_addr_x;
         ElementItem src_addr_y;
+        ElementItem static_record_layout;
         ElementItem supplier;
         ElementItem unit_conversion;
         ElementItem user;
@@ -227,6 +228,7 @@ private:
         void initS_rec_layout();
         void initSrc_addr_x();
         void initSrc_addr_y();
+        void initStatic_record_layout();
         void initUnit_conversion();
         void initUser();
         void initVersion();

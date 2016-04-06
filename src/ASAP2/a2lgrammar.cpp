@@ -137,7 +137,8 @@ QHash<QString, TokenTyp> A2lGrammar::initKeywords()
         << "NO_AXIS_PTS_X" << "NO_AXIS_PTS_Y" << "AXIS_PTS_X" << "AXIS_PTS_Y" << "FNC_VALUES"
         << "ALIGNMENT_FLOAT32_IEEE" << "ALIGNMENT_FLOAT64_IEEE" << "ALIGNMENT_BYTE" << "ALIGNMENT_WORD" << "ALIGNMENT_LONG"
         << "FUNCTION_VERSION" << "IN_MEASUREMENT" << "SUB_FUNCTION" << "MAX_REFRESH" << "CUSTOMER" << "SUPPLIER" << "UNIT" << "SI_EXPONENTS" << "UNIT_CONVERSION"
-        << "DATA_SIZE" << "SUB_GROUP" << "ROOT" << "REF_MEASUREMENT" << "ECU_ADDRESS_EXTENSION" << "MATRIX_DIM" << "FIX_AXIS_PAR_DIST";
+        << "DATA_SIZE" << "SUB_GROUP" << "ROOT" << "REF_MEASUREMENT" << "ECU_ADDRESS_EXTENSION" << "MATRIX_DIM" << "FIX_AXIS_PAR_DIST"
+        << "STATIC_RECORD_LAYOUT";
 
     foreach (std::string str, list)
         keywordsList.insert(QString(str.c_str()), Keyword);
@@ -378,7 +379,8 @@ void A2lGrammar::initRecord_layout()
     record_layout.factoryOptItem.insert("ALIGNMENT_LONG", &ALIGNMENT_LONG::itemFactory);
     record_layout.factoryOptItem.insert("ALIGNMENT_WORD", &ALIGNMENT_WORD::itemFactory);
     record_layout.factoryOptItem.insert("ALIGNMENT_FLOAT32_IEEE", &ALIGNMENT_FLOAT32_IEEE::itemFactory);
-    record_layout.factoryOptItem.insert("ALIGNMENT_FLOAT64_IEEE", &ALIGNMENT_FLOAT32_IEEE::itemFactory);
+    record_layout.factoryOptItem.insert("ALIGNMENT_FLOAT64_IEEE", &ALIGNMENT_FLOAT64_IEEE::itemFactory);
+    record_layout.factoryOptItem.insert("STATIC_RECORD_LAYOUT", &STATIC_RECORD_LAYOUT::itemFactory);
 }
 
 void A2lGrammar::initCompu_method()
@@ -945,6 +947,11 @@ void A2lGrammar::initSrc_addr_y()
 {
     src_addr_y.typePar  << Integer << DataType;
     src_addr_y.namePar << "Position" << "Datatype";
+}
+
+void A2lGrammar::initStatic_record_layout()
+{
+
 }
 
 void A2lGrammar::initUser()
