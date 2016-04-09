@@ -281,7 +281,8 @@ bool HexFile::parseFile()
     timer.start();
 
     // open file in binary format
-    FILE *fid = fopen(fullHexName.toStdString().c_str(), "rb");
+    FILE *fid = fopen(fullHexName.toLocal8Bit(), "rb");
+
     if (fid == NULL)
     {
         return false;

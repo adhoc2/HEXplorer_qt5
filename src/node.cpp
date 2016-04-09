@@ -286,8 +286,6 @@ Node* Node::interpolationSearch(QList<Node *> sortedArray, QString str)
 
     while (QString(sortedArray.at(low)->name) <= str && QString(sortedArray.at(high)->name) >= str)
     {
-        qDebug() << str.toStdString().c_str() << " :" << sortedArray.at(low)->name << " = " << distance(str , sortedArray.at(low)->name);
-        qDebug() << sortedArray.at(high)->name << " :" << sortedArray.at(low)->name << " = " << distance(sortedArray.at(high)->name, sortedArray.at(low)->name);
 
         mid = low +
                 (distance(str.toStdString().c_str() , sortedArray.at(low)->name) * (high - low)) /

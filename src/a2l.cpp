@@ -222,6 +222,7 @@ void A2l::parseSTA2l()
     if (errorList->isEmpty())
     {
         this->outputList.append("file parsed with success ...");
+        is_Ok = true;
     }
     else
     {

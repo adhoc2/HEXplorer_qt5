@@ -738,7 +738,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
 Data::Data(QSqlRecord record, QSqlDatabase database,  HexFile *hexFile, bool modif) : Node(), QObject()
 {
     //set node name
-    this->name = (char*)record.value(1).toString().toStdString().c_str();
+    this->name = (char*)record.value(1).toString().toLocal8Bit().data();
 
     //initialize settings
     xOrgSize = 0;

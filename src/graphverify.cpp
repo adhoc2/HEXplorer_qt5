@@ -95,6 +95,23 @@ GraphVerify::GraphVerify(HexFile *hex, QWidget *parent):  QMainWindow(parent)
         trqRef_C = hexFile->getData("Frm_trqRef_C");
         monTrqMax_C = hexFile->getData("MoFFrm_trqMax_C");
     }
+    else if(projectName.toLower() == "p1603")
+    {
+        trqSpd = hex->getData("RngMod_trqSpd_CUR");
+        apsMap = hex->getData("RngMod_trqAPSCor_MAP");
+        qLim = hexFile->getData("EngPrt_qLim_CUR");
+        fmtc = hexFile->getData("PhyMod_trq2qBasEOM0_MAP");
+        if (!fmtc)
+            fmtc = hexFile->getData("PhyMod_trq2qBas_MAP");
+        friction = hexFile->getData("RngMod_trqFrc_MAP");
+        trqMax_C = hexFile->getData("Frm_trqMax_C");
+        trqRef_C = hexFile->getData("Frm_trqRef_C");
+        monTrqMax_C = hexFile->getData("MoFFrm_trqMax_C");
+
+    }
+    else
+        return;
+
 
     // model
     QList<Data*> *list = new QList<Data*>;
@@ -308,7 +325,6 @@ double GraphVerify::q2trq(double Ni, double Qi)
 
     }
 
-    //qDebug(("Q = " + QString::number(q1) + " : " + QString::number(q2)).toStdString().c_str());
 
     //interpolate Q
     double T1 = fmtc->getY(q1).toDouble();
@@ -326,7 +342,6 @@ double GraphVerify::q2trq(double Ni, double Qi)
     delete[] Zn2;
     delete[] Zn;
 
-    //qDebug(("T = " + QString::number(Ti) + " Nm ").toStdString().c_str());
     return Ti;
 }
 

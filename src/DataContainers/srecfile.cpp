@@ -242,7 +242,7 @@ bool SrecFile::parseFile()
     timer.start();
 
     // open file in binary format
-    FILE *fid = fopen(fullSrecName.toStdString().c_str(), "rb");
+    FILE *fid = fopen(fullSrecName.toLocal8Bit(), "rb");
     if (fid == NULL)
     {
         return false;

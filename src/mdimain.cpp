@@ -422,7 +422,7 @@ void MDImain::createActions()
     //toolsMenu->setIcon(QIcon(":/icones/milky_outils.png"));
     toolsMenu->addAction(verify);
     toolsMenu->addAction(checkFmtc);
-    toolsMenu->addAction(childCount);
+    //toolsMenu->addAction(childCount);
 
     recentProMenu = new QMenu();
     recentProMenu->setTitle("recent projects");
@@ -870,24 +870,20 @@ void MDImain::showContextMenu(QPoint)
                 }
 
                 //menu tools
-//                A2LFILE *a2l = dynamic_cast<A2LFILE *> (hex->getParentNode());
-//                QString projectName = ((PROJECT*)a2l->getProject())->getPar("name");
-//                projectName = projectName.toLower();
+                A2LFILE *a2l = dynamic_cast<A2LFILE *> (hex->getParentNode());
+                QString projectName = ((PROJECT*)a2l->getProject())->getPar("name");
+                projectName = projectName.toLower();
 
-//                if (projectName == "c340" || projectName == "c342" || projectName == "p_662")
-//                {
-//                    verify->setDisabled(false);
-//                    checkFmtc->setDisabled(false);
-//                }
-//                else
-//                {
-//                    verify->setDisabled(true);
-//                    checkFmtc->setDisabled(true);
-//                }
-
-                verify->setDisabled(true);
-                checkFmtc->setDisabled(true);
-
+                if (projectName == "c340" || projectName == "c342" || projectName == "p_662" || projectName == "p1603")
+                {
+                    verify->setDisabled(false);
+                    checkFmtc->setDisabled(false);
+                }
+                else
+                {
+                    verify->setDisabled(true);
+                    checkFmtc->setDisabled(true);
+                }
             }
             else if (name.toLower().endsWith("srecfile"))
             {
@@ -1679,6 +1675,14 @@ void MDImain::addHexFile2Project()
                         readA2l(wp);
                     }
 
+                    //check if A2l parsing was successfull
+                    if (!wp->isOk())
+                    {
+                        QMessageBox::information(this,"HEXplorer","action open new dataset failed. A2Lfile is not parsed correctly.");
+                        writeOutput("action open new dataset failed : A2Lfile could not be parsed correctly.");
+                        return;
+                    }
+
                     //if no MOD_COMMON in ASAP file
                     if (wp->a2lFile->getProject()->getNode("MODULE") == NULL)
                     {
@@ -1895,6 +1899,14 @@ void MDImain::addSrecFile2Project()
                         readA2l(wp);
                     }
 
+                    //check if A2l parsing was successfull
+                    if (!wp->isOk())
+                    {
+                        QMessageBox::information(this,"HEXplorer","action open new dataset failed. A2Lfile is not parsed correctly.");
+                        writeOutput("action open new dataset failed : A2Lfile could not be parsed correctly.");
+                        return;
+                    }
+
                     // if no MOD_COMMON in ASAP file
                     if (wp->a2lFile->getProject()->getNode("MODULE") == NULL)
                     {
@@ -2048,6 +2060,14 @@ void MDImain::addCsvFile2Project()
                     if (!wp->a2lFile->isParsed())
                     {
                         readA2l(wp);
+                    }
+
+                    //check if A2l parsing was successfull
+                    if (!wp->isOk())
+                    {
+                        QMessageBox::information(this,"HEXplorer","action open new dataset failed. A2Lfile is not parsed correctly.");
+                        writeOutput("action open new dataset failed : A2Lfile could not be parsed correctly.");
+                        return;
                     }
 
                     // if no MOD_COMMON in ASAP file
@@ -2212,6 +2232,14 @@ void MDImain::addCdfxFile2Project()
                     if (!wp->a2lFile->isParsed())
                     {
                         readA2l(wp);
+                    }
+
+                    //check if A2l parsing was successfull
+                    if (!wp->isOk())
+                    {
+                        QMessageBox::information(this,"HEXplorer","action open new dataset failed. A2Lfile is not parsed correctly.");
+                        writeOutput("action open new dataset failed : A2Lfile could not be parsed correctly.");
+                        return;
                     }
 
                     // if no MOD_COMMON in ASAP file
@@ -3835,6 +3863,16 @@ void MDImain::readA2l(WorkProject* wp)
     statusBar()->hide();
     progBar->reset();
 
+    //messagebox in case of a2l parser error
+    if (!wp->isOk())
+    {
+        QMessageBox::warning(this, "HEXplorer" ,"ASAP file parser error");
+    }
+
+    //update output console
+    ui->listWidget->addItems(wp->_outputList());
+    ui->listWidget->scrollToBottom();
+
     //remove old a2lfile from model
     int pos = model->getIndex(oldA2lfile).row();
     model->dataRemoved(parentNode, pos, 1);
@@ -3878,9 +3916,15 @@ HexFile* MDImain::readHexFile(HexFile *hex)
     //if the a2lFile is not yet parsed, parse.
     if (!wp->a2lFile->isParsed())
     {
-        //model->beginReset();
         readA2l(wp);
-        //model->endReset();
+    }
+
+    //check if A2l parsing was successfull
+    if (!wp->isOk())
+    {
+        QMessageBox::warning(this,"HEXplorer","action open new dataset failed. A2Lfile is not parsed correctly.");
+        writeOutput("action open new dataset failed : A2Lfile could not be parsed correctly.");
+        return 0;
     }
 
     //get the index of the orginal hex node in treeview
@@ -3981,9 +4025,15 @@ SrecFile* MDImain::readSrecFile(SrecFile* srec)
     //if the a2lFile is not yet parsed, parse.
     if (!wp->a2lFile->isParsed())
     {
-        //model->beginReset();
         readA2l(wp);
-        //model->endReset();
+    }
+
+    //check if A2l parsing was successfull
+    if (!wp->isOk())
+    {
+        QMessageBox::warning(this,"HEXplorer","action open new dataset failed. A2Lfile is not parsed correctly.");
+        writeOutput("action open new dataset failed : A2Lfile could not be parsed correctly.");
+        return 0;
     }
 
     //get the index of the orginal hex node in treeview
@@ -5318,7 +5368,7 @@ void MDImain::quicklookFile()
     QModelIndex index  = ui->treeView->selectionModel()->currentIndex();
     QString str1 = model->getFullNodeName(index);
 
-    if (index.isValid())
+     if (index.isValid())
     {
         //get a pointer on the selected item
         Node *node =  model->getNode(index);
@@ -5333,7 +5383,8 @@ void MDImain::quicklookFile()
             HexFile *hex = dynamic_cast<HexFile*>(node);          
             if (!hex->isRead())
             {
-                readHexFile(hex);
+                if (readHexFile(hex) == NULL)
+                    return;
             }
         }
         else if (name.endsWith("SrecFile"))
