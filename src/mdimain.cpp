@@ -856,6 +856,10 @@ void MDImain::showContextMenu(QPoint)
                 Node *node =  model->getNode(index);
                 HexFile *hex = dynamic_cast<HexFile *> (node);
 
+                // if hexfile not read do not open context menu
+                if (!hex->isRead())
+                    return;
+
                 if (hex->getModifiedData().isEmpty())
                 {
                     sortBySubset->setDisabled(true);
@@ -912,6 +916,10 @@ void MDImain::showContextMenu(QPoint)
                 //menu editModified
                 Node *node =  model->getNode(index);
                 SrecFile *srec = dynamic_cast<SrecFile *> (node);
+
+                // if Srecfile not read do not open context menu
+                if (!srec->isRead())
+                    return;
 
                 if (srec->getModifiedData().isEmpty())
                 {

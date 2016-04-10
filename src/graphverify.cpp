@@ -67,6 +67,11 @@ GraphVerify::GraphVerify(HexFile *hex, QWidget *parent):  QMainWindow(parent)
     setupUi(this);
     hexFile = hex;
     offset = 10;
+    tCoolant = 90;
+
+    //set LindEdit
+    lineEdit->setText(QString::number(tCoolant));
+    lineEdit_2->setText(QString::number(offset));
 
     //get datas
     QString projectName = hex->getA2lFileProject()->getPar("name");;
@@ -143,18 +148,11 @@ GraphVerify::GraphVerify(HexFile *hex, QWidget *parent):  QMainWindow(parent)
     table->setVisible(false);
     createButtons();
 
-    connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(reDraw(QModelIndex,QModelIndex)));
+    connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(reDrawResult(QModelIndex,QModelIndex)));
 
     // calculate the inner/outter torque
-    calculate();
-
-//    // define zoomer
-//    d_zoomer[0] = new Zoomer( QwtPlot::xBottom, QwtPlot::yLeft, d_plot->canvas());
-//    d_zoomer[0]->setRubberBand(QwtPicker::RectRubberBand);
-//    d_zoomer[0]->setRubberBandPen(QColor(Qt::green));
-//    d_zoomer[0]->setTrackerMode(QwtPicker::ActiveOnly);
-//    d_zoomer[0]->setTrackerPen(QColor(Qt::white));
-//    activateZoom(false);
+    calculateInnerOutterTorque();
+    plotInnerOutterTorque();
 
     // define panner
     d_panner = new QwtPlotPanner(d_plot->canvas());
@@ -207,6 +205,7 @@ void GraphVerify::createButtons()
     zoomButton->setText("zoom");
     zoomButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     zoomButton->setVisible(false);
+
 
     toolBar->addWidget(btnVerify);
     toolBar->addWidget(btnShowData);
@@ -345,7 +344,7 @@ double GraphVerify::q2trq(double Ni, double Qi)
     return Ti;
 }
 
-void GraphVerify::setData()
+void GraphVerify::setDatasetValues()
 {
     // calculate speedCurve
     QModelIndexList listIndex;
@@ -480,9 +479,11 @@ void GraphVerify::setData()
         list.append(index);
         model->setData(index, list, QString::number(apsMap->getMaxZ()), Qt::EditRole);
     }
+
+    reDrawResult();
 }
 
-void GraphVerify::calculate()
+void GraphVerify::calculateInnerOutterTorque()
 {
     //axisX
     QVector<double> xData(qLim->xCount());
@@ -494,19 +495,33 @@ void GraphVerify::calculate()
     }
 
     //calculate innerT
+    innerT.clear();
     for (int i = 0; i < qLim->xCount(); i++)
     {
         double Ni = qLim->getX(i).toDouble();
         double Qi = qLim->getZ(i).toDouble();
         innerT.append(q2trq(Ni, Qi));
-
-        //qDebug() << Ni << ";" << Qi << " : " << q2trq(Ni, Qi);
     }
 
     //calculate outterT
+    outterT.clear();
     for (int i = 0; i < qLim->xCount(); i++)
     {
-        outterT.append(innerT[i] + friction->interp2D(xData[i], 90));
+        outterT.append(innerT[i] + friction->interp2D(xData[i], tCoolant));
+    }
+
+}
+
+void GraphVerify::plotInnerOutterTorque()
+{
+
+    //axisX
+    QVector<double> xData(qLim->xCount());
+    int i = 0;
+    foreach (QString str, qLim->getX())
+    {
+        xData[i] = str.toDouble();
+        i++;
     }
 
     //PLOT : backgroungColor
@@ -610,7 +625,7 @@ QwtPlotCurve * GraphVerify::selectCurve(QString str)
     return curve;
 }
 
-void GraphVerify::reDraw(QModelIndex topLeft,QModelIndex bottomRight)
+void GraphVerify::reDrawResult()
 {
     // calculate speedCurve
     QwtPlotCurve *d_selectedCurve = selectCurve("Torque Speed");
@@ -646,20 +661,41 @@ void GraphVerify::reDraw(QModelIndex topLeft,QModelIndex bottomRight)
     d_plot->replot();
 }
 
+void GraphVerify::reDrawOutterTorque()
+{
+    // calculate speedCurve
+    QwtPlotCurve *d_selectedCurve = selectCurve("outter Torque");
+    if (d_selectedCurve)
+    {
+        QVector<double> xData(d_selectedCurve->dataSize());
+        QVector<double> yData(d_selectedCurve->dataSize());
+
+        for (int x = 0; x < trqSpd->xCount(); x++)
+        {
+            xData[x] = trqSpd->getX(x).toDouble();
+            yData[x] = outterT.at(x);
+        }
+        d_selectedCurve->setSamples(xData, yData);
+    }
+    d_plot->replot();
+}
+
 void GraphVerify::setOffset()
 {
-    bool ok;
-    QString valueStr = QInputDialog::getText(this, tr("HEXplorer :: verify"),
-                                         tr("enter an offset:"), QLineEdit::Normal,
-                                         "", &ok);
+//    bool ok;
+//    QString valueStr = QInputDialog::getText(this, tr("HEXplorer :: verify"),
+//                                         tr("enter an offset:"), QLineEdit::Normal,
+//                                         "", &ok);
 
-    bool bl;
-    offset = valueStr.toDouble(&bl);
+//    bool bl;
+//    offset = valueStr.toDouble(&bl);
 
-    if (ok && bl)
-    {
-        setData();
-    }
+//    if (ok && bl)
+//    {
+//        setDatasetValues();
+//    }
+
+    setDatasetValues();
 }
 
 void GraphVerify::activateZoom(bool on)
@@ -674,4 +710,32 @@ void GraphVerify::activateZoom(bool on)
 
     d_picker->setEnabled(!on);
 
+}
+
+void GraphVerify::on_lineEdit_returnPressed()
+{
+    bool bl;
+    double arg  = lineEdit->text().toDouble(&bl);
+
+    if (bl)
+    {
+        tCoolant = arg;
+        lineEdit->setText(QString::number(tCoolant));
+
+        calculateInnerOutterTorque();
+        reDrawOutterTorque();
+    }
+
+}
+
+void GraphVerify::on_lineEdit_2_returnPressed()
+{
+    bool bl;
+    double arg = lineEdit_2->text().toDouble(&bl);
+
+    if (bl)
+    {
+        offset = arg;
+        lineEdit_2->setText(QString::number(offset));
+    }
 }

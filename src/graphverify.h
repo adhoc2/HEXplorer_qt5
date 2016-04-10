@@ -46,7 +46,8 @@ public:
 private:
     void createButtons();
     QwtPlotCurve * selectCurve(QString str);
-    void calculate();
+    void calculateInnerOutterTorque();
+    void plotInnerOutterTorque();
 
     //QwtArray<double> innerT;
     QVector<double> innerT;
@@ -54,6 +55,7 @@ private:
     QVector<double> outterT;
     double q2trq(double Ni, double Qi);
     double offset;
+    double tCoolant;
 
     SpreadsheetView *table;
     HexFile *hexFile;
@@ -73,10 +75,13 @@ private:
 
 private slots:
     void activateZoom(bool);
-    void setData();
+    void setDatasetValues();
     void setOffset();
     void showData(bool);
-    void reDraw(QModelIndex topLeft,QModelIndex bottomRight);
+    void reDrawResult();
+    void reDrawOutterTorque();
+    void on_lineEdit_returnPressed();
+    void on_lineEdit_2_returnPressed();
 };
 
 #endif // GRAPHVERIFY_H
