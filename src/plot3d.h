@@ -17,49 +17,33 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#ifndef GRAPH_H
-#define GRAPH_H
+#ifndef Plot3D_H
+#define Plot3D_H
 
-#include "ui_graph.h"
 #include <QMainWindow>
+#include <qwt3d_surfaceplot.h>
+#include <qwt3d_meshplot.h>
+#include <qwt3d_types.h>
 #include "data.h"
-#include "plot.h"
-#include <QTableView>
-#include "graphmodel.h"
-#include "spreadsheetview.h"
-class CanvasPicker;
 
-class Data;
-
-class Graph : public QMainWindow, private Ui::Graph
+class Plot3D : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit Graph(QWidget *parent = 0, Data *data = 0);
-    ~Graph();
-
-    void selectIndexTable(QModelIndex index);
+    explicit Plot3D(QWidget *parent = 0, Data *data = 0);
+    ~Plot3D();
 
 private:
-    GraphModel *model;
     Data *data;
-    Plot *plotXZ;
-    Plot *plotYZ;
-    void showInfo(QString text = QString::null);
-    void createButtons();
-    SpreadsheetView *table;
-    CanvasPicker *canvasXZ;
-    CanvasPicker *canvasYZ;
+    Qwt3D::Triple **triple;
+    //Qwt3D::SurfacePlot *surface;
+    Qwt3D::MeshPlot *surface;
+    void setData();
 
+public slots:
+    void printPlot();
 
-signals:
-
-private slots:
-    void plot3D_qwt();
-    void plot3D_mathgl();
-    void showData(bool);
-    void invertXY(bool);
 };
 
-#endif // GRAPH_H
+#endif // Plot3D_H

@@ -18,7 +18,7 @@
 // please contact the author at : christophe.hoel@gmail.com
 
 #include "graph.h"
-//#include "plot3d.h"
+#include "plot3d.h"
 #include "plotmathgl.h"
 #include "plot.h"
 #include <qtoolbar.h>
@@ -29,6 +29,7 @@
 #include <qwt_plot_zoomer.h>
 #include <qstatusbar.h>
 #include "canvaspicker.h"
+#include <qmessagebox.h>
 #include "qdebug.h"
 
 Graph::Graph(QWidget *parent, Data *dat) :  QMainWindow(parent)
@@ -86,8 +87,12 @@ void Graph::createButtons()
     invertAxis->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     QToolButton *btn3D = new QToolButton(toolBar);
-    btn3D->setText("3D");
+    btn3D->setText("3D_1");
     btn3D->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+
+    QToolButton *btn3D_2 = new QToolButton(toolBar);
+    btn3D_2->setText("3D_2");
+    btn3D_2->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     QToolButton *btnShowData = new QToolButton(toolBar);
     btnShowData->setText("Show data");
@@ -98,10 +103,12 @@ void Graph::createButtons()
     toolBar->addWidget(btnShowData);
     toolBar->addWidget(invertAxis);
     toolBar->addWidget(btn3D);
+    toolBar->addWidget(btn3D_2);
     toolBar->addWidget(btnPrint);
 
     connect(btnPrint, SIGNAL(clicked()), plotXZ, SLOT(printPlot()) );
-    connect(btn3D, SIGNAL(clicked()), this, SLOT(plot3D()) );
+    connect(btn3D, SIGNAL(clicked()), this, SLOT(plot3D_qwt()));
+    connect(btn3D_2, SIGNAL(clicked()), this, SLOT(plot3D_mathgl()));
     connect(btnShowData, SIGNAL(toggled(bool)), this, SLOT(showData(bool)) );
     connect(invertAxis, SIGNAL(toggled(bool)), this, SLOT(invertXY(bool)));
 }
@@ -117,16 +124,39 @@ void Graph::showInfo(QString text)
 #endif
 }
 
-void Graph::plot3D()
+void Graph::plot3D_qwt()
 {
+    if ( !QGLFormat::hasOpenGL() )
+    {
+          QMessageBox::warning(0, "HEXplorer :: plot 3D",
+                                          "3D plot not possible.\nThis system has no OpenGL features.",
+                                          QMessageBox::Ok, QMessageBox::Cancel);
+          return;
+    }
+
     if (data->getY().count() > 0)
     {
-//        Plot3D *plot = new Plot3D(0, data);
-//        plot->resize(600, 400);
-//        plot->show();
-
-        PlotMathGL *plot = new PlotMathGL(0, data);
+        Plot3D *plot = new Plot3D(0, data);
+        plot->resize(600, 400);
         plot->show();
+
+    }
+}
+
+void Graph::plot3D_mathgl()
+{
+    if ( !QGLFormat::hasOpenGL() )
+     {
+        QMessageBox::warning(0, "HEXplorer :: plot 3D",
+                                        "3D plot not possible.\nThis system has no OpenGL features.",
+                                        QMessageBox::Ok, QMessageBox::Cancel);
+          return;
+    }
+
+    if (data->getY().count() > 0)
+    {
+        PlotMathGL *plotMGL = new PlotMathGL(0, data);
+        plotMGL->show();
     }
 }
 

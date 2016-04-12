@@ -20,6 +20,7 @@ equals( QMAKE_CXX, cl) {
     QSCINTILLA_ROOT = ../LIBS/QScintilla-gpl-2.9
     WINHOARD_ROOT = ../LIBS/Hoard-3.10
     QWT_ROOT = ../LIBS/qwt-6.1.2
+    QWT3D_ROOT = ../LIBS/qwtplot3d-master_build322
     MATHGL_ROOT = ../LIBS/mathgl_msvc2013
 
     CONFIG += embed_manifest_exe c++11
@@ -31,6 +32,7 @@ equals( QMAKE_CXX, cl) {
      $${QSCINTILLA_ROOT}/Qt4Qt5 \
      $${WINHOARD_ROOT}/src/source \
      $${QWT_ROOT}/src \
+     $${QWT3D_ROOT}/include \
      $${MATHGL_ROOT}/include \
 
     # ---- debug ----- #
@@ -43,7 +45,8 @@ equals( QMAKE_CXX, cl) {
         -l$${QWT_ROOT}/lib_msvc2013/qwtd \
         -l$${MATHGL_ROOT}/lib/mgl \
         -l$${MATHGL_ROOT}/lib/mgl-qt5 \
-        -l$${WINHOARD_ROOT}/win32/libhoard
+        #-l$${WINHOARD_ROOT}/win32/libhoard \
+
 
 
         QMAKE_CXXFLAGS_DEBUG += -Ox -openmp
@@ -58,7 +61,8 @@ equals( QMAKE_CXX, cl) {
         -l$${QWT_ROOT}/lib_msvc2013/qwt \
         -l$${MATHGL_ROOT}/lib/mgl \
         -l$${MATHGL_ROOT}/lib/mgl-qt5 \
-        -l$${WINHOARD_ROOT}/win32/libhoard
+        #-l$${WINHOARD_ROOT}/win32/libhoard
+        -L$${QWT3D_ROOT}/lib_msvc2013/ -lqwtplot3d -lopengl32 -lglu32 -lgdi32
 
         # only for file a2l_quex_lexer.cpp because microsoft compiler cannot compile with -Ox (-Osiy -Gs instead)
         #QMAKE_CXXFLAGS_RELEASE += -Osiy -Gs -openmp -DQUEX_OPTION_ASSERTS_DISABLED
@@ -77,29 +81,26 @@ equals( QMAKE_CXX, cl) {
 
     QSCINTILLA_ROOT = ../LIBS/QScintilla-gpl-2.9
     QWT_ROOT = ../LIBS/qwt-6.1.2
-    QWT3D_ROOT = ../LIBS/qwtplot3d
+    QWT3D_ROOT = ../LIBS/qwtplot3d-master_build322
     unix:QUEX_ROOT = /Applications/quex/quex-0.60.2
     win32:QUEX_ROOT = "C:\Quex\quex-0.65.4"
     MATHGL_ROOT = ../LIBS/mathgl-2.3.3-mingw.i686
-    #QDJANGO_ROOT = ../LIBS/qdjango
 
-    DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL
+    DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT_DLL
     CONFIG +=  c++11
 
     INCLUDEPATH += . ./ASAP2 ./sqlite $${QUEX_ROOT} \
     ./Quex \
     ./DataContainers \
     $${QWT_ROOT}/src \
-    $${QWT3D_ROOT}/include \
     $${QSCINTILLA_ROOT}/Qt4Qt5 \
     $${MATHGL_ROOT}/include \
-    #$${QDJANGO_ROOT}/src/db \
+    $${QWT3D_ROOT}/include
 
     LIBS += -L$${QSCINTILLA_ROOT}/Qt4Qt5/lib \
-    -L$${QWT3D_ROOT}/lib \
     -L$${QWT_ROOT}/lib \
     -L$${MATHGL_ROOT}/lib \
-    #-L$${QDJANGO_ROOT}/lib
+    -L$${QWT3D_ROOT}/lib_mingw492
 
     # --- debug config --- #
     CONFIG( debug, debug|release ) {
@@ -117,7 +118,7 @@ equals( QMAKE_CXX, cl) {
         MOC_DIR = release/moc
         OBJECTS_DIR = release/obj
         #LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
-        LIBS += -lqwt -lgomp -lqscintilla2 -lmgl -lmgl-qt5
+        LIBS += -lqwt -lgomp -lqscintilla2 -lmgl -lmgl-qt5 -lqwtplot3d -lopengl32 -lglu32 -lgdi32
         QMAKE_CXXFLAGS_RELEASE += -O3 -fopenmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
 }
@@ -283,7 +284,8 @@ HEADERS += a2l.h \
     ASAP2/Nodes/dbfile.h \
     workingdirectory.h \
     deletefiledialog.h \
-    ASAP2/Items/static_record_layout.h
+    ASAP2/Items/static_record_layout.h \
+    plot3d.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -461,7 +463,8 @@ SOURCES += a2l.cpp \
     ASAP2/Nodes/dbfile.cpp \
     workingdirectory.cpp \
     deletefiledialog.cpp \
-    ASAP2/Items/static_record_layout.cpp
+    ASAP2/Items/static_record_layout.cpp \
+    plot3d.cpp
 
 OTHER_FILES += \
     GNU_license.txt \
