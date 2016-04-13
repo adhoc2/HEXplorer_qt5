@@ -45,9 +45,7 @@ equals( QMAKE_CXX, cl) {
         -l$${QWT_ROOT}/lib_msvc2013/qwtd \
         -l$${MATHGL_ROOT}/lib/mgl \
         -l$${MATHGL_ROOT}/lib/mgl-qt5 \
-        #-l$${WINHOARD_ROOT}/win32/libhoard \
-
-
+        -L$${QWT3D_ROOT}/lib_msvc2013/ -lqwtplot3dd -lopengl32 -lglu32 -lgdi32 \
 
         QMAKE_CXXFLAGS_DEBUG += -Ox -openmp
     }
@@ -61,8 +59,8 @@ equals( QMAKE_CXX, cl) {
         -l$${QWT_ROOT}/lib_msvc2013/qwt \
         -l$${MATHGL_ROOT}/lib/mgl \
         -l$${MATHGL_ROOT}/lib/mgl-qt5 \
-        #-l$${WINHOARD_ROOT}/win32/libhoard
         -L$${QWT3D_ROOT}/lib_msvc2013/ -lqwtplot3d -lopengl32 -lglu32 -lgdi32
+        #-l$${WINHOARD_ROOT}/win32/libhoard
 
         # only for file a2l_quex_lexer.cpp because microsoft compiler cannot compile with -Ox (-Osiy -Gs instead)
         #QMAKE_CXXFLAGS_RELEASE += -Osiy -Gs -openmp -DQUEX_OPTION_ASSERTS_DISABLED
@@ -108,7 +106,7 @@ equals( QMAKE_CXX, cl) {
         MOC_DIR = debug/moc
         OBJECTS_DIR = debug/obj
         DEFINES += MY_DEBUG
-        LIBS += -lqwtd -lgomp -lqscintilla2d -lmgl -lmgl-qt5
+        LIBS += -lqwtd -lgomp -lqscintilla2d -lmgl -lmgl-qt5 -lqwtplot3dd -lopengl32 -lglu32 -lgdi32
         QMAKE_CXXFLAGS_DEBUG += -fopenmp
     }
     else {
@@ -117,7 +115,6 @@ equals( QMAKE_CXX, cl) {
         UI_DIR = release/ui
         MOC_DIR = release/moc
         OBJECTS_DIR = release/obj
-        #LIBS += -lqwtplot3d -lqwt -lgomp -lqscintilla2
         LIBS += -lqwt -lgomp -lqscintilla2 -lmgl -lmgl-qt5 -lqwtplot3d -lopengl32 -lglu32 -lgdi32
         QMAKE_CXXFLAGS_RELEASE += -O3 -fopenmp -DQUEX_OPTION_ASSERTS_DISABLED
     }

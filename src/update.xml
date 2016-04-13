@@ -1,6 +1,12 @@
 <HEXplorer application="HEXplorer">
-    <revision version="0.7.6">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
-    <details>revision 0.7.6 (Q2/2016) :
+    <revision version="0.7.7">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
+    <details>revision 0.7.7 (Q2/2016) :
+    - bugs correction related to 3D openGL
+    - bugs correction related to opening an HEXfile when a2l file could not be read properly due t miising keywords.
+    - QwtPlot3D library "re-"added
+
+
+revision 0.7.6 (Q2/2016) :
     - STATIC_RECORD_LAYOUT keyword added
 
 
