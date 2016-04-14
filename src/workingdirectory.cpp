@@ -28,10 +28,18 @@ WorkingDirectory::WorkingDirectory(QString rootPath, A2lTreeModel *model = NULL,
     this->model = model;
 
     //connect a slot to populate the treeView
-    QObject::connect(fmodel, &QFileSystemModel::directoryLoaded, [=](const QString &newValue) {
-     this->populateNodeTreeview(newValue, this);
+    QObject::connect(fmodel, &QFileSystemModel::directoryLoaded, [=](const QString &path) {
+     this->populateNodeTreeview(path, this);
      } );
 
+    QObject::connect(fmodel, &QFileSystemModel::rootPathChanged, [=](const QString &newPath) {
+        this->rootPathChanged(newPath, this);
+        } );
+
+    QObject::connect(fmodel, &QFileSystemModel::fileRenamed, [=](const QString &path, const QString &oldname,
+                     const QString &newname) {
+        this->fileRenamed(path, oldname, newname, this);
+        } );
 
 }
 
@@ -41,14 +49,14 @@ WorkingDirectory::~WorkingDirectory()
     delete fmodel;
 }
 
-void WorkingDirectory::populateNodeTreeview(QString str, Node *node)
+void WorkingDirectory::populateNodeTreeview(QString path, Node *node)
 {
-    if (listWorkProjects.contains(str))
+    if (listWorkProjects.contains(path))
         return;
 
 
     //index of selected folder in model
-    QModelIndex parentIndex = fmodel->index(str);
+    QModelIndex parentIndex = fmodel->index(path);
     int numRows = fmodel->rowCount(parentIndex);
 
     //create a pointer to  WP
@@ -72,16 +80,14 @@ void WorkingDirectory::populateNodeTreeview(QString str, Node *node)
                mdimain->insertWp(wp);
 
                //update the ui->treeView
-               //model->beginReset();
                node->addChildNode(wp->a2lFile);
                wp->a2lFile->setParentNode(node);
                node->sortChildrensName();
                model->dataInserted(node, node->childNodes.indexOf(wp->a2lFile));
-               //model->endReset();
 
                hasA2l = true;
 
-               listWorkProjects.append(str);
+               listWorkProjects.append(path);
            }
        }
        else
@@ -103,20 +109,26 @@ void WorkingDirectory::populateNodeTreeview(QString str, Node *node)
                if (file.suffix().toLower() == "hex")
                {
                    HexFile* hex = new HexFile(file.absoluteFilePath(), wp);
-                   //model->beginReset();
                    wp->addHex(hex);
-                   //model->endReset();
                }
                else if (file.suffix().toLower() == "s19")
                {
                    SrecFile* srec = new SrecFile(file.absoluteFilePath(), wp);
-                   //model->beginReset();
                    wp->addSrec(srec);
-                   //model->endReset();
                }
            }
         }
     }
+}
+
+void WorkingDirectory::rootPathChanged(QString newpath, Node *node)
+{
+
+}
+
+void WorkingDirectory::fileRenamed(QString path, QString oldname, QString newname, Node *node)
+{
+
 }
 
 QString WorkingDirectory::getFullPath()

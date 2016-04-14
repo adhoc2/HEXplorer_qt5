@@ -1573,6 +1573,7 @@ WorkingDirectory* MDImain::openWorkingDirectory(QString rootPath)
     completer->setModel(model);
     ui->treeView->setColumnHidden(1, true);
 
+
     return nodeWd;
 
 }
@@ -1617,11 +1618,7 @@ void MDImain::on_actionClose_Working_Directory_triggered()
 
         if (r ==  QMessageBox::Yes)
         {
-            foreach (QModelIndex index, ui->treeView->selectionModel()->selectedIndexes())
-            {
-
-                removeWorkingDirectory(index);
-            }
+            removeWorkingDirectory(ui->treeView->selectionModel()->selectedIndexes());
         }
     }
 }
@@ -2807,11 +2804,6 @@ void MDImain::removeWorkProjects()
 
         if (r ==  QMessageBox::Yes)
         {
-//            foreach (QModelIndex index, ui->treeView->selectionModel()->selectedIndexes())
-//            {
-
-//                removeWorkProject(index);
-//            }
             removeWorkProject(ui->treeView->selectionModel()->selectedIndexes());
         }
     }
@@ -2825,7 +2817,7 @@ void MDImain::removeWorkProject(QModelIndex index)
         Node *node =  model->getNode(index);
         QString name = typeid(*node).name();
 
-        //ensire a correct file is selected
+        //ensure a correct file is selected
         if (!name.endsWith("A2LFILE") && !name.endsWith("DBFILE"))
         {
             QMessageBox::warning(this, "HEXplorer::remove project", "Please select first a project.",
@@ -3020,7 +3012,7 @@ void MDImain::removeWorkProject(QModelIndex index)
 
 void MDImain::removeWorkProject(QModelIndexList indexList)
 {
-    //get a pointer on the selected items
+    //get a pointer on the selected items and delete all its childrens
     QList<A2LFILE*> listNodes;
     foreach (QModelIndex index, indexList)
     {
@@ -3033,7 +3025,7 @@ void MDImain::removeWorkProject(QModelIndexList indexList)
             QMessageBox::warning(this, "HEXplorer::remove project", "Please select first a project.",
                                              QMessageBox::Ok);
         }
-        else
+        else if (1 == 0)
         {
             //As the selected node is an A2l file we can cast the node into its real type : A2LFILE
             A2LFILE *a2lfile = dynamic_cast<A2LFILE *> (node);
@@ -3107,26 +3099,37 @@ void MDImain::removeWorkProject(QModelIndexList indexList)
             //remove the node from treeView model
             listNodes.append(a2lfile);
         }
+        else
+        {
+            A2LFILE *a2lfile = dynamic_cast<A2LFILE *> (node);
+            listNodes.append(a2lfile);
+        }
+
     }
 
-    //remove datas from tree
+    //remove node workProject from tree
     foreach (A2LFILE* node, listNodes)
     {
         Node* parentNode = node->getParentNode();
         if (parentNode)
         {
             QModelIndex index = model->getIndex(node);
-            if (index.isValid())
-                model->dataRemoved(parentNode, index.row(), 1);
+            if (1 == 0)
+            {
+                if (index.isValid())
+                    model->dataRemoved(parentNode, index.row(), 1);
 
-            //get the project
-            WorkProject *wp = projectList->value(node->fullName());
+                //get the project
+                WorkProject *wp = projectList->value(node->fullName());
 
-            //remove the project from the this->projectList
-            projectList->remove(node->fullName());
+                //remove the project from the this->projectList
+                projectList->remove(node->fullName());
 
-            //delete the selected project
-            wp->detach(this);
+                //delete the selected project
+                wp->detach(this);
+            }
+            else
+                removeWorkProject(index);
         }
     }
 
@@ -3177,6 +3180,28 @@ void MDImain::removeWorkingDirectory(QModelIndex index)
             }
             QSettings settings(qApp->organizationName(), qApp->applicationName());
             settings.setValue("currentWDPath", workingDirectory);
+        }
+    }
+}
+
+void MDImain::removeWorkingDirectory(QModelIndexList indexList)
+{
+    //get a pointer on the selected items
+    QList<Node*> listNodes;
+    foreach (QModelIndex index, indexList)
+    {
+        Node *node =  model->getNode(index);
+        listNodes.append(node);
+    }
+
+    //delete each node
+    foreach (Node* node, listNodes)
+    {
+        Node* parentNode = node->getParentNode();
+        if (parentNode)
+        {
+            QModelIndex index = model->getIndex(node);
+            removeWorkingDirectory(index);
         }
     }
 }

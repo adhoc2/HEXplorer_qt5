@@ -12,6 +12,7 @@ class WorkingDirectory : public Node
         WorkingDirectory(QString rootPath, A2lTreeModel *model, MDImain *parent);
         ~WorkingDirectory();
         QString getFullPath();
+        void deleteFileModel();
 
 private:
         QFileSystemModel *fmodel;
@@ -20,7 +21,9 @@ private:
         QString rootPath;
         QStringList listWorkProjects;
 
-        void populateNodeTreeview(QString str, Node *node);
+        void populateNodeTreeview(QString path, Node *node);
+        void rootPathChanged(QString newpath, Node *node);
+        void fileRenamed(QString path, QString oldname, QString newname, Node *node);
 };
 
 #endif // WORKINGDIRECTORY_H
