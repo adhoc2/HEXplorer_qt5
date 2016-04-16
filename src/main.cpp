@@ -31,6 +31,7 @@
 
 int main(int argc, char *argv[])
 {
+    Qt::AA_UseSoftwareOpenGL;
     QApplication app(argc, argv);
     QByteArray encodedString = "Ch.Hoël";
 //    QTextCodec *codec = QTextCodec::codecForName("ISO 8859-1");

@@ -14,10 +14,12 @@ WorkingDirectory::WorkingDirectory(QString rootPath, A2lTreeModel *model = NULL,
     this->name = name;
     this->rootPath = rootPath;
 
+    qDebug() << rootPath;
 
     //fmodel
     fmodel = new QFileSystemModel();
     fmodel->setRootPath(QDir::cleanPath(rootPath));
+    qDebug() << fmodel->rootPath();
     QStringList filters;
     filters << "*.a2l" << "*.hex" << "*.s19";
     fmodel->setNameFilters(filters);
@@ -36,8 +38,7 @@ WorkingDirectory::WorkingDirectory(QString rootPath, A2lTreeModel *model = NULL,
         this->rootPathChanged(newPath, this);
         } );
 
-    QObject::connect(fmodel, &QFileSystemModel::fileRenamed, [=](const QString &path, const QString &oldname,
-                     const QString &newname) {
+    QObject::connect(fmodel, &QFileSystemModel::fileRenamed, [=](const QString &path, const QString &oldname, const QString &newname) {
         this->fileRenamed(path, oldname, newname, this);
         } );
 
@@ -123,12 +124,12 @@ void WorkingDirectory::populateNodeTreeview(QString path, Node *node)
 
 void WorkingDirectory::rootPathChanged(QString newpath, Node *node)
 {
-
+    qDebug() << " rootPathChanged" << newpath;
 }
 
 void WorkingDirectory::fileRenamed(QString path, QString oldname, QString newname, Node *node)
 {
-
+     qDebug() << "fileRenamed" << path << oldname << newname;
 }
 
 QString WorkingDirectory::getFullPath()
