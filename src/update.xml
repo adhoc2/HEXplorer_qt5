@@ -2,6 +2,7 @@
     <revision version="0.7.8">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
     <details>revision 0.7.8 (Q2/2016) :
     - bug correction related too closing more WorkingDirectories at the same time
+    - precision error when converting a data from hex to phys with Mingw compiler
 
 revision 0.7.7 (04/2016) :
     - bugs correction related to 3D openGL
