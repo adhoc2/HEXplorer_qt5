@@ -644,6 +644,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             }
 
             //dec2phys
+
             listZ = dec2Phys(decZ, "z");
 
         }
@@ -2907,7 +2908,7 @@ QString Data::hex2phys(QString hex, QString axis)
     else if (axis == "z")
     {
         //hex2dec
-        double dec = hex2dec(hex, datatypeZ, 16);
+        long double dec = hex2dec(hex, datatypeZ, 16);
 
         //dec2phys
         QString type = typeid(*label).name();
@@ -2923,34 +2924,39 @@ QString Data::hex2phys(QString hex, QString axis)
         COMPU_METHOD *cmpZ = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu_method);
         QString convType = cmpZ->getPar("ConversionType");
 
-        bool bl;
         if (convType.toLower() == "rat_func")
         {
-            COEFFS *item = (COEFFS*)cmpZ->getItem("COEFFS");
-            double a = ((QString)item->getPar("float1")).toDouble(&bl);
-            double b = ((QString)item->getPar("float2")).toDouble(&bl);
-            double c = ((QString)item->getPar("float3")).toDouble(&bl);
-            double d = ((QString)item->getPar("float4")).toDouble(&bl);
-            double e = ((QString)item->getPar("float5")).toDouble(&bl);
-            double f = ((QString)item->getPar("float6")).toDouble(&bl);
+            COEFFS *item = (COEFFS*)compu_methodZ->getItem("COEFFS");
+            long double a = ((QString)item->getPar("float1")).toDouble();
+            long double b = ((QString)item->getPar("float2")).toDouble();
+            long double c = ((QString)item->getPar("float3")).toDouble();
+            long double d = ((QString)item->getPar("float4")).toDouble();
+            long double e = ((QString)item->getPar("float5")).toDouble();
+            long double f = ((QString)item->getPar("float6")).toDouble();
 
+            double dbl = 0;
             if (dec * d - a == 0)
             {
-                phys.setNum((c - dec * f) / (dec * e - b),'f', precisionZ);
+                double num = c - dec * f;
+                double denum = dec * e - b;
+                dbl = num / denum;
+                //dbl = (c - dec * f) / (dec * e - b);
             }
             else
             {
-                phys.setNum(((b - dec * e) + sqrt(pow((dec * e - b), 2) - 4 * (dec * d - a) * (dec * f - c))) / (2 * (dec * d - a)),'f', precisionZ);
+                double num = (b - dec * e) + sqrt(pow((dec * e - b), 2) - 4 * (dec * d - a) * (dec * f - c));
+                double denum = 2 * (dec * d - a);
+                dbl = num / denum;
+                //dbl = ((b - dec * e) + sqrt(pow((dec * e - b), 2) - 4 * (dec * d - a) * (dec * f - c))) / (2 * (dec * d - a));
             }
 
-            double dbl = phys.toDouble();
             if (dbl == 0)
             {
                 return QString::number(0,'f', precisionZ);
             }
             else
             {
-                return phys;
+                return QString::number(dbl,'f', precisionZ);
             }
         }
         else if (convType.toLower() == "tab_verb")
@@ -3623,25 +3629,31 @@ QStringList Data::dec2Phys(QList<double> decValues, QString axis)
             if (convType.toLower() == "rat_func")
             {
                 COEFFS *item = (COEFFS*)compu_methodZ->getItem("COEFFS");
-                double a = ((QString)item->getPar("float1")).toDouble();
-                double b = ((QString)item->getPar("float2")).toDouble();
-                double c = ((QString)item->getPar("float3")).toDouble();
-                double d = ((QString)item->getPar("float4")).toDouble();
-                double e = ((QString)item->getPar("float5")).toDouble();
-                double f = ((QString)item->getPar("float6")).toDouble();
+                long double a = ((QString)item->getPar("float1")).toDouble();
+                long double b = ((QString)item->getPar("float2")).toDouble();
+                long double c = ((QString)item->getPar("float3")).toDouble();
+                long double d = ((QString)item->getPar("float4")).toDouble();
+                long double e = ((QString)item->getPar("float5")).toDouble();
+                long double f = ((QString)item->getPar("float6")).toDouble();
 
                 int cnt = decValues.count();
                 for (int i = 0; i < cnt; i++)
                 {
                     double dbl = 0;
-                    double dec = decValues.at(i);
+                    long double dec = decValues.at(i);
                     if (dec * d - a == 0)
                     {
-                        dbl = (c - dec * f) / (dec * e - b);
+                        double num = c - dec * f;
+                        double denum = dec * e - b;
+                        dbl = num / denum;
+                        //dbl = (c - dec * f) / (dec * e - b);
                     }
                     else
                     {
-                        dbl = ((b - dec * e) + sqrt(pow((dec * e - b), 2) - 4 * (dec * d - a) * (dec * f - c))) / (2 * (dec * d - a));
+                        double num = (b - dec * e) + sqrt(pow((dec * e - b), 2) - 4 * (dec * d - a) * (dec * f - c));
+                        double denum = 2 * (dec * d - a);
+                        dbl = num / denum;
+                        //dbl = ((b - dec * e) + sqrt(pow((dec * e - b), 2) - 4 * (dec * d - a) * (dec * f - c))) / (2 * (dec * d - a));
                     }
 
                     if (dbl == 0)
@@ -6205,6 +6217,9 @@ void Data::setZ(int i, QString str)
 
             listZ[i] = phys;
         }
+
+
+
 
         //update treeView
         checkValues();

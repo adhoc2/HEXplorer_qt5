@@ -14,16 +14,14 @@ WorkingDirectory::WorkingDirectory(QString rootPath, A2lTreeModel *model = NULL,
     this->name = name;
     this->rootPath = rootPath;
 
-    qDebug() << rootPath;
-
     //fmodel
     fmodel = new QFileSystemModel();
     fmodel->setRootPath(QDir::cleanPath(rootPath));
-    qDebug() << fmodel->rootPath();
     QStringList filters;
     filters << "*.a2l" << "*.hex" << "*.s19";
     fmodel->setNameFilters(filters);
     fmodel->setNameFilterDisables(false);
+
 
     //model
     mdimain = parent;
@@ -54,7 +52,6 @@ void WorkingDirectory::populateNodeTreeview(QString path, Node *node)
 {
     if (listWorkProjects.contains(path))
         return;
-
 
     //index of selected folder in model
     QModelIndex parentIndex = fmodel->index(path);
