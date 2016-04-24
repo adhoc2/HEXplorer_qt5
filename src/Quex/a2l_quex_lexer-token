@@ -17,7 +17,7 @@ QUEX_NAMESPACE_LEXEME_NULL_CLOSE
 
 
 
-#   line 7 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
+#   line 7 "C:/quex_0.65.10/quex-0.65.10/quex/code_base/token/CppDefault.qx"
 
 #       include <iostream>
 #       include <string>
@@ -61,12 +61,12 @@ public:
     virtual ~Token();
 
 
-#   line 14 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
+#   line 14 "C:/quex_0.65.10/quex-0.65.10/quex/code_base/token/CppDefault.qx"
     std::basic_string<QUEX_TYPE_CHARACTER> text;
 
 #   line 68 "a2l_quex_lexer-token"
 
-#   line 15 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
+#   line 15 "C:/quex_0.65.10/quex-0.65.10/quex/code_base/token/CppDefault.qx"
     size_t                                 number;
 
 #   line 73 "a2l_quex_lexer-token"
@@ -74,13 +74,13 @@ public:
 
 public:
 
-#   line 14 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
+#   line 14 "C:/quex_0.65.10/quex-0.65.10/quex/code_base/token/CppDefault.qx"
     std::basic_string<QUEX_TYPE_CHARACTER> get_text() const                                         { return text; }
-#   line 14 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
+#   line 14 "C:/quex_0.65.10/quex-0.65.10/quex/code_base/token/CppDefault.qx"
     void                                   set_text(std::basic_string<QUEX_TYPE_CHARACTER>& Value)  { text = Value; }
-#   line 15 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
+#   line 15 "C:/quex_0.65.10/quex-0.65.10/quex/code_base/token/CppDefault.qx"
     size_t                                 get_number() const                                       { return number; }
-#   line 15 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
+#   line 15 "C:/quex_0.65.10/quex-0.65.10/quex/code_base/token/CppDefault.qx"
     void                                   set_number(size_t Value)                                 { number = Value; }
 
 #   line 87 "a2l_quex_lexer-token"
@@ -121,7 +121,7 @@ public:
     public:
 #   define self (*this)
 
-#   line 77 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
+#   line 77 "C:/quex_0.65.10/quex-0.65.10/quex/code_base/token/CppDefault.qx"
 
         typedef std::basic_string<QUEX_TYPE_CHARACTER> __string;
 
@@ -187,7 +187,7 @@ public:
 
 
 
-#   line 129 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
+#   line 129 "C:/quex_0.65.10/quex-0.65.10/quex/code_base/token/CppDefault.qx"
 
         namespace quex {
         inline std::ostream&
@@ -268,7 +268,7 @@ QUEX_NAME_TOKEN(copy)(Token* __this, const Token* __That)
     (void)__this;
     (void)__That;
 
-#   line 28 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
+#   line 28 "C:/quex_0.65.10/quex-0.65.10/quex/code_base/token/CppDefault.qx"
 
         self._id    = Other._id;
         self.text   = Other.text;
@@ -307,7 +307,7 @@ QUEX_NAME_TOKEN(take_text)(Token*              __this,
     (void)__this;
     (void)__analyzer;
 
-#   line 111 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
+#   line 111 "C:/quex_0.65.10/quex-0.65.10/quex/code_base/token/CppDefault.qx"
 
 #       if 0
         {
@@ -357,7 +357,7 @@ QUEX_NAME_TOKEN(repetition_n_get)(Token* __this)
 #   define self (*__this)
     (void)__this;
     
-#   line 119 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
+#   line 119 "C:/quex_0.65.10/quex-0.65.10/quex/code_base/token/CppDefault.qx"
 
        return self.number;
    
@@ -374,7 +374,7 @@ QUEX_NAME_TOKEN(repetition_n_set)(Token* __this, size_t N)
     (void)__this;
     (void)N;
     
-#   line 115 "C:/Quex/quex-0.65.4/quex/code_base/token/CppDefault.qx"
+#   line 115 "C:/quex_0.65.10/quex-0.65.10/quex/code_base/token/CppDefault.qx"
 
        self.number = N;
    

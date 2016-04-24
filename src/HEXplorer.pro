@@ -26,7 +26,7 @@ equals( QMAKE_CXX, cl) {
 
     CONFIG += embed_manifest_exe c++11
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL CL_COMPILER
-    INCLUDEPATH += . "C:\Quex\quex-0.65.4" \
+    INCLUDEPATH += . "C:\quex_0.65.10\quex-0.65.10" \
      ./ASAP2 ./sqlite \
      ./DataContainers \
      ./Quex  \
@@ -84,7 +84,7 @@ equals( QMAKE_CXX, cl) {
     QWT_ROOT = ../LIBS/qwt-6.1.2
     QWT3D_ROOT = ../LIBS/qwtplot3d-master_build322
     unix:QUEX_ROOT = /Applications/quex/quex-0.60.2
-    win32:QUEX_ROOT = "C:\Quex\quex-0.65.4"
+    win32:QUEX_ROOT = "C:\Quex_0.65.10\quex-0.65.10"
     MATHGL_ROOT = ../LIBS/mathgl-2.3.3-mingw.i686
 
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT_DLL

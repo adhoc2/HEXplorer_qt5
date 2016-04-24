@@ -24,8 +24,8 @@
 #include <QModelIndex>
 #include <QProgressBar>
 #include <QSqlDatabase>
-class Node;
 
+class Node;
 class QsciLexerXML;
 class QsciLexer;
 class A2l;
@@ -75,6 +75,7 @@ protected:
     virtual void closeEvent(QCloseEvent *e);
 
 private:
+    Ui::MDImain *ui;
     TreeviewDelegate *treeViewDelegate;
     QString workingDirectory;
     QFileSystemModel *fmodel;
@@ -94,8 +95,7 @@ private:
     void updateView();
     A2lTreeModel *model;
     CompleterModel *completerModel;
-    TreeModelCompleter *completer;
-    Ui::MDImain *ui;
+    TreeModelCompleter *completer;    
     int compareTabs;
     QMap<QString, WorkProject*> *projectList;
     QMap<QString, QWidget*> *tabList;
@@ -137,7 +137,6 @@ private:
     QMenu *recentProMenu;
     QWidget *myWidget;
 
-
     void initToolBars();
     void createActions();
     void openProject(QString &fileName);
@@ -155,6 +154,7 @@ private:
 
 
 private slots:
+
      void compare_A2lFile();
      void import_Subsets();
      void export_Subsets();

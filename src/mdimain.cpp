@@ -191,8 +191,6 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
         settings.setValue("currentWDPath", workingDirectory);
     }
 
-    //QApplication::setStyle(QStyleFactory::create("fusion"));
-    //QApplication::setStyle(new ManhattanStyle(baseName));
 }
 
 MDImain::~MDImain()
@@ -1190,7 +1188,7 @@ void MDImain::on_actionAbout_triggered()
                    "build " + qApp->applicationVersion().toLocal8Bit() + " compiled with " + compiler + "\n\n"
                    "This software uses external libraries :\n"
                    "   - Qt framework " + QT_VERSION_STR + "\n"
-                   "   - Quex 0.65.4 (as efficient lexical analyser generator)\n"
+                   "   - Quex 0.65.10 (as efficient lexical analyser generator)\n"
                    "   - QScintilla 2.9 (as efficient text editor)\n"
                    "   - Qwt 6.1.2 (as 2D graph plotter)\n"
                    "   - MathGL 2.3.3 (as 3D graph plotter)\n\n"
