@@ -1557,23 +1557,20 @@ WorkingDirectory* MDImain::openWorkingDirectory(QString rootPath)
         return 0;
     }
 
-
     //create a new WorkingDirectory instance
     WorkingDirectory* nodeWd = new WorkingDirectory(rootPath, model, this);
 
     //update the model and treeview
     model->addNode2RootNode(nodeWd);
 
-    //expand node in treeView
+    //add model to treeview
     if (ui->treeView->model() != model)
         ui->treeView->setModel(model);
 
     completer->setModel(model);
     ui->treeView->setColumnHidden(1, true);
 
-
     return nodeWd;
-
 }
 
 void MDImain::on_actionClose_Working_Directory_triggered()
@@ -1773,6 +1770,7 @@ void MDImain::addHexFile2Project()
 
                         //stop timer
                         double tf = omp_get_wtime();
+
 
                         //update the treeView model
                         ui->treeView->expand(index);
@@ -2416,9 +2414,10 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
                 }
             }
 
-
             //get the parentNode of the HexFile (which must be an A2LFILE !!)
             A2LFILE *a2l = dynamic_cast<A2LFILE *> (hex->getParentNode());
+
+            model->resetModel();
             model->dataRemoved(a2l, index.row(), 1);
 
             //get the parentWp of the HexFile
@@ -2460,6 +2459,7 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
 
             //get the parentNode of the HexFile (which must be an A2LFILE !!)
             A2LFILE *a2l = dynamic_cast<A2LFILE *> (srec->getParentNode());
+            model->resetModel();
             model->dataRemoved(a2l, index.row(), 1);
 
             //get the parentWp of the HexFile
@@ -2504,6 +2504,7 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
 
             //get the parentNode of the HexFile (which must be an A2LFILE !!)
             A2LFILE *a2l = dynamic_cast<A2LFILE *> (csv->getParentNode());
+            model->resetModel();
             model->dataRemoved(a2l, index.row(), 1);
 
             //get the parentWp of the HexFile
@@ -2546,6 +2547,7 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
 
             //get the parentNode of the HexFile (which must be an A2LFILE !!)
             A2LFILE *a2l = dynamic_cast<A2LFILE *> (cdfx->getParentNode());
+            model->resetModel();
             model->dataRemoved(a2l, index.row(), 1);
 
             //get the parentWp of the HexFile
@@ -3670,10 +3672,6 @@ void MDImain::compare_A2lFile()
                 }
             }
         }
-        qDebug() << "list labels 1 : " << list1.count();
-        qDebug() << "list labels 2 : " << list2.count();
-        qDebug() << "missing into 1: " << missingLabels.count();
-        qDebug() << "new labels into 2: " << newLabels.count();
 
         //Missing, new, modified subsets
         Node *fun1 = wp1->a2lFile->getProject()->getNode("MODULE/" + moduleName1 + "/FUNCTION");
@@ -3877,7 +3875,6 @@ void MDImain::compare_A2lFile()
 
 void MDImain::readA2l(WorkProject* wp)
 {
-
     //get a pointer on old a2lFile
     A2LFILE *oldA2lfile = wp->a2lFile;
     Node* parentNode = wp->a2lFile->getParentNode();
@@ -3904,7 +3901,7 @@ void MDImain::readA2l(WorkProject* wp)
     ui->listWidget->addItems(wp->_outputList());
     ui->listWidget->scrollToBottom();
 
-    //remove old a2lfile from model
+    //remove old a2lfile index from model
     int pos = model->getIndex(oldA2lfile).row();
     model->dataRemoved(parentNode, pos, 1);
 
@@ -3915,7 +3912,7 @@ void MDImain::readA2l(WorkProject* wp)
         node->setParentNode(wp->a2lFile);
         oldA2lfile->removeChildNode(node);
     }
-    wp->a2lFile->sortChildrensName();
+    wp->a2lFile->sortChildrensName();    
 
     //add new a2lfile into model
     parentNode->addChildNode(wp->a2lFile);
@@ -4004,6 +4001,15 @@ HexFile* MDImain::readHexFile(HexFile *hex)
 
     if (hex->read())
     {
+        QModelIndexList listIndex;
+        foreach (QModelIndex index, model->getPersistentIndexList())
+         {
+             if (ui->treeView->isExpanded(index))
+             {
+                 listIndex << index;
+             }
+         }
+
         //remove original hex file from node/tree
         deleteFileFromProject(index);
 
@@ -4018,9 +4024,13 @@ HexFile* MDImain::readHexFile(HexFile *hex)
         double tf = omp_get_wtime();
 
         //update the treeView model
-        QModelIndex indexNew = model->getIndex(hex);
-        ui->treeView->expand(indexNew.parent().parent());
-        ui->treeView->expand(indexNew.parent());
+        foreach (QModelIndex index, listIndex)
+        {
+             ui->treeView->expand(index);
+        }
+//        QModelIndex indexNew = model->getIndex(hex);
+//        ui->treeView->expand(indexNew.parent().parent());
+//        ui->treeView->expand(indexNew.parent());
         ui->treeView->resizeColumnToContents(0);
 
         writeOutput("action open new dataset : HEX file add to project in " + QString::number(tf-ti) + " sec");
@@ -4112,6 +4122,15 @@ SrecFile* MDImain::readSrecFile(SrecFile* srec)
 
     if (srec->read())
     {
+        QModelIndexList listIndex;
+        foreach (QModelIndex index, model->getPersistentIndexList())
+         {
+             if (ui->treeView->isExpanded(index))
+             {
+                 listIndex << index;
+             }
+         }
+
         //remove original srec file from node/tree
         deleteFileFromProject(index);
 
@@ -4126,9 +4145,13 @@ SrecFile* MDImain::readSrecFile(SrecFile* srec)
         double tf = omp_get_wtime();
 
         //update the treeView model
-        QModelIndex indexNew = model->getIndex(srec);
-        ui->treeView->expand(indexNew.parent().parent());
-        ui->treeView->expand(indexNew.parent());
+        foreach (QModelIndex index, listIndex)
+        {
+             ui->treeView->expand(index);
+        }
+//        QModelIndex indexNew = model->getIndex(srec);
+//        ui->treeView->expand(indexNew.parent().parent());
+//        ui->treeView->expand(indexNew.parent());
         ui->treeView->resizeColumnToContents(0);
 
         writeOutput("action open new dataset : HEX file add to project in " + QString::number(tf-ti) + " sec");
@@ -5413,9 +5436,11 @@ void MDImain::quicklookFile()
             //read hex file if not read
             HexFile *hex = dynamic_cast<HexFile*>(node);          
             if (!hex->isRead())
-            {
+            {                
                 if (readHexFile(hex) == NULL)
+                {
                     return;
+                }
             }
         }
         else if (name.endsWith("SrecFile"))
@@ -5608,8 +5633,6 @@ void MDImain::editCompare()
 
     //get the data name
     Node *node = (Node*)((A2lTreeModel*)ui->treeView_2->model())->getNode(index);
-    qDebug() << node->name;
-    qDebug() << myWidget;
 
     QString name = typeid(*myWidget).name();
     if (name.toLower().endsWith("formcompare"))

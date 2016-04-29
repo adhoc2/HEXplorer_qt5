@@ -85,6 +85,8 @@ void WorkingDirectory::populateNodeTreeview(QString path, Node *node)
 
                hasA2l = true;
 
+               qDebug() << wp->a2lFile << wp->a2lFile->name;
+
                listWorkProjects.append(path);
            }
        }
@@ -108,6 +110,7 @@ void WorkingDirectory::populateNodeTreeview(QString path, Node *node)
                {
                    HexFile* hex = new HexFile(file.absoluteFilePath(), wp);
                    wp->addHex(hex);
+                   qDebug() << (Node*)hex << hex->name;
                }
                else if (file.suffix().toLower() == "s19")
                {

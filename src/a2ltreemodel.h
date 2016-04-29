@@ -33,8 +33,12 @@ public:
     void createRootNode();
     void addNode2RootNode(Node *node);
     void dataInserted(Node *parentNode, int position);
+    void startInsertData(Node *parentNode, int position, int count = 1);
+    void stopInsertData(Node *parentNode, int position, int count = 1);
     void dataRemoved(Node *nodeParent, int position, int count = 1);
     void renameNode(QModelIndex index, QString name);
+    void resetModel();
+    QModelIndexList getPersistentIndexList();
 
     QModelIndex index(int row, int column, const QModelIndex &parent) const;
     QModelIndex parent(const QModelIndex &child) const;

@@ -83,8 +83,7 @@ equals( QMAKE_CXX, cl) {
     QSCINTILLA_ROOT = ../LIBS/QScintilla-gpl-2.9
     QWT_ROOT = ../LIBS/qwt-6.1.2
     QWT3D_ROOT = ../LIBS/qwtplot3d-master_build322
-    unix:QUEX_ROOT = /Applications/quex/quex-0.60.2
-    win32:QUEX_ROOT = "C:\Quex_0.65.10\quex-0.65.10"
+    win32:QUEX_ROOT = "C:\quex_0.65.10\quex-0.65.10"
     MATHGL_ROOT = ../LIBS/mathgl-2.3.3-mingw.i686
 
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT_DLL

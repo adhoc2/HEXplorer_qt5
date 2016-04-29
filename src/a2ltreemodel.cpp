@@ -50,6 +50,8 @@ void A2lTreeModel::addNode2RootNode(Node *node)
     if (rootNode == 0)
         rootNode = new Node();
 
+    qDebug() << "rootNode:" << rootNode;
+
     // add the node as childNode
     rootNode->addChildNode(node);
     node->setParentNode(rootNode);
@@ -86,6 +88,7 @@ QModelIndex A2lTreeModel::getIndex(Node *node)
 QModelIndex A2lTreeModel::parent(const QModelIndex &index) const
 {
     Node *node = this->nodeFromIndex(index);
+
     if (node == rootNode || node == 0)
         return QModelIndex();
 
@@ -294,6 +297,22 @@ void A2lTreeModel::dataInserted(Node *parentNode, int position)
     insertRows(position, 1, indexParent);
 }
 
+void A2lTreeModel::startInsertData(Node *parentNode, int position, int count)
+{
+    // Create an index of the parent node
+    QModelIndex indexParent = getIndex(parentNode);
+
+    beginInsertRows(indexParent, position, position + count - 1);
+}
+
+void A2lTreeModel::stopInsertData(Node *parentNode, int position, int count)
+{
+    // Create an index of the parent node
+    //QModelIndex indexParent = getIndex(parentNode);
+
+    endInsertRows();
+}
+
 void A2lTreeModel::dataRemoved(Node *nodeParent, int position, int rows)
 {
     if (nodeParent == rootNode)
@@ -305,7 +324,7 @@ void A2lTreeModel::dataRemoved(Node *nodeParent, int position, int rows)
     // Create an index of the parent node
     QModelIndex indexParent = getIndex(nodeParent);
 
-    // create rows into parent node at position position
+    // remove rows into parent node at position position
     removeRows(position, rows, indexParent);
 }
 
@@ -437,4 +456,15 @@ bool A2lTreeModel::setData(const QModelIndex &index, const QVariant &value, int 
     {
         return false;
     }
+}
+
+void A2lTreeModel::resetModel()
+{
+    beginResetModel();
+    endResetModel();
+}
+
+QModelIndexList A2lTreeModel::getPersistentIndexList()
+{
+    return this->persistentIndexList();
 }
