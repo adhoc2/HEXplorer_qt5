@@ -50,8 +50,6 @@ void A2lTreeModel::addNode2RootNode(Node *node)
     if (rootNode == 0)
         rootNode = new Node();
 
-    qDebug() << "rootNode:" << rootNode;
-
     // add the node as childNode
     rootNode->addChildNode(node);
     node->setParentNode(rootNode);

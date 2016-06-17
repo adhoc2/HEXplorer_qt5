@@ -85,18 +85,9 @@ void WorkProject::addHex(HexFile *hex )
 {
     if (a2lFile)
     {
-//        QList<Node*> list = a2lFile->childNodes;
-//        list.append(hex);
-//        std::sort(list.begin(), list.end(), nodeLessThan);
-//        int pos = list.indexOf(hex);
-//        treeModel->startInsertData(a2lFile, pos);
-
         // add hex to a2lfile childrenslist
         a2lFile->addChildNode(hex);
         a2lFile->sortChildrensName();
-
-//        treeModel->stopInsertData(a2lFile, pos);
-
 
         // update treeView
         int pos = a2lFile->childNodes.indexOf(hex);

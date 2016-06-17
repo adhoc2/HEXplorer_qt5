@@ -95,7 +95,7 @@ HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QString module,
     }
 
 
-    //MOD_COMMON values (BYTE_ORDER, ALIGNEMENT_SWORD,...)
+    //MOD_COMMON values (BYTE_ORDER, ALIGNEMENT_ORDER,...)
     MOD_COMMON *modCommon = (MOD_COMMON*)a2lProject->getNode("MODULE/" + getModuleName() + "/MOD_COMMON");
     if (modCommon)
     {
@@ -109,57 +109,57 @@ HexFile::HexFile(QString fullHexFileName, WorkProject *parentWP, QString module,
         if (item1)
         {
             QString str = item1->getPar("AlignmentBorder");
-            nByte.insert("UBYTE", str.toInt(&bl,10));
-            nByte.insert("SBYTE", str.toInt(&bl,10));
+            commonAlignmentByte.insert("UBYTE", str.toInt(&bl,10));
+            commonAlignmentByte.insert("SBYTE", str.toInt(&bl,10));
         }
         else
         {
-            nByte.insert("UBYTE", 1);
-            nByte.insert("SBYTE", 1);
+            commonAlignmentByte.insert("UBYTE", 1);
+            commonAlignmentByte.insert("SBYTE", 1);
         }
         ALIGNMENT_WORD *item2 = (ALIGNMENT_WORD*)modCommon->getItem("alignment_word");
         if (item2)
         {
             QString str = item2->getPar("AlignmentBorder");
-            nByte.insert("UWORD", str.toInt(&bl,10));
-            nByte.insert("SWORD", str.toInt(&bl,10));
+            commonAlignmentByte.insert("UWORD", str.toInt(&bl,10));
+            commonAlignmentByte.insert("SWORD", str.toInt(&bl,10));
         }
         else
         {
-            nByte.insert("UWORD", 2);
-            nByte.insert("SWORD", 2);
+            commonAlignmentByte.insert("UWORD", 2);
+            commonAlignmentByte.insert("SWORD", 2);
         }
         ALIGNMENT_LONG *item3 = (ALIGNMENT_LONG*)modCommon->getItem("alignment_long");
         if (item3)
         {
             QString str = item3->getPar("AlignmentBorder");
-            nByte.insert("ULONG", str.toInt(&bl,10));
-            nByte.insert("SLONG", str.toInt(&bl,10));
+            commonAlignmentByte.insert("ULONG", str.toInt(&bl,10));
+            commonAlignmentByte.insert("SLONG", str.toInt(&bl,10));
         }
         else
         {
-            nByte.insert("ULONG", 4);
-            nByte.insert("SLONG", 4);
+            commonAlignmentByte.insert("ULONG", 4);
+            commonAlignmentByte.insert("SLONG", 4);
         }
         ALIGNMENT_FLOAT32_IEEE *item4 = (ALIGNMENT_FLOAT32_IEEE*)modCommon->getItem("alignment_float32_ieee");
         if (item4)
         {
             QString str = item4->getPar("AlignmentBorder");
-            nByte.insert("FLOAT32_IEEE", str.toInt(&bl,10));
+            commonAlignmentByte.insert("FLOAT32_IEEE", str.toInt(&bl,10));
         }
         else
         {
-            nByte.insert("FLOAT32_IEEE", 4);
+            commonAlignmentByte.insert("FLOAT32_IEEE", 4);
         }
         ALIGNMENT_FLOAT64_IEEE *item5 = (ALIGNMENT_FLOAT64_IEEE*)modCommon->getItem("alignment_float64_ieee");
         if (item5)
         {
             QString str = item5->getPar("AlignmentBorder");
-            nByte.insert("FLOAT64_IEEE", str.toInt(&bl,10));
+            commonAlignmentByte.insert("FLOAT64_IEEE", str.toInt(&bl,10));
         }
         else
         {
-            nByte.insert("FLOAT64_IEEE", 8);
+            commonAlignmentByte.insert("FLOAT64_IEEE", 8);
         }
     }
 
@@ -1461,7 +1461,31 @@ bool HexFile::isValidAddress(QString address)
 
 int HexFile::getNumByte(std::string str)
 {
-    return nByte.value(str.c_str());
+    //return commonAlignmentByte.value(str.c_str());
+
+    if (strcmp(str.c_str(), "SBYTE") == 0 || strcmp(str.c_str(), "UBYTE") == 0 )
+    {
+        return 1;
+    }
+    else if (strcmp(str.c_str(), "SWORD") == 0 || strcmp(str.c_str(), "UWORD") == 0 )
+    {
+        return 2;
+    }
+    else if (strcmp(str.c_str(), "SLONG") == 0 || strcmp(str.c_str(), "ULONG") == 0 )
+    {
+        return 4;
+    }
+    else if (strcmp(str.c_str(), "FLOAT32_IEEE") == 0)
+    {
+        return 4;
+    }
+    else if (strcmp(str.c_str(), "FLOAT64_IEEE") == 0)
+    {
+        return 8;
+    }
+    else
+        return 0;
+
 }
 
 // _______________ save Hex values __________________ //
@@ -1614,22 +1638,22 @@ void HexFile::hex2MemBlock(Data *data)
         {
             //BIT_MASK
             BIT_MASK *_bitmask = (BIT_MASK*)node->getItem("BIT_MASK");
-            uint16_t mask = 0;
+            uint32_t mask = 0;
             bool bl;
             if (_bitmask)
             {
                 // get the mask into uint
                 mask = QString(_bitmask->getPar("Mask")).toUInt(&bl, 16);
                 // calculate the decalage
-                uint16_t decalage = tzn(mask);
+                uint32_t decalage = tzn(mask);
                 // get the original Value into int
                 int nbyte = data->getZ(0).count() / 2;
-                int16_t orgValue = getDecValues(data->getAddressZ(), nbyte, 1, data->getDatatypeZ(), data->getByteOrderZ()).at(0);
+                uint32_t orgValue = getDecValues(data->getAddressZ(), nbyte, 1, data->getDatatypeZ(), data->getByteOrderZ()).at(0);
                 // get the value to be set into int
-                int16_t _setValue = data->getZ(0).toInt(&bl,16);
+                uint32_t _setValue = data->getZ(0).toInt(&bl,16);
                 _setValue = _setValue << decalage;
                 // set the bits into orgValue according to the mask
-                int n = 16;
+                int n = 32;
                 for (int i = 0; i < n; i++)
                 {
                     if (mask & (1 << i))

@@ -1272,6 +1272,7 @@ void SpreadsheetView::editAsBit()
     {
         //get the bits number through the deposit field of the characteristic node
         int _length = data->getZnbyte()*8;
+        qDebug() << data->name <<  _length;
 
         //open the bit edit window
         ulong value = (ulong)model()->data(index).toDouble();

@@ -1,10 +1,22 @@
 <HEXplorer application="HEXplorer">
-    <revision version="0.7.9">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
-    <details>revision 0.7.9 (Q2/2016) :
+    <revision version="0.7.11">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
+    <details>revision 0.7.11 (xx/2016) :
+    - bug correction : BIT_MASK usage with datatype LONG
+    - bug correction : datatype bitwidth hardcoded instead of being read in a2l in ALIGNMENT_ORDER.
+
+
+revision 0.7.10 (06/2016) :
+    - bug correction : a2l parser for float interpretation
+    - bug correction : wrong value displayed in quicklook for VL_BLK and srec files.
+    - bug correction : compare hex/srec file and csv/cdfx whis a given list of labels with some missing into the .csv/.cdfx file
+    - bug correction : function "display as bit" when csv or cdfx file is open in quicklook.
+
+
+revision 0.7.9 (04/2016) :
     - bug correction related to opening VSC in release 0.7.8.
 
 
-revision 0.7.8 (Q2/2016) :
+revision 0.7.8 (04/2016) :
     - bug correction related too closing more WorkingDirectories at the same time
     - precision error when converting a data from hex to phys with Mingw compiler
 

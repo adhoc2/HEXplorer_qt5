@@ -1,5 +1,5 @@
  //      -*- C++ -*-
-//     cd C:\Users\lmbhoc2\Documents\PRIVATE\PROGRAMMING\Qt\HEXplorer\src\Quex
+//     cd C:\Users\lmbhoc2\Documents\PRIVATE\PROGRAMMING\Qt\HEXplorer_src\src\Quex
 //     quex -i a2l_quex_lexer.qx -o a2l_quex_lexer > toto.txt
 
 
@@ -17,7 +17,7 @@ define
    D_HEX 				0x[0-9A-Fa-f]+	
    D_FLOAT 			[\+\-]?{D_UINTEGER}\.{D_UINTEGER}?
    D_BLOCK_BEGIN 		\/begin
-   D_BLOCK_END 			\/end
+   D_BLOCK_END 		\/end
 //   D_STRING			\".*\"   
 //   D_STRING			\"([^\\\"]*((\\\"[^\\\"]*\\\"[^\"]*)+\"|(\"\"[^\"]*\"\"[^\"]*)+\"|(\\\\[^\"]*)+\"))   
    D_STRING			\"(\\\"|\"\"|\\'|\\[^"'\\]|[^\\"]|\\\\)*\"   
@@ -233,6 +233,7 @@ mode ONE_AND_ONLY :
     	[_a-zA-Z]{D_SUB_IDENTIFIER}(\.{D_SUB_IDENTIFIER}*)* 	{ self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; }
 	[\+\-]?{D_UINTEGER} 						{ self_send1(QUEX_TKN_INTEGER, Lexeme); RETURN; }
 	{D_FLOAT}([eE][\+\-]?{D_UINTEGER})?     		{ self_send1(QUEX_TKN_FLOAT, Lexeme); RETURN; }
+	{D_UINTEGER}([eE][\+\-]?{D_UINTEGER})?     		{ self_send1(QUEX_TKN_FLOAT, Lexeme); RETURN; }	
 	{D_COMMENT}				 			{ self_send1(QUEX_TKN_COMMENT, Lexeme); RETURN; }
 	"\"%"{D_UINTEGER}\.{D_UINTEGER}"\"%"			{ self_send1(QUEX_TKN_STRINGFORMAT, Lexeme); RETURN; }
 	{D_STRING}           						{ self_send1(QUEX_TKN_STRING, Lexeme); RETURN; }

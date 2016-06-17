@@ -41,6 +41,7 @@ public:
     bool save(QString fileName = "");
     void setFullName(QString fullName);
     bool readFile();
+    int getNumByte(std::string str);
 
 public slots:
     void attach(QObject*o);
@@ -53,6 +54,8 @@ private:
     QList<QObject*> owners;
     PROJECT *a2lProject;
     QString fullPath;
+    QString byteOrderCommon;
+    QHash<QString,int> nByte;
 
 
 

@@ -514,7 +514,6 @@ void ChooseLabel::on_rightButton_clicked()
         ui->listWidget_2->addItem(newItem);
         delete item;
     }
-
     ui->listWidget_2->sortItems();
 }
 
@@ -546,20 +545,14 @@ void ChooseLabel::on_buttonBox_accepted()
 {
     FormCompare *fc = (FormCompare*)mainWidget;
 
-//    if((ui->listWidget->count() != 0) && (ui->listWidget_2->count() == 0))
-//    {
-//        fc->charList.clear();
-//        ui->listWidget->selectAll();
-//        foreach(QListWidgetItem *item, ui->listWidget->selectedItems())
-//            fc->charList.append(item->text());
-//    }
-//    else
-//    {
-        fc->charList.clear();
-        ui->listWidget_2->selectAll();
-        foreach(QListWidgetItem *item, ui->listWidget_2->selectedItems())
-            fc->charList.append(item->text());
-//    }
+    fc->charList.clear();
+    ui->listWidget_2->selectAll();
+    foreach(QListWidgetItem *item, ui->listWidget_2->selectedItems())
+        fc->charList.append(item->text());
+
+    // sort the list CASE SENSITIVE
+    std::sort(fc->charList.begin(), fc->charList.end());
+
 }
 
 void ChooseLabel::on_import_2_clicked()

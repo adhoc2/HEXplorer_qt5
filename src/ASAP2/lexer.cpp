@@ -564,7 +564,7 @@ TokenTyp A2lLexer::number(char &ch)
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
-            if (buffer->getValue() == '+' || buffer->getValue() == '-')
+            if (buffer->getValue() == '+' || buffer->getValue() == '-' || isDigit(buffer->getValue()))
             {
                 lexem += buffer->getAndClear();
                 buffer->read(in);
@@ -576,7 +576,6 @@ TokenTyp A2lLexer::number(char &ch)
                 token = Float;
                 return token;
             }
-
             else
             {
                 token = myUnknown;
@@ -595,7 +594,7 @@ TokenTyp A2lLexer::number(char &ch)
     {
         lexem += buffer->getAndClear();
         buffer->read(in);
-        if (buffer->getValue() == '+' || buffer->getValue() == '-')
+        if (buffer->getValue() == '+' || buffer->getValue() == '-' || isDigit(buffer->getValue()))
         {
             lexem += buffer->getAndClear();
             buffer->read(in);

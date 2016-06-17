@@ -85,6 +85,7 @@ public:
     bool save(QString fileName = "");
     void setFullName(QString fullName);
     bool isRead;
+    int getNumByte(std::string str);
 
 public slots:
     void attach(QObject*o);
@@ -98,6 +99,8 @@ private:
     PROJECT *a2lProject;
     QString fullPath;
     QList<SwInstance*> listSwInstance;
+    QString byteOrderCommon;
+    QHash<QString,int> nByte;
 
     SwInstance *getSwInstance(QString str);
     void checkConsistency(Data* data, SwInstance* instance);

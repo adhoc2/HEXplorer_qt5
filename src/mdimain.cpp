@@ -1997,7 +1997,7 @@ void MDImain::addSrecFile2Project()
 
                         //update the treeView model
                         ui->treeView->expand(index);
-                        ui->treeView->resizeColumnToContents(0);
+                        ui->treeView->resizeColumnToContents(0);                        
 
                         writeOutput("action open new dataset : Srec file "  + fullSrecName +" add to project in " + QString::number(tf-ti) + " sec");
 
@@ -3277,6 +3277,13 @@ void MDImain::editMeasuringChannels()
                 readA2l(wp);
             }
 
+            //if parser error stop
+            if (!wp->isOk())
+            {
+                writeOutput("measurement channels editing not possible due to a2l file issues.");
+                return;
+            }
+
             // get the list of MEASUREMET
             QList<Node*> list;
             Node *module = wp->a2lFile->getProject()->getNode("MODULE");
@@ -3361,7 +3368,7 @@ void MDImain::editMeasuringChannels()
         }
 
         //write output
-        writeOutput("measurment labels edited.");
+        writeOutput("measurement labels edited.");
 
     }
 }
@@ -3403,6 +3410,13 @@ void MDImain::editChar()
             if (!wp->a2lFile->isParsed())
             {
                 readA2l(wp);
+            }
+
+            //if parser error stop
+            if (!wp->isOk())
+            {
+                writeOutput("characteristics channels editing not possible due to a2l file issues.");
+                return;
             }
 
             // get the list of MEASUREMET

@@ -199,6 +199,7 @@ class Data : public QObject, public Node
         QString dec2hex(double dec, std::string type,  int base);
         QStringList dec2Phys(QList<double> listdec, QString axis);
         unsigned int tzn(unsigned int v);
+        int getZnbyte_Recordlayout(RECORD_LAYOUT *rcd_lyt);
 
         bool modifiable;
         bool sizeChanged;

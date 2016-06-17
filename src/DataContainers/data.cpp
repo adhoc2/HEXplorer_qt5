@@ -632,11 +632,11 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             BIT_MASK *_bitmask = (BIT_MASK*)node->getItem("BIT_MASK");
             if (_bitmask)
             {
-                uint16_t mask = QString(_bitmask->getPar("Mask")).toUInt(&bl, 16);
+                uint32_t mask = QString(_bitmask->getPar("Mask")).toUInt(&bl, 16);
                 for (int i = 0; i < decZ.count(); i++ )
                 {
-                    int16_t _result = (int16_t)decZ.at(i) & mask;
-                    int16_t _decalage =  tzn(mask);
+                    uint32_t _result = (uint32_t)decZ.at(i) & mask;
+                    int32_t _decalage =  tzn(mask);
                     _result = _result >> _decalage;
                     decZ[i] = _result;
                 }
@@ -1282,18 +1282,14 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
             BIT_MASK *_bitmask = (BIT_MASK*)node->getItem("BIT_MASK");
             if (_bitmask)
             {
-                uint16_t mask = QString(_bitmask->getPar("Mask")).toUInt(&bl, 16);
+                uint32_t mask = QString(_bitmask->getPar("Mask")).toUInt(&bl, 16);
                 for (int i = 0; i < decZ.count(); i++ )
                 {
-                    if (QString::compare("DOC_rTemp_P", this->name) == 0)
-                    {
-                        int16_t _result = (int16_t)decZ.at(i) & mask;
-                        int16_t _decalage =  tzn(mask);
-                        _result = _result >> _decalage;
-                        decZ[i] = _result;
-                    }
+                    uint32_t _result = (uint32_t)decZ.at(i) & mask;
+                    int32_t _decalage =  tzn(mask);
+                    _result = _result >> _decalage;
+                    decZ[i] = _result;
                 }
-
             }
 
             //dec2phys
@@ -1890,8 +1886,16 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, HexFile *hexFile, bool modif) : Node(no
         }
         else if (type == "AXIS_PTS_X")
         {
+            //get datatype
             datatypeZ = ((AXIS_PTS_X*)item)->getPar("Datatype");
+
+            //get the size of the type
+                //be carefull : if ALIGNMENT is present in record_layout use this one
+                //to determine the size and not the one in MODE_COMMON
+
             int Znbyte = hexParent->getNumByte(datatypeZ);
+
+            //get the address of the data
             addressZ = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
 
             //check if the number of points is specified otherwise take max number of points
@@ -2289,6 +2293,10 @@ int Data::getZnbyte()
         return hexParent->getNumByte(datatypeZ);
     else if (srecParent)
         return srecParent->getNumByte(datatypeZ);
+    else if (csvParent)
+        return csvParent->getNumByte(datatypeZ);
+    else if (cdfxParent)
+        return cdfxParent->getNumByte(datatypeZ);
     else
         return 0;
 }
@@ -8184,4 +8192,56 @@ unsigned int Data::tzn(unsigned int v)
     }
 
     return c;
+}
+
+int Data::getZnbyte_Recordlayout(RECORD_LAYOUT *rcd_lyt)
+{
+   bool bl;
+   if (strcmp(datatypeZ.c_str(), "SBYTE") == 0 || strcmp(datatypeZ.c_str(), "UBYTE") == 0 )
+   {
+       ALIGNMENT_BYTE *item = (ALIGNMENT_BYTE*)rcd_lyt->getItem("alignment_byte");
+       if (item)
+       {
+           QString str = item->getPar("AlignmentBorder");
+           return str.toInt(&bl,10);
+       }
+   }
+   else if (strcmp(datatypeZ.c_str(), "SWORD") == 0 || strcmp(datatypeZ.c_str(), "UWORD") == 0 )
+   {
+       ALIGNMENT_WORD *item = (ALIGNMENT_WORD*)rcd_lyt->getItem("alignment_word");
+       if (item)
+       {
+           QString str = item->getPar("AlignmentBorder");
+           return str.toInt(&bl,10);
+       }
+   }
+   else if (strcmp(datatypeZ.c_str(), "SLONG") == 0 || strcmp(datatypeZ.c_str(), "ULONG") == 0 )
+   {
+       ALIGNMENT_LONG *item = (ALIGNMENT_LONG*)rcd_lyt->getItem("alignment_long");
+       if (item)
+       {
+           QString str = item->getPar("AlignmentBorder");
+           return str.toInt(&bl,10);
+       }
+   }
+   else if (strcmp(datatypeZ.c_str(), "FLOAT32_IEEE") == 0)
+   {
+       ALIGNMENT_FLOAT32_IEEE *item = (ALIGNMENT_FLOAT32_IEEE*)rcd_lyt->getItem("alignment_float32_ieee");
+       if (item)
+       {
+           QString str = item->getPar("AlignmentBorder");
+           return str.toInt(&bl,10);
+       }
+   }
+   else if (strcmp(datatypeZ.c_str(), "FLOAT64_IEEE") == 0)
+   {
+       ALIGNMENT_FLOAT64_IEEE *item = (ALIGNMENT_FLOAT64_IEEE*)rcd_lyt->getItem("alignment_float64_ieee");
+       if (item)
+       {
+           QString str = item->getPar("AlignmentBorder");
+           return str.toInt(&bl,10);
+       }
+   }
+
+   return 0;
 }

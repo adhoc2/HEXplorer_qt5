@@ -1057,6 +1057,9 @@ void FormCompare::on_compare_clicked()
         listCompareTrg = list1;
     }
 
+    qDebug() << list1->count();
+    qDebug() << list2->count();
+
     int step = 0;
     QList<Data*>::iterator i = listCompareSrc->begin();
     QList<Data*>::iterator j = listCompareTrg->begin();
@@ -1064,6 +1067,7 @@ void FormCompare::on_compare_clicked()
     {
         Data* di = *i;
         Data* dj = *j;
+
         if (di->getName() == dj->getName())
         {
             bool different = false;

@@ -56,6 +56,76 @@ Csv::Csv(QString fullCsvFileName, WorkProject *parentWP, QString modName, QObjec
     maxValueProgbar = 0;
     valueProgBar = 0;
     omp_init_lock(&lock);
+
+    //get the byte_order
+    MOD_COMMON *modCommon = (MOD_COMMON*)a2lProject->getNode("MODULE/" + getModuleName() + "/MOD_COMMON");
+    if (modCommon)
+    {
+        Byte_Order *item = (Byte_Order*)modCommon->getItem("BYTE_ORDER");
+        if (item)
+            byteOrderCommon = item->getPar("ByteOrder");
+
+        //define dataType map
+        bool bl;
+        ALIGNMENT_BYTE *item1 = (ALIGNMENT_BYTE*)modCommon->getItem("alignment_byte");
+        if (item1)
+        {
+            QString str = item1->getPar("AlignmentBorder");
+            nByte.insert("UBYTE", str.toInt(&bl,10));
+            nByte.insert("SBYTE", str.toInt(&bl,10));
+        }
+        else
+        {
+            nByte.insert("UBYTE", 1);
+            nByte.insert("SBYTE", 1);
+        }
+        ALIGNMENT_WORD *item2 = (ALIGNMENT_WORD*)modCommon->getItem("alignment_word");
+        if (item2)
+        {
+            QString str = item2->getPar("AlignmentBorder");
+            nByte.insert("UWORD", str.toInt(&bl,10));
+            nByte.insert("SWORD", str.toInt(&bl,10));
+        }
+        else
+        {
+            nByte.insert("UWORD", 2);
+            nByte.insert("SWORD", 2);
+        }
+        ALIGNMENT_LONG *item3 = (ALIGNMENT_LONG*)modCommon->getItem("alignment_long");
+        if (item3)
+        {
+            QString str = item3->getPar("AlignmentBorder");
+            nByte.insert("ULONG", str.toInt(&bl,10));
+            nByte.insert("SLONG", str.toInt(&bl,10));
+        }
+        else
+        {
+            nByte.insert("ULONG", 4);
+            nByte.insert("SLONG", 4);
+        }
+        ALIGNMENT_FLOAT32_IEEE *item4 = (ALIGNMENT_FLOAT32_IEEE*)modCommon->getItem("alignment_float32_ieee");
+        if (item4)
+        {
+            QString str = item4->getPar("AlignmentBorder");
+            nByte.insert("FLOAT32_IEEE", 4);
+        }
+        else
+        {
+            nByte.insert("FLOAT32_IEEE", 4);
+        }
+        ALIGNMENT_FLOAT64_IEEE *item5 = (ALIGNMENT_FLOAT64_IEEE*)modCommon->getItem("alignment_float64_ieee");
+        if (item5)
+        {
+            QString str = item5->getPar("AlignmentBorder");
+            nByte.insert("FLOAT64_IEEE", str.toInt(&bl,10));
+        }
+        else
+        {
+            nByte.insert("FLOAT64_IEEE", 8);
+        }
+    }
+
+
 }
 
 Csv::~Csv()
@@ -808,4 +878,9 @@ void Csv::checkProgressStream(int n)
 
     omp_unset_lock(&lock);
 
+}
+
+int Csv::getNumByte(std::string str)
+{
+    return nByte.value(str.c_str());
 }

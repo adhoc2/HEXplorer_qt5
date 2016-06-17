@@ -376,6 +376,7 @@ void A2lGrammar::initRecord_layout()
     record_layout.factoryOptItem.insert("FNC_VALUES", &FNC_VALUES::itemFactory);
     record_layout.factoryOptItem.insert("SRC_ADDR_X", &SRC_ADDR_X::itemFactory);
     record_layout.factoryOptItem.insert("SRC_ADDR_Y", &SRC_ADDR_Y::itemFactory);
+    record_layout.factoryOptItem.insert("ALIGNMENT_BYTE", &ALIGNMENT_BYTE::itemFactory);
     record_layout.factoryOptItem.insert("ALIGNMENT_LONG", &ALIGNMENT_LONG::itemFactory);
     record_layout.factoryOptItem.insert("ALIGNMENT_WORD", &ALIGNMENT_WORD::itemFactory);
     record_layout.factoryOptItem.insert("ALIGNMENT_FLOAT32_IEEE", &ALIGNMENT_FLOAT32_IEEE::itemFactory);
