@@ -22,14 +22,19 @@
 #include "a2lgrammar.h"
 #include "csv.h"
 #include "cdfxfile.h"
+#include "qfileinfo.h"
 #include "qdebug.h"
 
 WorkProject::WorkProject(QString fullFileName, A2lTreeModel *model, MDImain *parent)
-    :  A2l(fullFileName, parent)
+    :  A2l(fullFileName, parent), Node()
 {
 
     treeModel = model;
     parentWidget = parent;
+
+    name = new char[(QFileInfo(fullFileName).fileName()).toLocal8Bit().count() + 1];
+    strcpy(name, QFileInfo(fullFileName).fileName().toLocal8Bit().data());
+
 }
 
 WorkProject::~WorkProject()
@@ -86,12 +91,15 @@ void WorkProject::addHex(HexFile *hex )
     if (a2lFile)
     {
         // add hex to a2lfile childrenslist
-        a2lFile->addChildNode(hex);
-        a2lFile->sortChildrensName();
+//        a2lFile->addChildNode(hex);
+//        a2lFile->sortChildrensName();
+        this->addChildNode(hex);
+        this->sortChildrensName();
 
         // update treeView
         int pos = a2lFile->childNodes.indexOf(hex);
-        treeModel->dataInserted(a2lFile, pos );
+        //treeModel->dataInserted(a2lFile, pos );
+        treeModel->dataInserted(this, this->childNodes.indexOf(hex));
 
         // add hex to this hexList
         hexList.insert(hex->fullName(), hex);
@@ -120,13 +128,17 @@ void WorkProject::addHex(HexFile *hex )
 void WorkProject::addSrec(SrecFile *srec )
 {
     // add hex to a2lfile childrenslist
-    a2lFile->addChildNode(srec);
-    a2lFile->sortChildrensName();
+    //a2lFile->addChildNode(srec);
+    //a2lFile->sortChildrensName();
+    this->addChildNode(srec);
+    this->sortChildrensName();
+
 
     // update treeView
-    treeModel->dataInserted(a2lFile, a2lFile->childNodes.indexOf(srec));
+    //treeModel->dataInserted(a2lFile, a2lFile->childNodes.indexOf(srec));
+    treeModel->dataInserted(this, this->childNodes.indexOf(srec));
 
-    // add hex to this hexList
+    // add srec to this srecList
     srecList.insert(srec->fullName(), srec);
 
     // add this to the hex owners (pseudo garbage collector)
@@ -136,11 +148,14 @@ void WorkProject::addSrec(SrecFile *srec )
 void WorkProject::addCsv(Csv *csv )
 {
     // add csv to a2lfile childrenslist
-    a2lFile->addChildNode(csv);
-    a2lFile->sortChildrensName();
+//    a2lFile->addChildNode(csv);
+//    a2lFile->sortChildrensName();
+    this->addChildNode(csv);
+    this->sortChildrensName();
 
     // update treeView
-    treeModel->dataInserted(a2lFile, a2lFile->childNodes.indexOf(csv));
+//    treeModel->dataInserted(a2lFile, a2lFile->childNodes.indexOf(csv));
+    treeModel->dataInserted(this, this->childNodes.indexOf(csv));
 
     // add csv to this hexList
     csvList.insert(csv->fullName(), csv);
@@ -153,11 +168,15 @@ void WorkProject::addCsv(Csv *csv )
 void WorkProject::addCdfx(CdfxFile *cdfx)
 {
     // add csv to a2lfile childrenslist
-    a2lFile->addChildNode(cdfx);
-    a2lFile->sortChildrensName();
+//    a2lFile->addChildNode(cdfx);
+//    a2lFile->sortChildrensName();
+    this->addChildNode(cdfx);
+    this->sortChildrensName();
 
     // update treeView
-    treeModel->dataInserted(a2lFile, a2lFile->childNodes.indexOf(cdfx));
+//    treeModel->dataInserted(a2lFile, a2lFile->childNodes.indexOf(cdfx));
+    treeModel->dataInserted(this, this->childNodes.indexOf(cdfx));
+
 
     // add cdfx to this hexList
     cdfxList.insert(cdfx->fullName(), cdfx);
@@ -294,9 +313,14 @@ QString WorkProject::getFullNodeName()
 {
     if (treeModel)
     {
-        QModelIndex index = treeModel->getIndex(this->a2lFile);
+        QModelIndex index = treeModel->getIndex(this);
         return treeModel->getFullNodeName(index);
     }
     else
         return "xxx";
+}
+
+std::string WorkProject::pixmap()
+{
+    return ":/icones/milky_cartable.png";
 }

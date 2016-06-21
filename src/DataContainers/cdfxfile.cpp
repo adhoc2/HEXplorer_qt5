@@ -255,8 +255,6 @@ bool CdfxFile::readFile()
         }
     }
 
-    qDebug() << "validated";
-
     //parse MSRSW
     QDomNodeList listMSRSW = document.elementsByTagName("MSRSW");
     QDomNode node = listMSRSW.at(0);
@@ -271,7 +269,6 @@ bool CdfxFile::readFile()
     else
     {
         parseMSRSW(node);
-        qDebug() << "parsed";
 
         if (errorList.isEmpty())
         {

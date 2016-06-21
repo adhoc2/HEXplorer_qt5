@@ -91,6 +91,7 @@ QModelIndex A2lTreeModel::parent(const QModelIndex &index) const
         return QModelIndex();
 
     Node *parentNode = node->getParentNode();
+
     if (parentNode == rootNode || parentNode == 0)
         return QModelIndex();
 

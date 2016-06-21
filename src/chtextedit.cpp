@@ -39,7 +39,7 @@ ChTextEdit::ChTextEdit(QWidget *parent) : QsciScintilla(parent)
     find = new QAction(tr("find"), this);
     find->setIcon(QIcon(":/icones/find.png"));
     find->setStatusTip(tr("find"));
-    //find->setShortcut(tr("Ctrl+F"));
+    find->setShortcut(tr("Ctrl+F"));
     find->setShortcutContext(Qt::WidgetShortcut);
     connect(find, SIGNAL(triggered()), this, SLOT(openFindDialog()));
     this->addAction(find);
@@ -117,7 +117,7 @@ void ChTextEdit::openFindDialog()
                                           "your text", &ok);
      if (ok && !searchText.isEmpty())
      {
-         this->findFirst(searchText, true, false, true, false, true, 0, 0, true);
+         this->findFirst(searchText, false, false, true, false, true, 0, 0, true);
          this->findNext->setDisabled(false);
          this->findPrevious->setDisabled(false);
      }
@@ -127,14 +127,16 @@ void ChTextEdit::openFindDialog()
 void ChTextEdit::findNextText()
 {
     if (!searchText.isEmpty())
-            this->findFirst(searchText, true, false, true, false, true, -1, -1, true);
+    {
+           this->findFirst(searchText, false, false, true, false, true);
+    }
 }
 
  void ChTextEdit::findPreviousText()
  {
      //int length = text.length();
      if (!searchText.isEmpty())
-            this->findFirst(searchText, true, false, true, true, false, -1, -1, true);
+            this->findFirst(searchText, true, false, true, true, false);
  }
 
  int ChTextEdit::lineNumberAreaWidth()

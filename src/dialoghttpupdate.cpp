@@ -144,8 +144,6 @@ void HttpUpdater::launchInstaller()
      QProcess *myProcess = new QProcess();
      myProcess->start(application);
 
-     qDebug() << application;
-
      if(myProcess->waitForStarted())
      {
          mdiMain->close();

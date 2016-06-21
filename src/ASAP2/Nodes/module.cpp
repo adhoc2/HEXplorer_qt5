@@ -87,12 +87,7 @@ MODULE::MODULE(Node *parentNode)
             //Sort the childNodes
             foreach (Node *node, childNodes)
             {
-//                qDebug() << node->name;
-//                 QTime timer;
-//                 timer.start();
                 node->sortChildrensName();
-//                int toto = timer.elapsed();
-//                qDebug() << toto;
             }
         }
 

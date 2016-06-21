@@ -20,8 +20,10 @@
 #ifndef CHTEXTEDIT_H
 #define CHTEXTEDIT_H
 
+class QAction;
+class QString;
 
-#include <Qsci/qsciscintilla.h>
+#include "Qsci/qsciscintilla.h"
 
 class ChTextEdit : public QsciScintilla
 {

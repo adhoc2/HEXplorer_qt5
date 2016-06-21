@@ -17,6 +17,7 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
+#include "qdebug.h"
 #include "datacontainer.h"
 #include "workproject.h"
 #include "spreadsheetview.h"
@@ -38,14 +39,14 @@ bool dataCompare(Data *a, Data *b)
 
 //_______________________________________________ //
 
-DataContainer::DataContainer(WorkProject *parentWP, QString module) : Node(parentWP->a2lFile, parentWP->a2lFile->lex, parentWP->a2lFile->errorList)
+DataContainer::DataContainer(WorkProject *parentWP, QString module) : Node(parentWP, parentWP->a2lFile->lex, parentWP->a2lFile->errorList)
 {
     parentWp = parentWP;
     isSortedBySubset = false;
     moduleName = module;
 }
 
-DataContainer::DataContainer(WorkProject *parentWP) : Node(parentWP->a2lFile)
+DataContainer::DataContainer(WorkProject *parentWP) : Node(parentWP)
 {
     parentWp = parentWP;
     isSortedBySubset = false;
@@ -133,6 +134,7 @@ void DataContainer::updateChildNodes(Data* data, bool add)
         {
             insertChildNode(data);
             data->setParentNode(this);
+
             parentWp->treeModel->dataInserted(this, childNodes.indexOf(data));
         }
         else if (!add && exist)

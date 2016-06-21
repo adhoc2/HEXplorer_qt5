@@ -188,7 +188,7 @@ SrecFile::SrecFile(QString fullSrecFileName, WorkProject *parentWP, QObject *par
     fullSrecName = fullSrecFileName;
     name = new char[(QFileInfo(fullSrecName).fileName()).toLocal8Bit().count() + 1];
     strcpy(name, (QFileInfo(fullSrecName).fileName()).toLocal8Bit().data());
-    a2lProject = (PROJECT*)getParentWp()->a2lFile->getProject();
+    //a2lProject = (PROJECT*)getParentWp()->a2lFile->getProject();
     maxValueProgbar = 0;
     valueProgBar = 0;
     omp_init_lock(&lock);
@@ -484,7 +484,8 @@ void SrecFile:: readAllData()
     listData.clear();
 
     //create list
-    A2LFILE *a2l = (A2LFILE*)this->getParentNode();
+    //A2LFILE *a2l = (A2LFILE*)this->getParentNode();
+    A2LFILE *a2l = ((WorkProject*)this->getParentNode())->a2lFile;
     MODULE *module = (MODULE*)a2l->getProject()->getNode("MODULE/" + getModuleName());
 
     //read labels
@@ -632,7 +633,8 @@ void SrecFile::runCreateData(QStringList list, QList<Data*> *listData, Node *nod
 
 Data* SrecFile::runCreateDataMapped(const QString &str)
 {
-    A2LFILE *a2l = (A2LFILE*)this->getParentNode();
+    //A2LFILE *a2l = (A2LFILE*)this->getParentNode();
+    A2LFILE *a2l = ((WorkProject*)this->getParentNode())->a2lFile;
     Node *nodeChar = a2l->getProject()->getNode("MODULE/" + getModuleName() + "/CHARACTERISTIC");
     Node *nodeAxis = a2l->getProject()->getNode("MODULE/" + getModuleName() + "/AXIS_PTS");
 
@@ -1192,7 +1194,6 @@ QList<double> SrecFile::getDecValues(double IAddr, int nByte, int count, std::st
                     buffer[i] = blockList[block]->data[index + i];
                 for (int j = 0; j < nByte*count - size; j++)
                 {
-                    //qDebug() << blockList.length() << " : " << block;
                     buffer[size + j] = blockList[block + 1]->data[j];
                 }
 
@@ -1588,16 +1589,6 @@ void SrecFile::hex2MemBlock(Data *data)
                 // get the value to be set into uint
                 uint32_t _setValue = data->getZ(0).toInt(&bl,16);
                 _setValue = _setValue << decalage;
-
-                if (strcmp(node->name, "EngBrakeOn") == 0)
-                {
-                    qDebug() << "mask" << mask;
-                    qDebug() << "decalage" << decalage;
-                    qDebug() << "orgValue" << orgValue;
-                    qDebug() << "_setValue" << data->getZ(0).toInt(&bl,16);
-                    qDebug() << "_setValue after decalage" << _setValue;
-
-                }
 
                 // set the bits into orgValue according to the mask
                 int n = 32;

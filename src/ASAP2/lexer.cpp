@@ -808,7 +808,6 @@ TokenTyp A2lQuexLexer::getNextToken()
         previousLine = getLine();
     }
 
-    //qDebug() << getLine() << " : " << token_p->type_id_name().c_str() << " : " << token_p->pretty_char_text().c_str();
     return myToken(token_p);
 }
 

@@ -27,8 +27,9 @@
 #include "mdimain.h"
 class Csv;
 class CdfxFile;
+class Node;
 
-class WorkProject :  public A2l
+class WorkProject :  public A2l, public Node
 {
     Q_OBJECT
 
@@ -65,6 +66,7 @@ class WorkProject :  public A2l
         A2lTreeModel *treeModel;
         MDImain *parentWidget;
         QString getFullNodeName();
+        std::string pixmap();
 
     private:
         QList<QObject*> owners;

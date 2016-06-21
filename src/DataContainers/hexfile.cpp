@@ -328,7 +328,7 @@ bool HexFile::parseFile()
 
     //get the length for the progressBar
     QString name = typeid(*this->getParentNode()).name();
-    if (name.toLower().endsWith("a2lfile"))
+    if (name.toLower().endsWith("workproject"))
     {
 //        A2LFILE *a2l = (A2LFILE*)this->getParentNode();
 //        MODULE *module = (MODULE*)a2l->getProject()->getNode("MODULE/" + getModuleName());
@@ -583,7 +583,8 @@ void HexFile::readAllData()
     listData.clear();
 
     //create list
-    A2LFILE *a2l = (A2LFILE*)this->getParentNode();
+    //A2LFILE *a2l = (A2LFILE*)this->getParentNode();
+    A2LFILE *a2l = ((WorkProject*)this->getParentNode())->a2lFile;
     MODULE *module = (MODULE*)a2l->getProject()->getNode("MODULE/" + getModuleName());
 
     //read labels
@@ -661,7 +662,8 @@ void HexFile::readAllData_db()
 
 Data* HexFile::runCreateDataMapped(const QString &str)
 {
-    A2LFILE *a2l = (A2LFILE*)this->getParentNode();
+    //A2LFILE *a2l = (A2LFILE*)this->getParentNode();
+    A2LFILE *a2l = ((WorkProject*)this->getParentNode())->a2lFile;
     Node *nodeChar = a2l->getProject()->getNode("MODULE/" + getModuleName() + "/CHARACTERISTIC");
     Node *nodeAxis = a2l->getProject()->getNode("MODULE/" + getModuleName() + "/AXIS_PTS");
 
@@ -1220,7 +1222,6 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
                     buffer[i] = blockList[block]->data[index + i];
                 for (int j = 0; j < nByte*count - size; j++)
                 {
-                    //qDebug() << blockList.length() << " : " << block;
                     buffer[size + j] = blockList[block + 1]->data[j];
                 }
 
@@ -2167,7 +2168,7 @@ void HexFile::detach(QObject *o)
     //remove self after last one
     if(owners.size() == 0)
     {
-        qDebug() << "HEX : " << this->name << " deleted";
+        qDebug() << "HEX : " << (Node*)this << this->name << " deleted";
         delete this;
     }
 }

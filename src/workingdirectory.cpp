@@ -78,14 +78,15 @@ void WorkingDirectory::populateNodeTreeview(QString path, Node *node)
                mdimain->insertWp(wp);
 
                //update the ui->treeView
-               node->addChildNode(wp->a2lFile);
-               wp->a2lFile->setParentNode(node);
+               //node->addChildNode(wp->a2lFile);
+               node->addChildNode(wp);
+               //wp->a2lFile->setParentNode(node);
+               wp->setParentNode(node);
                node->sortChildrensName();
-               model->dataInserted(node, node->childNodes.indexOf(wp->a2lFile));
+               //model->dataInserted(node, node->childNodes.indexOf(wp->a2lFile));
+               model->dataInserted(node, node->childNodes.indexOf(wp));
 
                hasA2l = true;
-
-               qDebug() << wp->a2lFile << wp->a2lFile->name;
 
                listWorkProjects.append(path);
            }
@@ -110,11 +111,10 @@ void WorkingDirectory::populateNodeTreeview(QString path, Node *node)
                {
                    HexFile* hex = new HexFile(file.absoluteFilePath(), wp);
                    wp->addHex(hex);
-                   qDebug() << (Node*)hex << hex->name;
                }
                else if (file.suffix().toLower() == "s19")
                {
-                   SrecFile* srec = new SrecFile(file.absoluteFilePath(), wp);
+                   SrecFile* srec = new SrecFile(file.absoluteFilePath(), wp);                   
                    wp->addSrec(srec);
                }
            }
@@ -136,3 +136,5 @@ QString WorkingDirectory::getFullPath()
 {
     return rootPath;
 }
+
+

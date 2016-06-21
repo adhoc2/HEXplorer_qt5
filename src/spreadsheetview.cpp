@@ -330,8 +330,6 @@ void SpreadsheetView::copy()
         // indentify topLeft and btmRight
         QModelIndex topLeft = range.topLeft();
         QModelIndex btmRight = range.bottomRight();
-        qDebug() << topLeft;
-        qDebug() << btmRight;
 
         int rowCount = btmRight.row() - topLeft.row() + 1;
         int colCount = btmRight.column() - topLeft.column() + 1;
@@ -1272,7 +1270,6 @@ void SpreadsheetView::editAsBit()
     {
         //get the bits number through the deposit field of the characteristic node
         int _length = data->getZnbyte()*8;
-        qDebug() << data->name <<  _length;
 
         //open the bit edit window
         ulong value = (ulong)model()->data(index).toDouble();

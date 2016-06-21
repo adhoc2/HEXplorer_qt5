@@ -545,6 +545,36 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionClose_Working_Directory->setEnabled(false);
         ui->actionRename_file->setEnabled(false);
     }
+    else if (name.endsWith("WorkProject"))
+    {
+        ui->toolBar_data->hide();
+
+        importSubsets->setEnabled(false);
+        exportSubsets->setEnabled(false);
+        addCdfxFile->setEnabled(true);
+        addCsvFile->setEnabled(true);
+        editChanged->setEnabled(false);
+        addHexFile->setEnabled(true);
+        addSrecFile->setEnabled(true);
+        deleteProject->setEnabled(true);
+        deleteFile->setEnabled(false);
+        editFile->setEnabled(true);
+        childCount->setEnabled(true);
+        showParam->setEnabled(false);
+        resetAllChangedData->setEnabled(false);
+        sortBySubset->setEnabled(false);
+        saveFile->setEnabled(false);
+        saveAsFile->setEnabled(false);
+        quicklook->setEnabled(false);
+        readValuesFromCsv->setEnabled(false);
+        readValuesFromCdfx->setEnabled(false);
+        editMeasChannels->setEnabled(true);
+        editCharacteristics->setEnabled(true);
+        openJScript->setEnabled(true);
+        saveA2lDB->setEnabled(true);
+        ui->actionClose_Working_Directory->setEnabled(false);
+        ui->actionRename_file->setEnabled(false);
+    }
     else if (name.endsWith("DBFILE"))
     {
         ui->toolBar_data->hide();
@@ -872,7 +902,7 @@ void MDImain::showContextMenu(QPoint)
                 }
 
                 //menu tools
-                A2LFILE *a2l = dynamic_cast<A2LFILE *> (hex->getParentNode());
+                A2LFILE *a2l = dynamic_cast<WorkProject *> (hex->getParentNode())->a2lFile;
                 QString projectName = ((PROJECT*)a2l->getProject())->getPar("name");
                 projectName = projectName.toLower();
 
@@ -935,6 +965,59 @@ void MDImain::showContextMenu(QPoint)
             else if (name.toLower().endsWith("a2lfile"))
             {
                 A2LFILE *a2lFile = (A2LFILE*)node;
+                if (a2lFile->isParsed())
+                {
+                    if (a2lFile->isConform())
+                    {
+                        menu.addAction(ui->actionNewA2lProject);
+                        menu.addAction(ui->actionLoad_DB);
+                        menu.addAction(deleteProject);
+                        menu.addAction(editFile);
+                        menu.addSeparator();
+                        menu.addAction(addHexFile);
+                        menu.addAction(addSrecFile);
+                        menu.addAction(addCsvFile);
+                        menu.addAction(addCdfxFile);
+                        menu.addSeparator();
+                        menu.addAction(openJScript);
+                        menu.addSeparator();
+                        menu.addAction(editMeasChannels);
+                        menu.addAction(editCharacteristics);
+                        menu.addSeparator();
+                        menu.addAction(saveA2lDB);
+                        //menu.addAction(childCount);
+                    }
+                    else
+                    {
+                        menu.addAction(ui->actionNewA2lProject);
+                        menu.addAction(deleteProject);
+                        menu.addSeparator();
+                        menu.addAction(editFile);
+                    }
+                }
+                else
+                {
+                    menu.addAction(ui->actionNewA2lProject);
+                    menu.addAction(ui->actionLoad_DB);
+                    menu.addAction(deleteProject);
+                    menu.addAction(editFile);
+                    menu.addSeparator();
+                    menu.addAction(addHexFile);
+                    menu.addAction(addSrecFile);
+                    menu.addAction(addCsvFile);
+                    menu.addAction(addCdfxFile);
+                    menu.addSeparator();
+                    menu.addAction(openJScript);
+                    menu.addSeparator();
+                    menu.addAction(editMeasChannels);
+                    menu.addAction(editCharacteristics);
+                    menu.addSeparator();
+                    menu.addAction(saveA2lDB);
+                }
+             }
+            else if (name.toLower().endsWith("workproject"))
+            {
+                A2LFILE *a2lFile = ((WorkProject*)node)->a2lFile;
                 if (a2lFile->isParsed())
                 {
                     if (a2lFile->isConform())
@@ -1083,7 +1166,7 @@ void MDImain::showContextMenu(QPoint)
                 {
                     weiterHex++;
                 }
-                else if (name.toLower().endsWith("a2lfile"))
+                else if (name.toLower().endsWith("workproject"))
                 {
                     weiterA2l++;
                 }
@@ -1450,7 +1533,7 @@ void MDImain::openProject(QString &fullFileName)
     progBar->reset();
 
     //update the ui->treeView
-    model->addNode2RootNode(wp->a2lFile);
+    model->addNode2RootNode(wp);
     if (ui->treeView->model() != model)
         ui->treeView->setModel(model);
     ui->treeView->setColumnHidden(1, true);
@@ -1629,7 +1712,7 @@ void MDImain::addHexFile2Project()
         Node *node =  model->getNode(index);
         QString name = typeid(*node).name();
 
-        if (!name.endsWith("A2LFILE") && !name.endsWith("DBFILE"))
+        if (!name.endsWith("WorkProject") && !name.endsWith("DBFILE"))
         {
             QMessageBox::warning(this, "HEXplorer::add hex file to project", "Please select first a project.",
                                              QMessageBox::Ok);
@@ -1662,12 +1745,13 @@ void MDImain::addHexFile2Project()
             else
             {
                 //Get the project (A2l) name
-                QString fullA2lName = model->name(index);
+                //QString fullA2lName = model->name(index);
 
                 //create a pointer on the WorkProject
-                WorkProject *wp = projectList->value(fullA2lName);
+                //WorkProject *wp = projectList->value(fullA2lName);
+                WorkProject *wp = (WorkProject*)node;
 
-                if (wp && name.endsWith("A2LFILE"))
+                if (wp && name.endsWith("WorkProject"))
                 {
                     //if the a2lFile is not yet parsed, parse.
                     if (!wp->a2lFile->isParsed())
@@ -1853,7 +1937,7 @@ void MDImain::addSrecFile2Project()
         Node *node =  model->getNode(index);
         QString name = typeid(*node).name();
 
-        if (!name.endsWith("A2LFILE"))
+        if (!name.endsWith("WorkProject"))
         {
             QMessageBox::warning(this, "HEXplorer::add hex file to project", "Please select first a project.",
                                              QMessageBox::Ok);
@@ -1887,10 +1971,11 @@ void MDImain::addSrecFile2Project()
             else
             {
                 //Get the project (A2l) name
-                QString fullA2lName = model->name(index);
+                //QString fullA2lName = model->name(index);
 
                 //create a pointer on the WorkProject
-                WorkProject *wp = projectList->value(fullA2lName);
+                //WorkProject *wp = projectList->value(fullA2lName);
+                WorkProject *wp = (WorkProject*)node;
 
                 if (wp)  //to prevent any crash of the aplication
                 {
@@ -2019,7 +2104,7 @@ void MDImain::addCsvFile2Project()
         Node *node =  model->getNode(index);
         QString name = typeid(*node).name();
 
-        if (!name.endsWith("A2LFILE"))
+        if (!name.endsWith("WorkProject"))
         {
             QMessageBox::warning(this, "HEXplorer::add csv file to project", "Please select first a project.",
                                              QMessageBox::Ok);
@@ -2050,10 +2135,11 @@ void MDImain::addCsvFile2Project()
             else
             {
                 //Get the project (A2l) name
-                QString fullA2lName = model->name(index);
+                //QString fullA2lName = model->name(index);
 
                 //create a pointer on the WorkProject
-                WorkProject *wp = projectList->value(fullA2lName);
+                //WorkProject *wp = projectList->value(fullA2lName);
+                WorkProject *wp = (WorkProject*)node;
 
                 if (wp)  //to prevent any crash of the aplication
                 {
@@ -2191,7 +2277,7 @@ void MDImain::addCdfxFile2Project()
         Node *node =  model->getNode(index);
         QString name = typeid(*node).name();
 
-        if (!name.endsWith("A2LFILE"))
+        if (!name.endsWith("WorkProject"))
         {
             QMessageBox::warning(this, "HEXplorer::add cdfx file to project", "Please select first a project.",
                                              QMessageBox::Ok);
@@ -2222,10 +2308,11 @@ void MDImain::addCdfxFile2Project()
             else
             {
                 //Get the project (A2l) name
-                QString fullA2lName = model->name(index);
+//                QString fullA2lName = model->name(index);
 
                 //create a pointer on the WorkProject
-                WorkProject *wp = projectList->value(fullA2lName);
+//                WorkProject *wp = projectList->value(fullA2lName);
+                WorkProject* wp = (WorkProject*)node;
 
                 if (wp)  //to prevent any chrash of the aplication
                 {
@@ -2414,10 +2501,11 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
                 }
             }
 
-            //get the parentNode of the HexFile (which must be an A2LFILE !!)
-            A2LFILE *a2l = dynamic_cast<A2LFILE *> (hex->getParentNode());
+            //get the parentNode of the HexFile (which must be an WorkProject !!)
+            //A2LFILE *a2l = dynamic_cast<A2LFILE *> (hex->getParentNode());
+            WorkProject *a2l = dynamic_cast<WorkProject *> (hex->getParentNode());
 
-            model->resetModel();
+           // model->resetModel();
             model->dataRemoved(a2l, index.row(), 1);
 
             //get the parentWp of the HexFile
@@ -2457,9 +2545,10 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
 
             }
 
-            //get the parentNode of the HexFile (which must be an A2LFILE !!)
-            A2LFILE *a2l = dynamic_cast<A2LFILE *> (srec->getParentNode());
-            model->resetModel();
+            //get the parentNode of the SrecFile (which must be an A2LFILE !!)
+            //A2LFILE *a2l = dynamic_cast<A2LFILE *> (srec->getParentNode());
+            WorkProject *a2l = dynamic_cast<WorkProject *> (srec->getParentNode());
+            //model->resetModel();
             model->dataRemoved(a2l, index.row(), 1);
 
             //get the parentWp of the HexFile
@@ -2468,7 +2557,6 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
 
             //update the treeView
             ui->treeView->resizeColumnToContents(0);
-
 
             //delete file from disk
             if (bl)
@@ -2504,7 +2592,7 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
 
             //get the parentNode of the HexFile (which must be an A2LFILE !!)
             A2LFILE *a2l = dynamic_cast<A2LFILE *> (csv->getParentNode());
-            model->resetModel();
+            //model->resetModel();
             model->dataRemoved(a2l, index.row(), 1);
 
             //get the parentWp of the HexFile
@@ -2547,7 +2635,7 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
 
             //get the parentNode of the HexFile (which must be an A2LFILE !!)
             A2LFILE *a2l = dynamic_cast<A2LFILE *> (cdfx->getParentNode());
-            model->resetModel();
+            //model->resetModel();
             model->dataRemoved(a2l, index.row(), 1);
 
             //get the parentWp of the HexFile
@@ -3248,7 +3336,7 @@ void MDImain::editMeasuringChannels()
         Node *node =  model->getNode(index);
         QString name = typeid(*node).name();
 
-        if (!name.endsWith("A2LFILE"))
+        if (!name.endsWith("WorkProject"))
         {
             QMessageBox::warning(this, "HEXplorer::edit measuring channels", "Please select first a project.",
                                              QMessageBox::Ok);
@@ -3265,10 +3353,11 @@ void MDImain::editMeasuringChannels()
         else
         {
             //Get the selected file name
-            QString fullFileName = model->name(index);
+            //QString fullFileName = model->name(index);
 
             //create a pointer on the WorkProject
-            WorkProject *wp = projectList->value(fullFileName);
+            //WorkProject *wp = projectList->value(fullFileName);
+            WorkProject* wp = (WorkProject*)node;
 
 
             //if the a2lFile is not yet parsed, parse.
@@ -3361,7 +3450,7 @@ void MDImain::editMeasuringChannels()
             //add a new tab with the spreadsheet
             QIcon icon;
             icon.addFile(":/icones/milky_peigne.png");
-            ui->tabWidget->addTab(view, icon, fullFileName);
+            ui->tabWidget->addTab(view, icon, wp->getFullNodeName());
 
             //set new FormCompare as activated
             ui->tabWidget->setCurrentWidget(view);
@@ -3384,7 +3473,7 @@ void MDImain::editChar()
         Node *node =  model->getNode(index);
         QString name = typeid(*node).name();
 
-        if (!name.endsWith("A2LFILE"))
+        if (!name.endsWith("WorkProject"))
         {
             QMessageBox::warning(this, "HEXplorer::edit measuring channels", "Please select first a project.",
                                              QMessageBox::Ok);
@@ -3401,10 +3490,11 @@ void MDImain::editChar()
         else
         {
             //Get the selected file name
-            QString fullFileName = model->name(index);
+            //QString fullFileName = model->name(index);
 
             //create a pointer on the WorkProject
-            WorkProject *wp = projectList->value(fullFileName);
+            //WorkProject *wp = projectList->value(fullFileName);
+            WorkProject *wp = (WorkProject*)node;
 
             //if the a2lFile is not yet parsed, parse.
             if (!wp->a2lFile->isParsed())
@@ -3496,8 +3586,8 @@ void MDImain::editChar()
 
             //add a new tab with the spreadsheet
             QIcon icon;
-            icon.addFile(":/icones/milky_peigne.png");
-            ui->tabWidget->addTab(view, icon, fullFileName);
+            icon.addFile(":/icones/milky_outils.png");
+            ui->tabWidget->addTab(view, icon, wp->getFullNodeName());
 
             //set new FormCompare as activated
             ui->tabWidget->setCurrentWidget(view);
@@ -3537,12 +3627,17 @@ void MDImain::compare_A2lFile()
         QString moduleName2;
 
         // get a2l file path
-        QString str1 = model->name(list.at(0));
-        QString str2 = model->name(list.at(1));
+//        QString str1 = model->name(list.at(0));
+//        QString str2 = model->name(list.at(1));
+
+        Node *node1 =  model->getNode(list.at(0));
+        Node *node2 =  model->getNode(list.at(1));
 
 
         // get listChar1
-        WorkProject *wp1 = projectList->value(str1);
+//        WorkProject *wp1 = projectList->value(str1);
+        WorkProject *wp1 = (WorkProject*)node1;
+        QString str1 = wp1->getFullA2lFileName().c_str();
         QStringList list1;
         if (wp1)  //to prevent any crash of the aplication
         {
@@ -3596,7 +3691,9 @@ void MDImain::compare_A2lFile()
         }
 
         // get CHAR listChar2
-        WorkProject *wp2 = projectList->value(str2);
+//        WorkProject *wp2 = projectList->value(str2);
+        WorkProject *wp2 = (WorkProject*)node2;
+        QString str2 = wp2->getFullA2lFileName().c_str();
         QStringList list2;
         if (wp2)  //to prevent any crash of the aplication
         {
@@ -3889,9 +3986,6 @@ void MDImain::compare_A2lFile()
 
 void MDImain::readA2l(WorkProject* wp)
 {
-    //get a pointer on old a2lFile
-    A2LFILE *oldA2lfile = wp->a2lFile;
-    Node* parentNode = wp->a2lFile->getParentNode();
 
     // display status bar
     statusBar()->show();
@@ -3915,33 +4009,6 @@ void MDImain::readA2l(WorkProject* wp)
     ui->listWidget->addItems(wp->_outputList());
     ui->listWidget->scrollToBottom();
 
-    //remove old a2lfile index from model
-    int pos = model->getIndex(oldA2lfile).row();
-    model->dataRemoved(parentNode, pos, 1);
-
-    //add to new a2l node the previously created childnodes
-    foreach(Node* node,oldA2lfile->childNodes)
-    {
-        wp->a2lFile->addChildNode(node);
-        node->setParentNode(wp->a2lFile);
-        oldA2lfile->removeChildNode(node);
-    }
-    wp->a2lFile->sortChildrensName();    
-
-    //add new a2lfile into model
-    parentNode->addChildNode(wp->a2lFile);
-    parentNode->sortChildrensName();
-    wp->a2lFile->setParentNode(parentNode);
-    model->dataInserted(parentNode, parentNode->childNodes.indexOf(wp->a2lFile));
-
-    //expand parsed a2l
-    ui->treeView->expand(model->getIndex(parentNode));
-
-    QModelIndex index = model->getIndex(wp->a2lFile);
-    ui->treeView->expand(index);
-
-    //finally delete old a2lfile
-    delete oldA2lfile;
 }
 
 HexFile* MDImain::readHexFile(HexFile *hex)
@@ -3972,7 +4039,7 @@ HexFile* MDImain::readHexFile(HexFile *hex)
     //get the index of the orginal hex node in treeview
     QModelIndex index = model->getIndex(hex);
 
-    //read hex file
+    //read hex file : hex* pointer will point on another memory cell
     QList<MODULE*> list = wp->a2lFile->getProject()->listModule();
     if (list.count() == 0)
     {
@@ -4040,11 +4107,12 @@ HexFile* MDImain::readHexFile(HexFile *hex)
         //update the treeView model
         foreach (QModelIndex index, listIndex)
         {
-             ui->treeView->expand(index);
+            if (index.isValid())
+            {
+                ui->treeView->expand(index);
+            }
         }
-//        QModelIndex indexNew = model->getIndex(hex);
-//        ui->treeView->expand(indexNew.parent().parent());
-//        ui->treeView->expand(indexNew.parent());
+
         ui->treeView->resizeColumnToContents(0);
 
         writeOutput("action open new dataset : HEX file add to project in " + QString::number(tf-ti) + " sec");
@@ -4206,7 +4274,7 @@ void MDImain::sort_BySubset()
         else
             hex->sortModifiedDataBySubset(true);
     }
-    if (name.endsWith("SrecFile"))
+    else if (name.endsWith("SrecFile"))
     {
         //As the selected node is an Srec file we can cast the node into its real type : SrecFile
         SrecFile *srec = dynamic_cast<SrecFile *> (node);
@@ -5434,6 +5502,7 @@ void MDImain::quicklookFile()
 {
     //get hexFiles path
     QModelIndex index  = ui->treeView->selectionModel()->currentIndex();
+
     QString str1 = model->getFullNodeName(index);
 
      if (index.isValid())
@@ -5450,7 +5519,7 @@ void MDImain::quicklookFile()
             //read hex file if not read
             HexFile *hex = dynamic_cast<HexFile*>(node);          
             if (!hex->isRead())
-            {                
+            {
                 if (readHexFile(hex) == NULL)
                 {
                     return;
