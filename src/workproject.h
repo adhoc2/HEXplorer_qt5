@@ -66,6 +66,7 @@ class WorkProject :  public A2l, public Node
         A2lTreeModel *treeModel;
         MDImain *parentWidget;
         QString getFullNodeName();
+        QString fullName();
         std::string pixmap();
 
     private:

@@ -2747,7 +2747,7 @@ void MDImain::editTextFile()
         else
         {
             if (name.endsWith("HexFile") || name.endsWith("Csv") || name.endsWith("SrecFile") ||
-                name.endsWith("CdfxFile") || name.endsWith("A2LFILE"))
+                name.endsWith("CdfxFile") || name.endsWith("A2LFILE") || name.endsWith("WorkProject") )
             {
                 //Get the selected file name
                 QString fullFileName = model->name(index);
@@ -2866,7 +2866,7 @@ void MDImain::removeWorkProjects()
             Node *node =  model->getNode(index);
             QString name = typeid(*node).name();
 
-            if (!name.endsWith("A2LFILE") && !name.endsWith("DBFILE"))
+            if (!name.endsWith("WorkProject") && !name.endsWith("DBFILE"))
             {
                 QMessageBox::warning(this, "HEXplorer::remove project", "Please select first a project.",
                                                  QMessageBox::Ok);
@@ -2906,7 +2906,7 @@ void MDImain::removeWorkProject(QModelIndex index)
         QString name = typeid(*node).name();
 
         //ensure a correct file is selected
-        if (!name.endsWith("A2LFILE") && !name.endsWith("DBFILE"))
+        if (!name.endsWith("WorkProject") && !name.endsWith("DBFILE"))
         {
             QMessageBox::warning(this, "HEXplorer::remove project", "Please select first a project.",
                                              QMessageBox::Ok);
@@ -2914,13 +2914,13 @@ void MDImain::removeWorkProject(QModelIndex index)
         }
 
         //remove file
-        if (name.endsWith("A2LFILE"))
+        if (name.endsWith("WorkProject"))
         {
             //As the selected node is an A2l file we can cast the node into its real type : A2LFILE
-            A2LFILE *a2lfile = dynamic_cast<A2LFILE *> (node);
+            WorkProject *wp = dynamic_cast<WorkProject *> (node);
 
             //ask to save the modified nodes (hex or Csv)
-            foreach (Node *node, a2lfile->childNodes)
+            foreach (Node *node, wp->childNodes)
             {
                 QString name = typeid(*node).name();
                 if (name.toLower().endsWith("hexfile"))
@@ -2993,10 +2993,10 @@ void MDImain::removeWorkProject(QModelIndex index)
             ui->treeView->resizeColumnToContents(0);
 
             //get the project
-            WorkProject *wp = projectList->value(a2lfile->fullName());
+            //WorkProject *wp = projectList->value(a2lfile->fullName());
 
             //remove the project from the this->projectList
-            projectList->remove(a2lfile->fullName());
+            projectList->remove(wp->fullName());
 
             //delete the selected project
             wp->detach(this);
@@ -3101,123 +3101,34 @@ void MDImain::removeWorkProject(QModelIndex index)
 void MDImain::removeWorkProject(QModelIndexList indexList)
 {
     //get a pointer on the selected items and delete all its childrens
-    QList<A2LFILE*> listNodes;
+    QList<WorkProject*> listNodes;
     foreach (QModelIndex index, indexList)
     {
         Node *node =  model->getNode(index);
         QString name = typeid(*node).name();
 
         //ensure a correct file is selected
-        if (!name.endsWith("A2LFILE"))
+        if (!name.endsWith("WorkProject"))
         {
             QMessageBox::warning(this, "HEXplorer::remove project", "Please select first a project.",
                                              QMessageBox::Ok);
         }
-        else if (1 == 0)
-        {
-            //As the selected node is an A2l file we can cast the node into its real type : A2LFILE
-            A2LFILE *a2lfile = dynamic_cast<A2LFILE *> (node);
-
-            //ask to save the modified nodes (hex or Csv)
-            foreach (Node *node, a2lfile->childNodes)
-            {
-                QString name = typeid(*node).name();
-                if (name.toLower().endsWith("hexfile"))
-                {
-                    HexFile *hex = (HexFile*)node;
-                    if (!hex->getModifiedData().isEmpty())
-                    {
-                          int r = QMessageBox::question(this, "HEXplorer::question",
-                                                        "Save changes in " + QString(hex->name) + "?",
-                                                        QMessageBox::Yes, QMessageBox::No);
-                          if (r == QMessageBox::Yes)
-                          {
-                              QModelIndex hexIndex = model->getIndex(hex);
-                              save_HexFile(hexIndex);
-                          }
-                    }
-                }
-                else if (name.toLower().endsWith("srecfile"))
-                {
-                    SrecFile *srec = (SrecFile*)node;
-                    if (!srec->getModifiedData().isEmpty())
-                    {
-                        int r = QMessageBox::question(this, "HEXplorer::question",
-                                                      "Save changes in " + QString(srec->name) + "?",
-                                                      QMessageBox::Yes, QMessageBox::No);
-                        if (r == QMessageBox::Yes)
-                        {
-                          QModelIndex srecIndex = model->getIndex(srec);
-                          save_SrecFile(srecIndex);
-                        }
-                    }
-                }
-                else if (name.toLower().endsWith("csv"))
-                {
-                    Csv *csv = (Csv*)node;
-                    if (!csv->getModifiedData().isEmpty())
-                    {
-                        int r = QMessageBox::question(this, "HEXplorer::question",
-                                                      "Save changes in " + QString(csv->name) + "?",
-                                                      QMessageBox::Yes, QMessageBox::No);
-                        if (r == QMessageBox::Yes)
-                        {
-                          QModelIndex csvIndex = model->getIndex(csv);
-                          save_CsvFile(csvIndex);
-                        }
-                    }
-                }
-                else if (name.toLower().endsWith("cdfxfile"))
-                {
-                    CdfxFile *cdfx = (CdfxFile*)node;
-                    if (!cdfx->getModifiedData().isEmpty())
-                    {
-                        int r = QMessageBox::question(this, "HEXplorer::question",
-                                                      "Save changes in " + QString(cdfx->name) + "?",
-                                                      QMessageBox::Yes, QMessageBox::No);
-                        if (r == QMessageBox::Yes)
-                        {
-                          QModelIndex cdfxIndex = model->getIndex(cdfx);
-                          save_CdfxFile(cdfxIndex);
-                        }
-                    }
-                }
-            }
-
-            //remove the node from treeView model
-            listNodes.append(a2lfile);
-        }
         else
         {
-            A2LFILE *a2lfile = dynamic_cast<A2LFILE *> (node);
-            listNodes.append(a2lfile);
+            WorkProject *wp = dynamic_cast<WorkProject*> (node);
+            listNodes.append(wp);
         }
 
     }
 
     //remove node workProject from tree
-    foreach (A2LFILE* node, listNodes)
+    foreach (WorkProject* node, listNodes)
     {
         Node* parentNode = node->getParentNode();
         if (parentNode)
         {
             QModelIndex index = model->getIndex(node);
-            if (1 == 0)
-            {
-                if (index.isValid())
-                    model->dataRemoved(parentNode, index.row(), 1);
-
-                //get the project
-                WorkProject *wp = projectList->value(node->fullName());
-
-                //remove the project from the this->projectList
-                projectList->remove(node->fullName());
-
-                //delete the selected project
-                wp->detach(this);
-            }
-            else
-                removeWorkProject(index);
+            removeWorkProject(index);
         }
     }
 

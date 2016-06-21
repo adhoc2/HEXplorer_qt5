@@ -41,6 +41,11 @@ WorkProject::~WorkProject()
 {
 }
 
+QString WorkProject::fullName()
+{
+    return getFullA2lFileName().c_str();
+}
+
 void WorkProject::attach(QObject *o)
 {
     //check owner for validity
