@@ -541,7 +541,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         editMeasChannels->setEnabled(true);
         editCharacteristics->setEnabled(true);
         openJScript->setEnabled(true);
-        saveA2lDB->setEnabled(true);
+        saveA2lDB->setEnabled(false);
         ui->actionClose_Working_Directory->setEnabled(false);
         ui->actionRename_file->setEnabled(false);
     }
@@ -571,7 +571,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         editMeasChannels->setEnabled(true);
         editCharacteristics->setEnabled(true);
         openJScript->setEnabled(true);
-        saveA2lDB->setEnabled(true);
+        saveA2lDB->setEnabled(false);
         ui->actionClose_Working_Directory->setEnabled(false);
         ui->actionRename_file->setEnabled(false);
     }
@@ -791,6 +791,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionClose_Working_Directory->setEnabled(false);
         ui->actionRename_file->setEnabled(false);
         duplicateDatacontainer->setEnabled(false);
+        ui->actionLoad_DB->setEnabled(false);
     }
 
     //get the full path of the index into treeView
@@ -1461,12 +1462,30 @@ void MDImain::on_actionUpdateWorkingDirectory_triggered()
 
     if (list.count() == 1)
     {
+        //remove original Working Directory
         QModelIndex index = list.at(0);
         QString fullPath = dynamic_cast<WorkingDirectory*>(model->getNode(index))->getFullPath();
-        removeWorkingDirectory(index);
-        WorkingDirectory* wd = openWorkingDirectory(fullPath);
-        index = model->getIndex(wd);
-        ui->treeView->expand(index);
+        //removeWorkingDirectory(index);
+
+        //get a pointer on the selected item
+        Node *nodeWd =  model->getNode(index);
+
+        //remove all wprk projects into working directory
+        foreach (Node *_node, nodeWd->childNodes)
+        {
+            QString name = typeid(*_node).name();
+            if (name.toLower().endsWith("workproject"))
+            {
+                removeWorkProject(model->getIndex(_node));
+            }
+        }
+
+        //re-load working Directory
+//        WorkingDirectory* wd = openWorkingDirectory(fullPath);
+//        index = model->getIndex(wd);
+//        ui->treeView->expand(index);
+        WorkingDirectory* wd = static_cast<WorkingDirectory*> (nodeWd);
+        wd->parseDir(fullPath);
     }
 }
 
@@ -1561,6 +1580,16 @@ void MDImain::openProject(QString &fullFileName)
 void MDImain::insertWp(WorkProject *wp)
 {
     this->projectList->insert(QString(wp->getFullA2lFileName().c_str()), wp);
+}
+
+WorkProject* MDImain::getWp(QString path)
+{
+    if (projectList->contains(path))
+    {
+        return projectList->value(path);
+    }
+    else
+        return NULL;
 }
 
 void MDImain::on_actionOpen_Working_Directory_triggered()
@@ -2670,20 +2699,20 @@ void MDImain::reAppendProject(WorkProject *wp)
     wp->attach(this);
 
     //insert the new created project into the projectList
-    projectList->insert(wp->getFullA2lFileName().c_str(), wp);
+    projectList->insertMulti(wp->getFullA2lFileName().c_str(), wp);
 
     //update model
-    Node* parentNode = wp->a2lFile->getParentNode();
-    parentNode->addChildNode(wp->a2lFile);
+    Node* parentNode = wp->getParentNode();
+    parentNode->addChildNode(wp);
     parentNode->sortChildrensName();
-    wp->a2lFile->setParentNode(parentNode);
-    model->dataInserted(parentNode, parentNode->childNodes.indexOf(wp->a2lFile));
+//    wp->setParentNode(parentNode);
+    model->dataInserted(parentNode, parentNode->childNodes.indexOf(wp));
 
 
     //update treeView
     QModelIndex parentIndex = model->getIndex(parentNode);
     ui->treeView->expand(parentIndex);
-    QModelIndex index = model->getIndex(wp->a2lFile);
+    QModelIndex index = model->getIndex(wp);
     ui->treeView->expand(index);
     ui->treeView->setColumnHidden(1, true);
 }
@@ -2992,9 +3021,6 @@ void MDImain::removeWorkProject(QModelIndex index)
             //update the treeView
             ui->treeView->resizeColumnToContents(0);
 
-            //get the project
-            //WorkProject *wp = projectList->value(a2lfile->fullName());
-
             //remove the project from the this->projectList
             projectList->remove(wp->fullName());
 
@@ -3141,8 +3167,8 @@ void MDImain::removeWorkingDirectory(QModelIndex index)
     if (index.isValid())
     {
         //get a pointer on the selected item
-        Node *node =  model->getNode(index);
-        QString name = typeid(*node).name();
+        Node *nodeWd =  model->getNode(index);
+        QString name = typeid(*nodeWd).name();
 
         if (!name.toLower().endsWith("workingdirectory"))
         {
@@ -3153,23 +3179,23 @@ void MDImain::removeWorkingDirectory(QModelIndex index)
         else
         {
             //As the selected node is an A2l file we can cast the node into its real type
-            WorkingDirectory *wd = dynamic_cast<WorkingDirectory *> (node);
+            WorkingDirectory *wd = dynamic_cast<WorkingDirectory *> (nodeWd);
 
             //remove all wprk projects into working directory
             foreach (Node *_node, wd->childNodes)
             {
                 QString name = typeid(*_node).name();
-                if (name.toLower().endsWith("a2lfile"))
+                if (name.toLower().endsWith("workproject"))
                 {
                     removeWorkProject(model->getIndex(_node));
                 }
             }
 
             //remove the node from treeView model
-            Node* nodeParent = node->getParentNode();
+            Node* nodeParent = nodeWd->getParentNode();
             model->dataRemoved(nodeParent, index.row(), 1);
 
-            //remove working directory from list
+            //remove working directory from list of Path
             QStringList listPath  = workingDirectory.split(";");
             listPath.removeAll(wd->getFullPath());
             workingDirectory = "";
@@ -3179,6 +3205,7 @@ void MDImain::removeWorkingDirectory(QModelIndex index)
             }
             QSettings settings(qApp->organizationName(), qApp->applicationName());
             settings.setValue("currentWDPath", workingDirectory);
+
         }
     }
 }
@@ -6344,7 +6371,7 @@ void MDImain::checkDroppedFile(QString str)
         fComp->setDataset1(str);
         fComp->on_quicklook_clicked();
     }
-    else if(name.toLower().endsWith("a2lfile"))
+    else if(name.toLower().endsWith("workproject"))
     {
         //create a textEditor
         A2LFILE *a2l = (A2LFILE*)node;
@@ -6409,7 +6436,7 @@ void MDImain::exportA2lDb()
         Node *node =  model->getNode(index);
         QString name = typeid(*node).name();
 
-        if (!name.endsWith("A2LFILE"))
+        if (!name.endsWith("WorkProject"))
         {
             QMessageBox::warning(this, "HEXplorer::edit measuring channels", "Please select first a project.",
                                              QMessageBox::Ok);

@@ -14,122 +14,133 @@ WorkingDirectory::WorkingDirectory(QString rootPath, A2lTreeModel *model = NULL,
     this->name = name;
     this->rootPath = rootPath;
 
-    //fmodel
-    fmodel = new QFileSystemModel();
-    fmodel->setRootPath(QDir::cleanPath(rootPath));
-    QStringList filters;
-    filters << "*.a2l" << "*.hex" << "*.s19";
-    fmodel->setNameFilters(filters);
-    fmodel->setNameFilterDisables(false);
-
-
-    //model
+    // set treeView model from mdiMain
     mdimain = parent;
     this->model = model;
 
-    //connect a slot to populate the treeView
-    QObject::connect(fmodel, &QFileSystemModel::directoryLoaded, [=](const QString &path) {
-     this->populateNodeTreeview(path, this);
+    //set parent of this Node WorkingDirectory
+    Node* rootNode = model->getRootNode();
+    if (rootNode == NULL)
+        model->createRootNode();
+    this->setParentNode(model->getRootNode());
+
+    //directory filters
+    QStringList filters;
+    filters << "*.a2l" << "*.hex" << "*.s19";
+
+    //parse rootPath
+    parseDir(rootPath);
+
+    QObject::connect(&fileWatcher, &QFileSystemWatcher::directoryChanged, [=](const QString &path) {
+     this->directoryChanged(path);
      } );
 
-    QObject::connect(fmodel, &QFileSystemModel::rootPathChanged, [=](const QString &newPath) {
-        this->rootPathChanged(newPath, this);
-        } );
-
-    QObject::connect(fmodel, &QFileSystemModel::fileRenamed, [=](const QString &path, const QString &oldname, const QString &newname) {
-        this->fileRenamed(path, oldname, newname, this);
-        } );
-
+    QObject::connect(&fileWatcher, &QFileSystemWatcher::fileChanged, [=](const QString &path) {
+     this->fileChanged(path);
+     } );
 }
 
 WorkingDirectory::~WorkingDirectory()
 {
     delete name;
-    delete fmodel;
 }
 
-void WorkingDirectory::populateNodeTreeview(QString path, Node *node)
+void WorkingDirectory::parseDir(QString dirPath)
 {
-    if (listWorkProjects.contains(path))
-        return;
-
-    //index of selected folder in model
-    QModelIndex parentIndex = fmodel->index(path);
-    int numRows = fmodel->rowCount(parentIndex);
+    //set a QDir
+    QDir dir(dirPath);
+    dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot |QDir::Hidden | QDir::NoSymLinks);
+    QFileInfoList list = dir.entryInfoList();
 
     //create a pointer to  WP
     WorkProject *wp = nullptr;
 
-    //foreach file under selected folder do something
-    bool hasA2l = false;
-    for (int row = 0; row < numRows; ++row)
-    {
-       QModelIndex index = fmodel->index(row, 0, parentIndex);
+    //create a list to store .hex and .s19
+    QFileInfoList listDatasets;
 
-       QFileInfo file = fmodel->fileInfo(index);
+    bool dirHasA2l = false;
+    foreach (QFileInfo file, list)
+    {
        if (file.isFile())
        {
-           if (file.suffix().toLower() == "a2l" && !hasA2l)
+           if (file.suffix().toLower() == "a2l" && !dirHasA2l)
            {
-               // create a new Wp
-               wp = new WorkProject(file.absoluteFilePath(), this->model, mdimain);
-               wp->init(); //init but do not parse the file
-               wp->attach(mdimain);
-               mdimain->insertWp(wp);
+               //check if .a2l already exists
+               wp = mdimain->getWp(file.absoluteFilePath());
 
-               //update the ui->treeView
-               //node->addChildNode(wp->a2lFile);
-               node->addChildNode(wp);
-               //wp->a2lFile->setParentNode(node);
-               wp->setParentNode(node);
-               node->sortChildrensName();
-               //model->dataInserted(node, node->childNodes.indexOf(wp->a2lFile));
-               model->dataInserted(node, node->childNodes.indexOf(wp));
+               //if wp does not exist creates a new WorkProject
+               if (!wp)
+               {
+                   // create a new Wp
+                   wp = new WorkProject(file.absoluteFilePath(), model, mdimain);
+                   wp->init(); //init but do not parse the file
+                   wp->attach(mdimain);
+                   mdimain->insertWp(wp);
 
-               hasA2l = true;
+                   //update the ui->treeView
+                   this->addChildNode(wp);
+                   wp->setParentNode(this);
+                   this->sortChildrensName();
+                   model->dataInserted(this, this->childNodes.indexOf(wp));
 
-               listWorkProjects.append(path);
+                   listWorkProjects.append(dirPath);
+               }
+
+               dirHasA2l = true;
+           }
+           else if (file.suffix().toLower() == "hex")
+           {
+               listDatasets.append(file);
+           }
+           else if (file.suffix().toLower() == "s19")
+           {
+               listDatasets.append(file);
            }
        }
-       else
+       else if (file.isDir())
        {
-           fmodel->fetchMore(index);
+           parseDir(file.absoluteFilePath());
+
        }
     }
 
-    //foreach file under selected folder do something
-    if (hasA2l)
+    //foreach file .hex or .s19 under selected folder and if .a2l file already exists
+    if (dirHasA2l)
     {
-        for (int row = 0; row < numRows; ++row)
+        foreach (QFileInfo file, listDatasets)
         {
-           QModelIndex index = fmodel->index(row, 0, parentIndex);
 
-           QFileInfo file = fmodel->fileInfo(index);
            if (file.isFile())
            {
                if (file.suffix().toLower() == "hex")
                {
                    HexFile* hex = new HexFile(file.absoluteFilePath(), wp);
                    wp->addHex(hex);
+                   fileWatcher.addPath(file.absoluteFilePath());
                }
                else if (file.suffix().toLower() == "s19")
                {
-                   SrecFile* srec = new SrecFile(file.absoluteFilePath(), wp);                   
+                   SrecFile* srec = new SrecFile(file.absoluteFilePath(), wp);
                    wp->addSrec(srec);
+                   fileWatcher.addPath(file.absoluteFilePath());
                }
            }
         }
     }
+
+    //set fileWatcher to control external changes to the root path
+    fileWatcher.addPath(dirPath);
+
 }
 
-void WorkingDirectory::rootPathChanged(QString newpath, Node *node)
+void WorkingDirectory::directoryChanged(QString dirPath)
 {
-    qDebug() << " rootPathChanged" << newpath;
+    qDebug() << dirPath;
 }
 
-void WorkingDirectory::fileRenamed(QString path, QString oldname, QString newname, Node *node)
+void WorkingDirectory::fileChanged(QString filePath)
 {
-     qDebug() << "fileRenamed" << path << oldname << newname;
+    qDebug() << filePath;
 }
 
 QString WorkingDirectory::getFullPath()

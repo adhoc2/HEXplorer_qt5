@@ -1868,7 +1868,7 @@ Data* SrecFile::getData(QString str)
 void SrecFile::checkDisplay()
 {
     //check if parentWp still exists
-    if (!parentNode->getParentNode()->isChild(this->parentNode->name))
+    if (!parentNode->getParentNode()->isChild(this->parentNode))
     {
         int ret = QMessageBox::warning(0, "HEXplorer :: add project",
                                         "This project was deleted !\nDo you want to reload it ?",
@@ -1882,7 +1882,7 @@ void SrecFile::checkDisplay()
     }
 
     //check if this is alaways a child of its parentWp
-    if (!parentNode->isChild(this->name))
+    if (!parentNode->isChild((this)))
     {
 
         int ret = QMessageBox::warning(0, "HEXplorer :: add SrecFile",

@@ -69,6 +69,7 @@ public:
      SrecFile *readSrecFile(SrecFile* srec);
      void readA2l(WorkProject *wp);
      void insertWp(WorkProject *wp);
+     WorkProject* getWp(QString path);
 
 protected:
     virtual void changeEvent(QEvent *e);

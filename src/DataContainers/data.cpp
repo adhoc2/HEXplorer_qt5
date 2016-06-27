@@ -118,8 +118,12 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
     precisionY = 0;
     precisionZ = 0;
     isSortedByRow = 0;
-    uint nPtsX = 1;
-    uint nPtsY = 1;
+    uint nPtsAxisX = 0;
+    uint nPtsAxisY = 0;
+    uint nPtsAxisX_Max = 0;
+    uint nPtsAxisY_Max = 0;
+    uint nPtsZvaluesX = 0;
+    uint nPtsZvaluesY = 0;
 
 
     //initialize the display number of rows of the CHARACTERISTIC
@@ -147,17 +151,17 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
         if (item)
         {
             QString toto = item->getPar("Number");
-            nPtsX = toto.toInt(&bl, 10);
+            nPtsAxisX = toto.toInt(&bl, 10);
         }
         else if (matrix_dim)
         {
-           nPtsX = ((QString)matrix_dim->getPar("xDim")).toInt();
-           nPtsY = ((QString)matrix_dim->getPar("yDim")).toInt();
+           nPtsAxisX = ((QString)matrix_dim->getPar("xDim")).toInt();
+           nPtsAxisY = ((QString)matrix_dim->getPar("yDim")).toInt();
         }
         else
         {
-            nPtsX = 1;
-            nPtsY = 1;
+            nPtsAxisX = 1;
+            nPtsAxisY = 1;
         }
 
         addressX = 0;
@@ -165,15 +169,15 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
 
         //AXIS_PTS_X
         QString str;
-        for (int i = 0; i < nPtsX; i++)
+        for (int i = 0; i < nPtsAxisX; i++)
         {
             listX.append(str.setNum(i));
         }
 
         //AXIS_PTS_Y
-        if (nPtsY > 1)
+        if (nPtsAxisY > 1)
         {
-            for (int i = 0; i < nPtsY; i++)
+            for (int i = 0; i < nPtsAxisY; i++)
             {
                 listY.append(str.setNum(i));
             }
@@ -185,11 +189,11 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
     {
         bool bl;
         NUMBER *item = (NUMBER*)node->getItem("NUMBER");
-        nPtsX = ((QString)item->getPar("Number")).toInt(&bl, 10);
+        nPtsAxisX = ((QString)item->getPar("Number")).toInt(&bl, 10);
 
         //AXIS_PTS_X
         QString str;
-        for (int i = 0; i < nPtsX; i++)
+        for (int i = 0; i < nPtsAxisX; i++)
         {
             listX.append(str.setNum(i));
         }
@@ -245,9 +249,9 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             }
 
 
-            //number of points X
+            //number of points X Maximum
             QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
-            nPtsX = maxAxisPts.toUInt();
+            nPtsAxisX_Max = maxAxisPts.toUInt();
 
             //axisPts RECORD_LAYOUT
             QString deposit = axisPtsX->getPar("Deposit");
@@ -276,31 +280,30 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
                     int nbyte = hexParent->getNumByte(datatype);
                     QString val = hexParent->getHexValue(axisPtsX->getPar("Adress"), offset, nbyte, byteOrderX);
                     bool bl;
-                    nPtsX = val.toInt(&bl,16);
+                    nPtsAxisX = val.toInt(&bl,16);
                     offset += nbyte;
 
                     //check if nPts < nPtsmax
-                    //QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
-                    double nmaxPts = maxAxisPts.toDouble();
-                    if (nPtsX > nmaxPts)
-                        nPtsX = nmaxPts;
+                    if (nPtsAxisX > nPtsAxisX_Max)
+                        nPtsAxisX = nPtsAxisX_Max;
                 }
                 else if (type == "AXIS_PTS_X")
                 {
                     //read the necessary parameters before reading values into HexFile
                     datatypeX = ((AXIS_PTS_X*)item)->getPar("Datatype");
                     int Xnbyte = hexParent->getNumByte(datatypeX);
-                    //addressX = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
                     addressX = QString(axisPtsX->getPar("Adress")).toUInt(&bl, 16) + offset;
 
                     //read values into HexFile
-                    QList<double> decX = hexParent->getDecValues(addressX, Xnbyte, nPtsX, datatypeX, byteOrderX);
+                    if (nPtsAxisX == 0)
+                        nPtsAxisX = nPtsAxisX_Max;
+                    QList<double> decX = hexParent->getDecValues(addressX, Xnbyte, nPtsAxisX, datatypeX, byteOrderX);
 
                     //convert the dec values into phys values
                     listX = dec2Phys(decX, "x");
 
                     //increment offset of the axisX length
-                    offset +=  nPtsX * Xnbyte;
+                    offset +=  nPtsAxisX * Xnbyte;
                 }
             }
 
@@ -309,6 +312,10 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
         {
             //do not compare X axis
             isAxisXComparable = false;
+
+            //number of points X Maximum
+            QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
+            nPtsAxisX_Max = maxAxisPts.toUInt();
 
             //OFFSET, SHIFT and NUMBERAPO
             FIX_AXIS_PAR *fixAxisPar = (FIX_AXIS_PAR*)axisDescrX->getItem("FIX_AXIS_PAR");
@@ -321,16 +328,14 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
                 bool bl;
                 int offset = off.toInt(&bl, 10);
                 int shift = sft.toInt(&bl, 10);
-                nPtsX = napo.toUInt(&bl, 10);
+                nPtsAxisX = napo.toUInt(&bl, 10);
 
                 //check if nPts < nPtsmax
-                QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
-                double nmaxPts = maxAxisPts.toDouble();
-                if (nPtsX > nmaxPts)
-                    nPtsX = nmaxPts;
+                if (nPtsAxisX > nPtsAxisX_Max)
+                    nPtsAxisX = nPtsAxisX_Max;
 
                 QString str;
-                for (int i = 0; i < nPtsX; i++)
+                for (int i = 0; i < nPtsAxisX; i++)
                 {
                     str.setNum((int)(offset + i * qPow(2, shift)), 10);
                     listX.append(str);
@@ -346,16 +351,14 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
                 bool bl;
                 int offset = off.toInt(&bl, 10);
                 int distance = dist.toInt(&bl, 10);
-                nPtsX = napo.toUInt(&bl, 10);
+                nPtsAxisX = napo.toUInt(&bl, 10);
 
                 //check if nPts < nPtsmax
-                QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
-                double nmaxPts = maxAxisPts.toDouble();
-                if (nPtsX > nmaxPts)
-                    nPtsX = nmaxPts;
+                if (nPtsAxisX > nPtsAxisX_Max)
+                    nPtsAxisX = nPtsAxisX_Max;
 
                 QString str;
-                for (int i = 0; i < nPtsX; i++)
+                for (int i = 0; i < nPtsAxisX; i++)
                 {
                     str.setNum((int)(offset + i * distance), 10);
                     listX.append(str);
@@ -373,9 +376,9 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
                 byteOrderX = byteOrder->getPar("ByteOrder");
             }
 
-            //number of points X
+            //number of points X Maximum
             QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
-            nPtsX = maxAxisPts.toUInt();
+            nPtsAxisX_Max = maxAxisPts.toUInt();
         }
     }
 
@@ -424,10 +427,9 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
                 byteOrderY = byteOrder->getPar("ByteOrder");
             }
 
-
-            //number of points Y
+            //number of points Y Max
             QString maxAxisPts = axisDescrY->getPar("MaxAxisPoints");
-            nPtsY = maxAxisPts.toUInt();
+            nPtsAxisY_Max = maxAxisPts.toUInt();
 
             //axisPts RECORD_LAYOUT
             QString deposit = axisPtsY->getPar("Deposit");
@@ -451,31 +453,31 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
                     int nbyte = hexParent->getNumByte(datatype);
                     QString val = hexParent->getHexValue(axisPtsY->getPar("Adress"), offset, nbyte, byteOrderY);
                     bool bl;
-                    nPtsY = val.toInt(&bl,16);
+                    nPtsAxisY = val.toInt(&bl,16);
                     offset += nbyte;
 
                     //check if nPts < nPtsmax
-                    //QString maxAxisPts = axisDescrY->getPar("MaxAxisPoints");
-                    double nmaxPts = maxAxisPts.toDouble();
-                    if (nPtsY > nmaxPts)
-                        nPtsY = nmaxPts;
+                    if (nPtsAxisY > nPtsAxisY_Max)
+                        nPtsAxisY = nPtsAxisY_Max;
                 }
                 else if (type == "AXIS_PTS_X")
                 {
                     //read the necessary parameters before reading values into HexFile
                     datatypeY = ((AXIS_PTS_X*)item)->getPar("Datatype");
                     int Ynbyte = hexParent->getNumByte(datatypeY);
-                    //addressY = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
                     addressY = QString(axisPtsY->getPar("Adress")).toUInt(&bl, 16) + offset;
 
                     //read values into HexFile
-                    QList<double> decY = hexParent->getDecValues(addressY, Ynbyte, nPtsY, datatypeY, byteOrderY);
+                    // get nPtsY if "NO_AXIS_PTS_X" is not specified
+                    if (nPtsAxisY == 0) // done in case "NO_AXIS_PTS_X" is not specified => use "MaxAxisPoints"
+                        nPtsAxisY = nPtsAxisY_Max;
+                    QList<double> decY = hexParent->getDecValues(addressY, Ynbyte, nPtsAxisY, datatypeY, byteOrderY);
 
                     //convert the dec values into phys values
                     listY = dec2Phys(decY, "y");
 
                     //increment offset of the axisX length
-                    offset +=  nPtsY * Ynbyte;
+                    offset +=  nPtsAxisY * Ynbyte;
                 }
             }
 
@@ -484,6 +486,10 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
         {
             //do not compare Y axis
             isAxisYComparable = false;
+
+            //number of points Y Max
+            QString maxAxisPts = axisDescrY->getPar("MaxAxisPoints");
+            nPtsAxisY_Max = maxAxisPts.toUInt();
 
             //OFFSET, SHIFT and NUMBERAPO
             FIX_AXIS_PAR *fixAxisPar = (FIX_AXIS_PAR*)axisDescrY->getItem("FIX_AXIS_PAR");
@@ -496,16 +502,14 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
                 bool bl;
                 int offset = off.toInt(&bl, 10);
                 int shift = sft.toInt(&bl, 10);
-                nPtsY = napo.toUInt(&bl, 10);
+                nPtsAxisY = napo.toUInt(&bl, 10);
 
                 //check if nPts < nPtsmax
-                QString maxAxisPts = axisDescrY->getPar("MaxAxisPoints");
-                double nmaxPts = maxAxisPts.toDouble();
-                if (nPtsY > nmaxPts)
-                    nPtsY = nmaxPts;
+                if (nPtsAxisY > nPtsAxisY_Max)
+                    nPtsAxisY = nPtsAxisY_Max;
 
                 QString str;
-                for (int i = 0; i < nPtsY; i++)
+                for (int i = 0; i < nPtsAxisY; i++)
                 {
                      str.setNum((int)(offset + i * qPow(2, shift)), 10);
                     listY.append(str);
@@ -521,16 +525,14 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
                 bool bl;
                 int offset = off.toInt(&bl, 10);
                 int distance = dist.toInt(&bl, 10);
-                nPtsY = napo.toUInt(&bl, 10);
+                nPtsAxisY = napo.toUInt(&bl, 10);
 
                 //check if nPts < nPtsmax
-                QString maxAxisPts = axisDescrY->getPar("MaxAxisPoints");
-                double nmaxPts = maxAxisPts.toDouble();
-                if (nPtsY > nmaxPts)
-                    nPtsY = nmaxPts;
+                if (nPtsAxisY > nPtsAxisY_Max)
+                    nPtsAxisY = nPtsAxisY_Max;
 
                 QString str;
-                for (int i = 0; i < nPtsY; i++)
+                for (int i = 0; i < nPtsAxisY; i++)
                 {
                      str.setNum((int)(offset + i *  distance), 10);
                     listY.append(str);
@@ -548,9 +550,9 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
                 byteOrderY = byteOrder->getPar("ByteOrder");
             }
 
-            //number of points Y
+            //number of points Y Max
             QString maxAxisPts = axisDescrY->getPar("MaxAxisPoints");
-            nPtsY = maxAxisPts.toUInt();
+            nPtsAxisY_Max = maxAxisPts.toUInt();
         }
     }
 
@@ -623,10 +625,14 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             }
 
             //get the decimal data from hexFile
+            if (nPtsAxisX  == 0)
+                nPtsAxisX = 1;
+            if (nPtsAxisY  == 0)
+                nPtsAxisY = 1;
             int Znbyte = hexParent->getNumByte(datatypeZ);
             bool bl;
             addressZ = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
-            QList<double> decZ = hexParent->getDecValues(addressZ, Znbyte, nPtsX * nPtsY, datatypeZ, byteOrderZ);
+            QList<double> decZ = hexParent->getDecValues(addressZ, Znbyte, nPtsAxisX * nPtsAxisY, datatypeZ, byteOrderZ);
 
             //BIT_MASK
             BIT_MASK *_bitmask = (BIT_MASK*)node->getItem("BIT_MASK");
@@ -643,7 +649,6 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             }
 
             //dec2phys
-
             listZ = dec2Phys(decZ, "z");
 
         }
@@ -661,40 +666,19 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
         {
             std::string datatype = ((NO_AXIS_PTS_X*)item)->getPar("Datatype");
             int nbyte = hexParent->getNumByte(datatype);
-//            QString val = hexParent->getHexValue(node->getPar("Adress"), offset, nbyte);
-//            bool bl;
-//            nPtsX = val.toInt(&bl,16);
             double address = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
-            nPtsX = hexParent->getDecValues(address, nbyte, 1, datatype, byteOrderX).at(0);
+            nPtsZvaluesX = hexParent->getDecValues(address, nbyte, 1, datatype, byteOrderX).at(0);
             offset += nbyte;
-
-            //check if nPts < nPtsmax
-            QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
-            double nmaxPts = maxAxisPts.toDouble();
-            if (nPtsX > nmaxPts)
-                nPtsX = nmaxPts;
-
-            xOrgSize = nPtsX;
+            xOrgSize = nPtsZvaluesX;
         }
         else if (type.compare("NO_AXIS_PTS_Y") == 0)
         {
             std::string datatype = ((NO_AXIS_PTS_Y*)item)->getPar("Datatype");
             int nbyte = hexParent->getNumByte(datatype);
-//            QString val = hexParent->getHexValue(node->getPar("Adress"), offset, nbyte);
-//            bool bl;
-//            nPtsY = val.toInt(&bl,16);
-
             double address = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
-            nPtsY = hexParent->getDecValues(address, nbyte, 1, datatype, byteOrderY).at(0);
+            nPtsZvaluesY = hexParent->getDecValues(address, nbyte, 1, datatype, byteOrderY).at(0);
             offset += nbyte;
-
-            //check if nPts < nPtsmax
-            QString maxAxisPts = axisDescrY->getPar("MaxAxisPoints");
-            double nmaxPts = maxAxisPts.toDouble();
-            if (nPtsY > nmaxPts)
-                nPtsY = nmaxPts;
-
-            yOrgSize = nPtsY;
+            yOrgSize = nPtsZvaluesY;
         }
         else if (type.compare("AXIS_PTS_X") == 0)
         {
@@ -704,13 +688,15 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             addressX = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
 
             //read values into HexFile
-            QList<double> decX = hexParent->getDecValues(addressX, Xnbyte, nPtsX, datatypeX, byteOrderX);
+            if (nPtsAxisX == 0)
+                nPtsAxisX = nPtsZvaluesX;
+            QList<double> decX = hexParent->getDecValues(addressX, Xnbyte, nPtsAxisX, datatypeX, byteOrderX);
 
             //convert the dec values into phys values
             listX = dec2Phys(decX, "x");
 
             //increment offset of the axisX length
-            offset +=  nPtsX * Xnbyte;
+            offset +=  nPtsAxisX * Xnbyte;
         }
         else if (type.compare("AXIS_PTS_Y") == 0)
         {
@@ -720,19 +706,21 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
             addressY = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
 
             //read values into HexFile
-            QList<double> decY = hexParent->getDecValues(addressY, Ynbyte, nPtsY, datatypeY, byteOrderY);
+            if (nPtsAxisY == 0)
+                nPtsAxisY = nPtsZvaluesY;
+            QList<double> decY = hexParent->getDecValues(addressY, Ynbyte, nPtsAxisY, datatypeY, byteOrderY);
 
             //convert the dec values into phys values
             listY = dec2Phys(decY, "y");
 
             //increment offset of the axisX length
-            offset +=  nPtsY * Ynbyte;
+            offset +=  nPtsAxisY * Ynbyte;
         }
 
     }
 
     //define number of rows of data to display
-    size += nPtsY;
+    size += nPtsAxisY;
 }
 
 Data::Data(QSqlRecord record, QSqlDatabase database,  HexFile *hexFile, bool modif) : Node(), QObject()
@@ -821,8 +809,12 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
     precisionY = 0;
     precisionZ = 0;
     isSortedByRow = 0;
-    uint nPtsX = 1;
-    uint nPtsY = 1;
+    uint nPtsAxisX = 0;
+    uint nPtsAxisY = 0;
+    uint nPtsAxisX_Max = 0;
+    uint nPtsAxisY_Max = 0;
+    uint nPtsZvaluesX = 0;
+    uint nPtsZvaluesY = 0;
 
 
     //initialize the display number of rows of the CHARACTERISTIC
@@ -850,17 +842,17 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
         if (item)
         {
             QString toto = item->getPar("Number");
-            nPtsX = toto.toInt(&bl, 10);
+            nPtsAxisX = toto.toInt(&bl, 10);
         }
         else if (matrix_dim)
         {
-           nPtsX = ((QString)matrix_dim->getPar("xDim")).toInt();
-           nPtsY = ((QString)matrix_dim->getPar("yDim")).toInt();
+           nPtsAxisX = ((QString)matrix_dim->getPar("xDim")).toInt();
+           nPtsAxisY = ((QString)matrix_dim->getPar("yDim")).toInt();
         }
         else
         {
-            nPtsX = 1;
-            nPtsY = 1;
+            nPtsAxisX = 1;
+            nPtsAxisY = 1;
         }
 
         addressX = 0;
@@ -868,15 +860,15 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
 
         //AXIS_PTS_X
         QString str;
-        for (int i = 0; i < nPtsX; i++)
+        for (int i = 0; i < nPtsAxisX; i++)
         {
             listX.append(str.setNum(i));
         }
 
         //AXIS_PTS_Y
-        if (nPtsY > 1)
+        if (nPtsAxisY > 1)
         {
-            for (int i = 0; i < nPtsY; i++)
+            for (int i = 0; i < nPtsAxisY; i++)
             {
                 listY.append(str.setNum(i));
             }
@@ -888,11 +880,11 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
     {
         bool bl;
         NUMBER *item = (NUMBER*)node->getItem("NUMBER");
-        nPtsX = ((QString)item->getPar("Number")).toInt(&bl, 10);
+        nPtsAxisX = ((QString)item->getPar("Number")).toInt(&bl, 10);
 
         //AXIS_PTS_X
         QString str;
-        for (int i = 0; i < nPtsX; i++)
+        for (int i = 0; i < nPtsAxisX; i++)
         {
             listX.append(str.setNum(i));
         }
@@ -940,9 +932,9 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
             QString nameAxisX = axisPtsRef->getPar("AxisPoints");
             AXIS_PTS *axisPtsX = (AXIS_PTS*)project->getNode("MODULE/" + moduleName + "/AXIS_PTS/" + nameAxisX);
 
-            //number of points X
+            //number of points X Maximum
             QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
-            nPtsX = maxAxisPts.toUInt();
+            nPtsAxisX_Max = maxAxisPts.toUInt();
 
             //BYTE_ORDER axisX
             Byte_Order *byteOrder = (Byte_Order*)axisPtsX->getItem("BYTE_ORDER");
@@ -973,38 +965,31 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
                     int nbyte = srecParent->getNumByte(datatype);
                     QString val = srecParent->getHexValue(axisPtsX->getPar("Adress"), offset, nbyte, byteOrderX);
                     bool bl;
-                    nPtsX = val.toInt(&bl,16);
+                    nPtsAxisX = val.toInt(&bl,16);
                     offset += nbyte;
 
                     //check if nPts < nPtsmax
-                    QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
-                    double nmaxPts = maxAxisPts.toDouble();
-                    if (nPtsX > nmaxPts)
-                        nPtsX = nmaxPts;
+                    if (nPtsAxisX > nPtsAxisX_Max)
+                        nPtsAxisX = nPtsAxisX_Max;
                 }
                 else if (type == "AXIS_PTS_X")
                 {
                     //read the necessary parameters before reading values into HexFile
                     datatypeX = ((AXIS_PTS_X*)item)->getPar("Datatype");
                     int Xnbyte = srecParent->getNumByte(datatypeX);
-                    //addressX = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
                     addressX = QString(axisPtsX->getPar("Adress")).toUInt(&bl, 16) + offset;
 
                     //read values into HexFile
-                    if (nPtsX == 1)
-                    {
-                        QString tamere = axisPtsX->getPar("MaxAxisPoints");
-                        nPtsX = tamere.toUInt();
-                    }
-                    QList<double> decX = srecParent->getDecValues(addressX, Xnbyte, nPtsX, datatypeX, byteOrderX);
+                    if (nPtsAxisX == 0)
+                        nPtsAxisX = nPtsAxisX_Max;
+                    QList<double> decX = srecParent->getDecValues(addressX, Xnbyte, nPtsAxisX, datatypeX, byteOrderX);
 
                     //convert the dec values into phys values
                     listX = dec2Phys(decX, "x");
 
                     //increment offset of the axisX length
-                    offset +=  nPtsX * Xnbyte;
+                    offset +=  nPtsAxisX * Xnbyte;
                 }
-
             }
 
         }
@@ -1012,6 +997,10 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
         {
             //do not compare X axis
             isAxisXComparable = false;
+
+            //number of points X Maximum
+            QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
+            nPtsAxisX_Max = maxAxisPts.toUInt();
 
             //OFFSET, SHIFT and NUMBERAPO
             FIX_AXIS_PAR *fixAxisPar = (FIX_AXIS_PAR*)axisDescrX->getItem("FIX_AXIS_PAR");
@@ -1021,16 +1010,14 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
             bool bl;
             int offset = off.toInt(&bl, 10);
             int shift = sft.toInt(&bl, 10);
-            nPtsX = napo.toUInt(&bl, 10);
+            nPtsAxisX = napo.toUInt(&bl, 10);
 
             //check if nPts < nPtsmax
-            QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
-            double nmaxPts = maxAxisPts.toDouble();
-            if (nPtsX > nmaxPts)
-                nPtsX = nmaxPts;
+            if (nPtsAxisX > nPtsAxisX_Max)
+                nPtsAxisX = nPtsAxisX_Max;
 
             QString str;
-            for (int i = 0; i < nPtsX; i++)
+            for (int i = 0; i < nPtsAxisX; i++)
             {
                 str.setNum((int)(offset + i * qPow(2, shift)), 16);
                 listX.append(str);
@@ -1047,9 +1034,9 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
                 byteOrderX = byteOrder->getPar("ByteOrder");
             }
 
-            //number of points X
+            //number of points X Maximum
             QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
-            nPtsX = maxAxisPts.toUInt();
+            nPtsAxisX_Max = maxAxisPts.toUInt();
         }
     }
 
@@ -1097,9 +1084,9 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
                 byteOrderY = byteOrder->getPar("ByteOrder");
             }
 
-            //number of points Y
+            //number of points Y Maximum
             QString maxAxisPts = axisDescrY->getPar("MaxAxisPoints");
-            nPtsY = maxAxisPts.toUInt();
+            nPtsAxisY_Max = maxAxisPts.toUInt();
 
             //axisPts RECORD_LAYOUT
             QString deposit = axisPtsY->getPar("Deposit");
@@ -1123,14 +1110,12 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
                     int nbyte = srecParent->getNumByte(datatype);
                     QString val = srecParent->getHexValue(axisPtsY->getPar("Adress"), offset, nbyte, byteOrderY);
                     bool bl;
-                    nPtsY = val.toInt(&bl,16);
+                    nPtsAxisY = val.toInt(&bl,16);
                     offset += nbyte;
 
                     //check if nPts < nPtsmax
-                    QString maxAxisPts = axisDescrY->getPar("MaxAxisPoints");
-                    double nmaxPts = maxAxisPts.toDouble();
-                    if (nPtsY > nmaxPts)
-                        nPtsY = nmaxPts;
+                    if (nPtsAxisY > nPtsAxisY_Max)
+                        nPtsAxisY = nPtsAxisY_Max;
                 }
                 else if (type == "AXIS_PTS_X")
                 {
@@ -1141,20 +1126,17 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
                     addressY = QString(axisPtsY->getPar("Adress")).toUInt(&bl, 16) + offset;
 
                     // get nPtsY if "NO_AXIS_PTS_X" is not specified
-                    if (nPtsY == 1) // done in case "NO_AXIS_PTS_X" is not specified => use "MaxAxisPoints"
-                    {
-                        QString tamere = axisPtsY->getPar("MaxAxisPoints");
-                        nPtsY = tamere.toUInt();
-                    }
+                    if (nPtsAxisY == 0) // done in case "NO_AXIS_PTS_X" is not specified => use "MaxAxisPoints"
+                        nPtsAxisY = nPtsAxisY_Max;
 
                     //read values into HexFile
-                    QList<double> decY = srecParent->getDecValues(addressY, Ynbyte, nPtsY, datatypeY, byteOrderY);
+                    QList<double> decY = srecParent->getDecValues(addressY, Ynbyte, nPtsAxisY, datatypeY, byteOrderY);
 
                     //convert the dec values into phys values
                     listY = dec2Phys(decY, "y");
 
                     //increment offset of the axisX length
-                    offset +=  nPtsY * Ynbyte;
+                    offset +=  nPtsAxisY * Ynbyte;
                 }
             }
 
@@ -1164,6 +1146,10 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
             //do not compare Y axis
             isAxisYComparable = false;
 
+            //number of points Y Maximum
+            QString maxAxisPts = axisDescrY->getPar("MaxAxisPoints");
+            nPtsAxisY_Max = maxAxisPts.toUInt();
+
             //OFFSET, SHIFT and NUMBERAPO
             FIX_AXIS_PAR *fixAxisPar = (FIX_AXIS_PAR*)axisDescrY->getItem("FIX_AXIS_PAR");
             QString off = fixAxisPar->getPar("Offset");
@@ -1172,16 +1158,14 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
             bool bl;
             int offset = off.toInt(&bl, 10);
             int shift = sft.toInt(&bl, 10);
-            nPtsY = napo.toUInt(&bl, 10);
+            nPtsAxisY = napo.toUInt(&bl, 10);
 
             //check if nPts < nPtsmax
-            QString maxAxisPts = axisDescrY->getPar("MaxAxisPoints");
-            double nmaxPts = maxAxisPts.toDouble();
-            if (nPtsY > nmaxPts)
-                nPtsY = nmaxPts;
+            if (nPtsAxisY > nPtsAxisY_Max)
+                nPtsAxisY = nPtsAxisY_Max;
 
             QString str;
-            for (int i = 0; i < nPtsY; i++)
+            for (int i = 0; i < nPtsAxisY; i++)
             {
                  str.setNum((int)(offset + i * qPow(2, shift)), 16);
                 listY.append(str);
@@ -1198,9 +1182,9 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
                 byteOrderY = byteOrder->getPar("ByteOrder");
             }
 
-            //number of points Y
+            //number of points Y Maximum
             QString maxAxisPts = axisDescrY->getPar("MaxAxisPoints");
-            nPtsY = maxAxisPts.toUInt();
+            nPtsAxisY_Max = maxAxisPts.toUInt();
         }
     }
 
@@ -1276,7 +1260,13 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
             int Znbyte = srecParent->getNumByte(datatypeZ);
             bool bl;
             addressZ = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
-            QList<double> decZ = srecParent->getDecValues(addressZ, Znbyte, nPtsX * nPtsY, datatypeZ, byteOrderZ);
+
+            if (nPtsAxisX  == 0)
+                nPtsAxisX = 1;
+            if (nPtsAxisY  == 0)
+                nPtsAxisY = 1;
+
+            QList<double> decZ = srecParent->getDecValues(addressZ, Znbyte, nPtsAxisX * nPtsAxisY, datatypeZ, byteOrderZ);
 
             //BIT_MASK
             BIT_MASK *_bitmask = (BIT_MASK*)node->getItem("BIT_MASK");
@@ -1310,40 +1300,21 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
         {
             std::string datatype = ((NO_AXIS_PTS_X*)item)->getPar("Datatype");
             int nbyte = srecParent->getNumByte(datatype);
-//            QString val = srecParent->getHexValue(node->getPar("Adress"), offset, nbyte);
-//            bool bl;
-//            nPtsX = val.toInt(&bl,16);
+
             double address = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
-            nPtsX = srecParent->getDecValues(address, nbyte, 1, datatype, byteOrderX).at(0);
+            nPtsZvaluesX = srecParent->getDecValues(address, nbyte, 1, datatype, byteOrderX).at(0);
+            xOrgSize = nPtsZvaluesX;
             offset += nbyte;
-
-            //check if nPts < nPtsmax
-            QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
-            double nmaxPts = maxAxisPts.toDouble();
-            if (nPtsX > nmaxPts)
-                nPtsX = nmaxPts;
-
-            xOrgSize = nPtsX;
         }
         else if (type.compare("NO_AXIS_PTS_Y") == 0)
         {
             std::string datatype = ((NO_AXIS_PTS_Y*)item)->getPar("Datatype");
             int nbyte = srecParent->getNumByte(datatype);
-//            QString val = srecParent->getHexValue(node->getPar("Adress"), offset, nbyte);
-//            bool bl;
-//            nPtsY = val.toInt(&bl,16);
 
             double address = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
-            nPtsY = srecParent->getDecValues(address, nbyte, 1, datatype, byteOrderY).at(0);
-            offset += nbyte;
-
-            //check if nPts < nPtsmax
-            QString maxAxisPts = axisDescrY->getPar("MaxAxisPoints");
-            double nmaxPts = maxAxisPts.toDouble();
-            if (nPtsY > nmaxPts)
-                nPtsY = nmaxPts;
-
-            yOrgSize = nPtsY;
+            nPtsZvaluesY = srecParent->getDecValues(address, nbyte, 1, datatype, byteOrderY).at(0);
+            yOrgSize = nPtsZvaluesY;
+            offset += nbyte;            
         }
         else if (type.compare("AXIS_PTS_X") == 0)
         {
@@ -1353,13 +1324,15 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
             addressX = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
 
             //read values into HexFile
-            QList<double> decX = srecParent->getDecValues(addressX, Xnbyte, nPtsX, datatypeX, byteOrderX);
+            if (nPtsAxisX == 0)
+                nPtsAxisX = nPtsZvaluesX;
+            QList<double> decX = srecParent->getDecValues(addressX, Xnbyte, nPtsAxisX, datatypeX, byteOrderX);
 
             //convert the dec values into phys values
             listX = dec2Phys(decX, "x");
 
             //increment offset of the axisX length
-            offset +=  nPtsX * Xnbyte;
+            offset +=  nPtsAxisX * Xnbyte;
         }
         else if (type.compare("AXIS_PTS_Y") == 0)
         {
@@ -1369,19 +1342,21 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
             addressY = QString(node->getPar("Adress")).toUInt(&bl, 16) + offset;
 
             //read values into HexFile
-            QList<double> decY = srecParent->getDecValues(addressY, Ynbyte, nPtsY, datatypeY, byteOrderY);
+            if (nPtsAxisY == 0)
+                nPtsAxisY = nPtsZvaluesY;
+            QList<double> decY = srecParent->getDecValues(addressY, Ynbyte, nPtsAxisY, datatypeY, byteOrderY);
 
             //convert the dec values into phys values
             listY = dec2Phys(decY, "y");
 
             //increment offset of the axisX length
-            offset +=  nPtsY * Ynbyte;
+            offset +=  nPtsAxisY * Ynbyte;
         }
 
     }
 
     //define number of rows of data to display
-    size += nPtsY;
+    size += nPtsAxisY;
 }
 
 Data::Data(CHARACTERISTIC *node, PROJECT *pro, Csv *csv, bool modif) : Node(node->name), QObject()
@@ -3009,7 +2984,7 @@ QString Data::hex2phys(QString hex, QString axis)
             return hex;
         }
         else
-            return hex;
+            return QString::number((uint)dec);
     }
     else
         return hex;
@@ -4145,7 +4120,7 @@ QString Data::phys2hex(QString phys, QString axis)
     }
     else if (axis == "z")
     {
-        double dec = 0;
+        double dec = phys.toDouble();
         QString type = typeid(*label).name();
         QString compu_method;
         if (type.endsWith("CHARACTERISTIC"))
@@ -4156,87 +4131,91 @@ QString Data::phys2hex(QString phys, QString axis)
         {
             compu_method = ((AXIS_PTS*)label)->getPar("Conversion");
         }
+
+
         COMPU_METHOD *cmpZ = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu_method);
-        QString convType = cmpZ->getPar("ConversionType");
-
-        bool bl;
-        if (convType.toLower() == "rat_func")
+        if (cmpZ)
         {
-            COEFFS *item = (COEFFS*)cmpZ->getItem("COEFFS");
-            double a = ((QString)item->getPar("float1")).toDouble(&bl);
-            double b = ((QString)item->getPar("float2")).toDouble(&bl);
-            double c = ((QString)item->getPar("float3")).toDouble(&bl);
-            double d = ((QString)item->getPar("float4")).toDouble(&bl);
-            double e = ((QString)item->getPar("float5")).toDouble(&bl);
-            double f = ((QString)item->getPar("float6")).toDouble(&bl);
+            QString convType = cmpZ->getPar("ConversionType");
 
-            double val = checkLimitsZ(phys).toDouble();
-            dec = (a * pow(val, 2) + b * val + c) / (d * pow(val, 2) + e * val + f);
-        }
-        else if (convType.toLower() == "tab_verb")
-        {
-            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmpZ->getItem("COMPU_TAB_REF");
-            QString compuTabRef = item->getPar("ConversionTable");
-            compuVTabAxisZ = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+            bool bl;
+            if (convType.toLower() == "rat_func")
+            {
+                COEFFS *item = (COEFFS*)cmpZ->getItem("COEFFS");
+                double a = ((QString)item->getPar("float1")).toDouble(&bl);
+                double b = ((QString)item->getPar("float2")).toDouble(&bl);
+                double c = ((QString)item->getPar("float3")).toDouble(&bl);
+                double d = ((QString)item->getPar("float4")).toDouble(&bl);
+                double e = ((QString)item->getPar("float5")).toDouble(&bl);
+                double f = ((QString)item->getPar("float6")).toDouble(&bl);
 
-            dec = compuVTabAxisZ->getPos(phys);
-        }
-        else if (convType.toLower() == "identical")
-        {
+                double val = checkLimitsZ(phys).toDouble();
+                dec = (a * pow(val, 2) + b * val + c) / (d * pow(val, 2) + e * val + f);
+            }
+            else if (convType.toLower() == "tab_verb")
+            {
+                COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmpZ->getItem("COMPU_TAB_REF");
+                QString compuTabRef = item->getPar("ConversionTable");
+                compuVTabAxisZ = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
 
-        }
-        else if (convType.toLower() == "form")
-        {
+                dec = compuVTabAxisZ->getPos(phys);
+            }
+            else if (convType.toLower() == "identical")
+            {
 
-        }
-        else if (convType.toLower() == "linear")
-        {
+            }
+            else if (convType.toLower() == "form")
+            {
 
-        }
-        else if (convType.toLower() == "tab_intp")
-        {
-            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmpZ->getItem("COMPU_TAB_REF");
-            QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisZ = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPU_TAB/" + compuTabRef);
+            }
+            else if (convType.toLower() == "linear")
+            {
 
-            QStringList list = compuTabAxisZ->getValueList();
+            }
+            else if (convType.toLower() == "tab_intp")
+            {
+                COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmpZ->getItem("COMPU_TAB_REF");
+                QString compuTabRef = item->getPar("ConversionTable");
+                compuTabAxisZ = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPU_TAB/" + compuTabRef);
+
+                QStringList list = compuTabAxisZ->getValueList();
 
 
-            //get the position of the decimal into the keys
-            QStringList::iterator pos = std::lower_bound(list.begin(), list.end(), phys, myCompare);
+                //get the position of the decimal into the keys
+                QStringList::iterator pos = std::lower_bound(list.begin(), list.end(), phys, myCompare);
 
-            //if dec is not included into the keys
-            if (pos == list.end())
-                dec = compuTabAxisZ->getKeys().last();
-            else if (pos == list.begin())
-                dec = compuTabAxisZ->getKeys().first();
+                //if dec is not included into the keys
+                if (pos == list.end())
+                    dec = compuTabAxisZ->getKeys().last();
+                else if (pos == list.begin())
+                    dec = compuTabAxisZ->getKeys().first();
+                else
+                {
+                    //interpolate (checking that denominator is difefrent to 0)
+                    float x1,x2,y1,y2 = 0;
+                    x1 = (*(pos - 1)).toFloat();
+                    x2 = (*pos).toFloat();
+                    y1 = compuTabAxisZ->getValue(x1).toFloat();
+                    y2 = compuTabAxisZ->getValue(x2).toFloat();
+                    float denom = (y2 - y1);
+                    if (denom)
+                        dec = x1 + (phys.toFloat() - y1)*(x2 - x1)/denom;
+                    else
+                        dec = 0;
+                }
+            }
+            else if (convType.toLower() == "tab_nointp")
+            {
+
+            }
             else
             {
-                //interpolate (checking that denominator is difefrent to 0)
-                float x1,x2,y1,y2 = 0;
-                x1 = (*(pos - 1)).toFloat();
-                x2 = (*pos).toFloat();
-                y1 = compuTabAxisZ->getValue(x1).toFloat();
-                y2 = compuTabAxisZ->getValue(x2).toFloat();
-                float denom = (y2 - y1);
-                if (denom)
-                    dec = x1 + (phys.toFloat() - y1)*(x2 - x1)/denom;
-                else
-                    dec = 0;
+
             }
         }
-        else if (convType.toLower() == "tab_nointp")
-        {
-
+            //dec2hex
+            return dec2hex(dec, datatypeZ, 16);
         }
-        else
-        {
-
-        }
-
-        //dec2hex
-        return dec2hex(dec, datatypeZ, 16);
-    }
     else
         return phys;
 }
@@ -4492,11 +4471,16 @@ QStringList Data::dec2hex(QList<double> listDec, std::string type,  int base)
 QString Data::dec2hex(double dec, std::string type, int base)
 {
     QString qHex = "";
-    int E = (int)dec;
+    uint E = (uint)dec;
     char hex[31];
 
     if(type == "SBYTE")
     {
+        if(E > SHRT_MAX)
+        {
+            E = SHRT_MAX;
+        }
+
         if ((0.5 <= dec - E && dec >= 0 )|| (dec - E > -0.5 && dec < 0))
         {
             if (E < CHAR_MAX)
@@ -4527,6 +4511,11 @@ QString Data::dec2hex(double dec, std::string type, int base)
     }
     else if(type == "UBYTE")
     {
+        if(E > UCHAR_MAX)
+        {
+            E = UCHAR_MAX;
+        }
+
         if (0.5 <= dec - E)
         {
             if (E < UCHAR_MAX)
@@ -4555,6 +4544,11 @@ QString Data::dec2hex(double dec, std::string type, int base)
     }
     else if(type == "SWORD")
     {
+        if(E > SHRT_MAX)
+        {
+            E = SHRT_MAX;
+        }
+
         if ((0.5 <= dec - E && dec >=0 )|| (dec - E > -0.5 && dec < 0))
         {
             if (E < SHRT_MAX)
@@ -4583,6 +4577,11 @@ QString Data::dec2hex(double dec, std::string type, int base)
     }
     else if(type == "UWORD")
     {
+        if(E > USHRT_MAX)
+        {
+            E = USHRT_MAX;
+        }
+
         if (0.5 <= dec - E)
         {
             if (E < USHRT_MAX)
@@ -4611,7 +4610,12 @@ QString Data::dec2hex(double dec, std::string type, int base)
     }
     else if(type == "SLONG")
     {
-        if ((0.5 <= dec - E && dec >=0 )|| (dec - E > -0.5 && dec < 0))
+        if(E > INT_MAX)
+        {
+            E = INT_MAX;
+        }
+
+        if ((0.5 <= dec - E && dec >=0 ) || (dec - E > -0.5 && dec < 0))
         {
             if (E < INT_MAX)
             {
@@ -4639,7 +4643,12 @@ QString Data::dec2hex(double dec, std::string type, int base)
     }
     else if(type == "ULONG")
     {
-        E = (unsigned int)dec;
+        //E = (unsigned int)dec;
+        if(E > UINT_MAX)
+        {
+            E = UINT_MAX;
+        }
+
         if (0.5 <= dec - E)
         {
             if (E < (unsigned int)UINT_MAX)
@@ -4655,7 +4664,7 @@ QString Data::dec2hex(double dec, std::string type, int base)
         {
             if (E > 0)
             {
-                sprintf(hex, "%X", (int)floor(dec));
+                sprintf(hex, "%X", (unsigned int)floor(dec));
             }
             else
             {
@@ -6230,6 +6239,8 @@ void Data::setZ(int i, QString str)
         QString hex = phys2hex(str, "z");
         QString phys = hex2phys(hex, "z");
 
+        qDebug() << str << hex << phys;
+
         //PHYS <> OLD
         if (phys != listZ.at(i))
         {
@@ -6239,9 +6250,6 @@ void Data::setZ(int i, QString str)
 
             listZ[i] = phys;
         }
-
-
-
 
         //update treeView
         checkValues();

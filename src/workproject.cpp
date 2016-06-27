@@ -102,7 +102,7 @@ void WorkProject::addHex(HexFile *hex )
         this->sortChildrensName();
 
         // update treeView
-        int pos = a2lFile->childNodes.indexOf(hex);
+        //int pos = a2lFile->childNodes.indexOf(hex);
         //treeModel->dataInserted(a2lFile, pos );
         treeModel->dataInserted(this, this->childNodes.indexOf(hex));
 
