@@ -41,6 +41,7 @@ class HexFile;
 class SrecFile;
 class Csv;
 class CdfxFile;
+class Dcm;
 
 class Data : public QObject, public Node
 {
@@ -53,15 +54,17 @@ class Data : public QObject, public Node
     public:
         Data();
         Data(Node *node);
-        Data(CHARACTERISTIC *node, PROJECT  *pro, HexFile *hexFile, bool modif = true);
         Data(QSqlRecord record, QSqlDatabase db, HexFile *hexFile, bool modif = true);
+        Data(CHARACTERISTIC *node, PROJECT  *pro, HexFile *hexFile, bool modif = true);        
         Data(CHARACTERISTIC *node, PROJECT  *pro, SrecFile *srecFile, bool modif = true);
         Data(CHARACTERISTIC *node, PROJECT *pro,  Csv *csv, bool modif = true);
         Data(CHARACTERISTIC *node, PROJECT *pro,  CdfxFile *cdfx, bool modif = true);
+        Data(CHARACTERISTIC *node, PROJECT *pro,  Dcm *dcm, bool modif = true);
         Data(AXIS_PTS *node, PROJECT *pro, HexFile *hexFile, bool modif = true);
         Data(AXIS_PTS *node, PROJECT *pro, SrecFile *srecFile, bool modif = true);
         Data(AXIS_PTS *node, PROJECT *pro,  Csv *csv, bool modif = true);
         Data(AXIS_PTS *node, PROJECT *pro,  CdfxFile *cdfx, bool modif = true);
+        Data(AXIS_PTS *node, PROJECT *pro,  Dcm *dcm, bool modif = true);
 
 
         static bool showWeakBoundsExceeded;
@@ -176,6 +179,7 @@ class Data : public QObject, public Node
         SrecFile * getSrecParent();
         Csv *getCsvParent();
         CdfxFile *getCdfxParent();
+        Dcm *getDcmParent();
 
     private:
 
@@ -211,6 +215,7 @@ class Data : public QObject, public Node
         HexFile *hexParent;
         SrecFile *srecParent;
         Csv *csvParent;
+        Dcm *dcmParent;
         CdfxFile *cdfxParent;
         bool displayed;
         QStringList listX;

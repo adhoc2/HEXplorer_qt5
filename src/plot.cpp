@@ -29,6 +29,7 @@
 #include "Nodes/compu_method.h"
 #include "csv.h"
 #include "cdfxfile.h"
+#include "dcmfile.h"
 
 
 Plot::Plot(GraphModel *mod, QString type) : QwtPlot()
@@ -47,9 +48,9 @@ Plot::Plot(GraphModel *mod, QString type) : QwtPlot()
     {
         setTitle(data->getName() + " " + data->getUnit() + " (" + QString(data->getSrecParent()->name) + ")");
     }
-    else if (data->getCsvParent())
+    else if (data->getDcmParent())
     {
-        setTitle(data->getName() + " " + data->getUnit() + " (" + QString(data->getCsvParent()->name) + ")");
+        setTitle(data->getName() + " " + data->getUnit() + " (" + QString(data->getDcmParent()->name) + ")");
     }
     else
     {

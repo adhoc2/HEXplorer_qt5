@@ -54,6 +54,7 @@
 #include "data.h"
 #include "diffmodel.h"
 #include "csv.h"
+#include "dcmfile.h"
 #include "dialogcsv.h"
 #include "dialogupdate.h"
 #include "mainwindow.h"
@@ -300,6 +301,11 @@ void MDImain::createActions()
     connect(addCdfxFile, SIGNAL(triggered()), this, SLOT(addCdfxFile2Project()));
     addCdfxFile->setDisabled(true);
 
+    addDcmFile = new QAction(tr("Import Dcm file"), this);
+    addDcmFile->setIcon(QIcon(":/icones/milky_importCsv.png"));
+    connect(addDcmFile, SIGNAL(triggered()), this, SLOT(addDcmFile2Project()));
+    addDcmFile->setDisabled(true);
+
     resetAllChangedData = new QAction(tr("reset all changes"), this);
     resetAllChangedData->setIcon(QIcon(":/icones/milky_resetAll.png"));
     connect(resetAllChangedData, SIGNAL(triggered()), this, SLOT(reset_AllChangedData()));
@@ -461,6 +467,7 @@ void MDImain::initToolBars()
     ui->toolBar_a2l->addAction(addSrecFile);
     ui->toolBar_a2l->addAction(addCsvFile);
     ui->toolBar_a2l->addAction(addCdfxFile);
+    ui->toolBar_a2l->addAction(addDcmFile);
     ui->toolBar_a2l->addSeparator();
     ui->toolBar_a2l->addAction(deleteProject);
     ui->toolBar_a2l->addAction(editFile);
@@ -523,6 +530,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         exportSubsets->setEnabled(false);
         addCdfxFile->setEnabled(true);
         addCsvFile->setEnabled(true);
+        addDcmFile->setEnabled(true);
         editChanged->setEnabled(false);
         addHexFile->setEnabled(true);
         addSrecFile->setEnabled(true);
@@ -553,6 +561,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         exportSubsets->setEnabled(false);
         addCdfxFile->setEnabled(true);
         addCsvFile->setEnabled(true);
+        addDcmFile->setEnabled(true);
         editChanged->setEnabled(false);
         addHexFile->setEnabled(true);
         addSrecFile->setEnabled(true);
@@ -583,6 +592,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         exportSubsets->setEnabled(false);
         addCdfxFile->setEnabled(false);
         addCsvFile->setEnabled(false);
+        addDcmFile->setEnabled(false);
         editChanged->setEnabled(false);
         addHexFile->setEnabled(false);
         addSrecFile->setEnabled(false);
@@ -613,6 +623,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         addCsvFile->setEnabled(false);
         addHexFile->setEnabled(false);
         addSrecFile->setEnabled(false);
+        addDcmFile->setEnabled(false);
         deleteProject->setEnabled(false);
         deleteFile->setEnabled(true);
         editFile->setEnabled(true);
@@ -645,6 +656,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         addCsvFile->setEnabled(false);
         addHexFile->setEnabled(false);
         addSrecFile->setEnabled(false);
+        addDcmFile->setEnabled(false);
         deleteProject->setEnabled(false);
         deleteFile->setEnabled(true);
         editFile->setEnabled(true);
@@ -678,6 +690,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         addCsvFile->setEnabled(false);
         addHexFile->setEnabled(false);
         addSrecFile->setEnabled(false);
+        addDcmFile->setEnabled(false);
         deleteProject->setEnabled(false);
         deleteFile->setEnabled(true);
         editFile->setEnabled(true);
@@ -708,6 +721,38 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         addCsvFile->setEnabled(false);
         addHexFile->setEnabled(false);
         addSrecFile->setEnabled(false);
+        addDcmFile->setEnabled(false);
+        deleteProject->setEnabled(false);
+        deleteFile->setEnabled(true);
+        editFile->setEnabled(true);
+        childCount->setEnabled(true);
+        showParam->setEnabled(false);
+        resetAllChangedData->setEnabled(true);
+        sortBySubset->setEnabled(true);
+        saveFile->setEnabled(true);
+        saveAsFile->setEnabled(true);
+        quicklook->setIcon(QIcon(":/icones/milky_loopCsv.png"));
+        quicklook->setEnabled(true);
+        readValuesFromCsv->setEnabled(false);
+        readValuesFromCdfx->setEnabled(false);
+        editMeasChannels->setEnabled(false);
+        editCharacteristics->setEnabled(false);
+        openJScript->setEnabled(false);
+        saveA2lDB->setEnabled(false);
+        ui->actionClose_Working_Directory->setEnabled(false);
+        ui->actionRename_file->setEnabled(false);
+        duplicateDatacontainer->setEnabled(false);
+
+        ui->toolBar_data->show();
+    }  
+    else if (name.endsWith("Dcm"))
+    {
+        exportSubsets->setEnabled(false);
+        addCdfxFile->setEnabled(false);
+        addCsvFile->setEnabled(false);
+        addHexFile->setEnabled(false);
+        addSrecFile->setEnabled(false);
+        addDcmFile->setEnabled(false);
         deleteProject->setEnabled(false);
         deleteFile->setEnabled(true);
         editFile->setEnabled(true);
@@ -739,6 +784,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         exportSubsets->setEnabled(false);
         addCdfxFile->setEnabled(false);
         addCsvFile->setEnabled(false);
+        addDcmFile->setEnabled(false);
         editChanged->setEnabled(false);
         addHexFile->setEnabled(false);
         addSrecFile->setEnabled(false);
@@ -773,6 +819,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         addCsvFile->setEnabled(false);
         addHexFile->setEnabled(false);
         addSrecFile->setEnabled(false);
+        addDcmFile->setEnabled(false);
         deleteProject->setEnabled(false);
         deleteFile->setEnabled(false);
         editFile->setEnabled(false);
@@ -1032,6 +1079,7 @@ void MDImain::showContextMenu(QPoint)
                         menu.addAction(addSrecFile);
                         menu.addAction(addCsvFile);
                         menu.addAction(addCdfxFile);
+                        menu.addAction(addDcmFile);
                         menu.addSeparator();
                         menu.addAction(openJScript);
                         menu.addSeparator();
@@ -1060,6 +1108,7 @@ void MDImain::showContextMenu(QPoint)
                     menu.addAction(addSrecFile);
                     menu.addAction(addCsvFile);
                     menu.addAction(addCdfxFile);
+                    menu.addAction(addDcmFile);
                     menu.addSeparator();
                     menu.addAction(openJScript);
                     menu.addSeparator();
@@ -1106,6 +1155,28 @@ void MDImain::showContextMenu(QPoint)
                 Csv *csv = dynamic_cast<Csv *> (node);
 
                 if (csv->getModifiedData().isEmpty())
+                    editChanged->setDisabled(true);
+                else
+                    editChanged->setDisabled(false);
+            }
+            else if (name.toLower().endsWith("dcm"))
+            {
+                menu.addAction(deleteFile);
+                menu.addAction(editFile);
+                menu.addSeparator();
+                menu.addAction(saveFile);
+                menu.addAction(saveAsFile);
+                menu.addSeparator();
+                menu.addAction(quicklook);
+                menu.addAction(editChanged);
+                menu.addAction(resetAllChangedData);
+                menu.addAction(sortBySubset);
+
+                //menu editModified
+                Node *node =  model->getNode(index);
+                Dcm *dcm = dynamic_cast<Dcm *> (node);
+
+                if (dcm->getModifiedData().isEmpty())
                     editChanged->setDisabled(true);
                 else
                     editChanged->setDisabled(false);
@@ -1302,7 +1373,7 @@ void MDImain::doubleClicked(QModelIndex)
 
     QString name = typeid(*node).name();
     if (name.toLower().endsWith("hexfile") || name.toLower().endsWith("srecfile") ||
-        name.toLower().endsWith("csv") || name.toLower().endsWith("cdfxfile"))
+        name.toLower().endsWith("csv") || name.toLower().endsWith("cdfxfile") || name.toLower().endsWith("dcm"))
     {
         quicklookFile();
     }
@@ -2181,8 +2252,8 @@ void MDImain::addCsvFile2Project()
                     //check if A2l parsing was successfull
                     if (!wp->isOk())
                     {
-                        QMessageBox::information(this,"HEXplorer","action open new dataset failed. A2Lfile is not parsed correctly.");
-                        writeOutput("action open new dataset failed : A2Lfile could not be parsed correctly.");
+                        QMessageBox::information(this,"HEXplorer","action open new Csv failed. A2Lfile is not parsed correctly.");
+                        writeOutput("action open new Csv failed : A2Lfile could not be parsed correctly.");
                         return;
                     }
 
@@ -2282,6 +2353,175 @@ void MDImain::addCsvFile2Project()
                             //remove csv from the workProject
                              wp->removeCsv(csv);
                              writeOutput("CSV file " + fullCsvName + "  NOT added to project due to wrong format ");
+                        }
+
+                        // hide the statusbar
+                        statusBar()->hide();
+                        progBar->reset();
+
+                    }
+                }
+            }
+        }
+    }
+}
+
+void MDImain::addDcmFile2Project()
+{
+    // check if a project is selected in treeView
+    QModelIndex index  = ui->treeView->selectionModel()->currentIndex();
+
+    if (index.isValid())
+    {
+        //get a pointer on the selected item
+        Node *node =  model->getNode(index);
+        QString name = typeid(*node).name();
+
+        if (!name.endsWith("WorkProject"))
+        {
+            QMessageBox::warning(this, "HEXplorer::add Dcm file to project", "Please select first a project.",
+                                             QMessageBox::Ok);
+            return;
+        }
+
+        int row = index.row();
+        if ( row < 0)
+        {
+            QMessageBox::information(this,"HEXplorer","please first select a project");
+            writeOutput("action open new Dcm file cancelled: no project first selected");
+            return;
+        }
+        else
+        {
+            QSettings settings(qApp->organizationName(), qApp->applicationName());
+            QString path = settings.value("currentDcmPath").toString();
+
+            QStringList files = QFileDialog::getOpenFileNames(this,
+                                              tr("select DCM files"), path,
+                                              tr("DCM files (*.dcm);;all files (*.*)"));
+
+            if (files.isEmpty())
+            {
+               writeOutput("action open new DCM file : no DCM file selected");
+               return;
+            }
+            else
+            {
+                //Get the project (A2l) name
+                WorkProject *wp = (WorkProject*)node;
+
+                if (wp)  //to prevent any crash of the aplication
+                {
+                    //if the a2lFile is not yet parsed, parse.
+                    if (!wp->a2lFile->isParsed())
+                    {
+                        readA2l(wp);
+                    }
+
+                    //check if A2l parsing was successfull
+                    if (!wp->isOk())
+                    {
+                        QMessageBox::information(this,"HEXplorer","action open new DCM failed. A2Lfile is not parsed correctly.");
+                        writeOutput("action open new DCM failed : A2Lfile could not be parsed correctly.");
+                        return;
+                    }
+
+                    // if no MOD_COMMON in ASAP file
+                    if (wp->a2lFile->getProject()->getNode("MODULE") == NULL)
+                    {
+                        QMessageBox::information(this, "HEXplorer", tr("no MOD_COMMON in ASAP file"));
+                        writeOutput("action open new DCM file : no MOD_COMMON in ASAP file");
+                        return;
+                    }
+
+                    // check if Csv already in project
+                    foreach (QString fullDcmName, files)
+                    {
+                        //if the selected Hex file is already into the project => exit
+                        if (wp->dcmFiles().contains(fullDcmName))
+                        {
+                            QMessageBox::information(this, "HEXplorer", tr("file already in project"));
+                            writeOutput("action open new Dcm file : Dcm file already in project");
+                            files.removeOne(fullDcmName);
+                            return;
+                        }
+                    }
+
+                    // Read CSV files
+                    QList<Dcm*> list;
+                    foreach (QString fullDcmName, files)
+                    {
+                        //update currentHexPath
+                        QSettings settings(qApp->organizationName(), qApp->applicationName());
+                        QString currentCsvPath = QFileInfo(fullDcmName).absolutePath();
+                        settings.setValue("currentDcmPath", currentCsvPath);
+
+                        //start a timer
+                        double ti = omp_get_wtime();
+
+                        //add the file to the project
+                        QString moduleName;
+                        QList<MODULE*> listModule = wp->a2lFile->getProject()->listModule();
+                        if (listModule.count() == 0)
+                        {
+                            writeOutput("action open new Dcm : no Module into A2l file !");
+                            return;
+                        }
+                        else if (listModule.count() == 1)
+                        {
+                            moduleName = listModule.at(0)->name;
+                        }
+                        else
+                        {
+                            // select a module
+                            DialogChooseModule *diag = new DialogChooseModule(&moduleName);
+                            QStringList listModuleName;
+                            foreach (MODULE* module, listModule)
+                            {
+                                listModuleName.append(module->name);
+                            }
+                            diag->setList(listModuleName);
+                            int ret = diag->exec();
+
+                            if (ret == QDialog::Accepted)
+                            {
+                                writeOutput("action open new Dcm : module " + moduleName + " selected.");
+                            }
+                            else
+                            {
+                                writeOutput("action open new Dcm : no module chosen !");
+                                return;
+                            }
+                        }
+
+                        Dcm *dcm = new Dcm(fullDcmName, wp, moduleName);
+
+                        // display status bar
+                        statusBar()->show();
+                        progBar->reset();
+                        connect(dcm, SIGNAL(incProgressBar(int,int)), this, SLOT(setValueProgressBar(int,int)), Qt::DirectConnection);
+
+                        if (dcm->readFile())
+                        {
+                            //add csv to the workProject
+                            wp->addDcm(dcm);
+                            list.append(dcm);
+
+                            //stop timer
+                            double tf = omp_get_wtime();
+
+                            //update the treeView model
+                            ui->treeView->expand(index);
+                            ui->treeView->resizeColumnToContents(0);
+
+                            writeOutput("Dcm file " + fullDcmName + " successfully added to the project " + QString::number(tf-ti) + " sec");
+
+                        }
+                        else
+                        {
+                            //remove csv from the workProject
+                             wp->removeDcm(dcm);
+                             writeOutput("Dcm file " + fullDcmName + "  NOT added to project due to wrong format ");
                         }
 
                         // hide the statusbar
@@ -2532,13 +2772,13 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
 
             //get the parentNode of the HexFile (which must be an WorkProject !!)
             //A2LFILE *a2l = dynamic_cast<A2LFILE *> (hex->getParentNode());
-            WorkProject *a2l = dynamic_cast<WorkProject *> (hex->getParentNode());
+            WorkProject *wp = dynamic_cast<WorkProject *> (hex->getParentNode());
 
            // model->resetModel();
-            model->dataRemoved(a2l, index.row(), 1);
+            model->dataRemoved(wp, index.row(), 1);
 
             //get the parentWp of the HexFile
-            WorkProject *wp = hex->getParentWp();
+            //WorkProject *wp = hex->getParentWp();
             wp->removeHexFile(hex);
 
             //update the treeView
@@ -2576,12 +2816,12 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
 
             //get the parentNode of the SrecFile (which must be an A2LFILE !!)
             //A2LFILE *a2l = dynamic_cast<A2LFILE *> (srec->getParentNode());
-            WorkProject *a2l = dynamic_cast<WorkProject *> (srec->getParentNode());
+            WorkProject *wp = dynamic_cast<WorkProject *> (srec->getParentNode());
             //model->resetModel();
-            model->dataRemoved(a2l, index.row(), 1);
+            model->dataRemoved(wp, index.row(), 1);
 
             //get the parentWp of the HexFile
-            WorkProject *wp = srec->getParentWp();
+            //WorkProject *wp = srec->getParentWp();
             wp->removeSrecFile(srec);
 
             //update the treeView
@@ -2620,12 +2860,12 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
             }
 
             //get the parentNode of the HexFile (which must be an A2LFILE !!)
-            A2LFILE *a2l = dynamic_cast<A2LFILE *> (csv->getParentNode());
+            WorkProject *wp = dynamic_cast<WorkProject *> (csv->getParentNode());
             //model->resetModel();
-            model->dataRemoved(a2l, index.row(), 1);
+            model->dataRemoved(wp, index.row(), 1);
 
             //get the parentWp of the HexFile
-            WorkProject *wp = csv->getParentWp();
+            //WorkProject *wp = csv->getParentWp();
             wp->removeCsv(csv);
 
             //update the treeView
@@ -2663,12 +2903,12 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
             }
 
             //get the parentNode of the HexFile (which must be an A2LFILE !!)
-            A2LFILE *a2l = dynamic_cast<A2LFILE *> (cdfx->getParentNode());
+            WorkProject *wp = dynamic_cast<WorkProject *> (cdfx->getParentNode());
             //model->resetModel();
-            model->dataRemoved(a2l, index.row(), 1);
+            model->dataRemoved(wp, index.row(), 1);
 
             //get the parentWp of the HexFile
-            WorkProject *wp = cdfx->getParentWp();
+            //WorkProject *wp = cdfx->getParentWp();
             wp->removeCdfxFile(cdfx);
 
             //update the treeView
@@ -2685,9 +2925,53 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
             //hide toolbar hex
             ui->toolBar_data->hide();
         }
+        else if (name.endsWith("Dcm"))
+        {
+            //ask for save changes
+            Dcm *dcm = dynamic_cast<Dcm *> (node);
+            QString dcmName = dcm->fullName();
+            if (!dcm->getModifiedData().isEmpty())
+            {
+                // ask for saving changes
+                int r = QMessageBox::question(this, "HEXplorer::question", tr("Save changes ?"),
+                                      QMessageBox::Yes, QMessageBox::No);
+
+                if (r ==  QMessageBox::Yes)
+                {
+                    if (!save_DcmFile(index))
+                    {
+                        return;
+                    }
+                }
+
+            }
+
+            //get the parentNode of the HexFile (which must be an A2LFILE !!)
+            WorkProject *wp = dynamic_cast<WorkProject *> (dcm->getParentNode());
+            //model->resetModel();
+            model->dataRemoved(wp, index.row(), 1);
+
+            //get the parentWp of the HexFile
+            //WorkProject *wp = dcm->getParentWp();
+            wp->removeDcm(dcm);
+
+            //update the treeView
+            ui->treeView->expand(indexParent);
+            ui->treeView->resizeColumnToContents(0);
+
+
+            //delete file from disk
+            if (bl)
+            {
+                QFile::remove(dcmName);
+            }
+
+            //hide toolbar hex
+            ui->toolBar_data->hide();
+        }
         else
         {
-            QMessageBox::warning(this, "HEXplorer::remove file from project", "Please select first an hex or csv file.",
+            QMessageBox::warning(this, "HEXplorer::remove file from project", "Please select first an hex, srec, csv, cdfx or dcm file.",
                                              QMessageBox::Ok);
             return;
         }
@@ -4245,6 +4529,17 @@ void MDImain::sort_BySubset()
         else
             cdfx->sortModifiedDataBySubset(true);
     }
+    else if (name.endsWith("Dcm"))
+    {
+        //As the selected node is an Hex file we can cast the node into its real type : HexFile
+        Dcm *dcm = dynamic_cast<Dcm *> (node);
+
+        //call sort by subset
+        if (dcm->isSortedBySubsets())
+            dcm->sortModifiedDataBySubset(false);
+        else
+            dcm->sortModifiedDataBySubset(true);
+    }
     else
     {
         QMessageBox::warning(this, "HEXplorer::sort by subset", "Please select first an hex, csv or Cdfx file.",
@@ -4877,6 +5172,14 @@ void MDImain::reset_AllChangedData()
         //reset all labels;
         cdfx->resetAllModifiedData();
     }
+    else if (name.endsWith("Dcm"))
+    {
+        //As the selected node is an Hex file we can cast the node into its real type : HexFile
+        Dcm *dcm = dynamic_cast<Dcm *> (node);
+
+        //reset all labels;
+        dcm->resetAllModifiedData();
+    }
     else
     {
         QMessageBox::warning(this, "HEXplorer::reset all changed data", "Please select first an hex or csv file.",
@@ -4931,6 +5234,24 @@ bool MDImain::save_CsvFile(QModelIndex index)
     if (ret == QMessageBox::Yes)
     {
         return csv->save();
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool MDImain::save_DcmFile(QModelIndex index)
+{
+
+    Dcm *dcm = (Dcm*)model->getNode(index);
+
+    int ret = QMessageBox::question(0, "HEXplorer :: save Dcm file",
+                          "overwrite " + dcm->fullName() + " ?", QMessageBox::Yes, QMessageBox::Cancel);
+
+    if (ret == QMessageBox::Yes)
+    {
+        return dcm->save();
     }
     else
     {
@@ -5477,7 +5798,9 @@ void MDImain::quicklookFile()
         }
 
 
-        if (name.endsWith("HexFile") || name.endsWith("SrecFile") || name.endsWith("Csv") || name.endsWith("CdfxFile"))
+        if (name.endsWith("HexFile") || name.endsWith("SrecFile") ||
+                name.endsWith("Csv") || name.endsWith("CdfxFile") ||
+                name.endsWith("Dcm"))
         {
 
             //create a new FormCompare
@@ -6385,9 +6708,16 @@ void MDImain::checkDroppedFile(QString str)
         fComp->setDataset1(str);
         fComp->on_quicklook_clicked();
     }
+    else if (name.toLower().endsWith("dcm"))
+    {
+        //create a new FormCompare
+        FormCompare *fComp = on_actionCompare_dataset_triggered();
+        fComp->setDataset1(str);
+        fComp->on_quicklook_clicked();
+    }
     else
     {
-        QMessageBox::information(this,"HEXplorer::drop file","please drop an A2l,Hex or Csv file");
+        QMessageBox::information(this,"HEXplorer::drop file","please drop an A2l,Hex , Srec, Dcm or Csv file");
     }
 }
 

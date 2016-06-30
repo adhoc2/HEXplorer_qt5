@@ -106,6 +106,7 @@ private:
     QAction *editMeasChannels;
     QAction *editCharacteristics;
     QAction *addCsvFile;
+    QAction *addDcmFile;
     QAction *addCdfxFile;
     QAction *addHexFile;
     QAction *addSrecFile;
@@ -179,6 +180,7 @@ private slots:
      bool save_File();
      bool save_HexFile(QModelIndex index);
      bool save_SrecFile(QModelIndex index);
+     bool save_DcmFile(QModelIndex index);
      bool save_CsvFile(QModelIndex index);
      bool save_CdfxFile(QModelIndex index);
      void saveAs_File();
@@ -204,6 +206,7 @@ private slots:
      void addSrecFile2Project();
      void addCsvFile2Project();
      void addCdfxFile2Project();
+     void addDcmFile2Project();
      void deleteFilesFromProject();
      void deleteFileFromProject(QModelIndex index, bool bl = 0);
      void removeWorkProjects();

@@ -22,6 +22,7 @@
 #include "Nodes/a2lfile.h"
 #include "hexfile.h"
 #include "csv.h"
+#include "dcmfile.h"
 #include "Nodes/def_characteristic.h"
 #include "formcompare.h"
 #include "mdimain.h"
@@ -47,6 +48,7 @@ ChooseLabel::ChooseLabel(A2LFILE *_a2l, HexFile *_hex, QWidget *parent) :
     srec = NULL;
     csv = NULL;
     cdfx = NULL;
+    dcm = NULL;
 
     // copy the charList from formComapare into choosenList and listView_2
     FormCompare *fc = (FormCompare*)mainWidget;
@@ -90,6 +92,7 @@ ChooseLabel::ChooseLabel(A2LFILE *_a2l, SrecFile *_srec, QWidget *parent) :
     srec = _srec;
     csv = NULL;
     cdfx = NULL;
+    dcm = NULL;
 
     // copy the charList from formComapare into choosenList and listView_2
     FormCompare *fc = (FormCompare*)mainWidget;
@@ -132,6 +135,7 @@ ChooseLabel::ChooseLabel(A2LFILE *_a2l, Csv *_csv, QWidget *parent) :
     hex = NULL;
     srec = NULL;
     cdfx = NULL;
+    dcm = NULL;
     csv = _csv;
 
     // copy the charList from formComapare into choosenList and listView_2
@@ -174,7 +178,52 @@ ChooseLabel::ChooseLabel(A2LFILE *_a2l, CdfxFile *_cdfx, QWidget *parent) :
     hex = NULL;
     srec = NULL;
     csv = NULL;
+    dcm = NULL;
     cdfx = _cdfx;
+
+    // copy the charList from formComapare into choosenList and listView_2
+    FormCompare *fc = (FormCompare*)mainWidget;
+    ui->listWidget_2->addItems(fc->charList);
+
+    // select the text from lineEdit
+    ui->lineEdit->setText("enter a label name ...");
+    ui->lineEdit->setFocus(Qt::OtherFocusReason);
+    ui->lineEdit->selectAll();
+
+    //clear the long_secription label
+    ui->label_3->clear();
+
+    // connect SLOTS
+    timer.setSingleShot(true);
+    connect(&timer, SIGNAL(timeout()), this, SLOT(on_lineEdit_textChanged()));
+    connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(on_lineEdit_textChanged()));
+    connect(ui->lineEdit_2, SIGNAL(editingFinished()), this, SLOT(on_lineEdit_textChanged()));
+    connect(ui->listWidget, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(selectedItem(QListWidgetItem*,QListWidgetItem*)));
+
+    // create actions for shortCuts
+    createActions();
+    ui->listWidget->addAction(rightSelect);
+    ui->listWidget_2->addAction(leftSelect);
+}
+
+
+ChooseLabel::ChooseLabel(A2LFILE *_a2l, Dcm *_dcm, QWidget *parent) :
+        QDialog(parent), ui(new Ui::ChooseLabel)
+{
+    // setup Ui
+    ui->setupUi(this);
+    setWindowTitle("HEXplorer::select Labels into " + QString(_a2l->name));
+    QIcon icon(":/icones/Add record.png");
+    setWindowIcon(icon);
+
+    //initialize pointers
+    mainWidget = parent;
+    a2l = _a2l;
+    hex = NULL;
+    srec = NULL;
+    cdfx = NULL;
+    csv = NULL;
+    dcm = _dcm;
 
     // copy the charList from formComapare into choosenList and listView_2
     FormCompare *fc = (FormCompare*)mainWidget;
@@ -256,6 +305,10 @@ void ChooseLabel::on_lineEdit_textChanged(QString str)
     {
          moduleName = csv->getModuleName();
     }
+    else if (dcm)
+    {
+         moduleName = dcm->getModuleName();
+    }
     else if (cdfx)
     {
         moduleName = cdfx->getModuleName();
@@ -320,6 +373,17 @@ void ChooseLabel::on_lineEdit_textChanged(QString str)
                         foreach (QString labelName, listLabelSubset)
                         {
                             if (!csvLabelList.contains(labelName))
+                            {
+                                listLabelSubset.removeOne(labelName);
+                            }
+                        }
+                    }
+                    else if (dcm)
+                    {
+                        QStringList dcmLabelList = dcm->getListNameData();
+                        foreach (QString labelName, listLabelSubset)
+                        {
+                            if (!dcmLabelList.contains(labelName))
                             {
                                 listLabelSubset.removeOne(labelName);
                             }
@@ -437,6 +501,8 @@ void ChooseLabel::on_lineEdit_textChanged(QString str)
                 list = csv->getListNameData();
             else if (cdfx)
                 list = cdfx->getListNameData();
+            else if (dcm)
+                list = dcm->getListNameData();
             else
                 list = module->listChar;
 

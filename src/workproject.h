@@ -63,6 +63,12 @@ class WorkProject :  public A2l, public Node
         void rename(CdfxFile *cdfx);
         bool containsCdfx(QString str);
 
+        QMap<QString, Dcm*> dcmFiles();
+        void addDcm(Dcm *dcm);
+        void removeDcm(Dcm *dcm);
+        void rename(Dcm *dcm);
+        bool containsDcm(QString str);
+
         A2lTreeModel *treeModel;
         MDImain *parentWidget;
         QString getFullNodeName();
@@ -75,6 +81,7 @@ class WorkProject :  public A2l, public Node
         QMap<QString, SrecFile*> srecList;
         QMap<QString, Csv*> csvList;
         QMap<QString, CdfxFile*> cdfxList;
+        QMap<QString, Dcm*> dcmList;
 
     public slots:
         void detach(QObject*o);

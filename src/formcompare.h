@@ -36,6 +36,7 @@ class Data;
 class FUNCTION;
 class Csv;
 class CdfxFile;
+class Dcm;
 
 namespace Ui
 {
@@ -60,6 +61,8 @@ class FormCompare : public QWidget
         SrecFile *getSrec2();
         Csv *getCsv1();
         Csv *getCsv2();
+        Dcm *getDcm1();
+        Dcm *getDcm2();
         CdfxFile *getCdf1();
         CdfxFile *getCdf2();
 
@@ -74,6 +77,8 @@ class FormCompare : public QWidget
         SrecFile *srec2;
         Csv *csv1;
         Csv *csv2;
+        Dcm *dcm1;
+        Dcm *dcm2;
         CdfxFile *cdfx1;
         CdfxFile *cdfx2;
         A2LFILE *a2l1;

@@ -30,6 +30,7 @@ class A2LFILE;
 class HexFile;
 class SrecFile;
 class Csv;
+class Dcm;
 class ProjectListWidget;
 class CdfxFile;
 
@@ -46,6 +47,7 @@ class ChooseLabel : public QDialog
         ChooseLabel(A2LFILE *_a2l, SrecFile *_srec, QWidget *parent = 0);
         ChooseLabel(A2LFILE *_a2l, Csv *_csv, QWidget *parent = 0);
         ChooseLabel(A2LFILE *_a2l, CdfxFile *_cdfx, QWidget *parent = 0);
+        ChooseLabel(A2LFILE *_a2l, Dcm *_dcm, QWidget *parent = 0);
         ~ChooseLabel();
 
     protected:
@@ -63,6 +65,7 @@ class ChooseLabel : public QDialog
         HexFile *hex;
         SrecFile *srec;
         Csv *csv;
+        Dcm *dcm;
         CdfxFile *cdfx;
 
         void createActions();

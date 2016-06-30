@@ -35,6 +35,7 @@
 #include "dialogexceedwb.h"
 #include "csv.h"
 #include "cdfxfile.h"
+#include "dcmfile.h"
 #include <QScriptEngine>
 #include <QtCore/qmath.h>
 #include "qdebug.h"
@@ -67,6 +68,8 @@ Data::Data(Node *node) : Node(node->name), QObject()
     project = NULL;
     hexParent = NULL;
     csvParent = NULL;
+    dcmParent = NULL;
+    cdfxParent = NULL;
     axisDescrX = NULL;
     axisDescrY = NULL;
     compuVTabAxisX = NULL;
@@ -98,6 +101,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
     hexParent = hexFile;
     csvParent = NULL;
     cdfxParent = NULL;
+    dcmParent = NULL;
     if (hexParent)
     {
         moduleName = hexParent->getModuleName();
@@ -190,6 +194,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
         bool bl;
         NUMBER *item = (NUMBER*)node->getItem("NUMBER");
         nPtsAxisX = ((QString)item->getPar("Number")).toInt(&bl, 10);
+
 
         //AXIS_PTS_X
         QString str;
@@ -740,6 +745,7 @@ Data::Data(QSqlRecord record, QSqlDatabase database,  HexFile *hexFile, bool mod
     hexParent = hexFile;
     csvParent = NULL;
     cdfxParent = NULL;
+    dcmParent = NULL;
     if (hexParent)
     {
         moduleName = hexParent->getModuleName();
@@ -763,6 +769,8 @@ Data::Data(QSqlRecord record, QSqlDatabase database,  HexFile *hexFile, bool mod
     isSortedByRow = 0;
     uint nPtsX = 1;
     uint nPtsY = 1;
+
+
 
     //initialize the display number of rows of the CHARACTERISTIC
     type = record.value("Type").toString();
@@ -788,6 +796,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
     srecParent = srecFile;
     csvParent = NULL;
     cdfxParent = NULL;
+    dcmParent = NULL;
     if (srecParent)
     {
         moduleName = srecParent->getModuleName();
@@ -1371,6 +1380,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, Csv *csv, bool modif) : Node(node
     srecParent = NULL;
     csvParent = csv;
     cdfxParent = NULL;
+    dcmParent = NULL;
     if (csv)
     {
         moduleName = csv->getModuleName();
@@ -1387,8 +1397,9 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, Csv *csv, bool modif) : Node(node
     precisionX = 0;
     precisionY = 0;
     precisionZ = 0;
-    uint nPtsX = 1;
-    uint nPtsY = 1;
+    uint nPtsAxisX = 1;
+    uint nPtsAxisY = 1;
+
     isSortedByRow = 0;
 
     //Type
@@ -1412,14 +1423,29 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, Csv *csv, bool modif) : Node(node
     {
         bool bl;
         NUMBER *item =  (NUMBER*)node->getItem("NUMBER");
-        QString toto = item->getPar("Number");
-        nPtsX = toto.toInt(&bl, 10);
+        MATRIX_DIM *matrix_dim =  (MATRIX_DIM*)node->getItem("MATRIX_DIM");
+        if (item)
+        {
+            QString toto = item->getPar("Number");
+            nPtsAxisX = toto.toInt(&bl, 10);
+        }
+        else if (matrix_dim)
+        {
+           nPtsAxisX = ((QString)matrix_dim->getPar("xDim")).toInt();
+           nPtsAxisY = ((QString)matrix_dim->getPar("yDim")).toInt();
+        }
+        else
+        {
+            nPtsAxisX = 1;
+            nPtsAxisY = 1;
+        }
+
         addressX = 0;
         addressY = 0;
 
         //AXIS_PTS_X
         QString str;
-        for (int i = 0; i < nPtsX; i++)
+        for (int i = 0; i < nPtsAxisX; i++)
         {
             listX.append(str.setNum(i));
         }
@@ -1430,11 +1456,11 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, Csv *csv, bool modif) : Node(node
     {
         bool bl;
         NUMBER *item = (NUMBER*)node->getItem("NUMBER");
-        nPtsX = ((QString)item->getPar("Number")).toInt(&bl, 10);
+        nPtsAxisX = ((QString)item->getPar("Number")).toInt(&bl, 10);
 
         //AXIS_PTS_X
         QString str;
-        for (int i = 0; i < nPtsX; i++)
+        for (int i = 0; i < nPtsAxisX; i++)
         {
             listX.append(str.setNum(i));
         }
@@ -1510,7 +1536,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, Csv *csv, bool modif) : Node(node
     record_layout = (RECORD_LAYOUT*)pro->getNode("MODULE/" + moduleName + "/RECORD_LAYOUT/" + deposit);
 
     //define number of rows of data to display
-    size += nPtsY;
+    size += nPtsAxisY;
 
     //read each element of Z_RECORD_LAYOUT
     foreach (Item *item, record_layout->optItems)
@@ -1572,6 +1598,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, CdfxFile *cdfx, bool modif) : Nod
     srecParent = NULL;
     csvParent = NULL;
     cdfxParent = cdfx;
+    dcmParent = NULL;
     if (cdfx)
     {
         moduleName = cdfx->getModuleName();
@@ -1588,8 +1615,8 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, CdfxFile *cdfx, bool modif) : Nod
     precisionX = 0;
     precisionY = 0;
     precisionZ = 0;
-    uint nPtsX = 1;
-    uint nPtsY = 1;
+    uint nPtsAxisX = 1;
+    uint nPtsAxisY = 1;
     isSortedByRow = 0;
 
     //Type
@@ -1613,14 +1640,29 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, CdfxFile *cdfx, bool modif) : Nod
     {
         bool bl;
         NUMBER *item =  (NUMBER*)node->getItem("NUMBER");
-        QString toto = item->getPar("Number");
-        nPtsX = toto.toInt(&bl, 10);
+        MATRIX_DIM *matrix_dim =  (MATRIX_DIM*)node->getItem("MATRIX_DIM");
+        if (item)
+        {
+            QString toto = item->getPar("Number");
+            nPtsAxisX = toto.toInt(&bl, 10);
+        }
+        else if (matrix_dim)
+        {
+           nPtsAxisX = ((QString)matrix_dim->getPar("xDim")).toInt();
+           nPtsAxisY = ((QString)matrix_dim->getPar("yDim")).toInt();
+        }
+        else
+        {
+            nPtsAxisX = 1;
+            nPtsAxisY = 1;
+        }
+
         addressX = 0;
         addressY = 0;
 
         //AXIS_PTS_X
         QString str;
-        for (int i = 0; i < nPtsX; i++)
+        for (int i = 0; i < nPtsAxisX; i++)
         {
             listX.append(str.setNum(i));
         }
@@ -1631,11 +1673,11 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, CdfxFile *cdfx, bool modif) : Nod
     {
         bool bl;
         NUMBER *item = (NUMBER*)node->getItem("NUMBER");
-        nPtsX = ((QString)item->getPar("Number")).toInt(&bl, 10);
+        nPtsAxisX = ((QString)item->getPar("Number")).toInt(&bl, 10);
 
         //AXIS_PTS_X
         QString str;
-        for (int i = 0; i < nPtsX; i++)
+        for (int i = 0; i < nPtsAxisX; i++)
         {
             listX.append(str.setNum(i));
         }
@@ -1712,7 +1754,224 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, CdfxFile *cdfx, bool modif) : Nod
     record_layout = (RECORD_LAYOUT*)pro->getNode("MODULE/" + moduleName + "/RECORD_LAYOUT/" + deposit);
 
     //define number of rows of data to display
-    size += nPtsY;
+    size += nPtsAxisY;
+
+    //read each element of Z_RECORD_LAYOUT
+    foreach (Item *item, record_layout->optItems)
+    {
+        QString type = item->name;
+
+        if (type == "AXIS_PTS_X")
+        {
+            datatypeX = ((AXIS_PTS_X*)item)->getPar("Datatype");
+        }
+        else if (type == "AXIS_PTS_Y")
+        {
+            datatypeY = ((AXIS_PTS_Y*)item)->getPar("Datatype");
+        }
+        else if (type == "FNC_VALUES")
+        {
+            //dataType
+            datatypeZ = ((FNC_VALUES*)item)->getPar("Datatype");
+        }
+    }
+
+    //Zaxis PRECISION
+    FORMAT *format = (FORMAT*)node->getItem("FORMAT");
+    if (format)
+    {
+        QString f = format->getPar("FormatString");
+        QStringList list = f.split(QRegExp("\\D+"));
+        if (list.count() < 3)
+            precisionZ = 0;
+        else
+            precisionZ = list.at(2).toInt();
+    }
+    else
+    {
+        QString compu = node->getPar("Conversion");
+        COMPU_METHOD *cmp = (COMPU_METHOD*)pro->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu);
+        if (cmp)
+        {
+            QString f = cmp->getPar("Format");
+            QStringList list = f.split(QRegExp("\\D+"));
+            if (list.count() < 3)
+                precisionZ = 0;
+            else
+                precisionZ = list.at(2).toInt();
+        }
+    }
+
+}
+
+Data::Data(CHARACTERISTIC *node, PROJECT *pro, Dcm *dcm, bool modif) : Node(node->name), QObject()
+{
+    isAxisXComparable = false;
+    isAxisYComparable = false;
+    sizeChanged = false;
+    modifiable = modif;
+    label = node;
+    project = pro;
+    hexParent = NULL;
+    srecParent = NULL;
+    csvParent = NULL;
+    dcmParent = dcm;
+    cdfxParent = NULL;
+    if (dcm)
+    {
+        moduleName = dcm->getModuleName();
+    }
+    axisDescrX = NULL;
+    axisDescrY = NULL;
+    compuVTabAxisX = NULL;
+    compuVTabAxisY = NULL;
+    compuVTabAxisZ = NULL;
+    compuTabAxisY = NULL;
+    compuTabAxisZ = NULL;
+    compu_methodZ = NULL;
+    displayed = false;
+    precisionX = 0;
+    precisionY = 0;
+    precisionZ = 0;
+    uint nPtsAxisX = 1;
+    uint nPtsAxisY = 1;
+    isSortedByRow = 0;
+
+    //Type
+    type = node->getPar("Type");
+    if (type.toLower() == "value")
+    {
+        size = 3;
+    }
+    else if (type.toLower() == "curve")
+    {
+        axisDescrX = (AXIS_DESCR*)node->getNode("AXIS_DESCR")->child(0);
+        size = 4;
+    }
+    else if (type.toLower() == "map")
+    {
+        axisDescrX = (AXIS_DESCR*)node->getNode("AXIS_DESCR")->child(0);
+        axisDescrY = (AXIS_DESCR*)node->getNode("AXIS_DESCR")->child(1);
+        size = 4;
+    }
+    else if (type.toLower() == "val_blk")
+    {
+        bool bl;
+        NUMBER *item =  (NUMBER*)node->getItem("NUMBER");
+        MATRIX_DIM *matrix_dim =  (MATRIX_DIM*)node->getItem("MATRIX_DIM");
+        if (item)
+        {
+            QString toto = item->getPar("Number");
+            nPtsAxisX = toto.toInt(&bl, 10);
+        }
+        else if (matrix_dim)
+        {
+           nPtsAxisX = ((QString)matrix_dim->getPar("xDim")).toInt();
+           nPtsAxisY = ((QString)matrix_dim->getPar("yDim")).toInt();
+        }
+        else
+        {
+            nPtsAxisX = 1;
+            nPtsAxisY = 1;
+        }
+
+        addressX = 0;
+        addressY = 0;
+
+        //AXIS_PTS_X
+        QString str;
+        for (int i = 0; i < nPtsAxisX; i++)
+        {
+            listX.append(str.setNum(i));
+        }
+
+        size = 4;
+    }
+    else if (type.toLower() == "ascii")
+    {
+        bool bl;
+        NUMBER *item = (NUMBER*)node->getItem("NUMBER");
+        nPtsAxisX = ((QString)item->getPar("Number")).toInt(&bl, 10);
+
+        //AXIS_PTS_X
+        QString str;
+        for (int i = 0; i < nPtsAxisX; i++)
+        {
+            listX.append(str.setNum(i));
+        }
+        size = 4;
+    }
+    else
+    {
+        size = 3;
+    }
+
+    //read AXIS_X
+    if (axisDescrX)
+    {
+        //Xaxis PRECISION
+        FORMAT *format = (FORMAT*)axisDescrX->getItem("FORMAT");
+        if (format)
+        {
+            QString f = format->getPar("FormatString");
+            QStringList list = f.split(QRegExp("\\D+"));
+            if (list.count() < 3)
+                precisionX = 0;
+            else
+                precisionX = list.at(2).toInt();
+        }
+        else
+        {
+            QString compu = axisDescrX->getPar("Conversion");
+            COMPU_METHOD *cmp = (COMPU_METHOD*)pro->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu);
+            if (cmp)
+            {
+                QString f = cmp->getPar("Format");
+                QStringList list = f.split(QRegExp("\\D+"));
+                if (list.count() < 3)
+                    precisionX = 0;
+                else
+                    precisionX = list.at(2).toInt();
+            }
+        }
+    }
+
+    //read AXIS_Y
+    if (axisDescrY)
+    {
+        //Yaxis PRECISION
+        FORMAT *format = (FORMAT*)axisDescrY->getItem("FORMAT");
+        if (format)
+        {
+            QString f = format->getPar("FormatString");
+            QStringList list = f.split(QRegExp("\\D+"));
+            if (list.count() < 3)
+                precisionY = 0;
+            else
+                precisionY = list.at(2).toInt();
+        }
+        else
+        {
+            QString compu = axisDescrY->getPar("Conversion");
+            COMPU_METHOD *cmp = (COMPU_METHOD*)pro->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu);
+            if (cmp)
+            {
+                QString f = cmp->getPar("Format");
+                QStringList list = f.split(QRegExp("\\D+"));
+                if (list.count() < 3)
+                    precisionY = 0;
+                else
+                    precisionY = list.at(2).toInt();
+            }
+        }
+    }
+
+    //RECORD_LAYOUT
+    QString deposit = node->getPar("Deposit");
+    record_layout = (RECORD_LAYOUT*)pro->getNode("MODULE/" + moduleName + "/RECORD_LAYOUT/" + deposit);
+
+    //define number of rows of data to display
+    size += nPtsAxisY;
 
     //read each element of Z_RECORD_LAYOUT
     foreach (Item *item, record_layout->optItems)
@@ -1774,6 +2033,7 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, HexFile *hexFile, bool modif) : Node(no
     srecParent = NULL;
     csvParent = NULL;
     cdfxParent = NULL;
+    dcmParent = NULL;
     if (hexParent)
     {
         moduleName = hexParent->getModuleName();
@@ -1911,6 +2171,7 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, SrecFile *srecFile, bool modif) : Node(
     hexParent = NULL;
     srecParent = srecFile;
     csvParent = NULL;
+    dcmParent = NULL;
     cdfxParent = NULL;
     if (srecParent)
     {
@@ -2038,6 +2299,7 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, Csv *csv, bool modif) : Node(node->name
     project = pro;
     hexParent = NULL;
     srecParent = NULL;
+    dcmParent = NULL;
     csvParent = csv;
     cdfxParent = NULL;
     if (csv)
@@ -2107,6 +2369,7 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, CdfxFile *cdfx, bool modif) : Node(node
     hexParent = NULL;
     srecParent = NULL;
     csvParent = NULL;
+    dcmParent = NULL;
     cdfxParent = cdfx;
     if (cdfx)
     {
@@ -2162,6 +2425,76 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, CdfxFile *cdfx, bool modif) : Node(node
 
     size = 5;
 }
+
+Data::Data(AXIS_PTS *node, PROJECT *pro, Dcm *dcm, bool modif) : Node(node->name), QObject()
+{
+    isAxisXComparable = false;
+    isAxisYComparable = false;
+    sizeChanged = false;
+    modifiable = modif;
+    label = node;
+    project = pro;
+    hexParent = NULL;
+    srecParent = NULL;
+    csvParent = NULL;
+    dcmParent = dcm;
+    cdfxParent = NULL;
+    if (dcm)
+    {
+        moduleName = dcm->getModuleName();
+    }
+    axisDescrX = NULL;
+    axisDescrY = NULL;
+    compuVTabAxisX = NULL;
+    compuVTabAxisY = NULL;
+    compuVTabAxisZ = NULL;
+    compuTabAxisY = NULL;
+    compuTabAxisZ = NULL;
+    compu_methodZ = NULL;
+    compu_methodZ = NULL;
+    displayed = false;
+    precisionX = 0;
+    precisionY = 0;
+    precisionZ = 0;
+    addressX = 0;
+    addressY = 0;
+    addressZ = 0;
+    isSortedByRow = 0;
+
+    //Type
+    type = "AXIS_PTS";
+
+    // RECORD_LAYOUT
+    QString deposit = node->getPar("Deposit");
+    record_layout = (RECORD_LAYOUT*)project->getNode("MODULE/" + moduleName + "/RECORD_LAYOUT/" + deposit);
+
+    //read each element of X_RECORD_LAYOUT
+    foreach (Item *item, record_layout->optItems)
+    {
+        QString type = item->name;
+        if (type == "AXIS_PTS_X")
+        {
+            datatypeZ = ((AXIS_PTS_X*)item)->getPar("Datatype");
+        }
+    }
+
+    //Zaxis PRECISION
+    QString compu = node->getPar("Conversion");
+    COMPU_METHOD *cmp = (COMPU_METHOD*)pro->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu);
+    if (cmp)
+    {
+        QString f = cmp->getPar("Format");
+        QStringList list = f.split(QRegExp("\\D+"));
+        if (list.count() < 3)
+            precisionZ = 0;
+        else
+            precisionZ = list.at(2).toInt();
+    }
+
+    size = 5;
+
+}
+
 
 // --- ASAP info --- //
 
@@ -2272,6 +2605,8 @@ int Data::getZnbyte()
         return csvParent->getNumByte(datatypeZ);
     else if (cdfxParent)
         return cdfxParent->getNumByte(datatypeZ);
+    else if (dcmParent)
+        return dcmParent->getNumByte(datatypeZ);
     else
         return 0;
 }
@@ -4471,11 +4806,12 @@ QStringList Data::dec2hex(QList<double> listDec, std::string type,  int base)
 QString Data::dec2hex(double dec, std::string type, int base)
 {
     QString qHex = "";
-    uint E = (uint)dec;
     char hex[31];
 
     if(type == "SBYTE")
     {
+        int8_t E = (int8_t)dec;
+
         if(E > SHRT_MAX)
         {
             E = SHRT_MAX;
@@ -4485,7 +4821,7 @@ QString Data::dec2hex(double dec, std::string type, int base)
         {
             if (E < CHAR_MAX)
             {
-                sprintf(hex, "%X", (int)ceil(dec));
+                sprintf(hex, "%X", (int8_t)ceil(dec));
 
             }
             else
@@ -4497,7 +4833,7 @@ QString Data::dec2hex(double dec, std::string type, int base)
         {
             if (E > CHAR_MIN)
             {
-                sprintf(hex, "%X", (int)floor(dec));
+                sprintf(hex, "%X", (int8_t)floor(dec));
             }
             else
             {
@@ -4508,9 +4844,14 @@ QString Data::dec2hex(double dec, std::string type, int base)
         qHex = QString(hex).right(2);
         while (qHex.count() < 2)
             qHex = "0" + qHex;
+
+        return qHex;
     }
     else if(type == "UBYTE")
     {
+
+        uint8_t E = (uint8_t)dec;
+
         if(E > UCHAR_MAX)
         {
             E = UCHAR_MAX;
@@ -4520,7 +4861,7 @@ QString Data::dec2hex(double dec, std::string type, int base)
         {
             if (E < UCHAR_MAX)
             {
-                sprintf(hex, "%X", (int)ceil(dec));
+                sprintf(hex, "%X", (uint8_t)ceil(dec));
             }
             else
             {
@@ -4531,7 +4872,7 @@ QString Data::dec2hex(double dec, std::string type, int base)
         {
             if (E > 0)
             {
-                sprintf(hex, "%X", (int)floor(dec));
+                sprintf(hex, "%X", (uint8_t)floor(dec));
             }
             else
             {
@@ -4541,9 +4882,13 @@ QString Data::dec2hex(double dec, std::string type, int base)
         qHex = QString(hex).right(2);
         while (qHex.count() < 2)
             qHex = "0" + qHex;
+
+        return qHex;
     }
     else if(type == "SWORD")
     {
+        int16_t E = (int16_t)dec;
+
         if(E > SHRT_MAX)
         {
             E = SHRT_MAX;
@@ -4553,7 +4898,7 @@ QString Data::dec2hex(double dec, std::string type, int base)
         {
             if (E < SHRT_MAX)
             {
-                sprintf(hex, "%X", (int)ceil(dec));
+                sprintf(hex, "%X", (int16_t)ceil(dec));
             }
             else
             {
@@ -4564,7 +4909,7 @@ QString Data::dec2hex(double dec, std::string type, int base)
         {
             if (E > SHRT_MIN)
             {
-                sprintf(hex, "%X", (int)floor(dec));
+                sprintf(hex, "%X", (int16_t)floor(dec));
             }
             else
             {
@@ -4574,9 +4919,13 @@ QString Data::dec2hex(double dec, std::string type, int base)
         qHex = QString(hex).right(4);
         while (qHex.count() < 4)
             qHex = "0" + qHex;
+
+        return qHex;
     }
     else if(type == "UWORD")
     {
+        uint16_t E = (uint16_t)dec;
+
         if(E > USHRT_MAX)
         {
             E = USHRT_MAX;
@@ -4586,7 +4935,7 @@ QString Data::dec2hex(double dec, std::string type, int base)
         {
             if (E < USHRT_MAX)
             {
-                sprintf(hex, "%X", (int)ceil(dec));
+                sprintf(hex, "%X", (uint16_t)ceil(dec));
             }
             else
             {
@@ -4597,7 +4946,7 @@ QString Data::dec2hex(double dec, std::string type, int base)
         {
             if (E > 0)
             {
-                sprintf(hex, "%X", (int)floor(dec));
+                sprintf(hex, "%X", (uint16_t)floor(dec));
             }
             else
             {
@@ -4607,9 +4956,13 @@ QString Data::dec2hex(double dec, std::string type, int base)
         qHex = QString(hex).right(4);
         while (qHex.count() < 4)
             qHex = "0" + qHex;
+
+        return qHex;
     }
     else if(type == "SLONG")
     {
+        int32_t E = (int32_t)dec;
+
         if(E > INT_MAX)
         {
             E = INT_MAX;
@@ -4619,7 +4972,7 @@ QString Data::dec2hex(double dec, std::string type, int base)
         {
             if (E < INT_MAX)
             {
-                sprintf(hex, "%X", (int)ceil(dec));
+                sprintf(hex, "%X", (int32_t)ceil(dec));
             }
             else
             {
@@ -4630,7 +4983,7 @@ QString Data::dec2hex(double dec, std::string type, int base)
         {
             if (E > INT_MIN)
             {
-                sprintf(hex, "%X", (int)floor(dec));
+                sprintf(hex, "%X", (int32_t)floor(dec));
             }
             else
             {
@@ -4640,9 +4993,13 @@ QString Data::dec2hex(double dec, std::string type, int base)
         qHex = QString(hex).right(8);
         while (qHex.count() < 8)
             qHex = "0" + qHex;
+
+        return qHex;
     }
     else if(type == "ULONG")
     {
+        uint32_t E = (uint32_t)dec;
+
         //E = (unsigned int)dec;
         if(E > UINT_MAX)
         {
@@ -4653,7 +5010,7 @@ QString Data::dec2hex(double dec, std::string type, int base)
         {
             if (E < (unsigned int)UINT_MAX)
             {
-                sprintf(hex, "%X", (unsigned int)ceil(dec));
+                sprintf(hex, "%X", (uint32_t)ceil(dec));
             }
             else
             {
@@ -4664,7 +5021,7 @@ QString Data::dec2hex(double dec, std::string type, int base)
         {
             if (E > 0)
             {
-                sprintf(hex, "%X", (unsigned int)floor(dec));
+                sprintf(hex, "%X", (uint32_t)floor(dec));
             }
             else
             {
@@ -4674,12 +5031,16 @@ QString Data::dec2hex(double dec, std::string type, int base)
         qHex = QString(hex).right(8);
         while (qHex.count() < 8)
             qHex = "0" + qHex;
+
+        return qHex;
     }
     else if(type == "FLOAT32_IEEE")
     {
         float f = (float)dec;
         sprintf(hex, "%08X", *(int*)&f);
         qHex = QString(hex);
+
+        return qHex;
     }
 
     return qHex;
@@ -4739,6 +5100,10 @@ bool Data::checkValues()
     {
         csvParent->checkDisplay();
     }
+    else if (dcmParent)
+    {
+        dcmParent->checkDisplay();
+    }
     else
     {
         cdfxParent->checkDisplay();
@@ -4758,6 +5123,10 @@ bool Data::checkValues()
         else if (csvParent)
         {
             csvParent->addModifiedData(this);
+        }
+        else if (dcmParent)
+        {
+            dcmParent->addModifiedData(this);
         }
         else
         {
@@ -4781,6 +5150,10 @@ bool Data::checkValues()
         {
             csvParent->removeModifiedData(this);
         }
+        else if (dcmParent)
+        {
+            dcmParent->removeModifiedData(this);
+        }
         else
         {
             cdfxParent->removeModifiedData(this);
@@ -4802,6 +5175,10 @@ bool Data::checkValues()
     else if (csvParent)
     {
         csvParent->getParentWp()->parentWidget->resetAllTableView();
+    }
+    else if (dcmParent)
+    {
+        dcmParent->getParentWp()->parentWidget->resetAllTableView();
     }
     else
     {
@@ -4860,6 +5237,16 @@ QString Data::getOrgX(int i)
             else if (cdfxParent)
             {
                 Data *axisData = cdfxParent->getData(nameAxisX);
+                if (axisData)
+                {
+                    return axisData->getOrgZ(i);
+                }
+                else
+                    return QString::number(i);
+            }
+            else if (dcmParent)
+            {
+                Data *axisData = dcmParent->getData(nameAxisX);
                 if (axisData)
                 {
                     return axisData->getOrgZ(i);
@@ -4930,6 +5317,16 @@ QString Data::getX(int i)
                 else
                     return QString::number(i);
             }
+            else if (dcmParent)
+            {
+                Data *axisData = dcmParent->getData(nameAxisX);
+                if (axisData)
+                {
+                    return axisData->getZ(i);
+                }
+                else
+                    return QString::number(i);
+            }
             else if (cdfxParent)
             {
                 Data *axisData = cdfxParent->getData(nameAxisX);
@@ -4992,6 +5389,18 @@ QStringList Data::getX()
             else if (csvParent)
             {
                 Data *axisData = csvParent->getData(nameAxisX);
+                if (axisData)
+                {
+                    return axisData->getZ();
+                }
+                else
+                {
+                    return listX;
+                }
+            }
+            else if (dcmParent)
+            {
+                Data *axisData = dcmParent->getData(nameAxisX);
                 if (axisData)
                 {
                     return axisData->getZ();
@@ -5084,6 +5493,16 @@ QString Data::getOrgY(int i)
                 else
                     return QString::number(i);
             }
+            else if (dcmParent)
+            {
+                Data *axisData = dcmParent->getData(nameAxisY);
+                if (axisData)
+                {
+                    return axisData->getOrgZ(i);
+                }
+                else
+                    return QString::number(i);
+            }
             else if (cdfxParent)
             {
                 Data *axisData = cdfxParent->getData(nameAxisY);
@@ -5157,6 +5576,16 @@ QString Data::getY(int i)
                 else
                     return QString::number(i);
             }
+            else if (dcmParent)
+            {
+                Data *axisData = dcmParent->getData(nameAxisY);
+                if (axisData)
+                {
+                    return axisData->getZ(i);
+                }
+                else
+                    return QString::number(i);
+            }
             else if (cdfxParent)
             {
                 Data *axisData = cdfxParent->getData(nameAxisY);
@@ -5220,6 +5649,30 @@ QStringList Data::getY()
             else if (csvParent)
             {
                 Data *axisData = csvParent->getData(nameAxisY);
+                if (axisData)
+                {
+                    return axisData->getZ();
+                }
+                else
+                {
+                    return listY;
+                }
+            }
+            else if (dcmParent)
+            {
+                Data *axisData = dcmParent->getData(nameAxisY);
+                if (axisData)
+                {
+                    return axisData->getZ();
+                }
+                else
+                {
+                    return listY;
+                }
+            }
+            else if (cdfxParent)
+            {
+                Data *axisData = cdfxParent->getData(nameAxisY);
                 if (axisData)
                 {
                     return axisData->getZ();
@@ -5519,6 +5972,8 @@ void Data::setX(int i, QString str)
                 axisData = csvParent->getData(nameAxisX);
             else if( cdfxParent)
                 axisData = cdfxParent->getData(nameAxisX);
+            else if( dcmParent)
+                axisData = dcmParent->getData(nameAxisX);
             else
                 return;
 
@@ -5668,6 +6123,8 @@ void Data::setX(QStringList list)
                 axisData = csvParent->getData(nameAxisX);
             else if( cdfxParent)
                 axisData = cdfxParent->getData(nameAxisX);
+            else if( dcmParent)
+                axisData = dcmParent->getData(nameAxisX);
             else
                 return;
 
@@ -5873,6 +6330,8 @@ void Data::setY(int i, QString str)
                 axisData = csvParent->getData(nameAxisY);
             else if( cdfxParent)
                 axisData = cdfxParent->getData(nameAxisY);
+            else if( dcmParent)
+                axisData = dcmParent->getData(nameAxisY);
             else
                 return;
 
@@ -6020,6 +6479,8 @@ void Data::setY(QStringList list)
                 axisData = csvParent->getData(nameAxisY);
             else if( cdfxParent)
                 axisData = cdfxParent->getData(nameAxisY);
+            else if( dcmParent)
+                axisData = dcmParent->getData(nameAxisY);
             else
                 return;
 
@@ -6877,6 +7338,14 @@ void Data::resetValX(int i)
                     axisData->resetValZ(i);
                 }
             }
+            else if (dcmParent)
+            {
+                Data *axisData = dcmParent->getData(nameAxisX);
+                if (axisData)
+                {
+                    axisData->resetValZ(i);
+                }
+            }
         }
         else if (xListVal.contains(i))
     {
@@ -6924,6 +7393,14 @@ void Data::resetValY(int i)
             else if (cdfxParent)
             {
                 Data *axisData = cdfxParent->getData(nameAxisY);
+                if (axisData)
+                {
+                    axisData->resetValZ(i);
+                }
+            }
+            else if (dcmParent)
+            {
+                Data *axisData = dcmParent->getData(nameAxisY);
                 if (axisData)
                 {
                     axisData->resetValZ(i);
@@ -7025,6 +7502,14 @@ void Data::undoValX(int i)
                     axisData->undoValZ(i);
                 }
             }
+            else if (dcmParent)
+            {
+                Data *axisData = dcmParent->getData(nameAxisX);
+                if (axisData)
+                {
+                    axisData->undoValZ(i);
+                }
+            }
         }
         else if (xListVal.contains(i))
         {
@@ -7089,6 +7574,14 @@ void Data::undoValY(int i)
             else if (cdfxParent)
             {
                 Data *axisData = cdfxParent->getData(nameAxisY);
+                if (axisData)
+                {
+                    axisData->undoValZ(i);
+                }
+            }
+            else if (dcmParent)
+            {
+                Data *axisData = dcmParent->getData(nameAxisY);
                 if (axisData)
                 {
                     axisData->undoValZ(i);
@@ -8000,6 +8493,10 @@ bool Data::checkAxisXMonotony()
             {
                 axisData = cdfxParent->getData(nameAxisX);
             }
+            else if (dcmParent)
+            {
+                axisData = dcmParent->getData(nameAxisX);
+            }
 
             if (axisData)
             {
@@ -8056,6 +8553,10 @@ bool Data::checkAxisYMonotony()
             {
                 axisData = cdfxParent->getData(nameAxisY);
             }
+            else if (dcmParent)
+            {
+                axisData = dcmParent->getData(nameAxisY);
+            }
 
             if (axisData)
             {
@@ -8111,6 +8612,11 @@ Csv *Data::getCsvParent()
 CdfxFile *Data::getCdfxParent()
 {
     return cdfxParent;
+}
+
+Dcm *Data::getDcmParent()
+{
+    return dcmParent;
 }
 
 bool Data::isModified()

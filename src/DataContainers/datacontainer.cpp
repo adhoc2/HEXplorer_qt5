@@ -553,6 +553,11 @@ bool DataContainer::exportDataList2Cdf(QStringList dataList, QString fileName)
 
 }
 
+bool DataContainer::exportDataList2Dcm(QStringList dataList, QString fileName)
+{
+    return false;
+}
+
 bool DataContainer::exportDataList2Mat(QStringList dataList, QString fileName)
 {
 //    MATFile *pmat;

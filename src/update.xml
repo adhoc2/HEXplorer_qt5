@@ -1,11 +1,12 @@
 <HEXplorer application="HEXplorer">
     <revision version="0.7.11">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
     <details>revision 0.7.11 (xx/2016) :
-    - Improvement : modify the way a WorkingDirectory is opened (Use of class QDir instead of QFileSystemModel)
-    - bug correction : when modifying a characteristic with compu_method = NO_COMPU_METHOD
-    - bug correction : Group Cur or Map resizing
-    - bug correction : treeView update issue => class WorkProject inheriting from class Node
-    - bug correction : BIT_MASK usage with datatype LONG
+    - Improvement : read damos .dcm files.
+    - Improvement : modify the way a WorkingDirectory is opened (Use of class QDir instead of QFileSystemModel).
+    - bug correction : when modifying a characteristic with compu_method = NO_COMPU_METHOD.
+    - bug correction : Group Cur or Map resizing.
+    - bug correction : treeView update issue => class WorkProject inheriting from class Node.
+    - bug correction : BIT_MASK usage with datatype LONG.
     - bug correction : datatype bitwidth hardcoded instead of being read in a2l in ALIGNMENT_ORDER.
 
 

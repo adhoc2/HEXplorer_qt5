@@ -46,6 +46,7 @@ public:
     void editData(Data* data);
     bool exportDataList2Csv(QStringList dataList, QString fileName = "");
     bool exportDataList2Cdf(QStringList dataList, QString fileName = "");
+    bool exportDataList2Dcm(QStringList dataList, QString fileName = "");
     bool exportDataList2Mat(QStringList dataList, QString fileName = "");
     bool testMonotony(QStringList listLabel);
 

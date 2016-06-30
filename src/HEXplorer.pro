@@ -284,7 +284,9 @@ HEADERS += a2l.h \
     workingdirectory.h \
     deletefiledialog.h \
     ASAP2/Items/static_record_layout.h \
-    plot3d.h
+    plot3d.h \
+    DataContainers/dcmfile.h \
+    DataContainers/lexerDcm.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -463,7 +465,9 @@ SOURCES += a2l.cpp \
     workingdirectory.cpp \
     deletefiledialog.cpp \
     ASAP2/Items/static_record_layout.cpp \
-    plot3d.cpp
+    plot3d.cpp \
+    DataContainers/dcmfile.cpp \
+    DataContainers/lexerDcm.cpp
 
 OTHER_FILES += \
     GNU_license.txt \

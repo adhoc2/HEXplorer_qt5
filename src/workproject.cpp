@@ -22,6 +22,7 @@
 #include "a2lgrammar.h"
 #include "csv.h"
 #include "cdfxfile.h"
+#include "dcmfile.h"
 #include "qfileinfo.h"
 #include "qdebug.h"
 
@@ -84,6 +85,11 @@ QMap<QString, SrecFile*> WorkProject::srecFiles()
 QMap<QString, Csv*> WorkProject::csvFiles()
 {
     return csvList;
+}
+
+QMap<QString, Dcm*> WorkProject::dcmFiles()
+{
+    return dcmList;
 }
 
 QMap<QString, CdfxFile*> WorkProject::cdfxFiles()
@@ -170,6 +176,26 @@ void WorkProject::addCsv(Csv *csv )
 
 }
 
+void WorkProject::addDcm(Dcm *dcm)
+{
+    // add csv to a2lfile childrenslist
+//    a2lFile->addChildNode(csv);
+//    a2lFile->sortChildrensName();
+    this->addChildNode(dcm);
+    this->sortChildrensName();
+
+    // update treeView
+//    treeModel->dataInserted(a2lFile, a2lFile->childNodes.indexOf(csv));
+    treeModel->dataInserted(this, this->childNodes.indexOf(dcm));
+
+    // add csv to this hexList
+    dcmList.insert(dcm->fullName(), dcm);
+
+    // add this to the csv owners
+    dcm->attach(this);
+
+}
+
 void WorkProject::addCdfx(CdfxFile *cdfx)
 {
     // add csv to a2lfile childrenslist
@@ -215,6 +241,15 @@ void WorkProject::removeCsv(Csv *csv )
 
 }
 
+void WorkProject::removeDcm(Dcm *dcm )
+{
+    dcmList.remove(dcm->fullName());
+
+    // remove this Wp to the csv owners
+    dcm->detach(this);
+
+}
+
 void WorkProject::removeCdfxFile(CdfxFile *cdfx)
 {
     cdfxList.remove(cdfx->fullName());
@@ -255,9 +290,21 @@ void WorkProject::rename(Csv *csv)
     csvList.insert(csv->fullName(), csv);
 }
 
+void WorkProject::rename(Dcm *dcm)
+{
+    QString key = dcmList.key(dcm);
+    dcmList.remove(key);
+    dcmList.insert(dcm->fullName(), dcm);
+}
+
 bool WorkProject::containsCsv(QString str)
 {
     return (csvList.keys().contains(str) || csvList.keys().contains(str.replace('/', '\\')));
+}
+
+bool WorkProject::containsDcm(QString str)
+{
+    return (dcmList.keys().contains(str) || dcmList.keys().contains(str.replace('/', '\\')));
 }
 
 void WorkProject::rename(CdfxFile *cdfx)
