@@ -18,16 +18,17 @@ equals( QMAKE_CXX, cl) {
 
     # --- common config --- #
 
-    QSCINTILLA_ROOT = ../LIBS/QScintilla-gpl-2.9
-    WINHOARD_ROOT = ../LIBS/Hoard-3.10
-    QWT_ROOT = ../LIBS/qwt-6.1.2
-    QWT3D_ROOT = ../LIBS/qwtplot3d-master_build322
-    MATHGL_ROOT = ../LIBS/mathgl_msvc2013
+    QSCINTILLA_ROOT = ../../HEXplorer_wd/LIBS/QScintilla-gpl-2.9
+    WINHOARD_ROOT = ../../HEXplorer_wd/LIBS/Hoard-3.10
+    QWT_ROOT = ../../HEXplorer_wd/LIBS/qwt-6.1.2
+    QWT3D_ROOT = ../../HEXplorer_wd/LIBS/qwtplot3d-master_build322
+    MATHGL_ROOT = ../../HEXplorer_wd/LIBS/mathgl_msvc2013
 
     CONFIG += embed_manifest_exe c++11
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL CL_COMPILER
     INCLUDEPATH += . "C:\quex_0.65.10\quex-0.65.10" \
-     ./ASAP2 ./sqlite \
+     ./ASAP2 \
+     ./sqlite \
      ./DataContainers \
      ./Quex  \
      $${QSCINTILLA_ROOT}/Qt4Qt5 \
@@ -80,18 +81,20 @@ equals( QMAKE_CXX, cl) {
 
     # --- common config --- #
 
-    QSCINTILLA_ROOT = ../LIBS/QScintilla-gpl-2.9
-    QWT_ROOT = ../LIBS/qwt-6.1.2
-    QWT3D_ROOT = ../LIBS/qwtplot3d-master_build322
+    QSCINTILLA_ROOT = ../../HEXplorer_wd/LIBS/QScintilla-gpl-2.9
+    QWT_ROOT = ../../HEXplorer_wd/LIBS/qwt-6.1.2
+    QWT3D_ROOT = ../../HEXplorer_wd/LIBS/qwtplot3d-master_build322
     win32:QUEX_ROOT = "C:\quex_0.65.10\quex-0.65.10"
-    MATHGL_ROOT = ../LIBS/mathgl-2.3.3-mingw.i686
+    MATHGL_ROOT = ../../HEXplorer_wd/LIBS/mathgl-2_3_5_1-mingw
 
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT_DLL
-    CONFIG +=  c++11
 
-    INCLUDEPATH += . ./ASAP2 ./sqlite $${QUEX_ROOT} \
+    INCLUDEPATH += . \
+    ./ASAP2 \
+    ./sqlite  \
     ./Quex \
     ./DataContainers \
+    $${QUEX_ROOT} \
     $${QWT_ROOT}/src \
     $${QSCINTILLA_ROOT}/Qt4Qt5 \
     $${MATHGL_ROOT}/include \
@@ -100,7 +103,7 @@ equals( QMAKE_CXX, cl) {
     LIBS += -L$${QSCINTILLA_ROOT}/Qt4Qt5/lib \
     -L$${QWT_ROOT}/lib \
     -L$${MATHGL_ROOT}/lib \
-    -L$${QWT3D_ROOT}/lib_mingw492
+    -L$${QWT3D_ROOT}/lib_mingw
 
     # --- debug config --- #
     CONFIG( debug, debug|release ) {
@@ -108,7 +111,7 @@ equals( QMAKE_CXX, cl) {
         MOC_DIR = debug/moc
         OBJECTS_DIR = debug/obj
         DEFINES += MY_DEBUG
-        LIBS += -lqwtd -lgomp -lqscintilla2d -lmgl -lmgl-qt5 -lqwtplot3dd -lopengl32 -lglu32 -lgdi32
+        LIBS += -lqwtd -lgomp -lqscintilla2d -lqwtplot3dd -lopengl32 -lglu32 -lgdi32  #-lmgl -lmgl-qt5
         QMAKE_CXXFLAGS_DEBUG += -fopenmp
     }
     else {
@@ -117,7 +120,7 @@ equals( QMAKE_CXX, cl) {
         UI_DIR = release/ui
         MOC_DIR = release/moc
         OBJECTS_DIR = release/obj
-        LIBS += -lqwt -lgomp -lqscintilla2 -lmgl -lmgl-qt5 -lqwtplot3d -lopengl32 -lglu32
+        LIBS += -lqwt -lgomp -lqscintilla2 -lqwtplot3d -lopengl32 -lglu32 #-lmgl -lmgl-qt5
         QMAKE_CXXFLAGS_RELEASE += -O3 -fopenmp -DQUEX_OPTION_ASSERTS_DISABLED
     }
 }
@@ -276,8 +279,6 @@ HEADERS += a2l.h \
     ASAP2/Nodes/compu_vtab_range.h \
     ASAP2/Nodes/compu_tab.h \
     ASAP2/Items/default_value_numeric.h \
-    foo.h \
-    plotmathgl.h \
     sqlite/sqlite3.h \
     connectionwidget.h \
     ASAP2/Nodes/dbfile.h \
@@ -457,8 +458,6 @@ SOURCES += a2l.cpp \
     ASAP2/Nodes/compu_tab.cpp \
     Quex/a2l_quex_lexer.cpp \
     ASAP2/Items/default_value_numeric.cpp \
-    foo.cpp \
-    plotmathgl.cpp \
     sqlite/sqlite3.c \
     connectionwidget.cpp \
     ASAP2/Nodes/dbfile.cpp \

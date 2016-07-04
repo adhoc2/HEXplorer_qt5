@@ -25,6 +25,7 @@ class QString;
 
 #include "Qsci/qsciscintilla.h"
 
+
 class ChTextEdit : public QsciScintilla
 {
     Q_OBJECT

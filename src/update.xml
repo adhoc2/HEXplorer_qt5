@@ -1,6 +1,7 @@
 <HEXplorer application="HEXplorer">
     <revision version="0.7.11">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
     <details>revision 0.7.11 (xx/2016) :
+    - use of Qt5.7.0
     - Improvement : read damos .dcm files.
     - Improvement : modify the way a WorkingDirectory is opened (Use of class QDir instead of QFileSystemModel).
     - bug correction : when modifying a characteristic with compu_method = NO_COMPU_METHOD.

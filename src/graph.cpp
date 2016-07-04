@@ -19,7 +19,7 @@
 
 #include "graph.h"
 #include "plot3d.h"
-#include "plotmathgl.h"
+//#include "plotmathgl.h"
 #include "plot.h"
 #include <qtoolbar.h>
 #include <qtoolbutton.h>
@@ -87,12 +87,13 @@ void Graph::createButtons()
     invertAxis->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     QToolButton *btn3D = new QToolButton(toolBar);
-    btn3D->setText("3D_1");
+    btn3D->setText("3D");
     btn3D->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     QToolButton *btn3D_2 = new QToolButton(toolBar);
-    btn3D_2->setText("3D_2");
+    btn3D_2->setText("mathGL");
     btn3D_2->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    btn3D_2->setEnabled(false);
 
     QToolButton *btnShowData = new QToolButton(toolBar);
     btnShowData->setText("Show data");
@@ -145,19 +146,19 @@ void Graph::plot3D_qwt()
 
 void Graph::plot3D_mathgl()
 {
-    if ( !QGLFormat::hasOpenGL() )
-     {
-        QMessageBox::warning(0, "HEXplorer :: plot 3D",
-                                        "3D plot not possible.\nThis system has no OpenGL features.",
-                                        QMessageBox::Ok, QMessageBox::Cancel);
-          return;
-    }
+//    if ( !QGLFormat::hasOpenGL() )
+//     {
+//        QMessageBox::warning(0, "HEXplorer :: plot 3D",
+//                                        "3D plot not possible.\nThis system has no OpenGL features.",
+//                                        QMessageBox::Ok, QMessageBox::Cancel);
+//          return;
+//    }
 
-    if (data->getY().count() > 0)
-    {
-        PlotMathGL *plotMGL = new PlotMathGL(0, data);
-        plotMGL->show();
-    }
+//    if (data->getY().count() > 0)
+//    {
+//        PlotMathGL *plotMGL = new PlotMathGL(0, data);
+//        plotMGL->show();
+//    }
 }
 
 void Graph::showData(bool on)

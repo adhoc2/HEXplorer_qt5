@@ -26,6 +26,7 @@
 #include <QFileDialog>
 #include <QMenu>
 #include "chtextedit.h"
+#include "Qsci/qsciscintilla.h"
 
 
 ChTextEdit::ChTextEdit(QWidget *parent) : QsciScintilla(parent)
@@ -117,7 +118,7 @@ void ChTextEdit::openFindDialog()
                                           "your text", &ok);
      if (ok && !searchText.isEmpty())
      {
-         this->findFirst(searchText, false, false, true, false, true, 0, 0, true);
+         this->findFirst(searchText, false, false, false, false, true, 0, 0, true);
          this->findNext->setDisabled(false);
          this->findPrevious->setDisabled(false);
      }
@@ -128,7 +129,7 @@ void ChTextEdit::findNextText()
 {
     if (!searchText.isEmpty())
     {
-           this->findFirst(searchText, false, false, true, false, true);
+           this->findFirst(searchText, false, false, false, false, true);
     }
 }
 
@@ -136,7 +137,7 @@ void ChTextEdit::findNextText()
  {
      //int length = text.length();
      if (!searchText.isEmpty())
-            this->findFirst(searchText, true, false, true, true, false);
+            this->findFirst(searchText, true, false, false, true, false);
  }
 
  int ChTextEdit::lineNumberAreaWidth()
