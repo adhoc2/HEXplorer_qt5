@@ -1886,13 +1886,13 @@ void SrecFile::checkDisplay()
     {
 
         int ret = QMessageBox::warning(0, "HEXplorer :: add SrecFile",
-                                        "This Hex file was deleted !\nDo you want to reload it ?",
+                                        "This Srec file was deleted !\nDo you want to reload it ?",
                                         QMessageBox::Ok, QMessageBox::Cancel);
 
         if (ret == QMessageBox::Ok)
         {
             WorkProject *wp = getParentWp();
-            wp->addSrec(this);
+            wp->addSrec(this, parentNode);
             this->attach(wp);
         }
     }

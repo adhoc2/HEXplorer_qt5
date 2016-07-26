@@ -182,5 +182,6 @@
         <file>icones/zoom_in.xpm</file>
         <file>icones/zoom_out.xpm</file>
         <file>icones/content-download.png</file>
+        <file>icones/milky_importDcm.png</file>
     </qresource>
 </RCC>

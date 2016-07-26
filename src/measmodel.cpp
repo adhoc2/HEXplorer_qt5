@@ -37,7 +37,7 @@ void MeasModel::setList(QList<Node *> labelList)
 
     listMeas = labelList;
 
-    nRow = labelList.count() + 1;
+    nRow = labelList.count();
     nColumn = 10;
 
     beginResetModel();
@@ -63,111 +63,9 @@ QVariant MeasModel::data(const QModelIndex &index, int role) const
     int column = index.column();
 
 
-    if (row == 0)
+   if (0 <= row && row < nRow)
     {
-        switch (role)
-        {
-        case Qt::DisplayRole :
-            {
-
-                if (column == 0)
-                {
-                    return "name";
-                }
-                else if (column == 1)
-                {
-                    return "description";
-                }
-                else if (column == 2)
-                {
-                    return "unit";
-                }
-                else if (column == 3)
-                {
-                    return "ECU address";
-                }
-                else if (column == 4)
-                {
-                    return "data type";
-                }
-                else if (column == 5)
-                {
-                    return "computation method";
-                }
-                else if (column == 6)
-                {
-                    return "resolution";
-                }
-                else if (column == 7)
-                {
-                    return "accuracy";
-                }
-                else if (column == 8)
-                {
-                    return "LowerLimit";
-                }
-                else if (column == 9)
-                {
-                    return "UpperLimit";
-                }
-                else
-                    return QVariant();
-
-
-            }
-            break;
-
-        case Qt::DecorationRole: // The data to be rendered as a decoration in the form of an icon.
-            break;
-
-        case Qt::EditRole:
-            {
-            }
-            break;
-
-        case Qt::ToolTipRole:
-            {
-            }
-            break;
-
-        case Qt::StatusTipRole: // The data displayed in the status bar.
-            break;
-
-        case Qt::WhatsThisRole: // The data displayed for the item in "What's This?" mode.
-            break;
-
-        case Qt::SizeHintRole: // The size hint for the item that will be supplied to views.
-            break;
-
-        case Qt::FontRole : // The font used for items rendered with the default delegate.
-            {
-                QFont font;
-                font.setBold(true);
-                return font;
-            }
-            break;
-
-        case Qt::TextAlignmentRole:
-            break;
-
-        case Qt::BackgroundRole:
-            {
-
-            }
-            break;
-
-        case Qt::ForegroundRole: // the foreground brush (text color, typically) used for items rendered with the default delegate.
-            {
-            QColor color = Qt::red;
-            return color;
-            }
-            break;
-        }
-
-    }
-    else if (0 < row && row <= nRow)
-    {
-        MEASUREMENT *label = (MEASUREMENT*)listMeas.at(row - 1);
+        MEASUREMENT *label = (MEASUREMENT*)listMeas.at(row);
 
         switch (role)
         {
@@ -189,7 +87,8 @@ QVariant MeasModel::data(const QModelIndex &index, int role) const
                 }
                 else if (column == 2)
                 {
-                    return cmp->getPar("Unit");
+                    if (cmp)
+                     return cmp->getPar("Unit");
                 }
                 else if (column == 3)
                 {
@@ -302,11 +201,108 @@ Qt::ItemFlags MeasModel::flags(const QModelIndex &index) const
      return flags;
  }
 
-QVariant MeasModel::headerData(int section, Qt::Orientation /* orientation */, int role) const
+QVariant MeasModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
 
-    if (role != Qt::DisplayRole)
-        return QVariant();
+    switch (role)
+    {
+        case Qt::DisplayRole :
+            {
+            if (orientation == Qt::Horizontal)
+            {
+                if (section == 0)
+                {
+                    return "name";
+                }
+                else if (section == 1)
+                {
+                    return "description";
+                }
+                else if (section == 2)
+                {
+                    return "unit";
+                }
+                else if (section == 3)
+                {
+                    return "ECU address";
+                }
+                else if (section == 4)
+                {
+                    return "data type";
+                }
+                else if (section == 5)
+                {
+                    return "computation method";
+                }
+                else if (section == 6)
+                {
+                    return "resolution";
+                }
+                else if (section == 7)
+                {
+                    return "accuracy";
+                }
+                else if (section == 8)
+                {
+                    return "LowerLimit";
+                }
+                else if (section == 9)
+                {
+                    return "UpperLimit";
+                }
+                else
+                    return QVariant();
 
-    return QString::number(section);
+            }
+            break;
+
+        case Qt::DecorationRole: // The data to be rendered as a decoration in the form of an icon.
+            break;
+
+        case Qt::EditRole:
+            {
+            }
+            break;
+
+        case Qt::ToolTipRole:
+            {
+            }
+            break;
+
+        case Qt::StatusTipRole: // The data displayed in the status bar.
+            break;
+
+        case Qt::WhatsThisRole: // The data displayed for the item in "What's This?" mode.
+            break;
+
+        case Qt::SizeHintRole: // The size hint for the item that will be supplied to views.
+            break;
+
+        case Qt::FontRole : // The font used for items rendered with the default delegate.
+            {
+               QFont font;
+               font.setBold(true);
+               return font;
+            }
+            break;
+
+        case Qt::TextAlignmentRole:
+            break;
+
+        case Qt::BackgroundRole:
+            {
+
+            }
+            break;
+
+        case Qt::ForegroundRole: // the foreground brush (text color, typically) used for items rendered with the default delegate.
+            {
+                QColor color = Qt::red;
+                return color;
+            }
+            break;
+        }
+    }
+
+    return QVariant();
 }

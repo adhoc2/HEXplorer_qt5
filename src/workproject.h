@@ -40,13 +40,13 @@ class WorkProject :  public A2l, public Node
         void attach(QObject*o);
 
         QMap<QString, HexFile*> hexFiles();
-        void addHex(HexFile *hex);
+        void addHex(HexFile *hex, Node *subDir);
         void removeHexFile(HexFile *hex);
         void rename(HexFile *hex);
         bool containsHex(QString str);
 
         QMap<QString, SrecFile*> srecFiles();
-        void addSrec(SrecFile *srec);
+        void addSrec(SrecFile *srec, Node *subDir);
         void removeSrecFile(SrecFile *srec);
         void rename(SrecFile *srec);
         bool containsSrec(QString str);

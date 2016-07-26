@@ -14,7 +14,7 @@ class WorkingDirectory : public Node
         ~WorkingDirectory();
         QString getFullPath();
         void deleteFileModel();
-        void parseDir(QString dirPath);
+        void parseDir(QString dirPath, WorkProject *wp = nullptr);
 
 private:
         QFileSystemWatcher fileWatcher;

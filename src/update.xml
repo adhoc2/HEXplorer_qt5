@@ -1,6 +1,11 @@
 <HEXplorer application="HEXplorer">
-    <revision version="0.7.11">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
-    <details>revision 0.7.11 (xx/2016) :
+    <revision version="0.7.12">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
+    <details>revision 0.7.12 (xx/2016) :
+    - Improvement : allow display folder under WorkProject in Treeview
+    - Improvement : display characteristics and Measuring channels.
+    - bug correction : plot with csv.
+
+revision 0.7.11 (Q2/2016) :
     - use of Qt5.7.0
     - Improvement : read damos .dcm files.
     - Improvement : modify the way a WorkingDirectory is opened (Use of class QDir instead of QFileSystemModel).

@@ -506,7 +506,6 @@ void FormCompare::checkDroppedFile(QString oldText)
             dcm1 = NULL;
             hex1->attach(this);
             hex1->getParentWp()->attach(this);
-            //a2l1 = (A2LFILE*)hex1->getParentNode();
             a2l1 = hex1->getParentWp()->a2lFile;
 
         }
@@ -527,7 +526,6 @@ void FormCompare::checkDroppedFile(QString oldText)
             dcm1 = NULL;
             srec1->attach(this);
             srec1->getParentWp()->attach(this);
-            //a2l1 = (A2LFILE*)srec1->getParentNode();
             a2l1 = srec1->getParentWp()->a2lFile;
         }
         else if(name.toLower().endsWith("csv"))
@@ -539,7 +537,6 @@ void FormCompare::checkDroppedFile(QString oldText)
             csv1 = (Csv*)node;
             csv1->attach(this);
             csv1->getParentWp()->attach(this);
-            //a2l1 = (A2LFILE*)node->getParentNode();
             a2l1 =csv1->getParentWp()->a2lFile;
         }
         else if(name.toLower().endsWith("cdfxfile"))
@@ -551,7 +548,6 @@ void FormCompare::checkDroppedFile(QString oldText)
             cdfx1 = (CdfxFile*)node;
             cdfx1->attach(this);
             cdfx1->getParentWp()->attach(this);
-            //a2l1 = (A2LFILE*)node->getParentNode();
             a2l1 =cdfx1->getParentWp()->a2lFile;
         }
         else if(name.toLower().endsWith("dcm"))
@@ -563,7 +559,6 @@ void FormCompare::checkDroppedFile(QString oldText)
             dcm1 = (Dcm*)node;
             dcm1->attach(this);
             dcm1->getParentWp()->attach(this);
-            //a2l1 = (A2LFILE*)node->getParentNode();
             a2l1 =dcm1->getParentWp()->a2lFile;
         }
 
@@ -637,7 +632,6 @@ void FormCompare::checkDroppedFile_2(QString str)
             srec2 = NULL;
             hex2->attach(this);
             hex2->getParentWp()->attach(this);
-            //a2l2 = (A2LFILE*)hex2->getParentNode();
             a2l2 = hex2->getParentWp()->a2lFile;
         }
         if (name.toLower().endsWith("srecfile"))
@@ -656,7 +650,6 @@ void FormCompare::checkDroppedFile_2(QString str)
             hex2 = NULL;
             srec2->attach(this);
             srec2->getParentWp()->attach(this);
-            //a2l2 = (A2LFILE*)srec2->getParentNode();
             a2l2 = srec2->getParentWp()->a2lFile;
         }
         else if(name.toLower().endsWith("csv"))
@@ -667,7 +660,6 @@ void FormCompare::checkDroppedFile_2(QString str)
             csv2 = (Csv*)node;
             csv2->attach(this);
             csv2->getParentWp()->attach(this);
-            //a2l2 = (A2LFILE*)node->getParentNode();
             a2l2 = csv2->getParentWp()->a2lFile;
         }
         else if(name.toLower().endsWith("cdfxfile"))
@@ -678,7 +670,6 @@ void FormCompare::checkDroppedFile_2(QString str)
             cdfx2 = (CdfxFile*)node;
             cdfx2->attach(this);
             cdfx2->getParentWp()->attach(this);
-            //a2l2 = (A2LFILE*)node->getParentNode();
             a2l2 = cdfx2->getParentWp()->a2lFile;
         }
 

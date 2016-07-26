@@ -45,7 +45,7 @@ WorkingDirectory::~WorkingDirectory()
     delete name;
 }
 
-void WorkingDirectory::parseDir(QString dirPath)
+void WorkingDirectory::parseDir(QString dirPath, WorkProject *wp)
 {
     //set a QDir
     QDir dir(dirPath);
@@ -53,12 +53,27 @@ void WorkingDirectory::parseDir(QString dirPath)
     QFileInfoList list = dir.entryInfoList();
 
     //create a pointer to  WP
-    WorkProject *wp = nullptr;
+    //WorkProject *wp = nullptr;
 
     //create a list to store .hex and .s19
     QFileInfoList listDatasets;
+    QFileInfoList listDirs;
 
-    bool dirHasA2l = false;
+    Node* subDir = nullptr;
+
+    bool dirHasA2l = 0;
+    if (wp)
+    {
+        dirHasA2l = 1;
+
+        //create a node subFolder
+        char* name = new char[dir.dirName().length() + 1];
+        strcpy(name, dir.dirName().toLocal8Bit().data());
+        subDir = new Node(name);
+        subDir->setParentNode(wp);
+        wp->addChildNode(subDir);
+    }
+
     foreach (QFileInfo file, list)
     {
        if (file.isFile())
@@ -86,6 +101,7 @@ void WorkingDirectory::parseDir(QString dirPath)
                    listWorkProjects.append(dirPath);
                }
 
+               fileWatcher.addPath(file.absoluteFilePath());
                dirHasA2l = true;
            }
            else if (file.suffix().toLower() == "hex")
@@ -99,33 +115,54 @@ void WorkingDirectory::parseDir(QString dirPath)
        }
        else if (file.isDir())
        {
-           parseDir(file.absoluteFilePath());
-
+           listDirs.append(file);
        }
     }
 
     //foreach file .hex or .s19 under selected folder and if .a2l file already exists
     if (dirHasA2l)
     {
+
         foreach (QFileInfo file, listDatasets)
         {
-
            if (file.isFile())
            {
                if (file.suffix().toLower() == "hex")
                {
-                   HexFile* hex = new HexFile(file.absoluteFilePath(), wp);
-                   wp->addHex(hex);
+                   HexFile* hex = new HexFile(file.absoluteFilePath(), wp);                   
+
+                   if (subDir)
+                   {
+                       wp->addHex(hex, subDir);
+                   }
+                   else
+                       wp->addHex(hex, wp);
+
                    fileWatcher.addPath(file.absoluteFilePath());
                }
                else if (file.suffix().toLower() == "s19")
                {
                    SrecFile* srec = new SrecFile(file.absoluteFilePath(), wp);
-                   wp->addSrec(srec);
+                   if (subDir)
+                   {
+                       wp->addSrec(srec, subDir);
+                   }
+                   else
+                       wp->addSrec(srec, wp);
+
                    fileWatcher.addPath(file.absoluteFilePath());
                }
            }
         }
+    }
+
+    //parse the under directories at the end with the wp if exists
+    foreach (QFileInfo file, listDirs)
+    {
+       if (file.isDir())
+       {
+           parseDir(file.absoluteFilePath(), wp);
+       }
     }
 
     //set fileWatcher to control external changes to the root path
@@ -147,5 +184,3 @@ QString WorkingDirectory::getFullPath()
 {
     return rootPath;
 }
-
-

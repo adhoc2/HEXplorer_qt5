@@ -302,7 +302,7 @@ void MDImain::createActions()
     addCdfxFile->setDisabled(true);
 
     addDcmFile = new QAction(tr("Import Dcm file"), this);
-    addDcmFile->setIcon(QIcon(":/icones/milky_importCsv.png"));
+    addDcmFile->setIcon(QIcon(":/icones/milky_importDcm.png"));
     connect(addDcmFile, SIGNAL(triggered()), this, SLOT(addDcmFile2Project()));
     addDcmFile->setDisabled(true);
 
@@ -950,7 +950,7 @@ void MDImain::showContextMenu(QPoint)
                 }
 
                 //menu tools
-                A2LFILE *a2l = dynamic_cast<WorkProject *> (hex->getParentNode())->a2lFile;
+                A2LFILE *a2l = hex->getParentWp()->a2lFile;
                 QString projectName = ((PROJECT*)a2l->getProject())->getPar("name");
                 projectName = projectName.toLower();
 
@@ -1346,7 +1346,7 @@ void MDImain::on_actionAbout_triggered()
                    "   - Quex 0.65.10 (as efficient lexical analyser generator)\n"
                    "   - QScintilla 2.9 (as efficient text editor)\n"
                    "   - Qwt 6.1.2 (as 2D graph plotter)\n"
-                   "   - MathGL 2.3.3 (as 3D graph plotter)\n\n"
+                   "   - QwtPlot3D 0.3.1a (as 3D graph plotter)\n\n"
                    "Please visit the following link for more information :\n"
                     "http://lmbhoc1.github.io/HEXplorer/";
 
@@ -1943,7 +1943,7 @@ void MDImain::addHexFile2Project()
 
                         if (hex->read())
                         {
-                            wp->addHex(hex);
+                            wp->addHex(hex, wp);
                         }
                         else
                             delete hex;
@@ -2002,7 +2002,7 @@ void MDImain::addHexFile2Project()
 
                         //read hexFile and add node to parent Node
                         if (hex->read_db())
-                            wp->addHex(hex);
+                            wp->addHex(hex, wp);
                         else
                             delete hex;
 
@@ -2168,7 +2168,7 @@ void MDImain::addSrecFile2Project()
 
                         if (srec->read())
                         {
-                            wp->addSrec(srec);
+                            wp->addSrec(srec, wp);
                         }
                         else
                             delete srec;
@@ -2770,15 +2770,12 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
                 }
             }
 
-            //get the parentNode of the HexFile (which must be an WorkProject !!)
-            //A2LFILE *a2l = dynamic_cast<A2LFILE *> (hex->getParentNode());
-            WorkProject *wp = dynamic_cast<WorkProject *> (hex->getParentNode());
+            //update treeview
+            Node* nodeParent = node->getParentNode();
+            model->dataRemoved(nodeParent, index.row(), 1);
 
-           // model->resetModel();
-            model->dataRemoved(wp, index.row(), 1);
-
-            //get the parentWp of the HexFile
-            //WorkProject *wp = hex->getParentWp();
+            //get the parentNode of the SrecFile
+            WorkProject *wp = hex->getParentWp();
             wp->removeHexFile(hex);
 
             //update the treeView
@@ -2814,14 +2811,12 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
 
             }
 
-            //get the parentNode of the SrecFile (which must be an A2LFILE !!)
-            //A2LFILE *a2l = dynamic_cast<A2LFILE *> (srec->getParentNode());
-            WorkProject *wp = dynamic_cast<WorkProject *> (srec->getParentNode());
-            //model->resetModel();
-            model->dataRemoved(wp, index.row(), 1);
+            //update treeview
+            Node* nodeParent = node->getParentNode();
+            model->dataRemoved(nodeParent, index.row(), 1);
 
-            //get the parentWp of the HexFile
-            //WorkProject *wp = srec->getParentWp();
+            //get the parentNode of the SrecFile
+            WorkProject *wp = srec->getParentWp();
             wp->removeSrecFile(srec);
 
             //update the treeView
@@ -2860,12 +2855,8 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
             }
 
             //get the parentNode of the HexFile (which must be an A2LFILE !!)
-            WorkProject *wp = dynamic_cast<WorkProject *> (csv->getParentNode());
-            //model->resetModel();
+            WorkProject *wp = csv->getParentWp();
             model->dataRemoved(wp, index.row(), 1);
-
-            //get the parentWp of the HexFile
-            //WorkProject *wp = csv->getParentWp();
             wp->removeCsv(csv);
 
             //update the treeView
@@ -2903,12 +2894,8 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
             }
 
             //get the parentNode of the HexFile (which must be an A2LFILE !!)
-            WorkProject *wp = dynamic_cast<WorkProject *> (cdfx->getParentNode());
-            //model->resetModel();
+            WorkProject *wp = cdfx->getParentWp();
             model->dataRemoved(wp, index.row(), 1);
-
-            //get the parentWp of the HexFile
-            //WorkProject *wp = cdfx->getParentWp();
             wp->removeCdfxFile(cdfx);
 
             //update the treeView
@@ -2947,12 +2934,8 @@ void MDImain::deleteFileFromProject(QModelIndex index, bool bl)
             }
 
             //get the parentNode of the HexFile (which must be an A2LFILE !!)
-            WorkProject *wp = dynamic_cast<WorkProject *> (dcm->getParentNode());
-            //model->resetModel();
+            WorkProject *wp = dcm->getParentWp();
             model->dataRemoved(wp, index.row(), 1);
-
-            //get the parentWp of the HexFile
-            //WorkProject *wp = dcm->getParentWp();
             wp->removeDcm(dcm);
 
             //update the treeView
@@ -3676,11 +3659,10 @@ void MDImain::editMeasuringChannels()
 
             //set new FormCompare as activated
             ui->tabWidget->setCurrentWidget(view);
+
+            //write output
+            writeOutput(QString::number(list.count()) + " measurement labels edited.");
         }
-
-        //write output
-        writeOutput("measurement labels edited.");
-
     }
 }
 
@@ -3814,11 +3796,10 @@ void MDImain::editChar()
             //set new FormCompare as activated
             ui->tabWidget->setCurrentWidget(view);
 
+            //write output
+            writeOutput(QString::number(list.count()) + " characterisitcs edited.");
+
         }
-
-        //write output
-        writeOutput("characteristics edited.");
-
     }
 }
 
@@ -4244,6 +4225,9 @@ HexFile* MDImain::readHexFile(HexFile *hex)
     //get parent WP
     WorkProject *wp = hex->getParentWp();
 
+    //get parent Node in treeView (might be different than WP)
+    Node* nodeParent = hex->getParentNode();
+
     //if the a2lFile is not yet parsed, parse.
     if (!wp->a2lFile->isParsed())
     {
@@ -4317,7 +4301,7 @@ HexFile* MDImain::readHexFile(HexFile *hex)
         deleteFileFromProject(index);
 
         //add new hex node in WP
-        wp->addHex(hex);
+        wp->addHex(hex, nodeParent);
 
         // hide the statusbar
         statusBar()->hide();
@@ -4354,7 +4338,6 @@ HexFile* MDImain::readHexFile(HexFile *hex)
         return NULL;
     }
 
-
 }
 
 SrecFile* MDImain::readSrecFile(SrecFile* srec)
@@ -4362,10 +4345,14 @@ SrecFile* MDImain::readSrecFile(SrecFile* srec)
     //start timer
     double ti = omp_get_wtime();
 
+    //store Srec fullname
     QString fullName = srec->fullName();
 
     //get parent WP
     WorkProject *wp = srec->getParentWp();
+
+    //get parent Node in treeView (might be different than WP)
+    Node* nodeParent = srec->getParentNode();
 
     //if the a2lFile is not yet parsed, parse.
     if (!wp->a2lFile->isParsed())
@@ -4438,8 +4425,8 @@ SrecFile* MDImain::readSrecFile(SrecFile* srec)
         //remove original srec file from node/tree
         deleteFileFromProject(index);
 
-        //add new hex node in WP
-        wp->addSrec(srec);
+        //attach srec to WP and as node in nodeParent
+        wp->addSrec(srec, nodeParent);
 
         // hide the statusbar
         statusBar()->hide();
@@ -4453,12 +4440,9 @@ SrecFile* MDImain::readSrecFile(SrecFile* srec)
         {
              ui->treeView->expand(index);
         }
-//        QModelIndex indexNew = model->getIndex(srec);
-//        ui->treeView->expand(indexNew.parent().parent());
-//        ui->treeView->expand(indexNew.parent());
         ui->treeView->resizeColumnToContents(0);
 
-        writeOutput("action open new dataset : HEX file add to project in " + QString::number(tf-ti) + " sec");
+        writeOutput("action open new dataset : Srec file add to project in " + QString::number(tf-ti) + " sec.");
 
         return srec;
     }
@@ -6312,6 +6296,8 @@ void MDImain::on_actionDuplicate_DataContainer_triggered()
     Node *node =  model->getNode(index);
     QString name = typeid(*node).name();
 
+    Node* nodeParent = node->getParentNode();
+
     if (name.toLower().endsWith("hexfile"))
     {
 
@@ -6331,7 +6317,7 @@ void MDImain::on_actionDuplicate_DataContainer_triggered()
         if (QFile::copy(hex->fullName(), newName ))
         {
             HexFile *clone = new HexFile(newName, wp);
-            wp->addHex(clone);
+            wp->addHex(clone, nodeParent);
             writeOutput("action duplicate file : performed with success");
         }
         else
@@ -6358,7 +6344,7 @@ void MDImain::on_actionDuplicate_DataContainer_triggered()
         if (QFile::copy(srec->fullName(), newName ))
         {
             SrecFile *clone = new SrecFile(newName, wp);
-            wp->addSrec(clone);
+            wp->addSrec(clone, nodeParent);
             writeOutput("action duplicate file : performed with success");
         }
         else

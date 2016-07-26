@@ -52,6 +52,10 @@ Plot::Plot(GraphModel *mod, QString type) : QwtPlot()
     {
         setTitle(data->getName() + " " + data->getUnit() + " (" + QString(data->getDcmParent()->name) + ")");
     }
+    else if (data->getCsvParent())
+    {
+        setTitle(data->getName() + " " + data->getUnit() + " (" + QString(data->getCsvParent()->name) + ")");
+    }
     else
     {
         setTitle(data->getName() + " " + data->getUnit() + " (" + QString(data->getCdfxParent()->name) + ")");

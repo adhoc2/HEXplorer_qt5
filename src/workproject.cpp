@@ -97,57 +97,30 @@ QMap<QString, CdfxFile*> WorkProject::cdfxFiles()
     return cdfxList;
 }
 
-void WorkProject::addHex(HexFile *hex )
+void WorkProject::addHex(HexFile *hex, Node* subDir )
 {
-    if (a2lFile)
-    {
-        // add hex to a2lfile childrenslist
-//        a2lFile->addChildNode(hex);
-//        a2lFile->sortChildrensName();
-        this->addChildNode(hex);
-        this->sortChildrensName();
+    // add hex to subDir childrenslist for treeView
+    subDir->addChildNode(hex);
+    hex->setParentNode(subDir);
+    subDir->sortChildrensName();
 
-        // update treeView
-        //int pos = a2lFile->childNodes.indexOf(hex);
-        //treeModel->dataInserted(a2lFile, pos );
-        treeModel->dataInserted(this, this->childNodes.indexOf(hex));
+    treeModel->dataInserted(subDir, subDir->childNodes.indexOf(hex));
 
-        // add hex to this hexList
-        hexList.insert(hex->fullName(), hex);
+    // add hex to this hexList
+    hexList.insert(hex->fullName(), hex);
 
-        // add this to the hex owners (pseudo garbage collector)
-        hex->attach(this);
-
-    }
-    else if (dbFile)
-    {
-        // add hex to a2lfile childrenslist
-        dbFile->addChildNode(hex);
-        dbFile->sortChildrensName();
-
-        // update treeView
-        treeModel->dataInserted(dbFile, dbFile->childNodes.indexOf(hex));
-
-        // add hex to this hexList
-        hexList.insert(hex->fullName(), hex);
-
-        // add this to the hex owners (pseudo garbage collector)
-        hex->attach(this);
-    }
+    // add this to the hex owners (pseudo garbage collector)
+    hex->attach(this);
 }
 
-void WorkProject::addSrec(SrecFile *srec )
+void WorkProject::addSrec(SrecFile *srec, Node* subDir)
 {
-    // add hex to a2lfile childrenslist
-    //a2lFile->addChildNode(srec);
-    //a2lFile->sortChildrensName();
-    this->addChildNode(srec);
-    this->sortChildrensName();
+    // add hex to subDir childrenslist for treeView
+    subDir->addChildNode(srec);
+    srec->setParentNode(subDir);
+    subDir->sortChildrensName();
 
-
-    // update treeView
-    //treeModel->dataInserted(a2lFile, a2lFile->childNodes.indexOf(srec));
-    treeModel->dataInserted(this, this->childNodes.indexOf(srec));
+    treeModel->dataInserted(subDir, subDir->childNodes.indexOf(srec));
 
     // add srec to this srecList
     srecList.insert(srec->fullName(), srec);
@@ -159,13 +132,10 @@ void WorkProject::addSrec(SrecFile *srec )
 void WorkProject::addCsv(Csv *csv )
 {
     // add csv to a2lfile childrenslist
-//    a2lFile->addChildNode(csv);
-//    a2lFile->sortChildrensName();
     this->addChildNode(csv);
     this->sortChildrensName();
 
     // update treeView
-//    treeModel->dataInserted(a2lFile, a2lFile->childNodes.indexOf(csv));
     treeModel->dataInserted(this, this->childNodes.indexOf(csv));
 
     // add csv to this hexList
@@ -178,14 +148,11 @@ void WorkProject::addCsv(Csv *csv )
 
 void WorkProject::addDcm(Dcm *dcm)
 {
-    // add csv to a2lfile childrenslist
-//    a2lFile->addChildNode(csv);
-//    a2lFile->sortChildrensName();
+    // add dcm to a2lfile childrenslist
     this->addChildNode(dcm);
     this->sortChildrensName();
 
     // update treeView
-//    treeModel->dataInserted(a2lFile, a2lFile->childNodes.indexOf(csv));
     treeModel->dataInserted(this, this->childNodes.indexOf(dcm));
 
     // add csv to this hexList
@@ -199,13 +166,10 @@ void WorkProject::addDcm(Dcm *dcm)
 void WorkProject::addCdfx(CdfxFile *cdfx)
 {
     // add csv to a2lfile childrenslist
-//    a2lFile->addChildNode(cdfx);
-//    a2lFile->sortChildrensName();
     this->addChildNode(cdfx);
     this->sortChildrensName();
 
     // update treeView
-//    treeModel->dataInserted(a2lFile, a2lFile->childNodes.indexOf(cdfx));
     treeModel->dataInserted(this, this->childNodes.indexOf(cdfx));
 
 

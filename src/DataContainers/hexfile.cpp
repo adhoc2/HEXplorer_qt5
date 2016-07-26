@@ -1970,7 +1970,7 @@ void HexFile::checkDisplay()
         if (ret == QMessageBox::Ok)
         {
             WorkProject *wp = getParentWp();
-            wp->addHex(this);
+            wp->addHex(this, parentNode);
             //this->attach(wp);
         }
     }

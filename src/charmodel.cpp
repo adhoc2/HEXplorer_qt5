@@ -37,8 +37,8 @@ void CharModel::setList(QList<Node *> labelList)
 
     listChar = labelList;
 
-    nRow = labelList.count() + 1;
-    nColumn = 10;
+    nRow = labelList.count();
+    nColumn = 11;
 
     beginResetModel();
     endResetModel();
@@ -62,116 +62,9 @@ QVariant CharModel::data(const QModelIndex &index, int role) const
     int row = index.row();
     int column = index.column();
 
-
-    if (row == 0)
+    if (0 <= row && row < nRow)
     {
-        switch (role)
-        {
-        case Qt::DisplayRole :
-            {
-
-                if (column == 0)
-                {
-                    return "name";
-                }
-                else if (column == 1)
-                {
-                    return "description";
-                }
-                else if (column == 2)
-                {
-                    return "unit";
-                }
-                else if (column == 3)
-                {
-                    return "fonction";
-                }
-                else if (column == 4)
-                {
-                    return "ECU address";
-                }
-                else if (column == 5)
-                {
-                    return "data type";
-                }
-                else if (column == 6)
-                {
-                    return "computation method";
-                }
-                else if (column == 7)
-                {
-                    return "Deposit";
-                }
-                else if (column == 8)
-                {
-                    return "MaxDiff";
-                }
-                else if (column == 9)
-                {
-                    return "LowerLimit";
-                }
-                else if (column == 10)
-                {
-                    return "UpperLimit";
-                }
-                else
-                    return QVariant();
-
-
-            }
-            break;
-
-        case Qt::DecorationRole: // The data to be rendered as a decoration in the form of an icon.
-            break;
-
-        case Qt::EditRole:
-            {
-            }
-            break;
-
-        case Qt::ToolTipRole:
-            {
-            }
-            break;
-
-        case Qt::StatusTipRole: // The data displayed in the status bar.
-            break;
-
-        case Qt::WhatsThisRole: // The data displayed for the item in "What's This?" mode.
-            break;
-
-        case Qt::SizeHintRole: // The size hint for the item that will be supplied to views.
-            break;
-
-        case Qt::FontRole : // The font used for items rendered with the default delegate.
-            {
-                QFont font;
-                font.setBold(true);
-                return font;
-            }
-            break;
-
-        case Qt::TextAlignmentRole:
-            break;
-
-        case Qt::BackgroundRole:
-            {
-
-            }
-            break;
-
-        case Qt::ForegroundRole: // the foreground brush (text color, typically) used for items rendered with the default delegate.
-            {
-            QColor color = Qt::red;
-            return color;
-            }
-            break;
-        }
-
-    }
-    else if (0 < row && row <= nRow)
-    {
-        CHARACTERISTIC *label = (CHARACTERISTIC*)listChar.at(row - 1);
+        CHARACTERISTIC *label = (CHARACTERISTIC*)listChar.at(row);
 
         switch (role)
         {
@@ -195,7 +88,9 @@ QVariant CharModel::data(const QModelIndex &index, int role) const
                 else if (column == 2)
                 {
                     //return cmp->getPar("Unit");
-                    return cmp->fixPar("Unit").c_str();
+                    if (cmp)
+                        return cmp->fixPar("Unit").c_str();
+
                 }
                 else if (column == 3)
                 {
@@ -308,11 +203,111 @@ Qt::ItemFlags CharModel::flags(const QModelIndex &index) const
      return flags;
  }
 
-QVariant CharModel::headerData(int section, Qt::Orientation /* orientation */, int role) const
+QVariant CharModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
+    switch (role)
+    {
+        case Qt::DisplayRole :
+            {
+            if (orientation == Qt::Horizontal)
+            {
+                if (section == 0)
+                {
+                    return "name";
+                }
+                else if (section == 1)
+                {
+                    return "description";
+                }
+                else if (section == 2)
+                {
+                    return "unit";
+                }
+                else if (section == 3)
+                {
+                    return "fonction";
+                }
+                else if (section == 4)
+                {
+                    return "ECU address";
+                }
+                else if (section == 5)
+                {
+                    return "data type";
+                }
+                else if (section == 6)
+                {
+                    return "computation method";
+                }
+                else if (section == 7)
+                {
+                    return "Deposit";
+                }
+                else if (section == 8)
+                {
+                    return "MaxDiff";
+                }
+                else if (section == 9)
+                {
+                    return "LowerLimit";
+                }
+                else if (section == 10)
+                {
+                    return "UpperLimit";
+                }
+            }
+                else
+                    return QVariant();
 
-    if (role != Qt::DisplayRole)
-        return QVariant();
+            }
+            break;
 
-    return QString::number(section);
+        case Qt::DecorationRole: // The data to be rendered as a decoration in the form of an icon.
+            break;
+
+        case Qt::EditRole:
+            {
+            }
+            break;
+
+        case Qt::ToolTipRole:
+            {
+            }
+            break;
+
+        case Qt::StatusTipRole: // The data displayed in the status bar.
+            break;
+
+        case Qt::WhatsThisRole: // The data displayed for the item in "What's This?" mode.
+            break;
+
+        case Qt::SizeHintRole: // The size hint for the item that will be supplied to views.
+            break;
+
+        case Qt::FontRole : // The font used for items rendered with the default delegate.
+            {
+               QFont font;
+               font.setBold(true);
+               return font;
+            }
+            break;
+
+        case Qt::TextAlignmentRole:
+            break;
+
+        case Qt::BackgroundRole:
+            {
+
+            }
+            break;
+
+        case Qt::ForegroundRole: // the foreground brush (text color, typically) used for items rendered with the default delegate.
+            {
+                QColor color = Qt::red;
+                return color;
+            }
+            break;
+    }
+
+    return QVariant();
 }
