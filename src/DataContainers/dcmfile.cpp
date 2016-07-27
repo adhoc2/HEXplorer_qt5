@@ -333,23 +333,24 @@ bool Dcm::readFile()
                     {
                         return false;
                     }
-
-                    //check for Keyword END
-                    if (token == Keyword && ( mylex.getLexem() == "END"))
-                    {
-
-                        qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
-                        token = mylex.getNextToken(in);
-                    }
                 }
                 else
                 {
                     token = mylex.getNextToken(in);
-                    while (token != Identifier && token != Eof)
+                    while (token != Keyword ||  mylex.getLexem() != "END")
                     {
                        token = mylex.getNextToken(in);
                     }
                 }
+
+                //check for Keyword END
+                if (token == Keyword && ( mylex.getLexem() == "END"))
+                {
+
+                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    token = mylex.getNextToken(in);
+                }
+
 
             }
         }
@@ -482,21 +483,22 @@ bool Dcm::readFile()
                             return false;
                         }
                     }
-                    //check for Keyword END
-                    if (token == Keyword && ( mylex.getLexem() == "END"))
-                    {
 
-                        qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
-                        token = mylex.getNextToken(in);
-                    }
                 }
                 else
                 {
                     token = mylex.getNextToken(in);
-                    while (token != Identifier && token != Eof)
+                    while (token != Keyword ||  mylex.getLexem() != "END")
                     {
                        token = mylex.getNextToken(in);
                     }
+                }
+
+                //check for Keyword END
+                if (token == Keyword && ( mylex.getLexem() == "END"))
+                {
+                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    token = mylex.getNextToken(in);
                 }
 
             }
@@ -548,7 +550,6 @@ bool Dcm::readFile()
                     data = getData(mylex.getLexem().c_str());
                 }
 
-                bool ok = false;
                 if (data)
                 {
                     //do not use longname, unit,...
@@ -633,22 +634,22 @@ bool Dcm::readFile()
                     {
                         return false;
                     }
-
-                    //check for Keyword END
-                    if (token == Keyword && ( mylex.getLexem() == "END"))
-                    {
-
-                        qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
-                        token = mylex.getNextToken(in);
-                    }
                 }
                 else
                 {
                     token = mylex.getNextToken(in);
-                    while (token != Identifier && token != Eof)
+                    while (token != Keyword ||  mylex.getLexem() != "END")
                     {
                        token = mylex.getNextToken(in);
                     }
+                }
+
+                //check for Keyword END
+                if (token == Keyword && ( mylex.getLexem() == "END"))
+                {
+
+                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    token = mylex.getNextToken(in);
                 }
 
             }
@@ -829,24 +830,24 @@ bool Dcm::readFile()
                         }
                     }
 
-                    //check for Keyword END
-                    if (token == Keyword && ( mylex.getLexem() == "END"))
-                    {
-
-                        qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
-                        token = mylex.getNextToken(in);
-                    }
-
                     // define size (lines)
                     data->updateSize();
                 }
                 else
                 {
                     token = mylex.getNextToken(in);
-                    while (token != Identifier && token != Eof)
+                    while (token != Keyword ||  mylex.getLexem() != "END")
                     {
                        token = mylex.getNextToken(in);
                     }
+                }
+
+                //check for Keyword END
+                if (token == Keyword && ( mylex.getLexem() == "END"))
+                {
+
+                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    token = mylex.getNextToken(in);
                 }
 
             }
@@ -1016,24 +1017,24 @@ bool Dcm::readFile()
                         }
                     }
 
-                    //check for Keyword END
-                    if (token == Keyword && ( mylex.getLexem() == "END"))
-                    {
-
-                        qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
-                        token = mylex.getNextToken(in);
-                    }
-
                     // define size (lines)
                     data->updateSize();
                 }
                 else
                 {
                     token = mylex.getNextToken(in);
-                    while (token != Identifier && token != Eof)
+                    while (token != Keyword ||  mylex.getLexem() != "END")
                     {
                        token = mylex.getNextToken(in);
                     }
+                }
+
+                //check for Keyword END
+                if (token == Keyword && ( mylex.getLexem() == "END"))
+                {
+
+                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    token = mylex.getNextToken(in);
                 }
 
             }
@@ -1085,7 +1086,6 @@ bool Dcm::readFile()
                     data = getData(mylex.getLexem().c_str());
                 }
 
-                bool ok = false;
                 if (data)
                 {
                     //do not use longname, unit,...
@@ -1286,24 +1286,24 @@ bool Dcm::readFile()
                         }
                     }
 
-                    //check for Keyword END
-                    if (token == Keyword && ( mylex.getLexem() == "END"))
-                    {
-
-                        qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
-                        token = mylex.getNextToken(in);
-                    }
-
                     // define size (lines)
                     data->updateSize();
                 }
                 else
                 {
                     token = mylex.getNextToken(in);
-                    while (token != Identifier && token != Eof)
+                    while (token != Keyword ||  mylex.getLexem() != "END")
                     {
                        token = mylex.getNextToken(in);
                     }
+                }
+
+                //check for Keyword END
+                if (token == Keyword && ( mylex.getLexem() == "END"))
+                {
+
+                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    token = mylex.getNextToken(in);
                 }
 
             }
@@ -1355,7 +1355,6 @@ bool Dcm::readFile()
                     data = getData(mylex.getLexem().c_str());
                 }
 
-                bool ok = false;
                 if (data)
                 {
                     //do not use longname, unit,...
@@ -1412,22 +1411,22 @@ bool Dcm::readFile()
                     {
                         return false;
                     }
-
-                    //check for Keyword END
-                    if (token == Keyword && ( mylex.getLexem() == "END"))
-                    {
-
-                        qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
-                        token = mylex.getNextToken(in);
-                    }
                 }
                 else
                 {
                     token = mylex.getNextToken(in);
-                    while (token != Identifier && token != Eof)
+                    while (token != Keyword ||  mylex.getLexem() != "END")
                     {
                        token = mylex.getNextToken(in);
                     }
+                }
+
+                //check for Keyword END
+                if (token == Keyword && ( mylex.getLexem() == "END"))
+                {
+
+                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    token = mylex.getNextToken(in);
                 }
 
             }

@@ -1,7 +1,10 @@
 <HEXplorer application="HEXplorer">
     <revision version="0.7.12">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
     <details>revision 0.7.12 (xx/2016) :
-    - Improvement : allow display folder under WorkProject in Treeview
+    - bug corection : edit label from diff label after compare.
+    - bug correction : read dcm file when label not in dataset available.
+    - bug correction : edit dcm file as text.
+    - Improvement : allow display folder under WorkProject in Treeview.
     - Improvement : display characteristics and Measuring channels.
     - bug correction : plot with csv.
 

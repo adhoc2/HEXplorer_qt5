@@ -1672,7 +1672,7 @@ void MDImain::on_actionOpen_Working_Directory_triggered()
     //QFileDialog to select multiple directories
     QFileDialog w;
     w.setFileMode(QFileDialog::Directory);
-    w.setOption(QFileDialog::DontUseNativeDialog,true);
+    w.setOption(QFileDialog::DontUseNativeDialog, true);
     w.setOption(QFileDialog::ShowDirsOnly, true);
     w.setDirectory(QDir(path));
     QListView *l = w.findChild<QListView*>("listView");
@@ -1689,11 +1689,32 @@ void MDImain::on_actionOpen_Working_Directory_triggered()
     if (w.exec())
         pathList = w.selectedFiles();
 
-
-//    QString dir = QFileDialog::getExistingDirectory(this, tr("please select directories"),
+//    QString pathList = QFileDialog::getExistingDirectory(this, tr("please select directories"),
 //                                                    path,
 //                                                    QFileDialog::ShowDirsOnly
 //                                                    | QFileDialog::DontResolveSymlinks);
+//    QString pathList;
+
+//    QFileSystemModel *model = new QFileSystemModel();
+//    model->setRootPath(path);
+//    model->setFilter(QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks);
+
+//    QTreeView *tree = new QTreeView();
+//    tree->setModel(model);
+//    tree->setSelectionMode(QAbstractItemView::MultiSelection);
+
+//    const QModelIndex rootIndex = model->index(QDir::cleanPath(path));
+//    if (rootIndex.isValid())
+//        tree->setRootIndex(rootIndex);
+
+//    tree->setAnimated(false);
+//    tree->setIndentation(20);
+//    tree->setSortingEnabled(true);
+//    const QSize availableSize = QApplication::desktop()->availableGeometry(tree).size();
+//    tree->resize(availableSize / 2);
+//    tree->setColumnWidth(0, tree->width() / 3);
+//    tree->setWindowTitle(QObject::tr("Select Directories."));
+//    tree->show();
 
 
     if (pathList.isEmpty())
@@ -3043,7 +3064,8 @@ void MDImain::editTextFile()
         else
         {
             if (name.endsWith("HexFile") || name.endsWith("Csv") || name.endsWith("SrecFile") ||
-                name.endsWith("CdfxFile") || name.endsWith("A2LFILE") || name.endsWith("WorkProject") )
+                name.endsWith("CdfxFile") || name.endsWith("A2LFILE") || name.endsWith("WorkProject") ||
+                name.endsWith("Dcm"))
             {
                 //Get the selected file name
                 QString fullFileName = model->name(index);
@@ -5947,6 +5969,8 @@ void MDImain::edit()
             parentName = data->getCsvParent()->name;
         else if (data->getCdfxParent())
             parentName = data->getCdfxParent()->name;
+        else if (data->getDcmParent())
+            parentName = data->getDcmParent()->name;
         win->setWindowTitle("HEXplorer :: " + QString(data->name) + " (" + parentName + ")");
 
         win->show();
@@ -5978,6 +6002,8 @@ void MDImain::editCompare()
         Csv *csv2 = fComp->getCsv2();
         CdfxFile *cdfx1 = fComp->getCdf1();
         CdfxFile *cdfx2 = fComp->getCdf2();
+        Dcm *dcm1 = fComp->getDcm1();
+        Dcm *dcm2 = fComp->getDcm2();
 
         if (_srec1)
             data1 = _srec1->getData(node->name);
@@ -5987,6 +6013,8 @@ void MDImain::editCompare()
             data1 = csv1->getData(node->name);
         else if (cdfx1)
             data1 = cdfx1->getData(node->name);
+        else if (dcm1)
+            data1 = dcm1->getData(node->name);
 
         if (_srec2)
             data2 = _srec2->getData(node->name);
@@ -5996,6 +6024,8 @@ void MDImain::editCompare()
             data2 = csv2->getData(node->name);
         else if (cdfx2)
             data2 = cdfx2->getData(node->name);
+        else if (dcm2)
+            data2 = dcm2->getData(node->name);
 
         if (data1 && data2)
         {
