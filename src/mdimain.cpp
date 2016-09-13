@@ -96,11 +96,21 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
                  "}"
 
                  );
+
+    //tabwidget desettings
     ui->tabWidget->clear();
     ui->tabWidget->setAcceptDrops(true);
+    ui->tabWidget->setVisible(true);
+//    QTextEdit *textEdit = new QTextEdit("drag and drop");
+//    textEdit->setAcceptDrops(false);
+//    ui->tabWidget->addTab(textEdit, "help");
+
+
+
+    //restore main window sate
     this->readSettings();
     ui->Differentlabels_Dock->setVisible(false);
-    showMaximized();
+    //showMaximized();
 
     // menus / toolbars / statusbar
     createActions();
@@ -146,6 +156,7 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
     completer->setMaxVisibleItems(20);
     ui->lineEdit->setCompleter(completer);
     ui->lineEdit->setFocus();
+    connect(ui->lineEdit, SIGNAL(returnPressed()), this, SLOT(completerSelected()));
 
     //initialize pointers
     projectList = new QMap<QString, WorkProject*>;
@@ -158,10 +169,11 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
     connect(ui->tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(removeTab(int)));
 
     //check for updates
-    connect(this, SIGNAL(check()), this, SLOT(initCheckHttpUpdates()), Qt::QueuedConnection);
+    //connect(this, SIGNAL(checkUpdates()), this, SLOT(initCheckHttpUpdates()), Qt::QueuedConnection);
+    //connect(this, SIGNAL(checkUpdates()), this, SLOT(initCheckGitUpdates()), Qt::QueuedConnection);
     QSettings settings(qApp->organizationName(), qApp->applicationName());
     if ((settings.value("Update/automatic") == true) || (!settings.contains("Update/automatic")))
-        emit check();
+        emit checkUpdates();
 
     //create settings variables for multi_thread and lexer type
     if (!settings.contains("openMP"))
@@ -1558,6 +1570,13 @@ void MDImain::on_actionUpdateWorkingDirectory_triggered()
         WorkingDirectory* wd = static_cast<WorkingDirectory*> (nodeWd);
         wd->parseDir(fullPath);
     }
+}
+
+void MDImain::completerSelected()
+{
+    Node *node = model->getRootNode()->getNode(ui->lineEdit->text());
+    if (node)
+        expandNode(node);
 }
 
 // ------------------ A2lFile ----------------------//
@@ -3715,11 +3734,7 @@ void MDImain::editChar()
         }
         else
         {
-            //Get the selected file name
-            //QString fullFileName = model->name(index);
-
-            //create a pointer on the WorkProject
-            //WorkProject *wp = projectList->value(fullFileName);
+            //get the Wp
             WorkProject *wp = (WorkProject*)node;
 
             //if the a2lFile is not yet parsed, parse.
@@ -3735,7 +3750,7 @@ void MDImain::editChar()
                 return;
             }
 
-            // get the list of MEASUREMET
+            // get the list of CHARACTERISTICS
             QList<Node*> list;
             Node *module = wp->a2lFile->getProject()->getNode("MODULE");
             if (module == NULL)
@@ -3800,14 +3815,12 @@ void MDImain::editChar()
 
             //display the characterisitc channels in view
             CharModel *charModel = new CharModel();
-//            charModel->setHeaderData(0, Qt::Horizontal, tr("Name"));
             charModel->setList(list);
 
             //create a new spreadSheet
             SpreadsheetView *view = new SpreadsheetView();
             view->setModel(charModel);
 
-//            FreezeTableWidget *view = new FreezeTableWidget(charModel);
             view->setAlternatingRowColors(true);
 
             //add a new tab with the spreadsheet
@@ -4381,6 +4394,7 @@ SrecFile* MDImain::readSrecFile(SrecFile* srec)
     {
         readA2l(wp);
     }
+
 
     //check if A2l parsing was successfull
     if (!wp->isOk())
@@ -5770,6 +5784,7 @@ void MDImain::quicklookFile()
 
     QString str1 = model->getFullNodeName(index);
 
+
      if (index.isValid())
     {
         //get a pointer on the selected item
@@ -5811,6 +5826,7 @@ void MDImain::quicklookFile()
 
             //create a new FormCompare
             FormCompare *fComp = on_actionCompare_dataset_triggered();
+            qDebug() << str1;
             fComp->setDataset1(str1);
 
             //perform a quicklook
@@ -6563,13 +6579,22 @@ QString MDImain::strippedName(const QString &fullFileName)
     return QFileInfo(fullFileName).fileName();
 }
 
+void MDImain::initCheckGitUpdates()
+{
+    //check for updates on Git : https://github.com/adhoc2/HEXplorer/releases/latest
+
+    //if update is available display a message
+    QUrl url("https://github.com/adhoc2/HEXplorer/tree/master/src/update.xml");
+    DialogHttpUpdate updater(url, true, this);
+}
+
 void MDImain::on_actionCheck_for_updates_triggered()
 {
     //remove the old installer file used for previous Update
     QFile::remove(qApp->applicationDirPath() + "/update_HEXplorer.exe");
 
-    QUrl url("http://hexplorer.googlecode.com/svn/trunk/src/update.xml");
-    DialogHttpUpdate updater(url, true, this);
+    QUrl url("https://github.com/adhoc2/HEXplorer/tree/master/src/update.xml");
+    DialogHttpUpdate updater(url, false, this);
 }
 
 void MDImain::initCheckHttpUpdates()
@@ -6687,6 +6712,9 @@ void MDImain::checkDroppedFile(QString str)
         fComp->setDataset1(str);
         fComp->on_quicklook_clicked();
 
+        //set new FormCompare as activated
+        ui->tabWidget->setCurrentWidget(fComp);
+
     }
     else if (name.toLower().endsWith("srecfile"))
     {
@@ -6702,6 +6730,9 @@ void MDImain::checkDroppedFile(QString str)
         fComp->setDataset1(str);
         fComp->on_quicklook_clicked();
 
+        //set new FormCompare as activated
+        ui->tabWidget->setCurrentWidget(fComp);
+
     }
     else if(name.toLower().endsWith("csv"))
     {
@@ -6709,6 +6740,9 @@ void MDImain::checkDroppedFile(QString str)
         FormCompare *fComp = on_actionCompare_dataset_triggered();
         fComp->setDataset1(str);
         fComp->on_quicklook_clicked();
+
+        //set new FormCompare as activated
+        ui->tabWidget->setCurrentWidget(fComp);
     }
     else if(name.toLower().endsWith("workproject"))
     {
@@ -6723,6 +6757,9 @@ void MDImain::checkDroppedFile(QString str)
         FormCompare *fComp = on_actionCompare_dataset_triggered();
         fComp->setDataset1(str);
         fComp->on_quicklook_clicked();
+
+        //set new FormCompare as activated
+        ui->tabWidget->setCurrentWidget(fComp);
     }
     else if (name.toLower().endsWith("dcm"))
     {
@@ -6730,6 +6767,9 @@ void MDImain::checkDroppedFile(QString str)
         FormCompare *fComp = on_actionCompare_dataset_triggered();
         fComp->setDataset1(str);
         fComp->on_quicklook_clicked();
+
+        //set new FormCompare as activated
+        ui->tabWidget->setCurrentWidget(fComp);
     }
     else
     {

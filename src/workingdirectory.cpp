@@ -1,6 +1,7 @@
 #include "workingdirectory.h"
 #include "workproject.h"
 #include "qdebug.h"
+#include <QStringList>
 
 
 WorkingDirectory::WorkingDirectory(QString rootPath, A2lTreeModel *model = NULL, MDImain *parent = 0 ) : Node()
@@ -50,7 +51,9 @@ void WorkingDirectory::parseDir(QString dirPath, WorkProject *wp)
     //set a QDir
     QDir dir(dirPath);
     dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot |QDir::Hidden | QDir::NoSymLinks);
+    dir.setSorting(QDir::Name);
     QFileInfoList list = dir.entryInfoList();
+
 
     //create a pointer to  WP
     //WorkProject *wp = nullptr;
@@ -72,6 +75,9 @@ void WorkingDirectory::parseDir(QString dirPath, WorkProject *wp)
         subDir = new Node(name);
         subDir->setParentNode(wp);
         wp->addChildNode(subDir);
+        wp->sortChildrensName();
+
+        model->dataInserted(wp, wp->childNodes.indexOf(subDir));
     }
 
     foreach (QFileInfo file, list)
@@ -86,8 +92,19 @@ void WorkingDirectory::parseDir(QString dirPath, WorkProject *wp)
                //if wp does not exist creates a new WorkProject
                if (!wp)
                {
+                   //check if a wp has already the same name (fileName) to prevent unique path in treeview model
+                   QString displayNameOrg = file.fileName();
+                   QString displayName = file.fileName();
+                   int i = 0;
+                   while (getNode(displayName))
+                   {
+                       displayName = displayNameOrg + " (" + QString::number(i) + ")";
+                       i++;
+                   }
+
+
                    // create a new Wp
-                   wp = new WorkProject(file.absoluteFilePath(), model, mdimain);
+                   wp = new WorkProject(file.absoluteFilePath(), model, mdimain, displayName);
                    wp->init(); //init but do not parse the file
                    wp->attach(mdimain);
                    mdimain->insertWp(wp);

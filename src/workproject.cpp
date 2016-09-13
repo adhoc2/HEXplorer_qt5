@@ -26,15 +26,23 @@
 #include "qfileinfo.h"
 #include "qdebug.h"
 
-WorkProject::WorkProject(QString fullFileName, A2lTreeModel *model, MDImain *parent)
+WorkProject::WorkProject(QString fullFileName, A2lTreeModel *model, MDImain *parent, QString displayName)
     :  A2l(fullFileName, parent), Node()
 {
 
     treeModel = model;
     parentWidget = parent;
 
-    name = new char[(QFileInfo(fullFileName).fileName()).toLocal8Bit().count() + 1];
-    strcpy(name, QFileInfo(fullFileName).fileName().toLocal8Bit().data());
+    if (QString::compare(displayName, "") != 0)
+    {
+        name = new char[displayName.toLocal8Bit().count() + 1];
+        strcpy(name, displayName.toLocal8Bit().data());
+    }
+    else
+    {
+        name = new char[(QFileInfo(fullFileName).fileName()).toLocal8Bit().count() + 1];
+        strcpy(name, QFileInfo(fullFileName).fileName().toLocal8Bit().data());
+    }
 
 }
 

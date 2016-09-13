@@ -106,6 +106,7 @@ Node *Node::child(QString str, bool bin)
         strcpy(node.name, str.toLocal8Bit().data());
         //QList<Node*>::iterator i =  qBinaryFind(childNodes.begin(), childNodes.end(), &node, nodeLessThan);
         QList<Node*>::iterator i =  std::lower_bound(childNodes.begin(), childNodes.end(), &node, nodeLessThan);
+        //QList<Node*>::iterator i =  std::lower_bound(childNodes.begin(), childNodes.end(), &node, compareNode);
 
         if (i == childNodes.end())
         {

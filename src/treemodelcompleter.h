@@ -32,6 +32,7 @@ class TreeModelCompleter : public QCompleter
         TreeModelCompleter(QAbstractItemModel *model, QObject *parent = 0);
 
         QString separator() const;
+        QString getPath(QModelIndex index);
 
     public slots:
         void setSeparator(const QString &separator);

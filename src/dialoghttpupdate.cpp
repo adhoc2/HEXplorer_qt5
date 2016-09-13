@@ -195,6 +195,7 @@ void HttpUpdater::getXmlFinished(QNetworkReply *reply)
         {
             QByteArray data = reply->readAll();
             QXmlStreamReader reader(data);
+
             while (!reader.atEnd())
             {
                 reader.readNext();

@@ -67,3 +67,8 @@ QString TreeModelCompleter::pathFromIndex(const QModelIndex &index) const
 
     return dataList.join(sep);
 }
+
+QString TreeModelCompleter::getPath(QModelIndex index)
+{
+    return this->pathFromIndex(index);
+}

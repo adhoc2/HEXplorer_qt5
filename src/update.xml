@@ -1,6 +1,11 @@
 <HEXplorer application="HEXplorer">
-    <revision version="0.7.12">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
-    <details>revision 0.7.12 (xx/2016) :
+    <revision version="0.7.11">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
+    <details>revision 0.7.12 (Q3/2016) :
+    - bug correction : prevent 2 different a2l files with the same fileName to have the same path in treeview model.
+    - bug correction : importing dcm where ST/X or ST/Y are splitted in more lines.
+    - bug correction : treeview display sorted when using subfolder.
+    - bug correction : quicklool cdfx point on cdfx and not dcm.
+    - Improvement : lineEdit for treeView search => expand corrisponding node.
     - bug corection : edit label from diff label after compare.
     - bug correction : read dcm file when label not in dataset available.
     - bug correction : edit dcm file as text.
@@ -11,7 +16,7 @@
 revision 0.7.11 (Q2/2016) :
     - use of Qt5.7.0
     - Improvement : read damos .dcm files.
-    - Improvement : modify the way a WorkingDirectory is opened (Use of class QDir instead of QFileSystemModel).
+    - Improvement : modify the way a WorkingDirectory is open (Use of class QDir instead of QFileSystemModel).
     - bug correction : when modifying a characteristic with compu_method = NO_COMPU_METHOD.
     - bug correction : Group Cur or Map resizing.
     - bug correction : treeView update issue => class WorkProject inheriting from class Node.
@@ -200,6 +205,6 @@ revision 0.4.4 (01/03/2011) :
     - progressBar importing/exporting Csv
 
 revision 0.4.3 (25/02/2011) :
-    - bugs and error corection
+    - bugs and error correction
     </details>
 </HEXplorer>

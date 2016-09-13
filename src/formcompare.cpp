@@ -303,11 +303,11 @@ void FormCompare::on_quicklook_clicked()
             }
         }
     }
-    else
+    else if (cdfx)
     {
         foreach (QString str, charList)
         {
-            Data *data = dcm->getData(str);
+            Data *data = cdfx->getData(str);
             if (data)
             {
                 list->append(data);

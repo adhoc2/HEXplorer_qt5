@@ -34,7 +34,7 @@ class WorkProject :  public A2l, public Node
     Q_OBJECT
 
     public:
-        WorkProject(QString fullFileName, A2lTreeModel *model = NULL, MDImain *parent = 0);
+        WorkProject(QString fullFileName, A2lTreeModel *model = NULL, MDImain *parent = 0, QString displayName = "");
         ~WorkProject();
 
         void attach(QObject*o);

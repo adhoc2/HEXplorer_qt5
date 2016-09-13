@@ -168,6 +168,7 @@ private slots:
      void on_actionSettings_triggered();
      void on_actionCheck_for_updates_triggered();
      void initCheckHttpUpdates();
+     void initCheckGitUpdates();
      void openRecentFile();
      void read_ValuesFromCsv();
      void read_ValuesFromCdfx();
@@ -236,12 +237,13 @@ private slots:
      void on_actionUpdateWorkingDirectory_triggered();
      void on_actionDuplicate_DataContainer_triggered();
      void on_actionRename_file_triggered();
+     void completerSelected();
 
 public slots:
     void resetAllTableView();
 
 signals:
-    void check();
+    void checkUpdates();
 
 };
 

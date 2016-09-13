@@ -713,40 +713,39 @@ bool Dcm::readFile()
 
                     //read axis X values
                     qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
-                    if (token == Keyword && ( mylex.getLexem() == "ST/X"))
+                    data->clearX();
+                    QStringList listX;
+                    while (token == Keyword && ( mylex.getLexem() == "ST/X"))
                     {
-                        // in case a label is twice in the subset!!
-                        data->clearX();
-
                         // read the Z values
-                        QStringList list;
                         token = mylex.getNextToken(in);
                         while (token ==  Integer || token == Float)
                         {
                             QString str = mylex.getLexem().c_str();
-                            list.append(str);
+                            listX.append(str);
                             token = mylex.getNextToken(in);
                         }
-
-                        // copy x values to data
-                        foreach (QString str, list)
-                        {
-                            // convert PHYS value from Dcm into HEX value
-                            QString hex = data->phys2hex(str, "x");
-
-                            // convert HEX value into PHYS value
-                            QString phys = data->hex2phys(hex, "x");
-
-                            // copy PHYS value into Zaxis
-                            qDebug() << phys;
-                            data->appendX(phys);
-                        }
-
                     }
-                    else
+
+                    // copy x values to data
+                    foreach (QString str, listX)
                     {
-                        return false;
+                        // convert PHYS value from Dcm into HEX value
+                        QString hex = data->phys2hex(str, "x");
+
+                        // convert HEX value into PHYS value
+                        QString phys = data->hex2phys(hex, "x");
+
+                        // copy PHYS value into Zaxis
+                        qDebug() << phys;
+                        data->appendX(phys);
                     }
+
+//                    }
+//                    else
+//                    {
+//                        return false;
+//                    }
 
                     //read Z values
                     qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
@@ -899,7 +898,6 @@ bool Dcm::readFile()
                     data = getData(mylex.getLexem().c_str());
                 }
 
-                bool ok = false;
                 if (data)
                 {
                     //do not use longname, unit,...
@@ -913,40 +911,39 @@ bool Dcm::readFile()
 
                     //read axis X values
                     qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
-                    if (token == Keyword && ( mylex.getLexem() == "ST/X"))
+                    data->clearX();
+                    QStringList listX;
+                    while (token == Keyword && ( mylex.getLexem() == "ST/X"))
                     {
-                        // in case a label is twice in the subset!!
-                        data->clearX();
 
-                        // read the Z values
-                        QStringList list;
                         token = mylex.getNextToken(in);
                         while (token ==  Integer || token == Float)
                         {
                             QString str = mylex.getLexem().c_str();
-                            list.append(str);
+                            listX.append(str);
                             token = mylex.getNextToken(in);
                         }
-
-                        // copy x values to data
-                        foreach (QString str, list)
-                        {
-                            // convert PHYS value from Dcm into HEX value
-                            QString hex = data->phys2hex(str, "x");
-
-                            // convert HEX value into PHYS value
-                            QString phys = data->hex2phys(hex, "x");
-
-                            // copy PHYS value into Zaxis
-                            qDebug() << phys;
-                            data->appendX(phys);
-                        }
-
                     }
-                    else
+
+                    // copy x values to data
+                    foreach (QString str, listX)
                     {
-                        return false;
+                        // convert PHYS value from Dcm into HEX value
+                        QString hex = data->phys2hex(str, "x");
+
+                        // convert HEX value into PHYS value
+                        QString phys = data->hex2phys(hex, "x");
+
+                        // copy PHYS value into Zaxis
+                        qDebug() << phys;
+                        data->appendX(phys);
                     }
+
+//                    }
+//                    else
+//                    {
+//                        return false;
+//                    }
 
                     //read Y and Z values
                     qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
@@ -1099,40 +1096,38 @@ bool Dcm::readFile()
 
                     //read axis X values
                     qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
-                    if (token == Keyword && ( mylex.getLexem() == "ST/X"))
+                    QStringList listX;
+                    data->clearX();
+                    while (token == Keyword && ( mylex.getLexem() == "ST/X"))
                     {
-                        // in case a label is twice in the subset!!
-                        data->clearX();
-
-                        // read the Z values
-                        QStringList list;
+                        // read the X values
                         token = mylex.getNextToken(in);
                         while (token ==  Integer || token == Float)
                         {
                             QString str = mylex.getLexem().c_str();
-                            list.append(str);
+                            listX.append(str);
                             token = mylex.getNextToken(in);
                         }
-
-                        // copy x values to data
-                        foreach (QString str, list)
-                        {
-                            // convert PHYS value from Dcm into HEX value
-                            QString hex = data->phys2hex(str, "x");
-
-                            // convert HEX value into PHYS value
-                            QString phys = data->hex2phys(hex, "x");
-
-                            // copy PHYS value into Zaxis
-                            qDebug() << phys;
-                            data->appendX(phys);
-                        }
-
                     }
-                    else
+
+                    // copy x values to data
+                    foreach (QString str, listX)
                     {
-                        return false;
+                        // convert PHYS value from Dcm into HEX value
+                        QString hex = data->phys2hex(str, "x");
+
+                        // convert HEX value into PHYS value
+                        QString phys = data->hex2phys(hex, "x");
+
+                        // copy PHYS value into Zaxis
+                        qDebug() << phys;
+                        data->appendX(phys);
                     }
+
+//                    else
+//                    {
+//                        return false;
+//                    }
 
                     //read Y and Z values
                     qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
@@ -1368,49 +1363,48 @@ bool Dcm::readFile()
 
                     //read axis Z values
                     qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
-                    if (token == Keyword && ( mylex.getLexem() == "ST/X"))
+                    data->clearZ();
+                    QStringList listZ;
+                    while (token == Keyword && ( mylex.getLexem() == "ST/X"))
                     {
-                        // in case a label is twice in the subset!!
-                        data->clearZ();
-
-                        // read the Z values
-                        QStringList list;
+                        // read the Z values                        
                         token = mylex.getNextToken(in);
                         while (token ==  Integer || token == Float)
                         {
                             QString str = mylex.getLexem().c_str();
-                            list.append(str);
+                            listZ.append(str);
                             token = mylex.getNextToken(in);
                         }
-
-                        // copy z values to data
-                        foreach (QString str, list)
-                        {
-                            // convert PHYS value from Dcm into HEX value
-                            QString hex = data->phys2hex(str, "z");
-
-                            // convert HEX value into PHYS value
-                            QString phys = data->hex2phys(hex, "z");
-
-                            // copy PHYS value into Zaxis
-                            qDebug() << phys;
-                            data->appendZ(phys);
-                        }
-
-                        // add X values to data
-                        data->clearX(); // in case a label is twice in the subset!!
-                        for (int i = 0; i < data->zCount(); i++)
-                        {
-                            data->appendX(QString::number(i));
-                        }
-
-                        // define size (lines)
-                        data->updateSize();
                     }
-                    else
+
+                    // copy z values to data
+                    foreach (QString str, listZ)
                     {
-                        return false;
+                        // convert PHYS value from Dcm into HEX value
+                        QString hex = data->phys2hex(str, "z");
+
+                        // convert HEX value into PHYS value
+                        QString phys = data->hex2phys(hex, "z");
+
+                        // copy PHYS value into Zaxis
+                        qDebug() << phys;
+                        data->appendZ(phys);
                     }
+
+                    // add X values to data
+                    data->clearX(); // in case a label is twice in the subset!!
+                    for (int i = 0; i < data->zCount(); i++)
+                    {
+                        data->appendX(QString::number(i));
+                    }
+
+                    // define size (lines)
+                    data->updateSize();
+//                    }
+//                    else
+//                    {
+//                        return false;
+//                    }
                 }
                 else
                 {
