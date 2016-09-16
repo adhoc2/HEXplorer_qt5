@@ -1,6 +1,8 @@
 <HEXplorer application="HEXplorer">
-    <revision version="0.7.11">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
+    <revision version="0.7.12">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
     <details>revision 0.7.12 (Q3/2016) :
+    - bug correction : ensure files are still present on disk before parsing.
+    - bug correction : application crash when quicklook file after editing characterisitics of the related a2l.
     - bug correction : prevent 2 different a2l files with the same fileName to have the same path in treeview model.
     - bug correction : importing dcm where ST/X or ST/Y are splitted in more lines.
     - bug correction : treeview display sorted when using subfolder.

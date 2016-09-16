@@ -153,10 +153,18 @@ void A2l::parseSTA2l()
     // open the file in binary mode "rb" to get the right file length
     // when openinig in ascci mode "r", the \r are cancelled when calling fread()
 
+    if (!QFile(fullA2lName).exists())
+    {
+        this->outputList.append("action open new workproject : cancelled because file does not exist on drive. Please reload the working directory.");
+        is_Ok = false;
+        return;
+    }
+
     FILE* fid = fopen(fullA2lName.toLocal8Bit(),"r");
     if (!fid)
     {
         this->outputList.append("Cannot read file " + this->fullA2lName);
+        is_Ok = false;
         return;
     }
 
@@ -250,11 +258,18 @@ bool A2l::parseOpenMPA2l()
 //    QString strr = in.readAll();
 //    file.close();
 
+    if (!QFile(fullA2lName).exists())
+    {
+        this->outputList.append("action open new workproject : cancelled because file does not exist on drive. Please reload the working directory.");
+        return false;
+    }
+
     //create a stream into the file (Merci Oscar...)
     FILE* fid = fopen(fullA2lName.toLocal8Bit(),"rb");
     if (!fid)
     {
         this->outputList.append("Cannot read file " + this->fullA2lName);
+        is_Ok = false;
         return false;
     }
 

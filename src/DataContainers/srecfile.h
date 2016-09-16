@@ -85,7 +85,9 @@ class SrecFile : public QObject, public DataContainer
 
         //QtConcurrent members
         void runCreateData(QStringList list, QList<Data *> *listData, Node *nodeChar, Node *nodeAxis);
+        void runCreateData2(QList<Data *> *listData, QList<Node *> *listNodeChar, QList<Node *> *listNodeAxis);
         Data* runCreateDataMapped(const QString &str);
+        Data* runCreateDataMapped2(const Node *node);
 
         //members
         bool _read;

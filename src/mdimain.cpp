@@ -4257,6 +4257,13 @@ HexFile* MDImain::readHexFile(HexFile *hex)
     //read hex file if not read
     QString fullName = hex->fullName();
 
+
+    if (!QFile(fullName).exists())
+    {
+        writeOutput("action open new dataset : cancelled because file does not exist on drive. Please reload the working directory.");
+        return NULL;
+    }
+
     //get parent WP
     WorkProject *wp = hex->getParentWp();
 
@@ -4382,6 +4389,11 @@ SrecFile* MDImain::readSrecFile(SrecFile* srec)
 
     //store Srec fullname
     QString fullName = srec->fullName();
+    if (!QFile(fullName).exists())
+    {
+        writeOutput("action open new dataset : cancelled because file does not exist on drive. Please reload the working directory.");
+        return NULL;
+    }
 
     //get parent WP
     WorkProject *wp = srec->getParentWp();

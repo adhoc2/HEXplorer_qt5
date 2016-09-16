@@ -494,8 +494,13 @@ void SrecFile:: readAllData()
 
 
 
+    //using standard (no concurrent)
+    if (0)
+    {
+        runCreateData(module->listChar, &listData, nodeChar, nodeAxis);
+    }
 
-    //using QtConcurrent::run
+    //using QtConcurrent::run - runCreateData
     if (0)
     {
         int length = module->listChar.count();
@@ -529,6 +534,55 @@ void SrecFile:: readAllData()
         }
     }
 
+    //using QtConcurrent::run - runCreateData2
+    if (0)
+    {
+        int length = module->listChar.count();
+        if (length > 10000 && omp_get_num_procs() > 1)
+        {
+            // split nodeChar into 2 lists
+            int middleChar = 0;
+            if (nodeChar->childCount() % 2 == 0)
+                middleChar = nodeChar->childCount() / 2;
+            else
+                middleChar = (int)(nodeChar->childCount()/2);
+
+            QList<Node*> listChar1 = nodeChar->childNodes.mid(0, middleChar);
+            QList<Node*> listChar2 = nodeChar->childNodes.mid(middleChar, nodeChar->childCount() - middleChar);
+
+            // split nodeAxis into 2 lists
+            int middleAxis = 0;
+            if (nodeAxis->childCount() % 2 == 0)
+                middleAxis = nodeAxis->childCount() / 2;
+            else
+                middleAxis = (int)(nodeAxis->childCount()/2);
+
+            QList<Node*> listAxis1 = nodeAxis->childNodes.mid(0, middleAxis);
+            QList<Node*> listAxis2 = nodeAxis->childNodes.mid(middleAxis, nodeAxis->childCount() - middleAxis);
+
+            // read datas
+            QList<Data*> listData1;
+            QList<Data*> listData2;
+            QFuture<void> t1 = QtConcurrent::run(this, &SrecFile::runCreateData2, &listData1, &listChar1, &listAxis1);
+            QFuture<void> t2 = QtConcurrent::run(this, &SrecFile::runCreateData2, &listData2, &listChar2, &listAxis2);
+            t1.waitForFinished();
+            t2.waitForFinished();
+
+            //append the results from threads to listData
+            listData.append(listData1);
+            listData.append(listData2);
+            std::sort(listData.begin(), listData.end(), nodeLessThan);
+
+        }
+        else
+        {
+            QList<Node*> listChar1 = nodeChar->childNodes;
+            QList<Node*> listAxis1 = nodeAxis->childNodes;
+            runCreateData2(&listData, &listChar1, &listAxis1);
+            std::sort(listData.begin(), listData.end(), nodeLessThan);
+        }
+    }
+
     //using QtConcurrent::mapped
     if (1)
     {        
@@ -541,7 +595,12 @@ void SrecFile:: readAllData()
         QObject::connect(&futureWatcher, SIGNAL(progressValueChanged(int)), &dialog, SLOT(setValue(int)));
 
         // Start the computation
-        futureWatcher.setFuture(QtConcurrent::mapped(module->listChar, std::bind(&SrecFile::runCreateDataMapped, this, std::placeholders::_1)));
+        //futureWatcher.setFuture(QtConcurrent::mapped(module->listChar, std::bind(&SrecFile::runCreateDataMapped, this, std::placeholders::_1)));
+        QList<Node*> _myList;
+        _myList << nodeChar->childNodes;
+        _myList << nodeAxis->childNodes;
+        std::sort(_myList.begin(), _myList.end(), nodeLessThan);
+        futureWatcher.setFuture(QtConcurrent::mapped(_myList, std::bind(&SrecFile::runCreateDataMapped2, this, std::placeholders::_1)));
         dialog.exec();
         futureWatcher.waitForFinished();
 
@@ -554,7 +613,7 @@ void SrecFile:: readAllData()
 }
 
 void SrecFile::runCreateData(QStringList list, QList<Data*> *listData, Node *nodeChar, Node *nodeAxis)
-{
+{    
     int i = 0;
     foreach (QString str, list)
     {
@@ -631,6 +690,23 @@ void SrecFile::runCreateData(QStringList list, QList<Data*> *listData, Node *nod
     }
 }
 
+void SrecFile::runCreateData2(QList<Data *> *listData, QList<Node *> *listNodeChar, QList<Node *> *listNodeAxis)
+{
+    foreach(Node* label, *listNodeChar)
+    {
+        CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
+        Data *data = new Data(charac, a2lProject, this);
+        listData->append(data);
+    }
+
+    foreach(Node* label, *listNodeAxis)
+    {
+        AXIS_PTS *axis = (AXIS_PTS*)label;
+        Data *data = new Data(axis, a2lProject, this);
+        listData->append(data);
+    }
+}
+
 Data* SrecFile::runCreateDataMapped(const QString &str)
 {
     //A2LFILE *a2l = (A2LFILE*)this->getParentNode();
@@ -650,19 +726,8 @@ Data* SrecFile::runCreateDataMapped(const QString &str)
         {
             found = true;
             CHARACTERISTIC *charac = (CHARACTERISTIC*)label;
-            QString add = charac->getPar("Adress");
-            bool bl = isValidAddress(add);
-            if(1)
-            {
-                //rwLock.lockForRead();
-                Data *data = new Data(charac, a2lProject, this);
-                //rwLock.unlock();
-                return data;
-            }
-            else
-            {
-                return 0;
-            }
+            Data *data = new Data(charac, a2lProject, this);
+            return data;
         }
     }
 
@@ -676,20 +741,9 @@ Data* SrecFile::runCreateDataMapped(const QString &str)
         {
             found = true;
             AXIS_PTS *axis = (AXIS_PTS*)label2;
-            QString add = axis->getPar("Adress");
+            Data *data = new Data(axis, a2lProject, this);
+            return data;
 
-            bool bl = isValidAddress(add);
-            if (1)
-            {
-                //rwLock.lockForRead();
-                Data *data = new Data(axis, a2lProject, this);
-                //rwLock.unlock();
-                return data;
-            }
-            else
-            {
-                return 0;
-            }
         }
     }
 
@@ -699,6 +753,23 @@ Data* SrecFile::runCreateDataMapped(const QString &str)
         return 0;
     }
 
+}
+
+Data* SrecFile::runCreateDataMapped2(const Node *node)
+{
+    QString type = typeid(*node).name();
+    if (type.toLower().endsWith("characteristic"))
+    {
+        CHARACTERISTIC *charac = (CHARACTERISTIC*)node;
+        Data *data = new Data(charac, a2lProject, this);
+        return data;
+    }
+    else
+    {
+        AXIS_PTS *axis = (AXIS_PTS*)node;
+        Data *data = new Data(axis, a2lProject, this);
+        return data;
+    }
 }
 
 // ________________ read Hex values___________________ //

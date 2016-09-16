@@ -585,9 +585,11 @@ void HexFile::readAllData()
     //create list
     //A2LFILE *a2l = (A2LFILE*)this->getParentNode();
     A2LFILE *a2l = ((WorkProject*)this->getParentNode())->a2lFile;
-    MODULE *module = (MODULE*)a2l->getProject()->getNode("MODULE/" + getModuleName());
 
     //read labels
+    Node *nodeChar = a2l->getProject()->getNode("MODULE/" + getModuleName() + "/CHARACTERISTIC");
+    Node *nodeAxis = a2l->getProject()->getNode("MODULE/" + getModuleName() + "/AXIS_PTS");
+
     QProgressDialog dialog;
     dialog.setLabelText(QString("Reading HEX file : progressing using %1 thread(s)...").arg(QThread::idealThreadCount()));
 
@@ -597,7 +599,12 @@ void HexFile::readAllData()
     QObject::connect(&futureWatcher, SIGNAL(progressValueChanged(int)), &dialog, SLOT(setValue(int)));
 
     // Start the computation
-    futureWatcher.setFuture(QtConcurrent::mapped(module->listChar, std::bind(&HexFile::runCreateDataMapped, this, std::placeholders::_1)));
+    //futureWatcher.setFuture(QtConcurrent::mapped(module->listChar, std::bind(&SrecFile::runCreateDataMapped, this, std::placeholders::_1)));
+    QList<Node*> _myList;
+    _myList << nodeChar->childNodes;
+    _myList << nodeAxis->childNodes;
+    std::sort(_myList.begin(), _myList.end(), nodeLessThan);
+    futureWatcher.setFuture(QtConcurrent::mapped(_myList, std::bind(&HexFile::runCreateDataMapped2, this, std::placeholders::_1)));
     dialog.exec();
     futureWatcher.waitForFinished();
 
@@ -728,6 +735,23 @@ Data* HexFile::runCreateDataMapped(const QString &str)
         return 0;
     }
 
+}
+
+Data* HexFile::runCreateDataMapped2(const Node *node)
+{
+    QString type = typeid(*node).name();
+    if (type.toLower().endsWith("characteristic"))
+    {
+        CHARACTERISTIC *charac = (CHARACTERISTIC*)node;
+        Data *data = new Data(charac, a2lProject, this);
+        return data;
+    }
+    else
+    {
+        AXIS_PTS *axis = (AXIS_PTS*)node;
+        Data *data = new Data(axis, a2lProject, this);
+        return data;
+    }
 }
 
 

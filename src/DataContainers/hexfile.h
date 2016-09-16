@@ -96,6 +96,7 @@ class HexFile : public QObject, public DataContainer
     private:
         //QtConcurrent members
         Data* runCreateDataMapped(const QString &str);
+        Data* runCreateDataMapped2(const Node *node);
 
         // members
         bool _read;
