@@ -338,7 +338,7 @@ QString WorkProject::getFullNodeName()
     if (treeModel)
     {
         QModelIndex index = treeModel->getIndex(this);
-        return treeModel->getFullNodeName(index);
+        return treeModel->getFullNodeTreePath(index);
     }
     else
         return "xxx";

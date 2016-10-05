@@ -61,6 +61,7 @@ class Node
         std::string fixPar(QString str);
 
 
+        QString getFullTreePath();
         void addChildNode (Node *child);
         void insertChildNode (Node *child);
         void removeChildNode(Node *child);

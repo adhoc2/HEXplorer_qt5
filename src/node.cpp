@@ -278,6 +278,18 @@ std::string Node::fixPar(QString str)
     return  tt;
 }
 
+QString Node::getFullTreePath()
+{
+    QString str = this->name;
+    Node* node = this;
+    while (node->getParentNode()&& node->getParentNode()->getParentNode() != NULL)
+    {
+        str = QString(node->getParentNode()->name) + "/" + str;
+        node = node->getParentNode();
+    }
+    return str;
+}
+
 Node* Node::interpolationSearch(QList<Node *> sortedArray, QString str)
 {
     int low = 0;

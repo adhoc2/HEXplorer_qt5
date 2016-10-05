@@ -53,7 +53,7 @@ public:
     QVariant line(const QModelIndex &index) const;
     QMap<std::string, std::string> *getPar(const QModelIndex &index) const;
     std::string getNodeName(const QModelIndex &index) const;
-    QString getFullNodeName(const QModelIndex &index) const;
+    QString getFullNodeTreePath(const QModelIndex &index) const;
     QString name(const QModelIndex &index);
     Node *getNode(const QModelIndex &index);
     Node *getRootNode();

@@ -446,6 +446,7 @@ bool SrecFile::isA2lCombined()
                         str.append((unsigned char)c);
                 }
 
+
                 //compare EPK from A2L with EPK from HexFile
                 if (str == str1)
                     return true;
@@ -455,7 +456,7 @@ bool SrecFile::isA2lCombined()
                                                   "HEXplorer::question",
                                                   "The a2l and hex version does not seem to be compatible.\n"
                                                   "A2l EEPROM Identifier : " + str1 + "\n"
-                                                  "Hex EEPROM Identifier : " + str + "\n\n"
+                                                  "Srec EEPROM Identifier : " + str + "\n\n"
                                                   "Are you sure you want to proceed ?",
                                                   QMessageBox::Yes, QMessageBox::No);
                     if (r == QMessageBox::Yes)
@@ -1498,7 +1499,7 @@ int SrecFile::getNumByte(std::string str)
 
 // _______________ save Hex values __________________ //
 
-QStringList SrecFile::writeHex()
+QStringList SrecFile::writeBlock2HexLines()
 {
     QStringList list;
     if (testMonotony(list))
@@ -1512,6 +1513,7 @@ QStringList SrecFile::writeHex()
         return list;
     }
 }
+
 
 void SrecFile::setValue(unsigned int IAddr, QString hex,  int nByte, QString _byteOrder)
 {
@@ -2240,17 +2242,18 @@ void SrecFile::setFullName(QString fullName)
             FormCompare *fcomp = (FormCompare*)obj;
             if (fcomp->getSrec1() == this)
             {
-                 QString str = QFileInfo(getParentWp()->getFullA2lFileName().c_str()).fileName()
-                               + "/"
-                               + QFileInfo(fullSrecName).fileName();
-                 fcomp->setDataset1(str);
+//                 QString str = QFileInfo(getParentWp()->getFullA2lFileName().c_str()).fileName()
+//                               + "/"
+//                               + QFileInfo(fullSrecName).fileName();
+                 fcomp->setDataset1(this->getFullTreePath());
+                 fcomp->on_quicklook_clicked();
             }
             else if (fcomp->getSrec2() == this)
             {
-                QString str = QFileInfo(getParentWp()->getFullA2lFileName().c_str()).fileName()
-                              + "/"
-                              + QFileInfo(fullSrecName).fileName();
-                 fcomp->setDataset2(str);
+//                QString str = QFileInfo(getParentWp()->getFullA2lFileName().c_str()).fileName()
+//                              + "/"
+//                              + QFileInfo(fullSrecName).fileName();
+                 fcomp->setDataset2(this->getFullTreePath());
             }
         }
     }

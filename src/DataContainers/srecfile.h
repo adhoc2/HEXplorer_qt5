@@ -66,7 +66,7 @@ class SrecFile : public QObject, public DataContainer
         void verify();
         void checkDisplay();
         void setFullName(QString fullName);
-        QStringList writeHex();
+        QStringList writeBlock2HexLines();
         QString getHexValue(QString address, int offset, int commonAlignmentByte, QString _byteOrder = "");
         QStringList getHexValues(QString address, int offset, int commonAlignmentByte, int size, QString _byteOrder = "");
         QList<double> getDecValues(double address, int commonAlignmentByte, int size, std::string type, QString _byteOrder = "");

@@ -257,6 +257,10 @@ void MDImain::createActions()
         connect(recentFileActs[i], SIGNAL(triggered()), this, SLOT(openRecentFile()));
     }
 
+    editInHDrive = new QAction(tr("show file or folder on disk"), this);
+    connect(editInHDrive, SIGNAL(triggered()), this, SLOT(editInHDDrive()));
+    editInHDrive->setDisabled(true);
+
     importSubsets = new QAction(tr("import subsets"), this);
     importSubsets->setIcon(QIcon(":/icones/milky_importSubset.png"));
     connect(importSubsets, SIGNAL(triggered()), this, SLOT(import_Subsets()));
@@ -320,6 +324,7 @@ void MDImain::createActions()
 
     resetAllChangedData = new QAction(tr("reset all changes"), this);
     resetAllChangedData->setIcon(QIcon(":/icones/milky_resetAll.png"));
+    resetAllChangedData->setShortcut(Qt::CTRL + Qt::Key_U);
     connect(resetAllChangedData, SIGNAL(triggered()), this, SLOT(reset_AllChangedData()));
     resetAllChangedData->setDisabled(true);
 
@@ -471,10 +476,12 @@ void MDImain::on_listWidget_customContextMenuRequested()
 
 void MDImain::initToolBars()
 {
+    // Working Directory : WD
+    ui->toolBar_WD->addAction(ui->actionOpen_Working_Directory);
+    ui->toolBar_WD->addAction(ui->actionUpdateWorkingDirectory);
+
     // Project : A2l
-    ui->toolBar_a2l->addAction(ui->actionOpen_Working_Directory);
     ui->toolBar_a2l->addAction(ui->actionNewA2lProject);
-    //ui->toolBar_a2l->addAction(ui->actionLoad_DB);
     ui->toolBar_a2l->addAction(addHexFile);
     ui->toolBar_a2l->addAction(addSrecFile);
     ui->toolBar_a2l->addAction(addCsvFile);
@@ -485,7 +492,6 @@ void MDImain::initToolBars()
     ui->toolBar_a2l->addAction(editFile);
     ui->toolBar_a2l->addAction(editMeasChannels);
     ui->toolBar_a2l->addAction(editCharacteristics);
-    //ui->toolBar_a2l->addAction(openJScript);
 
     // Data : Hex or Csv or Cdf file
     ui->toolBar_data->addAction(quicklook);
@@ -564,6 +570,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         saveA2lDB->setEnabled(false);
         ui->actionClose_Working_Directory->setEnabled(false);
         ui->actionRename_file->setEnabled(false);
+        ui->actionUpdateWorkingDirectory->setEnabled(false);
     }
     else if (name.endsWith("WorkProject"))
     {
@@ -595,6 +602,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         saveA2lDB->setEnabled(false);
         ui->actionClose_Working_Directory->setEnabled(false);
         ui->actionRename_file->setEnabled(false);
+        editInHDrive->setEnabled(true);
+        ui->actionUpdateWorkingDirectory->setEnabled(false);
     }
     else if (name.endsWith("DBFILE"))
     {
@@ -626,6 +635,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         saveA2lDB->setEnabled(false);
         ui->actionClose_Working_Directory->setEnabled(false);
         ui->actionRename_file->setEnabled(false);
+        editInHDrive->setEnabled(false);
+        ui->actionUpdateWorkingDirectory->setEnabled(false);
     }
     else if (name.endsWith("HexFile"))
     {
@@ -656,6 +667,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionClose_Working_Directory->setEnabled(false);
         duplicateDatacontainer->setEnabled(true);
         ui->actionRename_file->setEnabled(true);
+        editInHDrive->setEnabled(true);
+        ui->actionUpdateWorkingDirectory->setEnabled(false);
 
         ui->toolBar_data->show();
 
@@ -689,6 +702,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionClose_Working_Directory->setEnabled(false);
         ui->actionRename_file->setEnabled(true);
         duplicateDatacontainer->setEnabled(true);
+        editInHDrive->setEnabled(true);
+        ui->actionUpdateWorkingDirectory->setEnabled(false);
 
 
         ui->toolBar_data->show();
@@ -723,6 +738,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionClose_Working_Directory->setEnabled(false);
         ui->actionRename_file->setEnabled(false);
         duplicateDatacontainer->setEnabled(false);
+        editInHDrive->setEnabled(true);
+        ui->actionUpdateWorkingDirectory->setEnabled(false);
 
         ui->toolBar_data->show();
     }
@@ -754,6 +771,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionClose_Working_Directory->setEnabled(false);
         ui->actionRename_file->setEnabled(false);
         duplicateDatacontainer->setEnabled(false);
+        editInHDrive->setEnabled(true);
+        ui->actionUpdateWorkingDirectory->setEnabled(false);
 
         ui->toolBar_data->show();
     }  
@@ -785,6 +804,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionClose_Working_Directory->setEnabled(false);
         ui->actionRename_file->setEnabled(false);
         duplicateDatacontainer->setEnabled(false);
+        editInHDrive->setEnabled(true);
+        ui->actionUpdateWorkingDirectory->setEnabled(false);
 
         ui->toolBar_data->show();
     }
@@ -792,6 +813,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
     {
         ui->toolBar_data->hide();
 
+        ui->actionUpdateWorkingDirectory->setEnabled(true);
         importSubsets->setEnabled(false);
         exportSubsets->setEnabled(false);
         addCdfxFile->setEnabled(false);
@@ -819,6 +841,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionClose_Working_Directory->setEnabled(true);
         ui->actionRename_file->setEnabled(false);
         duplicateDatacontainer->setEnabled(false);
+        editInHDrive->setEnabled(true);
 
     }
     else
@@ -851,6 +874,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionRename_file->setEnabled(false);
         duplicateDatacontainer->setEnabled(false);
         ui->actionLoad_DB->setEnabled(false);
+        ui->actionUpdateWorkingDirectory->setEnabled(false);
     }
 
     //get the full path of the index into treeView
@@ -920,6 +944,7 @@ void MDImain::showContextMenu(QPoint)
                 menu.addSeparator();
                 menu.addAction(quicklook);
                 menu.addAction(editFile);
+                menu.addAction(editInHDrive);
                 menu.addSeparator();
                 menu.addAction(readValuesFromCsv);
                 menu.addAction(readValuesFromCdfx);
@@ -944,44 +969,47 @@ void MDImain::showContextMenu(QPoint)
                 Node *node =  model->getNode(index);
                 HexFile *hex = dynamic_cast<HexFile *> (node);
 
-                // if hexfile not read do not open context menu
-                if (!hex->isRead())
-                    return;
+                // if hexfile not read do not open following context menu
+                if (hex->isRead())
+                {
+                    if (hex->getModifiedData().isEmpty())
+                    {
+                        sortBySubset->setDisabled(true);
+                        resetAllChangedData->setDisabled(true);
+                        editChanged->setDisabled(true);
+                    }
+                    else
+                    {
+                        sortBySubset->setDisabled(false);
+                        resetAllChangedData->setDisabled(false);
+                        editChanged->setDisabled(false);
+                    }
 
-                if (hex->getModifiedData().isEmpty())
-                {
-                    sortBySubset->setDisabled(true);
-                    resetAllChangedData->setDisabled(true);
-                    editChanged->setDisabled(true);
-                }
-                else
-                {
-                    sortBySubset->setDisabled(false);
-                    resetAllChangedData->setDisabled(false);
-                    editChanged->setDisabled(false);
+                    //menu tools
+                    A2LFILE *a2l = hex->getParentWp()->a2lFile;
+                    QString projectName = ((PROJECT*)a2l->getProject())->getPar("name");
+                    projectName = projectName.toLower();
+
+                    if (projectName == "c340" || projectName == "c342" || projectName == "p_662" || projectName == "p1603")
+                    {
+                        verify->setDisabled(false);
+                        checkFmtc->setDisabled(false);
+                    }
+                    else
+                    {
+                        verify->setDisabled(true);
+                        checkFmtc->setDisabled(true);
+                    }
+
                 }
 
-                //menu tools
-                A2LFILE *a2l = hex->getParentWp()->a2lFile;
-                QString projectName = ((PROJECT*)a2l->getProject())->getPar("name");
-                projectName = projectName.toLower();
-
-                if (projectName == "c340" || projectName == "c342" || projectName == "p_662" || projectName == "p1603")
-                {
-                    verify->setDisabled(false);
-                    checkFmtc->setDisabled(false);
-                }
-                else
-                {
-                    verify->setDisabled(true);
-                    checkFmtc->setDisabled(true);
-                }
             }
             else if (name.toLower().endsWith("srecfile"))
             {
                 menu.addSeparator();
                 menu.addAction(quicklook);
                 menu.addAction(editFile);
+                menu.addAction(editInHDrive);
                 menu.addSeparator();
                 menu.addAction(readValuesFromCsv);
                 menu.addAction(readValuesFromCdfx);
@@ -1006,20 +1034,20 @@ void MDImain::showContextMenu(QPoint)
                 SrecFile *srec = dynamic_cast<SrecFile *> (node);
 
                 // if Srecfile not read do not open context menu
-                if (!srec->isRead())
-                    return;
-
-                if (srec->getModifiedData().isEmpty())
+                if (srec->isRead())
                 {
-                    sortBySubset->setDisabled(true);
-                    resetAllChangedData->setDisabled(true);
-                    editChanged->setDisabled(true);
-                }
-                else
-                {
-                    sortBySubset->setDisabled(false);
-                    resetAllChangedData->setDisabled(false);
-                    editChanged->setDisabled(false);
+                    if (srec->getModifiedData().isEmpty())
+                    {
+                        sortBySubset->setDisabled(true);
+                        resetAllChangedData->setDisabled(true);
+                        editChanged->setDisabled(true);
+                    }
+                    else
+                    {
+                        sortBySubset->setDisabled(false);
+                        resetAllChangedData->setDisabled(false);
+                        editChanged->setDisabled(false);
+                    }
                 }
             }
             else if (name.toLower().endsWith("a2lfile"))
@@ -1061,6 +1089,7 @@ void MDImain::showContextMenu(QPoint)
                     menu.addAction(ui->actionLoad_DB);
                     menu.addAction(deleteProject);
                     menu.addAction(editFile);
+                    menu.addAction(editInHDrive);
                     menu.addSeparator();
                     menu.addAction(addHexFile);
                     menu.addAction(addSrecFile);
@@ -1115,6 +1144,7 @@ void MDImain::showContextMenu(QPoint)
                     menu.addAction(ui->actionLoad_DB);
                     menu.addAction(deleteProject);
                     menu.addAction(editFile);
+                    menu.addAction(editInHDrive);
                     menu.addSeparator();
                     menu.addAction(addHexFile);
                     menu.addAction(addSrecFile);
@@ -1136,6 +1166,7 @@ void MDImain::showContextMenu(QPoint)
                 menu.addAction(ui->actionLoad_DB);
                 menu.addAction(deleteProject);
                 //menu.addAction(editFile);
+                menu.addAction(editInHDrive);
                 menu.addSeparator();
                 menu.addAction(addHexFile);
                 menu.addAction(addSrecFile);
@@ -1153,6 +1184,7 @@ void MDImain::showContextMenu(QPoint)
             {
                 menu.addAction(deleteFile);
                 menu.addAction(editFile);
+                menu.addAction(editInHDrive);
                 menu.addSeparator();
                 menu.addAction(saveFile);
                 menu.addAction(saveAsFile);
@@ -1175,6 +1207,7 @@ void MDImain::showContextMenu(QPoint)
             {
                 menu.addAction(deleteFile);
                 menu.addAction(editFile);
+                menu.addAction(editInHDrive);
                 menu.addSeparator();
                 menu.addAction(saveFile);
                 menu.addAction(saveAsFile);
@@ -1197,6 +1230,7 @@ void MDImain::showContextMenu(QPoint)
             {
                 menu.addAction(deleteFile);
                 menu.addAction(editFile);
+                menu.addAction(editInHDrive);
                 menu.addSeparator();
                 menu.addAction(saveFile);
                 menu.addAction(saveAsFile);
@@ -1219,6 +1253,7 @@ void MDImain::showContextMenu(QPoint)
             {
                 menu.addAction(ui->actionUpdateWorkingDirectory);
                 menu.addAction(ui->actionClose_Working_Directory);
+                menu.addAction(editInHDrive);
 
             }
             else
@@ -5321,8 +5356,8 @@ bool MDImain::save_HexFile(QModelIndex index)
     if (ret == QMessageBox::Yes)
     {
         // display status bar
-        statusBar()->show();
-        progBar->reset();
+//        statusBar()->show();
+//        progBar->reset();
 
         // write all
         QStringList list = hex->writeHex();
@@ -5347,24 +5382,25 @@ bool MDImain::save_HexFile(QModelIndex index)
             return false;
         }
 
-        QApplication::setOverrideCursor(Qt::WaitCursor);
 
         // write into file
         QTextStream out(&file);
-        int i = progBar->value();
-        int max = progBar->maximum();
-        foreach (QString str, list)
-        {
-            out << str << "\r\n";
-            i++;
-            setValueProgressBar(i, max);
-        }
+        QString str = list.join("\r\n");
+
+        out << str << "\r\n";
+//        int i = progBar->value();
+//        int max = progBar->maximum();
+//        foreach (QString str, list)
+//        {
+//            out << str << "\r\n";
+//            i++;
+//            setValueProgressBar(i, max);
+//        }
 
         // hide the statusbar
-        statusBar()->hide();
-        progBar->reset();
+//        statusBar()->hide();
+//        progBar->reset();
 
-        QApplication::restoreOverrideCursor();
 
         double tf = omp_get_wtime();
         writeOutput("action save dataset : performed with success in " + QString::number(tf - ti) + " s");
@@ -5393,11 +5429,11 @@ bool MDImain::save_SrecFile(QModelIndex index)
     if (ret == QMessageBox::Yes)
     {
         // display status bar
-        statusBar()->show();
-        progBar->reset();
+//        statusBar()->show();
+//        progBar->reset();
 
         // write all
-        QStringList list = srec->writeHex();
+        QStringList list = srec->writeBlock2HexLines();
 
         if (list.isEmpty())
         {
@@ -5419,24 +5455,27 @@ bool MDImain::save_SrecFile(QModelIndex index)
             return false;
         }
 
-        QApplication::setOverrideCursor(Qt::WaitCursor);
+//        QApplication::setOverrideCursor(Qt::WaitCursor);
 
         // write into file
         QTextStream out(&file);
-        int i = progBar->value();
-        int max = progBar->maximum();
-        foreach (QString str, list)
-        {
-            out << str << "\r\n";
-            i++;
-            setValueProgressBar(i, max);
-        }
+//        int i = progBar->value();
+//        int max = progBar->maximum();
+        QString str = list.join("\r\n");
+        out << str << "\r\n";
+
+//        foreach (QString str, list)
+//        {
+//            out << str << "\r\n";
+//            i++;
+//            setValueProgressBar(i, max);
+//        }
 
         // hide the statusbar
-        statusBar()->hide();
-        progBar->reset();
+//        statusBar()->hide();
+//        progBar->reset();
 
-        QApplication::restoreOverrideCursor();
+//        QApplication::restoreOverrideCursor();
 
         double tf = omp_get_wtime();
         writeOutput("action save dataset : performed with success in " + QString::number(tf - ti) + " s");
@@ -5488,12 +5527,12 @@ void MDImain::saveAs_File()
 void MDImain::saveAs_HexFile(QModelIndex index)
 {
     // get the HexFile Node
-    HexFile *hex = (HexFile*)model->getNode(index);
+    HexFile *orgHex = (HexFile*)model->getNode(index);
 
     // ask for new HexFile name
     QString fileName = QFileDialog::getSaveFileName(this,
-                                                    QFileInfo(hex->fullName()).fileName(),
-                                                    QFileInfo(hex->fullName()).absolutePath(),
+                                                    QFileInfo(orgHex->fullName()).fileName(),
+                                                    QFileInfo(orgHex->fullName()).absolutePath(),
                                                     tr("hex files (*.hex);;all files (*.*)"));
     if (fileName.isEmpty())
     {
@@ -5506,7 +5545,8 @@ void MDImain::saveAs_HexFile(QModelIndex index)
         fileName.append(".hex");
     }
 
-    if (hex->getParentWp()->containsHex(fileName))
+    //check if the file is already open in HEXplorer
+    if (orgHex->getParentWp()->containsHex(fileName))
     {
         QMessageBox::warning(this, tr("Application"),
                              tr("file %1 is already open.\nFirst close the open version or enter another file name.")
@@ -5514,58 +5554,11 @@ void MDImain::saveAs_HexFile(QModelIndex index)
         return;
     }
 
-    //if hex is not read => copy file
-    if (!hex->isRead())
-    {
-        hex = readHexFile(hex);
-    }
+    //copy the orginal file to a new one
+    on_actionDuplicate_DataContainer_triggered(fileName);
 
-    // display status bar
-    statusBar()->show();
-    progBar->reset();
-
-    // write the file
-    QStringList list = hex->writeHex();
-    if (list.isEmpty())
-    {
-        writeOutput("action save dataset : cancelled");
-        QApplication::restoreOverrideCursor();
-        return;
-    }
-
-    // check if the new file can be written
-    QFile file(fileName);
-    if (!file.open(QFile::WriteOnly)) {
-        QMessageBox::warning(this, tr("Application"),
-                             tr("Cannot write file %1:\n%2.")
-                             .arg(fileName)
-                             .arg(file.errorString()));
-
-        writeOutput("action save dataset : impossible because file not ready for writing");
-        return;
-    }
-
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    QTextStream out(&file);
-    int i = progBar->value();
-    int max = progBar->maximum();
-    foreach (QString str, list)
-    {
-        out << str << "\r\n";
-        i++;
-        setValueProgressBar(i, max);
-    }
-
-    // hide the statusbar
-    statusBar()->hide();
-    progBar->reset();
-
-    QApplication::restoreOverrideCursor();
-
-    // update Node name with the new file name
-    index = model->getIndex(hex);
-    model->renameNode(index, QFileInfo(fileName).fileName());
-    hex->setFullName(fileName);
+    //remove the changed labels from org Hex
+    orgHex->resetAllModifiedData();
 
     // log
     writeOutput("action save dataset : performed with success ");
@@ -5575,12 +5568,12 @@ void MDImain::saveAs_HexFile(QModelIndex index)
 void MDImain::saveAs_SrecFile(QModelIndex index)
 {
     // get the HexFile Node
-    SrecFile *srec = (SrecFile*)model->getNode(index);
+    SrecFile *orgSrec = (SrecFile*)model->getNode(index);
 
     // ask for new HexFile name
     QString fileName = QFileDialog::getSaveFileName(this,
-                                                    QFileInfo(srec->fullName()).fileName(),
-                                                    QFileInfo(srec->fullName()).absolutePath(),
+                                                    QFileInfo(orgSrec->fullName()).fileName(),
+                                                    QFileInfo(orgSrec->fullName()).absolutePath(),
                                                     tr("Srec files (*.s19);;all files (*.*)"));
     if (fileName.isEmpty())
     {
@@ -5594,7 +5587,7 @@ void MDImain::saveAs_SrecFile(QModelIndex index)
     }
 
     //check if the file is already open in HEXplorer
-    if (srec->getParentWp()->containsSrec(fileName))
+    if (orgSrec->getParentWp()->containsSrec(fileName))
     {
         QMessageBox::warning(this, tr("Application"),
                              tr("file %1 is already open.\nFirst close the open version or enter another file name.")
@@ -5602,59 +5595,14 @@ void MDImain::saveAs_SrecFile(QModelIndex index)
         return;
     }
 
-    //if hex is not read => copy file
-    if (!srec->isRead())
-    {
-        srec = readSrecFile(srec);
-    }
+    //copy the orginal file to a new one
+    QModelIndex newIndex = on_actionDuplicate_DataContainer_triggered(fileName);
 
+    //save the dataset changes on disk file
+    save_SrecFile(newIndex);
 
-    // display status bar
-    statusBar()->show();
-    progBar->reset();
-
-    // write the file
-    QStringList list = srec->writeHex();
-    if (list.isEmpty())
-    {
-        writeOutput("action save dataset : cancelled");
-        QApplication::restoreOverrideCursor();
-        return;
-    }
-
-    // check if the new file can be written
-    QFile file(fileName);
-    if (!file.open(QFile::WriteOnly)) {
-        QMessageBox::warning(this, tr("Application"),
-                             tr("Cannot write file %1:\n%2.")
-                             .arg(fileName)
-                             .arg(file.errorString()));
-
-        writeOutput("action save dataset : impossible because file not ready for writing");
-        return;
-    }
-
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    QTextStream out(&file);
-    int i = progBar->value();
-    int max = progBar->maximum();
-    foreach (QString str, list)
-    {
-        out << str << "\r\n";
-        i++;
-        setValueProgressBar(i, max);
-    }
-
-    // hide the statusbar
-    statusBar()->hide();
-    progBar->reset();
-
-    QApplication::restoreOverrideCursor();
-
-    // update Node name with the new file name
-    index = model->getIndex(srec);
-    model->renameNode(index, QFileInfo(fileName).fileName());
-    srec->setFullName(fileName);
+    //remove the changed labels from org Srec
+    orgSrec->resetAllModifiedData();
 
     // log
     writeOutput("action save dataset : performed with success ");
@@ -5775,8 +5723,8 @@ void MDImain::compare_HexFile()
     {
 
         //get node names
-        QString str1 = model->getFullNodeName(list.at(0));
-        QString str2 = model->getFullNodeName(list.at(1));
+        QString str1 = model->getFullNodeTreePath(list.at(0));
+        QString str2 = model->getFullNodeTreePath(list.at(1));
 
         //create a new FormCompare
         FormCompare *fComp = on_actionCompare_dataset_triggered();
@@ -5794,7 +5742,7 @@ void MDImain::quicklookFile()
     //get hexFiles path
     QModelIndex index  = ui->treeView->selectionModel()->currentIndex();
 
-    QString str1 = model->getFullNodeName(index);
+    QString str1 = model->getFullNodeTreePath(index);
 
 
      if (index.isValid())
@@ -5838,7 +5786,6 @@ void MDImain::quicklookFile()
 
             //create a new FormCompare
             FormCompare *fComp = on_actionCompare_dataset_triggered();
-            qDebug() << str1;
             fComp->setDataset1(str1);
 
             //perform a quicklook
@@ -5868,7 +5815,7 @@ void MDImain::editChangedLabels()
     if (name.endsWith("HexFile"))
     {
         HexFile *hex = (HexFile*)model->getNode(index);
-        QString str1 = model->getFullNodeName(index);
+        QString str1 = model->getFullNodeTreePath(index);
 
         //create a new FormCompare
         FormCompare *fComp = on_actionCompare_dataset_triggered();
@@ -5888,7 +5835,7 @@ void MDImain::editChangedLabels()
     else if (name.endsWith("SrecFile"))
     {
         SrecFile *srec = (SrecFile*)model->getNode(index);
-        QString str1 = model->getFullNodeName(index);
+        QString str1 = model->getFullNodeTreePath(index);
 
         //create a new FormCompare
         FormCompare *fComp = on_actionCompare_dataset_triggered();
@@ -5909,7 +5856,7 @@ void MDImain::editChangedLabels()
     else if (name.endsWith("Csv"))
     {
         Csv *csv = (Csv*)model->getNode(index);
-        QString str1 = model->getFullNodeName(index);
+        QString str1 = model->getFullNodeTreePath(index);
 
         //create a new FormCompare
         FormCompare *fComp = on_actionCompare_dataset_triggered();
@@ -5929,7 +5876,7 @@ void MDImain::editChangedLabels()
     else if (name.endsWith("CdfxFile"))
     {
         CdfxFile *cdfx = (CdfxFile*)model->getNode(index);
-        QString str1 = model->getFullNodeName(index);
+        QString str1 = model->getFullNodeTreePath(index);
 
         //create a new FormCompare
         FormCompare *fComp = on_actionCompare_dataset_triggered();
@@ -6345,7 +6292,64 @@ void MDImain::import_Subsets()
     }
 }
 
-void MDImain::on_actionDuplicate_DataContainer_triggered()
+void MDImain::editInHDDrive()
+{
+    //get hexFiles path
+    QModelIndex index  = ui->treeView->selectionModel()->currentIndex();
+    Node *node = model->getNode(index);
+    QString name = typeid(*node).name();
+
+    QString PathToReveal = "";
+    if (name.endsWith("HexFile"))
+    {
+        HexFile *hex = dynamic_cast<HexFile*>(node);
+        PathToReveal = hex->fullName();
+    }
+    else if (name.endsWith("SrecFile"))
+    {
+        SrecFile *srec = dynamic_cast<SrecFile*>(node);
+        PathToReveal = srec->fullName();
+    }
+
+    // Mac, Windows support folder or file.
+#if defined(Q_OS_WIN)
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QString windirstr = env.value("WINDIR");
+    QDir windir = QDir(windirstr);
+    QStringList listWindDirEntries = windir.entryList();
+    if (listWindDirEntries.contains("explorer.exe"))
+    {
+        QString explorer = windirstr + "\\explorer.exe";
+        QString param = "";
+        if (!QFileInfo(PathToReveal).isDir())
+            param = QLatin1String("/select,");
+        param += QDir::toNativeSeparators(PathToReveal);
+        QString command = explorer + " " + param;
+        QProcess::startDetached(command);
+    }
+    else
+    {
+        QMessageBox::warning(this,
+                             tr("Launching Windows Explorer failed"),
+                             tr("Could not find explorer.exe in path to launch Windows Explorer."));
+        return;
+
+    }
+#elif defined(Q_OS_MAC)
+    Q_UNUSED(parent)
+    QStringList scriptArgs;
+    scriptArgs << QLatin1String("-e")
+            << QString::fromLatin1("tell application \"Finder\" to reveal POSIX file \"%1\"").arg(pathToReveal);
+    QProcess::execute(QLatin1String("/usr/bin/osascript"), scriptArgs);
+    scriptArgs.clear();
+    scriptArgs << QLatin1String("-e")
+            << QLatin1String("tell application \"Finder\" to activate");
+    QProcess::execute("/usr/bin/osascript", scriptArgs);
+#endif
+
+}
+
+QModelIndex  MDImain::on_actionDuplicate_DataContainer_triggered(QString fullFileName)
 {
     //get the index of the selected hex file
     QModelIndex index  = ui->treeView->selectionModel()->currentIndex();
@@ -6360,54 +6364,116 @@ void MDImain::on_actionDuplicate_DataContainer_triggered()
     {
 
         //As the selected node is an Hex file we can cast the node into its real type : HexFile
-        HexFile *hex = dynamic_cast<HexFile *> (node);
+        HexFile *orgHex = dynamic_cast<HexFile *> (node);
 
         //get the parentWp of the HexFile
-        WorkProject *wp = hex->getParentWp();
+        WorkProject *wp = orgHex->getParentWp();
 
-        //add to the project
-        if (!hex->childNodes.isEmpty())
-            save_HexFile(index);
-
-        QString orgName = hex->fullName();
+        // copy the file
+        QString orgName = orgHex->fullName();
         QString baseName = QFileInfo(orgName).baseName();
-        QString newName = orgName.replace(baseName, baseName + "_copy");
-        if (QFile::copy(hex->fullName(), newName ))
+        QString newName = "";
+        if (fullFileName.isEmpty())
         {
-            HexFile *clone = new HexFile(newName, wp);
-            wp->addHex(clone, nodeParent);
-            writeOutput("action duplicate file : performed with success");
+            newName = orgName.replace(baseName, baseName + "_copy");
+        }
+        else
+        {
+            newName = fullFileName;
+        }
+
+        if (QFile::copy(orgHex->fullName(), newName ))
+        {
+            HexFile *cloneHex = new HexFile(newName, wp);
+            wp->addHex(cloneHex, nodeParent);
+
+            //if changes in orgSrec => copy changes to cloneSrec
+            if (!orgHex->childNodes.isEmpty())
+            {
+                //read file
+                HexFile* hex= readHexFile(cloneHex);
+
+                //get source and destination dataList and copy
+                QList<Data*> listCopySrc = orgHex->getModifiedData();
+                foreach (Data* dataSrc, listCopySrc)
+                {
+                    Data *dataTrg = hex->getData(dataSrc->getName());
+                    if (dataTrg)
+                    {
+                        dataTrg->copyAllFrom(dataSrc);
+                    }
+                }
+
+                writeOutput("action duplicate file : performed with success");
+
+                return model->getIndex(hex);
+            }
+            else
+                return QModelIndex();
         }
         else
         {
             writeOutput("action duplicate file : not possible");
+            return QModelIndex();
         }
 
     }
     else if (name.toLower().endsWith("srecfile"))
     {
         //As the selected node is an Hex file we can cast the node into its real type : HexFile
-        SrecFile *srec = dynamic_cast<SrecFile *> (node);
+        SrecFile *orgSrec = dynamic_cast<SrecFile *> (node);
 
         //get the parentWp of the HexFile
-        WorkProject *wp = srec->getParentWp();
+        WorkProject *wp = orgSrec->getParentWp();
 
-        //add to the project
-        if (!srec->childNodes.isEmpty())
-            save_HexFile(index);
-
-        QString orgName = srec->fullName();
+        // copy the file
+        QString orgName = orgSrec->fullName();
         QString baseName = QFileInfo(orgName).baseName();
-        QString newName = orgName.replace(baseName, baseName + "_copy");
-        if (QFile::copy(srec->fullName(), newName ))
+        QString newName = "";
+        if (fullFileName.isEmpty())
         {
-            SrecFile *clone = new SrecFile(newName, wp);
-            wp->addSrec(clone, nodeParent);
-            writeOutput("action duplicate file : performed with success");
+            newName = orgName.replace(baseName, baseName + "_copy");
+        }
+        else
+        {
+            newName = fullFileName;
+        }
+
+        if (QFile::copy(orgSrec->fullName(), newName ))
+        {
+            SrecFile *cloneSrec = new SrecFile(newName, wp);
+            wp->addSrec(cloneSrec, nodeParent);
+
+            //if changes in orgSrec => copy changes to cloneSrec
+            if (!orgSrec->childNodes.isEmpty())
+            {
+                //read file
+                SrecFile* srec= readSrecFile(cloneSrec);
+
+                //get source and destination dataList and copy
+                QList<Data*> listCopySrc = orgSrec->getModifiedData();
+                foreach (Data* dataSrc, listCopySrc)
+                {
+                    Data *dataTrg = srec->getData(dataSrc->getName());
+                    if (dataTrg)
+                    {
+                        dataTrg->copyAllFrom(dataSrc);
+                    }
+                }
+
+                writeOutput("action duplicate file : performed with success");
+                return model->getIndex(srec);
+            }
+            else
+            {
+                writeOutput("action duplicate file : performed with success");
+                return QModelIndex();
+            }
         }
         else
         {
             writeOutput("action duplicate file : not possible");
+            return QModelIndex();
         }
 
     }

@@ -1,6 +1,23 @@
 <HEXplorer application="HEXplorer">
-    <revision version="0.7.12">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
-    <details>revision 0.7.12 (Q3/2016) :
+    <revision version="0.7.13">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
+    <details>revision 0.7.13 (Q4/2016) :
+    TODO:      
+    - improvement : manage tree strcuture (dataset copy/paste, create new folder,...) directly from treeview.
+    - improvement : create kind of experiments...
+    - improvement : copy/paste dataset in treeview
+
+
+    DONE:
+    - improvement : function save dataset improved.
+    - improvement : action "duplicate" dataset, do no save changes in original file and paste new with differences.
+    - improvement : "save_as" dataset create a new node instead of renaming original.
+    - improvement : display files in treeview into OS hardisk file manager.
+    - improvement : shortcut "F5" for reload working directory.
+    - bug correction : duplicate dataset when changes are in.
+    - bug correction : display menu delete file when selecting a non-read data file.    
+    - bug correction : when "save as" data file, retrieve the correct treemodel path.
+
+revision 0.7.12 (Q3/2016) :
     - bug correction : ensure files are still present on disk before parsing.
     - bug correction : application crash when quicklook file after editing characterisitics of the related a2l.
     - bug correction : prevent 2 different a2l files with the same fileName to have the same path in treeview model.

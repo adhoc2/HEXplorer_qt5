@@ -62,7 +62,7 @@ void MyTreeView::startDrag()
     foreach(QModelIndex index, list)
     {
         A2lTreeModel *mod = (A2lTreeModel*)this->model();
-        str.append(mod->getFullNodeName(index) + ";");
+        str.append(mod->getFullNodeTreePath(index) + ";");
     }
     mimeData->setText(str);
 

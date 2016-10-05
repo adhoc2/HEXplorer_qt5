@@ -100,6 +100,8 @@ private:
     int compareTabs;
     QMap<QString, WorkProject*> *projectList;
     QMap<QString, QWidget*> *tabList;
+    QAction *actionUpdateWorkingDirectory;
+    QAction *editInHDrive;
     QAction *importSubsets;
     QAction *exportSubsets;
     QAction *openJScript;
@@ -157,6 +159,7 @@ private:
 
 private slots:
 
+     void editInHDDrive();
      void compare_A2lFile();
      void import_Subsets();
      void export_Subsets();
@@ -235,7 +238,7 @@ private slots:
      void on_actionOpen_Working_Directory_triggered();
      void on_actionClose_Working_Directory_triggered();
      void on_actionUpdateWorkingDirectory_triggered();
-     void on_actionDuplicate_DataContainer_triggered();
+     QModelIndex on_actionDuplicate_DataContainer_triggered(QString fullFileName = "");
      void on_actionRename_file_triggered();
      void completerSelected();
 

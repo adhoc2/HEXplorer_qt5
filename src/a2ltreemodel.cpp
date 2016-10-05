@@ -181,7 +181,7 @@ std::string A2lTreeModel::getNodeName(const QModelIndex &index) const
     }
 }
 
-QString A2lTreeModel::getFullNodeName(const QModelIndex &index) const
+QString A2lTreeModel::getFullNodeTreePath(const QModelIndex &index) const
 {
     Node *node = nodeFromIndex(index);
     if (!node)

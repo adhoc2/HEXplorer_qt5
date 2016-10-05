@@ -63,7 +63,7 @@ void DialogCsv::on_add_all_clicked()
         foreach(Node *data, node->childNodes)
         {
             QModelIndex index = model->getIndex(data);
-            listWidget_2->addItem(model->getFullNodeName(index));
+            listWidget_2->addItem(model->getFullNodeTreePath(index));
         }
     }
 }
