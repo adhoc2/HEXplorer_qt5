@@ -464,7 +464,7 @@
     <string>save Hex</string>
    </property>
    <property name="toolTip">
-    <string>save hex</string>
+    <string>Save hex</string>
    </property>
   </action>
   <action name="actionCompareHex">
@@ -474,6 +474,9 @@
    </property>
    <property name="text">
     <string>compare</string>
+   </property>
+   <property name="toolTip">
+    <string>Compare</string>
    </property>
   </action>
   <action name="actionAbout">
@@ -491,7 +494,7 @@
      <normaloff>:/icones/RootIcon.ico</normaloff>:/icones/RootIcon.ico</iconset>
    </property>
    <property name="text">
-    <string>open session</string>
+    <string>Open session</string>
    </property>
   </action>
   <action name="actionCompare_dataset">
@@ -501,6 +504,9 @@
    </property>
    <property name="text">
     <string>quicklook</string>
+   </property>
+   <property name="toolTip">
+    <string>Quicklook</string>
    </property>
   </action>
   <action name="actionChooseLabels">
@@ -512,7 +518,7 @@
     <string>ChooseLabels</string>
    </property>
    <property name="toolTip">
-    <string>choose labels</string>
+    <string>Choose labels</string>
    </property>
   </action>
   <action name="actionSave_session">
@@ -522,6 +528,9 @@
    </property>
    <property name="text">
     <string>save session</string>
+   </property>
+   <property name="toolTip">
+    <string>Save session</string>
    </property>
   </action>
   <action name="actionCheck_for_updates">
@@ -564,6 +573,9 @@
    </property>
    <property name="text">
     <string>open script</string>
+   </property>
+   <property name="toolTip">
+    <string>Open script</string>
    </property>
   </action>
   <action name="actionEdit_database">

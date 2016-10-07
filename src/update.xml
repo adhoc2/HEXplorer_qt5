@@ -4,10 +4,10 @@
     TODO:      
     - improvement : manage tree strcuture (dataset copy/paste, create new folder,...) directly from treeview.
     - improvement : create kind of experiments...
-    - improvement : copy/paste dataset in treeview
-
+    - improvement : inform user when opening a WD on the net which takes a lot of time.
 
     DONE:
+    - improvement : copy/paste dataset in treeview
     - improvement : function save dataset improved.
     - improvement : action "duplicate" dataset, do no save changes in original file and paste new with differences.
     - improvement : "save_as" dataset create a new node instead of renaming original.

@@ -168,6 +168,11 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
     connect(ui->treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(nodeSelected()));
     connect(ui->tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(removeTab(int)));
 
+    //clipboard
+    indexClipBoard = QModelIndex();
+    nodeClipBoard = nullptr;
+    pathClipBoard = "";
+
     //check for updates
     //connect(this, SIGNAL(checkUpdates()), this, SLOT(initCheckHttpUpdates()), Qt::QueuedConnection);
     //connect(this, SIGNAL(checkUpdates()), this, SLOT(initCheckGitUpdates()), Qt::QueuedConnection);
@@ -257,41 +262,53 @@ void MDImain::createActions()
         connect(recentFileActs[i], SIGNAL(triggered()), this, SLOT(openRecentFile()));
     }
 
-    editInHDrive = new QAction(tr("show file or folder on disk"), this);
+    copyDataset = new QAction(tr("Copy"), this);
+    copyDataset->setIcon(QIcon(":/icones/copy.png"));
+    copyDataset->setShortcut(Qt::CTRL + Qt::Key_C);
+    connect(copyDataset, SIGNAL(triggered()), this, SLOT(onCopyDataset()));
+    copyDataset->setDisabled(true);
+
+    pasteDataset = new QAction(tr("Paste"), this);
+    pasteDataset->setIcon(QIcon(":/icones/paste.png"));
+    pasteDataset->setShortcut(Qt::CTRL + Qt::Key_V);
+    connect(pasteDataset, SIGNAL(triggered()), this, SLOT(onPasteDataset()));
+    pasteDataset->setDisabled(true);
+
+    editInHDrive = new QAction(tr("Show file or folder on disk"), this);
     connect(editInHDrive, SIGNAL(triggered()), this, SLOT(editInHDDrive()));
     editInHDrive->setDisabled(true);
 
-    importSubsets = new QAction(tr("import subsets"), this);
+    importSubsets = new QAction(tr("Import subsets"), this);
     importSubsets->setIcon(QIcon(":/icones/milky_importSubset.png"));
     connect(importSubsets, SIGNAL(triggered()), this, SLOT(import_Subsets()));
     importSubsets->setDisabled(true);
 
-    exportSubsets = new QAction(tr("export subsets"), this);
+    exportSubsets = new QAction(tr("Export subsets"), this);
     exportSubsets->setIcon(QIcon(":/icones/milky_exportSubset.png"));
     connect(exportSubsets, SIGNAL(triggered()), this, SLOT(export_Subsets()));
     exportSubsets->setDisabled(true);
 
-    openJScript = new QAction(tr("run java script"), this);
+    openJScript = new QAction(tr("Run java script"), this);
     openJScript->setIcon(QIcon(":/icones/run.png"));
     connect(openJScript, SIGNAL(triggered()), this, SLOT(newFormScript()));
     openJScript->setDisabled(true);
 
-    editMeasChannels = new QAction(tr("edit measuring channels"), this);
+    editMeasChannels = new QAction(tr("Edit measuring channels"), this);
     editMeasChannels->setIcon(QIcon(":/icones/milky_peigne.png"));
     connect(editMeasChannels, SIGNAL(triggered()), this, SLOT(editMeasuringChannels()));
     editMeasChannels->setDisabled(true);
 
-    editCharacteristics = new QAction(tr("edit characteristics"), this);
+    editCharacteristics = new QAction(tr("Edit characteristics"), this);
     editCharacteristics->setIcon(QIcon(":/icones/milky_outils.png"));
     connect(editCharacteristics, SIGNAL(triggered()), this, SLOT(editChar()));
     editCharacteristics->setDisabled(true);
 
-    exportListData = new QAction(tr("export list"), this);
+    exportListData = new QAction(tr("Export list"), this);
     exportListData->setIcon(QIcon(":/icones/export.png"));
     connect(exportListData, SIGNAL(triggered()), this, SLOT(export_ListData()));
     exportListData->setDisabled(false);
 
-    deleteProject = new QAction(tr("remove project"), this);
+    deleteProject = new QAction(tr("Remove project"), this);
     deleteProject->setIcon(QIcon(":/icones/milky_ciseau.png"));
     deleteProject->setShortcut(Qt::Key_Delete);
     connect(deleteProject, SIGNAL(triggered()), this, SLOT(removeWorkProjects()));
@@ -322,23 +339,23 @@ void MDImain::createActions()
     connect(addDcmFile, SIGNAL(triggered()), this, SLOT(addDcmFile2Project()));
     addDcmFile->setDisabled(true);
 
-    resetAllChangedData = new QAction(tr("reset all changes"), this);
+    resetAllChangedData = new QAction(tr("Reset all changes"), this);
     resetAllChangedData->setIcon(QIcon(":/icones/milky_resetAll.png"));
     resetAllChangedData->setShortcut(Qt::CTRL + Qt::Key_U);
     connect(resetAllChangedData, SIGNAL(triggered()), this, SLOT(reset_AllChangedData()));
     resetAllChangedData->setDisabled(true);
 
-    sortBySubset = new QAction(tr("sort changes by subset"), this);
+    sortBySubset = new QAction(tr("Sort changes by subset"), this);
     sortBySubset->setIcon(QIcon(":/icones/viewtree.png"));
     connect(sortBySubset, SIGNAL(triggered()), this, SLOT(sort_BySubset()));
     sortBySubset->setDisabled(true);
 
-    editFile = new QAction(tr("edit as text"), this);
+    editFile = new QAction(tr("Edit as text"), this);
     editFile->setIcon(QIcon(":/icones/milky_editText.png"));
     connect(editFile, SIGNAL(triggered()), this, SLOT(editTextFile()));
     editFile->setDisabled(true);
 
-    deleteFile = new QAction(tr("remove file from project"), this);
+    deleteFile = new QAction(tr("Remove file from project"), this);
     deleteFile->setIcon(QIcon(":/icones/milky_ciseau.png"));
     deleteFile->setShortcut(Qt::Key_Delete);
     connect(deleteFile, SIGNAL(triggered()), this, SLOT(deleteFilesFromProject()));
@@ -356,77 +373,77 @@ void MDImain::createActions()
     connect(saveAsFile, SIGNAL(triggered()), this, SLOT(saveAs_File()));
     saveAsFile->setDisabled(true);
 
-    compareHexFile = new QAction(tr("compare dataset"), this);
+    compareHexFile = new QAction(tr("Compare dataset"), this);
     compareHexFile->setIcon(QIcon(":/icones/copy.png"));
     connect(compareHexFile, SIGNAL(triggered()), this, SLOT(compare_HexFile()));
     compareHexFile->setDisabled(false);
 
-    compareA2lFile = new QAction(tr("compare A2L files"), this);
+    compareA2lFile = new QAction(tr("Compare A2L files"), this);
     compareA2lFile->setIcon(QIcon(":/icones/copy.png"));
     connect(compareA2lFile, SIGNAL(triggered()), this, SLOT(compare_A2lFile()));
     compareA2lFile->setDisabled(false);
 
-    quicklook = new QAction(tr("quicklook"), this);
+    quicklook = new QAction(tr("Quicklook"), this);
     quicklook->setIcon(QIcon(":/icones/milky_loopHex.png"));
     quicklook->setShortcut(Qt::Key_Space);
     connect(quicklook, SIGNAL(triggered()), this, SLOT(quicklookFile()));
     quicklook->setDisabled(true);
 
-    resetData = new QAction(tr("reset data"), this);
+    resetData = new QAction(tr("Reset data"), this);
     resetData->setIcon(QIcon(":/icones/milky_resetAll.png"));
     connect(resetData, SIGNAL(triggered()), this, SLOT(reset_Data()));
 
-    clearOutput = new QAction(tr("clear"), this);
+    clearOutput = new QAction(tr("Clear"), this);
     clearOutput->setIcon(QIcon(":/icones/milky_pinceau.png"));
     connect(clearOutput, SIGNAL(triggered()), this, SLOT(clear_Output()));
 
-    plotData = new QAction(tr("plot"), this);
+    plotData = new QAction(tr("Plot"), this);
     plotData->setIcon(QIcon(":/icones/AXIS.bmp"));
     plotData->setStatusTip(tr("plot"));
     connect(plotData, SIGNAL(triggered()), this, SLOT(fplotData()));
 
-    readValuesFromCsv = new QAction(tr("import CSV values"), this);
+    readValuesFromCsv = new QAction(tr("Import CSV values"), this);
     readValuesFromCsv->setIcon(QIcon(":/icones/milky_importCsv.png"));
     readValuesFromCsv->setDisabled(true);
     connect(readValuesFromCsv, SIGNAL(triggered()), this, SLOT(read_ValuesFromCsv()));
 
-    readValuesFromCdfx = new QAction(tr("import CDF values"), this);
+    readValuesFromCdfx = new QAction(tr("Import CDF values"), this);
     readValuesFromCdfx->setIcon(QIcon(":/icones/milky_importCdfx.png"));
     readValuesFromCdfx->setDisabled(true);
     connect(readValuesFromCdfx, SIGNAL(triggered()), this, SLOT(read_ValuesFromCdfx()));
 
-    showParam = new QAction(tr("show fix parameters"), this);
+    showParam = new QAction(tr("Show fix parameters"), this);
     connect(showParam, SIGNAL(triggered()), this, SLOT(showFixPar()));
     showParam->setDisabled(true);
 
-    childCount = new QAction(tr("count elements"), this);
+    childCount = new QAction(tr("Count elements"), this);
     connect(childCount, SIGNAL(triggered()), this, SLOT(countChild()));
     childCount->setDisabled(true);
 
-    verify = new QAction(tr("verify"), this);
+    verify = new QAction(tr("Verify"), this);
     connect(verify, SIGNAL(triggered()), this, SLOT(verifyMaxTorque()));
     verify->setDisabled(true);
 
-    checkFmtc = new QAction(tr("check FMTC monotony"), this);
+    checkFmtc = new QAction(tr("Check FMTC monotony"), this);
     connect(checkFmtc, SIGNAL(triggered()), this, SLOT(checkFmtcMonotony()));
     checkFmtc->setDisabled(true);
 
-    editChanged = new QAction(tr("edit all changes"), this);
+    editChanged = new QAction(tr("Edit all changes"), this);
     editChanged->setIcon(QIcon(":/icones/milky_find.png"));
     connect(editChanged, SIGNAL(triggered()), this, SLOT(editChangedLabels()));
     editChanged->setDisabled(true);
 
-    editLabel= new QAction(tr("edit"), this);
+    editLabel= new QAction(tr("Edit"), this);
     editLabel->setIcon(QIcon(":/icones/eye.png"));
     connect(editLabel, SIGNAL(triggered()), this, SLOT(edit()));
     editLabel->setDisabled(false);
 
-    editLabelCompare= new QAction(tr("edit"), this);
+    editLabelCompare= new QAction(tr("Edit"), this);
     editLabelCompare->setIcon(QIcon(":/icones/eye.png"));
     connect(editLabelCompare, SIGNAL(triggered()), this, SLOT(editCompare()));
     editLabelCompare->setDisabled(false);
 
-    saveA2lDB = new QAction(tr("save A2l into DB"), this);
+    saveA2lDB = new QAction(tr("Save A2l into DB"), this);
     saveA2lDB->setIcon(QIcon(":/icones/milky_exportBaril.png"));
     connect(saveA2lDB, SIGNAL(triggered()), this, SLOT(exportA2lDb()));
     saveA2lDB->setDisabled(true);
@@ -500,6 +517,8 @@ void MDImain::initToolBars()
     ui->toolBar_data->addAction(resetAllChangedData);
     ui->toolBar_data->addAction(sortBySubset);
     ui->toolBar_data->addSeparator();
+    ui->toolBar_data->addAction(copyDataset);
+    ui->toolBar_data->addAction(pasteDataset);
     ui->toolBar_data->addAction(duplicateDatacontainer);
     ui->toolBar_data->addAction(ui->actionRename_file);
     ui->toolBar_data->addAction(saveFile);
@@ -571,6 +590,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionClose_Working_Directory->setEnabled(false);
         ui->actionRename_file->setEnabled(false);
         ui->actionUpdateWorkingDirectory->setEnabled(false);
+        copyDataset->setEnabled(false);
+        pasteDataset->setEnabled(true);
     }
     else if (name.endsWith("WorkProject"))
     {
@@ -604,6 +625,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionRename_file->setEnabled(false);
         editInHDrive->setEnabled(true);
         ui->actionUpdateWorkingDirectory->setEnabled(false);
+        copyDataset->setEnabled(false);
+        pasteDataset->setEnabled(true);
     }
     else if (name.endsWith("DBFILE"))
     {
@@ -637,6 +660,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionRename_file->setEnabled(false);
         editInHDrive->setEnabled(false);
         ui->actionUpdateWorkingDirectory->setEnabled(false);
+        copyDataset->setEnabled(false);
+        pasteDataset->setEnabled(false);
     }
     else if (name.endsWith("HexFile"))
     {
@@ -669,6 +694,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionRename_file->setEnabled(true);
         editInHDrive->setEnabled(true);
         ui->actionUpdateWorkingDirectory->setEnabled(false);
+        copyDataset->setEnabled(true);
+        pasteDataset->setEnabled(true);
 
         ui->toolBar_data->show();
 
@@ -704,6 +731,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         duplicateDatacontainer->setEnabled(true);
         editInHDrive->setEnabled(true);
         ui->actionUpdateWorkingDirectory->setEnabled(false);
+        copyDataset->setEnabled(true);
+        pasteDataset->setEnabled(true);
 
 
         ui->toolBar_data->show();
@@ -740,6 +769,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         duplicateDatacontainer->setEnabled(false);
         editInHDrive->setEnabled(true);
         ui->actionUpdateWorkingDirectory->setEnabled(false);
+        copyDataset->setEnabled(false);
+        pasteDataset->setEnabled(false);
 
         ui->toolBar_data->show();
     }
@@ -773,6 +804,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         duplicateDatacontainer->setEnabled(false);
         editInHDrive->setEnabled(true);
         ui->actionUpdateWorkingDirectory->setEnabled(false);
+        copyDataset->setEnabled(false);
+        pasteDataset->setEnabled(false);
 
         ui->toolBar_data->show();
     }  
@@ -806,6 +839,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         duplicateDatacontainer->setEnabled(false);
         editInHDrive->setEnabled(true);
         ui->actionUpdateWorkingDirectory->setEnabled(false);
+        copyDataset->setEnabled(false);
+        pasteDataset->setEnabled(false);
 
         ui->toolBar_data->show();
     }
@@ -842,6 +877,8 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionRename_file->setEnabled(false);
         duplicateDatacontainer->setEnabled(false);
         editInHDrive->setEnabled(true);
+        copyDataset->setEnabled(false);
+        pasteDataset->setEnabled(false);
 
     }
     else
@@ -958,6 +995,8 @@ void MDImain::showContextMenu(QPoint)
                 menu.addMenu(toolsMenu);
                 menu.addSeparator();
                 //menu.addAction(ui->actionDuplicate_DataContainer);
+                menu.addAction(copyDataset);
+                menu.addAction(pasteDataset);
                 menu.addAction(duplicateDatacontainer);
                 menu.addAction(ui->actionRename_file);
                 menu.addAction(saveFile);
@@ -1022,6 +1061,8 @@ void MDImain::showContextMenu(QPoint)
                 menu.addAction(sortBySubset);
                 menu.addMenu(toolsMenu);
                 menu.addSeparator();
+                menu.addAction(copyDataset);
+                menu.addAction(pasteDataset);
                 menu.addAction(duplicateDatacontainer);
                 menu.addAction(ui->actionRename_file);
                 menu.addAction(saveFile);
@@ -1062,6 +1103,7 @@ void MDImain::showContextMenu(QPoint)
                         menu.addAction(deleteProject);
                         menu.addAction(editFile);
                         menu.addSeparator();
+                        menu.addAction(pasteDataset);
                         menu.addAction(addHexFile);
                         menu.addAction(addSrecFile);
                         menu.addAction(addCsvFile);
@@ -1116,6 +1158,7 @@ void MDImain::showContextMenu(QPoint)
                         menu.addAction(deleteProject);
                         menu.addAction(editFile);
                         menu.addSeparator();
+                        menu.addAction(pasteDataset);
                         menu.addAction(addHexFile);
                         menu.addAction(addSrecFile);
                         menu.addAction(addCsvFile);
@@ -1395,7 +1438,7 @@ void MDImain::on_actionAbout_triggered()
                    "   - Qwt 6.1.2 (as 2D graph plotter)\n"
                    "   - QwtPlot3D 0.3.1a (as 3D graph plotter)\n\n"
                    "Please visit the following link for more information :\n"
-                    "http://lmbhoc1.github.io/HEXplorer/";
+                    "https://github.com/adhoc2/HEXplorer";
 
     QTextCodec *codec = QTextCodec::codecForName("ISO 8859-1");
     QString string = codec->toUnicode(encodedString);
@@ -6357,7 +6400,6 @@ QModelIndex  MDImain::on_actionDuplicate_DataContainer_triggered(QString fullFil
     //get a pointer on the selected item
     Node *node =  model->getNode(index);
     QString name = typeid(*node).name();
-
     Node* nodeParent = node->getParentNode();
 
     if (name.toLower().endsWith("hexfile"))
@@ -6371,11 +6413,20 @@ QModelIndex  MDImain::on_actionDuplicate_DataContainer_triggered(QString fullFil
 
         // copy the file
         QString orgName = orgHex->fullName();
-        QString baseName = QFileInfo(orgName).baseName();
-        QString newName = "";
+        QString baseOrgName = QFileInfo(orgName).baseName();
+        QString baseName = baseOrgName;
+        QString newName = orgName;
         if (fullFileName.isEmpty())
         {
-            newName = orgName.replace(baseName, baseName + "_copy");
+            int i = 1;
+            bool check = true;
+            while (check)
+            {
+                newName = newName.replace(baseName, baseOrgName + " (" + QString::number(i) + ")");
+                baseName = QFileInfo(newName).baseName();
+                check = QFile(newName).exists();
+                i++;
+            }
         }
         else
         {
@@ -6428,11 +6479,20 @@ QModelIndex  MDImain::on_actionDuplicate_DataContainer_triggered(QString fullFil
 
         // copy the file
         QString orgName = orgSrec->fullName();
-        QString baseName = QFileInfo(orgName).baseName();
-        QString newName = "";
+        QString baseOrgName = QFileInfo(orgName).baseName();
+        QString baseName = baseOrgName;
+        QString newName = orgName;
         if (fullFileName.isEmpty())
         {
-            newName = orgName.replace(baseName, baseName + "_copy");
+            int i = 1;
+            bool check = true;
+            while (check)
+            {
+                newName = newName.replace(baseName, baseOrgName + " (" + QString::number(i) + ")");
+                baseName = QFileInfo(newName).baseName();
+                check = QFile(newName).exists();
+                i++;
+            }
         }
         else
         {
@@ -6486,6 +6546,171 @@ void MDImain::on_actionRename_file_triggered()
     QModelIndex index  = ui->treeView->selectionModel()->currentIndex();
     ui->treeView->edit(index);
 
+}
+
+void MDImain::onCopyDataset()
+{
+    //get hexFiles path
+    indexClipBoard  = ui->treeView->selectionModel()->currentIndex();
+    nodeClipBoard =  model->getNode(indexClipBoard);
+    QString name = typeid(*nodeClipBoard).name();
+    if (name.toLower().endsWith("hexfile"))
+    {
+         HexFile *hex = dynamic_cast<HexFile *> (nodeClipBoard);
+         pathClipBoard = hex->fullName();
+    }
+    else if(name.toLower().endsWith("srecfile"))
+    {
+         SrecFile *srec = dynamic_cast<SrecFile *> (nodeClipBoard);
+         pathClipBoard = srec->fullName();
+    }
+}
+
+void MDImain::onPasteDataset()
+{
+    if (nodeClipBoard == nullptr || !indexClipBoard.isValid())
+    {
+        return;
+    }
+
+    //check the index before pasting
+    if (!QFile(pathClipBoard).exists())
+    {
+        QMessageBox::warning(this, "HEXplorer :: Paste action.",
+                             "Could not find this item.\n"
+                             "Dataset with path " + pathClipBoard + " is no longer available on disk.");
+
+        return;
+    }
+
+
+    if (nodeClipBoard != model->getRootNode())
+    {
+        Node* nodeParent = nodeClipBoard->getParentNode();
+        QString name = typeid(*nodeClipBoard).name();
+
+        if (name.toLower().endsWith("hexfile"))
+        {
+            //As the selected node is an Hex file we can cast the node into its real type : HexFile
+            HexFile *orgHex = dynamic_cast<HexFile *> (nodeClipBoard);
+
+            //get the parentWp of the HexFile
+            WorkProject *wp = orgHex->getParentWp();
+
+            // copy the file
+            QString orgName = orgHex->fullName();
+            QString baseOrgName = QFileInfo(orgName).baseName();
+            QString baseName = baseOrgName;
+            QString newName = orgName;
+            int i = 1;
+            bool check = true;
+            while (check)
+            {
+                newName = newName.replace(baseName, baseOrgName + " (" + QString::number(i) + ")");
+                baseName = QFileInfo(newName).baseName();
+                check = QFile(newName).exists();
+                i++;
+            }
+
+
+            if (QFile::copy(orgHex->fullName(), newName ))
+            {
+                HexFile *cloneHex = new HexFile(newName, wp);
+                wp->addHex(cloneHex, nodeParent);
+
+                //if changes in orgSrec => copy changes to cloneSrec
+                if (!orgHex->childNodes.isEmpty())
+                {
+                    //read file
+                    HexFile* hex= readHexFile(cloneHex);
+
+                    //get source and destination dataList and copy
+                    QList<Data*> listCopySrc = orgHex->getModifiedData();
+                    foreach (Data* dataSrc, listCopySrc)
+                    {
+                        Data *dataTrg = hex->getData(dataSrc->getName());
+                        if (dataTrg)
+                        {
+                            dataTrg->copyAllFrom(dataSrc);
+                        }
+                    }
+
+                    writeOutput("action paste file : performed with success");
+
+                    return;
+                }
+                else
+                    return;
+            }
+            else
+            {
+                writeOutput("action paste file : not possible");
+                return;
+            }
+
+        }
+        else if (name.toLower().endsWith("srecfile"))
+        {
+            //As the selected node is an Hex file we can cast the node into its real type : HexFile
+            SrecFile *orgSrec = dynamic_cast<SrecFile *> (nodeClipBoard);
+
+            //get the parentWp of the HexFile
+            WorkProject *wp = orgSrec->getParentWp();
+
+            // copy the file
+            QString orgName = orgSrec->fullName();
+            QString baseOrgName = QFileInfo(orgName).baseName();
+            QString baseName = baseOrgName;
+            QString newName = orgName;
+            int i = 1;
+            bool check = true;
+            while (check)
+            {
+                newName = newName.replace(baseName, baseOrgName + " (" + QString::number(i) + ")");
+                baseName = QFileInfo(newName).baseName();
+                check = QFile(newName).exists();
+                i++;
+            }
+
+            if (QFile::copy(orgSrec->fullName(), newName ))
+            {
+                SrecFile *cloneSrec = new SrecFile(newName, wp);
+                wp->addSrec(cloneSrec, nodeParent);
+
+                //if changes in orgSrec => copy changes to cloneSrec
+                if (!orgSrec->childNodes.isEmpty())
+                {
+                    //read file
+                    SrecFile* srec= readSrecFile(cloneSrec);
+
+                    //get source and destination dataList and copy
+                    QList<Data*> listCopySrc = orgSrec->getModifiedData();
+                    foreach (Data* dataSrc, listCopySrc)
+                    {
+                        Data *dataTrg = srec->getData(dataSrc->getName());
+                        if (dataTrg)
+                        {
+                            dataTrg->copyAllFrom(dataSrc);
+                        }
+                    }
+
+                    writeOutput("action paste file : performed with success");
+                    return;
+                }
+                else
+                {
+                    writeOutput("action paste file : performed with success");
+                    return;
+                }
+            }
+            else
+            {
+                writeOutput("action paste file : not possible");
+                return;
+            }
+
+        }
+    }
 }
 
 //-------------------- TabList ---------------------//

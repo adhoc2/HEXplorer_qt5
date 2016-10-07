@@ -100,6 +100,8 @@ private:
     int compareTabs;
     QMap<QString, WorkProject*> *projectList;
     QMap<QString, QWidget*> *tabList;
+    QAction *copyDataset;
+    QAction *pasteDataset;
     QAction *actionUpdateWorkingDirectory;
     QAction *editInHDrive;
     QAction *importSubsets;
@@ -140,6 +142,9 @@ private:
     QMenu *toolsMenu;
     QMenu *recentProMenu;
     QWidget *myWidget;
+    QModelIndex indexClipBoard;
+    Node* nodeClipBoard;
+    QString pathClipBoard;
 
     void initToolBars();
     void createActions();
@@ -240,6 +245,8 @@ private slots:
      void on_actionUpdateWorkingDirectory_triggered();
      QModelIndex on_actionDuplicate_DataContainer_triggered(QString fullFileName = "");
      void on_actionRename_file_triggered();
+     void onCopyDataset();
+     void onPasteDataset();
      void completerSelected();
 
 public slots:
