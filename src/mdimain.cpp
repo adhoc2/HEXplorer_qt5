@@ -6550,7 +6550,25 @@ void MDImain::on_actionRename_file_triggered()
 
 void MDImain::onCopyDataset()
 {
-    //get hexFiles path
+    //remove previous node from hex/srec owner list
+    if (nodeClipBoard)
+    {
+        QString name = typeid(*nodeClipBoard).name();
+        if (name.toLower().endsWith("hexfile"))
+        {
+           HexFile *hex = dynamic_cast<HexFile *> (nodeClipBoard);
+           hex->detach(this);
+
+        }
+        else if(name.toLower().endsWith("srecfile"))
+        {
+            SrecFile *srec = dynamic_cast<SrecFile *> (nodeClipBoard);
+            srec->detach(this);
+
+        }
+    }
+
+    //get the dataset information in Clipboard
     indexClipBoard  = ui->treeView->selectionModel()->currentIndex();
     nodeClipBoard =  model->getNode(indexClipBoard);
     QString name = typeid(*nodeClipBoard).name();
@@ -6558,23 +6576,29 @@ void MDImain::onCopyDataset()
     {
          HexFile *hex = dynamic_cast<HexFile *> (nodeClipBoard);
          pathClipBoard = hex->fullName();
+         hex->attach(this);
+
+
     }
     else if(name.toLower().endsWith("srecfile"))
     {
          SrecFile *srec = dynamic_cast<SrecFile *> (nodeClipBoard);
          pathClipBoard = srec->fullName();
+         srec->attach(this);
     }
 }
 
 void MDImain::onPasteDataset()
 {
-    if (nodeClipBoard == nullptr || !indexClipBoard.isValid())
+    if (!indexClipBoard.isValid()) //index not valid.
     {
         return;
     }
-
-    //check the index before pasting
-    if (!QFile(pathClipBoard).exists())
+    else if (nodeClipBoard == nullptr || nodeClipBoard == model->getRootNode()) //pointer null
+    {
+        return;
+    }
+    else if (!QFile(pathClipBoard).exists()) //file is deleted.
     {
         QMessageBox::warning(this, "HEXplorer :: Paste action.",
                              "Could not find this item.\n"
@@ -6582,134 +6606,132 @@ void MDImain::onPasteDataset()
 
         return;
     }
-
-
-    if (nodeClipBoard != model->getRootNode())
+    else
     {
-        Node* nodeParent = nodeClipBoard->getParentNode();
-        QString name = typeid(*nodeClipBoard).name();
+            Node* nodeParent = nodeClipBoard->getParentNode();
+            QString name = typeid(*nodeClipBoard).name();
 
-        if (name.toLower().endsWith("hexfile"))
-        {
-            //As the selected node is an Hex file we can cast the node into its real type : HexFile
-            HexFile *orgHex = dynamic_cast<HexFile *> (nodeClipBoard);
-
-            //get the parentWp of the HexFile
-            WorkProject *wp = orgHex->getParentWp();
-
-            // copy the file
-            QString orgName = orgHex->fullName();
-            QString baseOrgName = QFileInfo(orgName).baseName();
-            QString baseName = baseOrgName;
-            QString newName = orgName;
-            int i = 1;
-            bool check = true;
-            while (check)
+            if (name.toLower().endsWith("hexfile"))
             {
-                newName = newName.replace(baseName, baseOrgName + " (" + QString::number(i) + ")");
-                baseName = QFileInfo(newName).baseName();
-                check = QFile(newName).exists();
-                i++;
-            }
+                //As the selected node is an Hex file we can cast the node into its real type : HexFile
+                HexFile *orgHex = dynamic_cast<HexFile *> (nodeClipBoard);
 
+                //get the parentWp of the HexFile
+                WorkProject *wp = orgHex->getParentWp();
 
-            if (QFile::copy(orgHex->fullName(), newName ))
-            {
-                HexFile *cloneHex = new HexFile(newName, wp);
-                wp->addHex(cloneHex, nodeParent);
-
-                //if changes in orgSrec => copy changes to cloneSrec
-                if (!orgHex->childNodes.isEmpty())
+                // copy the file
+                QString orgName = orgHex->fullName();
+                QString baseOrgName = QFileInfo(orgName).baseName();
+                QString baseName = baseOrgName;
+                QString newName = orgName;
+                int i = 1;
+                bool check = true;
+                while (check)
                 {
-                    //read file
-                    HexFile* hex= readHexFile(cloneHex);
-
-                    //get source and destination dataList and copy
-                    QList<Data*> listCopySrc = orgHex->getModifiedData();
-                    foreach (Data* dataSrc, listCopySrc)
-                    {
-                        Data *dataTrg = hex->getData(dataSrc->getName());
-                        if (dataTrg)
-                        {
-                            dataTrg->copyAllFrom(dataSrc);
-                        }
-                    }
-
-                    writeOutput("action paste file : performed with success");
-
-                    return;
+                    newName = newName.replace(baseName, baseOrgName + " (" + QString::number(i) + ")");
+                    baseName = QFileInfo(newName).baseName();
+                    check = QFile(newName).exists();
+                    i++;
                 }
-                else
-                    return;
-            }
-            else
-            {
-                writeOutput("action paste file : not possible");
-                return;
-            }
 
-        }
-        else if (name.toLower().endsWith("srecfile"))
-        {
-            //As the selected node is an Hex file we can cast the node into its real type : HexFile
-            SrecFile *orgSrec = dynamic_cast<SrecFile *> (nodeClipBoard);
 
-            //get the parentWp of the HexFile
-            WorkProject *wp = orgSrec->getParentWp();
-
-            // copy the file
-            QString orgName = orgSrec->fullName();
-            QString baseOrgName = QFileInfo(orgName).baseName();
-            QString baseName = baseOrgName;
-            QString newName = orgName;
-            int i = 1;
-            bool check = true;
-            while (check)
-            {
-                newName = newName.replace(baseName, baseOrgName + " (" + QString::number(i) + ")");
-                baseName = QFileInfo(newName).baseName();
-                check = QFile(newName).exists();
-                i++;
-            }
-
-            if (QFile::copy(orgSrec->fullName(), newName ))
-            {
-                SrecFile *cloneSrec = new SrecFile(newName, wp);
-                wp->addSrec(cloneSrec, nodeParent);
-
-                //if changes in orgSrec => copy changes to cloneSrec
-                if (!orgSrec->childNodes.isEmpty())
+                if (QFile::copy(orgHex->fullName(), newName ))
                 {
-                    //read file
-                    SrecFile* srec= readSrecFile(cloneSrec);
+                    HexFile *cloneHex = new HexFile(newName, wp);
+                    wp->addHex(cloneHex, nodeParent);
 
-                    //get source and destination dataList and copy
-                    QList<Data*> listCopySrc = orgSrec->getModifiedData();
-                    foreach (Data* dataSrc, listCopySrc)
+                    //if changes in orgSrec => copy changes to cloneSrec
+                    if (!orgHex->childNodes.isEmpty())
                     {
-                        Data *dataTrg = srec->getData(dataSrc->getName());
-                        if (dataTrg)
-                        {
-                            dataTrg->copyAllFrom(dataSrc);
-                        }
-                    }
+                        //read file
+                        HexFile* hex= readHexFile(cloneHex);
 
-                    writeOutput("action paste file : performed with success");
-                    return;
+                        //get source and destination dataList and copy
+                        QList<Data*> listCopySrc = orgHex->getModifiedData();
+                        foreach (Data* dataSrc, listCopySrc)
+                        {
+                            Data *dataTrg = hex->getData(dataSrc->getName());
+                            if (dataTrg)
+                            {
+                                dataTrg->copyAllFrom(dataSrc);
+                            }
+                        }
+
+                        writeOutput("action paste file : performed with success");
+
+                        return;
+                    }
+                    else
+                        return;
                 }
                 else
                 {
-                    writeOutput("action paste file : performed with success");
+                    writeOutput("action paste file : not possible");
                     return;
                 }
-            }
-            else
-            {
-                writeOutput("action paste file : not possible");
-                return;
-            }
 
-        }
+            }
+            else if (name.toLower().endsWith("srecfile"))
+            {
+                //As the selected node is an Hex file we can cast the node into its real type : HexFile
+                SrecFile *orgSrec = dynamic_cast<SrecFile *> (nodeClipBoard);
+
+                //get the parentWp of the HexFile
+                WorkProject *wp = orgSrec->getParentWp();
+
+                // copy the file
+                QString orgName = orgSrec->fullName();
+                QString baseOrgName = QFileInfo(orgName).baseName();
+                QString baseName = baseOrgName;
+                QString newName = orgName;
+                int i = 1;
+                bool check = true;
+                while (check)
+                {
+                    newName = newName.replace(baseName, baseOrgName + " (" + QString::number(i) + ")");
+                    baseName = QFileInfo(newName).baseName();
+                    check = QFile(newName).exists();
+                    i++;
+                }
+
+                if (QFile::copy(orgSrec->fullName(), newName ))
+                {
+                    SrecFile *cloneSrec = new SrecFile(newName, wp);
+                    wp->addSrec(cloneSrec, nodeParent);
+
+                    //if changes in orgSrec => copy changes to cloneSrec
+                    if (!orgSrec->childNodes.isEmpty())
+                    {
+                        //read file
+                        SrecFile* srec= readSrecFile(cloneSrec);
+
+                        //get source and destination dataList and copy
+                        QList<Data*> listCopySrc = orgSrec->getModifiedData();
+                        foreach (Data* dataSrc, listCopySrc)
+                        {
+                            Data *dataTrg = srec->getData(dataSrc->getName());
+                            if (dataTrg)
+                            {
+                                dataTrg->copyAllFrom(dataSrc);
+                            }
+                        }
+
+                        writeOutput("action paste file : performed with success");
+                        return;
+                    }
+                    else
+                    {
+                        writeOutput("action paste file : performed with success");
+                        return;
+                    }
+                }
+                else
+                {
+                    writeOutput("action paste file : not possible");
+                    return;
+                }
+
+            }
     }
 }
 

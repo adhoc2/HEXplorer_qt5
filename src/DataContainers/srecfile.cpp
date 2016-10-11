@@ -2199,6 +2199,7 @@ void SrecFile::detach(QObject *o)
     //remove self after last one
     if(owners.size() == 0)
     {
+        qDebug() << "Srec : " << (Node*)this << this->name << " deleted";
         delete this;
     }
 }
