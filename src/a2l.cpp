@@ -27,6 +27,7 @@
 #include <QtConcurrent/QtConcurrent>
 #include <QFutureWatcher>
 #include <QProgressDialog>
+#include <QTextEdit>
 
 #include "a2l.h"
 #include "hexfile.h"
@@ -96,7 +97,7 @@ void A2l::parse()
     //parse in 1 or 2 threads based on processor architecture
     bool myDebug = 0;
 #ifdef MY_DEBUG
-    myDebug = 1;
+    myDebug = 0;
 #endif
     QString multiThread = "";
     QString lexerType = "";
@@ -137,48 +138,21 @@ void A2l::parse()
 
 void A2l::parseSTA2l()
 {
-//    QFile file(fullA2lName);
-//    if (!file.open(QFile::ReadOnly))
-//    {
-//        this->outputList.append("Cannot read file " + this->fullA2lName);
-//        return;
-//    }
-
-//    QTextStream in1(&file);
-//    QString str;
-//    str = in1.readAll();
-//    file.close();
-
-    // create a stream into the file (Merci Oscar...)
-    // open the file in binary mode "rb" to get the right file length
-    // when openinig in ascci mode "r", the \r are cancelled when calling fread()
-
-    if (!QFile(fullA2lName).exists())
+    //open the selected file
+    QFile file(fullA2lName);
+    if (!file.open(QIODevice::ReadOnly))
     {
-        this->outputList.append("action open new workproject : cancelled because file does not exist on drive. Please reload the working directory.");
-        is_Ok = false;
+        this->outputList.append("Cannot read file " + fullA2lName);
         return;
     }
 
-    FILE* fid = fopen(fullA2lName.toLocal8Bit(),"r");
-    if (!fid)
-    {
-        this->outputList.append("Cannot read file " + this->fullA2lName);
-        is_Ok = false;
-        return;
-    }
+    size_t size = file.size();
+    char* buffer = new char[size];
+    file.read(buffer, size);
+    file.close();
 
-    // obtain file size:
-    fseek(fid, 0, SEEK_END);
-    long size = ftell(fid);
-    rewind(fid);
-
-    // allocate memory to contain the whole file:
-    char* buffer = (char*)malloc((size)*sizeof(char));
-
-    // copy the file into the buffer:
-    fread(buffer, sizeof(char), size, fid);
-    fclose(fid);
+    //save the buffer into a QString for splitting
+    QString str = QString::fromLocal8Bit(buffer, size);
 
     // set the maximum for the progressbar
     progBarMaxValue = size;
@@ -190,13 +164,13 @@ void A2l::parseSTA2l()
     if (settings.value("lexer") == "Quex")
     {
         //save the buffer into a stringstream qluex
-        std::istringstream in(buffer);
+        std::istringstream in(str.toStdString());
 
         //start the tokeniser Quex
         lexer = new A2lQuexLexer(in);
         connect(lexer, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)), Qt::DirectConnection);
         lexer->initialize();
-        errorList = new QStringList();
+        errorList = new QStringList();        
 
         //create an ASAP2 file Node to start parsing
         A2LFILE *nodeA2l = new A2LFILE(0, lexer, errorList, fullA2lName);
@@ -207,7 +181,7 @@ void A2l::parseSTA2l()
     else if (settings.value("lexer") != "Quex")
     {
         //save the buffer into a qtextstream  for my lexer
-        QString str = QString::fromLatin1(buffer, size);
+        //QString str = QString::fromLatin1(buffer, size);
         QTextStream in(&str);
 
         //start the tokeniser myLex
@@ -245,51 +219,24 @@ bool A2l::parseOpenMPA2l()
     QTime time;
     time.start();
 
-//    //open the selected file
-//    QFile file(fullA2lName);
-//    if (!file.open(QFile::ReadOnly))
-//    {
-//        this->outputList.append("Cannot read file " + this->fullA2lName);
-//        return true;
-//    }
-
-//    //create a stream into the file
-//    QTextStream in(&file);
-//    QString strr = in.readAll();
-//    file.close();
-
-    if (!QFile(fullA2lName).exists())
+    //open the selected file
+    QFile file(fullA2lName);
+    if (!file.open(QIODevice::ReadOnly))
     {
-        this->outputList.append("action open new workproject : cancelled because file does not exist on drive. Please reload the working directory.");
-        return false;
+        this->outputList.append("Cannot read file " + fullA2lName);
+        return true;
     }
 
-    //create a stream into the file (Merci Oscar...)
-    FILE* fid = fopen(fullA2lName.toLocal8Bit(),"rb");
-    if (!fid)
-    {
-        this->outputList.append("Cannot read file " + this->fullA2lName);
-        is_Ok = false;
-        return false;
-    }
-
-    // obtain file size:
-    fseek(fid, 0, SEEK_END);
-    long size = ftell(fid);
-    rewind(fid);
-
-    // allocate memory to contain the whole file:
-    char* buffer = (char*)malloc((size)*sizeof(char));
-
-    // copy the file into the buffer:
-    fread(buffer, sizeof(char), size, fid);
-    fclose(fid);
+    size_t size = file.size();
+    char* buffer = new char[size];
+    file.read(buffer, size);
+    file.close();
 
     //save the buffer into a QString for splitting
-    QString str = QString::fromLatin1(buffer, size);
+    QString str = QString::fromLocal8Bit(buffer, size);
 
-    //free memory from the char* buffer
-    delete buffer;
+    //remove blank lines
+    //str.replace(QRegExp("[\r\n][\t\s]*[\r\n]"), QString('\n'));
 
     qDebug() << "\n ---- A2Lfile ---- ";
     qDebug() << "1- read " << time.elapsed();
@@ -320,6 +267,7 @@ bool A2l::parseOpenMPA2l()
     double t_ref1 = 0, t_final1 = 0;
     double t_ref2 = 0, t_final2 = 0;
     QSettings settings(qApp->organizationName(), qApp->applicationName());
+
     #pragma omp parallel
       {
           #pragma omp sections
@@ -420,6 +368,7 @@ bool A2l::parseOpenMPA2l()
             }
       }
 
+
     //display parsing errors
     if (nodeA2l1->errorList->isEmpty() && nodeA2l2->errorList->isEmpty())
     {
@@ -464,7 +413,10 @@ bool A2l::parseOpenMPA2l()
 
 
     //delete nodeA2l2; MEMORY LEAK !!!
-    //cannot be deleted because of the lexer and grammar    
+    //cannot be deleted because of the lexer and grammar
+
+    //free memory from the char* buffer
+    delete buffer;
 
     return true;
 }
@@ -512,15 +464,22 @@ bool A2l::trunkA2l(QString &str, QString &str1, QString &str2)
 
         //create 2 ASAP file for parallel parsing
         str2 = "ASAP2_VERSION  1 4 \n"
-               "/begin PROJECT PRO \"EDC17CV41\"\n"
+               "/begin PROJECT PRO \"PROJECT\"\n"
                "  /begin HEADER \"\"\n"
-               "    VERSION    \"P_662_EDC17CV41_420\"\n"
-               "    PROJECT_NO P_662\n"
+               "    VERSION    \"VERSION\"\n"
+               "    PROJECT_NO P_NUMBER\n"
                "  /end HEADER \n"
                "  /begin MODULE CHUNKstart DIM \"\"\n" + str1.right(str1.size()- lastBeginChar) + str2;
 
 
         str1 = str1.left(lastBeginChar) + "\nCHUNKend";
+
+//        QTextEdit *toto = new QTextEdit(str1);
+//        toto->show();
+
+//        QTextEdit *toto2 = new QTextEdit(str2);
+//        toto2->show();
+
 
         return true;
     }
@@ -613,6 +572,10 @@ void A2l::merge(A2LFILE *src, A2LFILE *trg)
             MODULE *trgMod = (MODULE*)trgModule->child(j);
             trgMod->listChar.append(srcMod->listChar);
             trgMod->listChar.sort();
+
+            //merge also the listChar from cut Module
+            trgMod->listMeas.append(srcMod->listMeas);
+            trgMod->listMeas.sort();
 
             //add the other modules that were not splitted for parsing
             foreach(Node* node, srcModule->childNodes)

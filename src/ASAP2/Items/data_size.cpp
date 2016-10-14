@@ -17,7 +17,7 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#include "data_size.h".h"
+#include "data_size.h"
 #include <QMessageBox>
 #include "a2lgrammar.h"
 

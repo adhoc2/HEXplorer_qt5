@@ -17,7 +17,7 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#include "Nodes/function_list.h".h"
+#include "Nodes/function_list.h"
 #include <QMessageBox>
 #include <typeinfo>
 #include <QHash>

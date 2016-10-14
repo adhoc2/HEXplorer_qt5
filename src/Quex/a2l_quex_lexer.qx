@@ -1,5 +1,5 @@
  //      -*- C++ -*-
-//     cd C:\Users\lmbhoc2\Documents\PRIVATE\PROGRAMMING\Qt\HEXplorer_src\src\Quex
+//     cd C:\Users\lmbhoc2\Documents\ADHOC2_docs\PROGRAMMING\Qt\HEXplorer_src\src\Quex
 //     quex -i a2l_quex_lexer.qx -o a2l_quex_lexer > toto.txt
 
 
@@ -10,7 +10,7 @@ header
 
 define 
 {
-   D_WHITESPACE    		[ \t\r\n]+
+   D_WHITESPACE    		[ \t]+
    //D_SUB_IDENTIFIER    	[_a-zA-Z][_a-zA-Z0-9\[\]]*
    D_SUB_IDENTIFIER    	[_a-zA-Z0-9]*(\[[_a-zA-Z0-9]+\])*
    D_UINTEGER			[0-9]+
@@ -55,7 +55,7 @@ token
 }
 
 mode ONE_AND_ONLY :
-//<skip:       [ \r\n\t]>
+<skip:       [\r\n]>
 <skip_range: "/begin A2ML" "/end A2ML">
 <skip_range: "/begin IF_DATA" "/end IF_DATA">
 {

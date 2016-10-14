@@ -17,7 +17,7 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#include "Nodes/sub_group.h".h"
+#include "Nodes/sub_group.h"
 #include <QMessageBox>
 #include <typeinfo>
 #include <QHash>

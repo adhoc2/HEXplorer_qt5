@@ -601,8 +601,10 @@ void HexFile::readAllData()
     // Start the computation
     //futureWatcher.setFuture(QtConcurrent::mapped(module->listChar, std::bind(&SrecFile::runCreateDataMapped, this, std::placeholders::_1)));
     QList<Node*> _myList;
-    _myList << nodeChar->childNodes;
-    _myList << nodeAxis->childNodes;
+    if (nodeChar)
+        _myList << nodeChar->childNodes;
+    if (nodeAxis)
+        _myList << nodeAxis->childNodes;
     std::sort(_myList.begin(), _myList.end(), nodeLessThan);
     futureWatcher.setFuture(QtConcurrent::mapped(_myList, std::bind(&HexFile::runCreateDataMapped2, this, std::placeholders::_1)));
     dialog.exec();

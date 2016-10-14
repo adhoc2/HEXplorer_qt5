@@ -1,18 +1,22 @@
 <HEXplorer application="HEXplorer">
     <revision version="0.7.13">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
     <details>revision 0.7.13 (Q4/2016) :
-    TODO:      
-    - improvement : manage tree strcuture (dataset copy/paste, create new folder,...) directly from treeview.
+    TODO:
+    - bug : update workind directory and read a2l with char or meas edited from a2l.
+    - improvement : manage tree structure (dataset copy/paste, create new folder,...) directly from treeview.
     - improvement : create kind of experiments...
     - improvement : inform user when opening a WD on the net which takes a lot of time.
+    - improvement : compare a2l - measurement channels.
 
     DONE:
-    - improvement : copy/paste dataset in treeview
+    - improvement : manage better end of file in A2L.
+    - improvement : copy/paste dataset in treeview.
     - improvement : function save dataset improved.
     - improvement : action "duplicate" dataset, do no save changes in original file and paste new with differences.
     - improvement : "save_as" dataset create a new node instead of renaming original.
     - improvement : display files in treeview into OS hardisk file manager.
     - improvement : shortcut "F5" for reload working directory.
+    - bug correction : A2L containing lots of balnk lines.
     - bug correction : duplicate dataset when changes are in.
     - bug correction : display menu delete file when selecting a non-read data file.    
     - bug correction : when "save as" data file, retrieve the correct treemodel path.

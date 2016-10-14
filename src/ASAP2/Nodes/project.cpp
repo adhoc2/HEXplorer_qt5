@@ -63,7 +63,7 @@ PROJECT::PROJECT(Node *parentNode, A2lLexer *lexer)
         else
         {			
             QString s(lex->toString(token).c_str());
-            this->showError("expected token : BlockEnd PROJECT\nfind token : " + s);
+            this->showError("expected token : BlockEnd PROJECT\nfind token : " + s + " " + QString(lex->getLexem().c_str()));
         }
     }
     else if ((token == Eof || token == Identifier) && lex->getLexem() == "CHUNKend")

@@ -119,6 +119,7 @@ MODULE::MODULE(Node *parentNode)
 
     //sort the list of characteristics including (characteristics or axis_pts or...)
     this->listChar.sort();
+    this->listMeas.sort();
 }
 
 MODULE::~MODULE()
@@ -217,10 +218,11 @@ TokenTyp MODULE::parseOptPar(QMap<std::string, Occurence> *nameOptPar)
                                     Meas->name = (char*)"MEASUREMENT";
                                     this->addChildNode(Meas);
                                     //Meas->_pixmap = ":/icones/MEAS.bmp";
-                                    Meas->_pixmap = "";
+                                    Meas->_pixmap = "";                                    
                                 }
                                 instance = factoryOptNode->value(lexem)->createInstance(child("MEASUREMENT", false));
                                 child("MEASUREMENT", false)->addChildNode(instance);
+                                listMeas.append(instance->name);
                             }
                             else if (lexem == "FUNCTION")
                             {

@@ -3954,7 +3954,8 @@ void MDImain::compare_A2lFile()
 //        WorkProject *wp1 = projectList->value(str1);
         WorkProject *wp1 = (WorkProject*)node1;
         QString str1 = wp1->getFullA2lFileName().c_str();
-        QStringList list1;
+        QStringList listChar1;
+        QStringList listMeas1;
         if (wp1)  //to prevent any crash of the aplication
         {
             //if the a2lFile is not yet parsed, parse.
@@ -4002,7 +4003,8 @@ void MDImain::compare_A2lFile()
                 }
 
                 MODULE *mod = (MODULE*)wp1->a2lFile->getProject()->getNode("MODULE/" + moduleName1);
-                list1 = mod->listChar;
+                listChar1 = mod->listChar;
+                listMeas1 = mod->listMeas;
             }
         }
 
@@ -4010,7 +4012,8 @@ void MDImain::compare_A2lFile()
 //        WorkProject *wp2 = projectList->value(str2);
         WorkProject *wp2 = (WorkProject*)node2;
         QString str2 = wp2->getFullA2lFileName().c_str();
-        QStringList list2;
+        QStringList listChar2;
+        QStringList listMeas2;
         if (wp2)  //to prevent any crash of the aplication
         {
             //if the a2lFile is not yet parsed, parse.
@@ -4057,45 +4060,81 @@ void MDImain::compare_A2lFile()
                     }
                 }
 
-                list2 = ((MODULE*)wp2->a2lFile->getProject()->getNode("MODULE/" + moduleName2))->listChar;
+                listChar2 = ((MODULE*)wp2->a2lFile->getProject()->getNode("MODULE/" + moduleName2))->listChar;
+                listMeas2 = ((MODULE*)wp2->a2lFile->getProject()->getNode("MODULE/" + moduleName2))->listMeas;
             }
         }
 
         //Missing labels
-        QStringList missingLabels;
-        foreach (QString str, list1)
+        QStringList missingChars;
+        QStringList missingMeas;
+        foreach (QString str, listChar1)
         {
             //QStringList::iterator i = qBinaryFind(list2.begin(), list2.end(), str);
-            QStringList::iterator i = std::lower_bound(list2.begin(), list2.end(), str);
-            if (i == list2.end())
+            QStringList::iterator i = std::lower_bound(listChar2.begin(), listChar2.end(), str);
+            if (i == listChar2.end())
             {
-                missingLabels.append(str);
+                missingChars.append(str);
             }
             else
             {
                 if (str.compare(*i) != 0)
                 {
-                    missingLabels.append(str);
+                    missingChars.append(str);
+                }
+            }
+        }      
+        foreach (QString str, listMeas1)
+        {
+            //QStringList::iterator i = qBinaryFind(list2.begin(), list2.end(), str);
+            QStringList::iterator i = std::lower_bound(listMeas2.begin(), listMeas2.end(), str);
+            if (i == listMeas2.end())
+            {
+                missingMeas.append(str);
+            }
+            else
+            {
+                if (str.compare(*i) != 0)
+                {
+                    missingMeas.append(str);
                 }
             }
         }
 
         //New labels
-        QStringList newLabels;        
-        foreach (QString str, list2)
+        QStringList newChars;
+        QStringList newMeas;
+        foreach (QString str, listChar2)
         {
             //QStringList::iterator i = qBinaryFind(list1.begin(), list1.end(), str);
-            QStringList::iterator i = std::lower_bound(list1.begin(), list1.end(), str);
+            QStringList::iterator i = std::lower_bound(listChar1.begin(), listChar1.end(), str);
             //if (i == list1.end())
-            if (i == list1.end())
+            if (i == listChar1.end())
             {
-                newLabels.append(str);
+                newChars.append(str);
             }
             else
             {
                 if (str.compare(*i) != 0)
                 {
-                    newLabels.append(str);
+                    newChars.append(str);
+                }
+            }
+        }
+        foreach (QString str, listMeas2)
+        {
+            //QStringList::iterator i = qBinaryFind(list1.begin(), list1.end(), str);
+            QStringList::iterator i = std::lower_bound(listMeas1.begin(), listMeas1.end(), str);
+            //if (i == list1.end())
+            if (i == listMeas1.end())
+            {
+                newMeas.append(str);
+            }
+            else
+            {
+                if (str.compare(*i) != 0)
+                {
+                    newMeas.append(str);
                 }
             }
         }
@@ -4229,29 +4268,50 @@ void MDImain::compare_A2lFile()
         QString text;
 
         //summary
-        text.append("--------------- Labels ----------------\n");
-        text.append(QString::number(missingLabels.count()) + " missing labels into " + str2 + "\n");
-        text.append(QString::number(newLabels.count()) + " new labels into " + str2 + "\n");
-        text.append("-------------- Subsets ----------------\n");
+        text.append("--------------- Calibration Labels ----------------\n");
+        text.append(QString::number(missingChars.count()) + " missing calibration labels into " + str2 + "\n");
+        text.append(QString::number(newChars.count()) + " new calibration labels into " + str2 + "\n");
+        text.append("--------------- Measurement Labels ----------------\n");
+        text.append(QString::number(missingMeas.count()) + " missing measurement labels into " + str2 + "\n");
+        text.append(QString::number(newMeas.count()) + " new measurement labels into " + str2 + "\n");
+        text.append("-------------- Subsets (Functions) ----------------\n");
         text.append(QString::number(missingSubsets.count()) + " missing subsets into " + str2 + "\n");
         text.append(QString::number(newSubsets.count()) + " new subsets into " + str2 + "\n");
         text.append(QString::number(modifiedSubsets.count()) + " modified subsets\n");
+        text.append("---------------------------------------------------\n");
 
         //missing labels
         text.append("\n");
-        text.append(QString::number(missingLabels.count()) + " missing labels into " + str2 + " : \n");
-        foreach (QString str, missingLabels)
+        text.append(QString::number(missingChars.count()) + " missing labels into " + str2 + " : \n");
+        foreach (QString str, missingChars)
         {
             text.append("\t" + str + "\n");
         }
 
         //new labels
         text.append("\n");
-        text.append(QString::number(newLabels.count()) + " new labels into " + str2 + " : \n");
-        foreach (QString str, newLabels)
+        text.append(QString::number(newChars.count()) + " new labels into " + str2 + " : \n");
+        foreach (QString str, newChars)
         {
             text.append("\t" + str + "\n");
         }
+
+        //missing Measurements
+        text.append("\n");
+        text.append(QString::number(missingMeas.count()) + " missing measurement labels into " + str2 + " : \n");
+        foreach (QString str, missingMeas)
+        {
+            text.append("\t" + str + "\n");
+        }
+
+        //new Measurements
+        text.append("\n");
+        text.append(QString::number(newMeas.count()) + " new measurement labels into " + str2 + " : \n");
+        foreach (QString str, newMeas)
+        {
+            text.append("\t" + str + "\n");
+        }
+
 
         //missing subsets
         text.append("\n");

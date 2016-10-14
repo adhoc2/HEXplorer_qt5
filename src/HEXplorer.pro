@@ -67,7 +67,7 @@ equals( QMAKE_CXX, cl) {
 
         # only for file a2l_quex_lexer.cpp because microsoft compiler cannot compile with -Ox (-Osiy -Gs instead)
         #QMAKE_CXXFLAGS_RELEASE += -Osiy -Gs -openmp -DQUEX_OPTION_ASSERTS_DISABLED
-        QMAKE_CXXFLAGS_RELEASE += -Ox -openmp -DQUEX_OPTION_ASSERTS_DISABLED
+        QMAKE_CXXFLAGS_RELEASE += -Ox -openmp -DQUEX_OPTION_ASSERTS_DISABLED -DQUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE
         QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.01
     }
 }
@@ -121,7 +121,7 @@ equals( QMAKE_CXX, cl) {
         MOC_DIR = release/moc
         OBJECTS_DIR = release/obj
         LIBS += -lqwt -lgomp -lqscintilla2 -lqwtplot3d -lopengl32 -lglu32 #-lmgl -lmgl-qt5
-        QMAKE_CXXFLAGS_RELEASE += -O3 -fopenmp -DQUEX_OPTION_ASSERTS_DISABLED
+        QMAKE_CXXFLAGS_RELEASE += -O3 -fopenmp -DQUEX_OPTION_ASSERTS_DISABLED -DQUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE
     }
 }
 

@@ -49,6 +49,7 @@ class MODULE : public Node
         static Factory<Node, MODULE> nodeFactory;
         char* getPar(std::string str);
         QStringList listChar;
+        QStringList listMeas;
 
     private:
         // Fix parameters
