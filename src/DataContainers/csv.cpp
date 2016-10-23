@@ -164,7 +164,7 @@ bool Csv::readFile()
     {
         char ch;
 
-        //parse "Description Header"
+        //parse "Description Header" for "unit delimiter, string delimiter, comment
         in.seek(20);
         mylex.getNextToken(in);
         if (mylex.getToken() == Float)
@@ -191,27 +191,32 @@ bool Csv::readFile()
                                 mylex.stringDelimiter = c1;
                             else
                             {
-                                showError("CSV description Header : parser error");
+                                showError("CSV description Header : parser error at line " + QString::number(mylex.getLine())
+                                           + " with lexem " + QString(mylex.getLexem().c_str()));
                                 return false;
                             }
                         }
                         else
                         {
-                            showError("CSV description Header : parser error");
+                            showError("CSV description Header : parser error at line " + QString::number(mylex.getLine())
+                                      + " with lexem " + QString(mylex.getLexem().c_str()));
                             return false;
                         }
                     }
                     else
                     {
-                        showError("CSV description Header : parser error");
+                        showError("CSV description Header : parser error at line " + QString::number(mylex.getLine())
+                                  + " with lexem " + QString(mylex.getLexem().c_str()));
                         return false;
                     }
+                    mylex.unitDelimiter = ':';
                 }
             }
         }
         else
         {
-            showError("CSV description Header : parser error");
+            showError("CSV description Header : parser error at line " + QString::number(mylex.getLine())
+                      + " with lexem " + QString(mylex.getLexem().c_str()));
             return false;
         }
 
@@ -254,7 +259,11 @@ bool Csv::readFile()
                     }
                 }
                 else
+                {
+                    showError("CSV parser error at line " + QString::number(mylex.getLine())
+                              + " with lexem " + QString(mylex.getLexem().c_str()));
                     return false;
+                }
             }
             else if (token == Identifier)
             {
@@ -312,8 +321,10 @@ bool Csv::readFile()
                         {
                             // check for Indentation
                             token = mylex.getNextToken(in);
-                            if (token != Indentation)
+                            if (token != Indentation && token != UnitType)
                             {
+                                showError("CSV parser error at line " + QString::number(mylex.getLine())
+                                          + " with lexem " + QString(mylex.getLexem().c_str()));
                                 return false;
                             }
 
@@ -326,6 +337,11 @@ bool Csv::readFile()
                             // read the Z values
                             QStringList list;
                             token = mylex.getNextToken(in);
+                            while(token == Indentation)
+                            {
+                                token = mylex.getNextToken(in);
+                            }
+
                             mylex.initialize();
                             while (token ==  Integer || token == Float || token  == String)
                             {
@@ -335,7 +351,7 @@ bool Csv::readFile()
                                 list.append(str);
                                 token = mylex.getNextToken(in);
                                 // check for Indentation
-                                if (token == Indentation)
+                                if (token == Indentation || token == UnitType)
                                 {
                                     nRows++;
                                     token = mylex.getNextToken(in);
@@ -446,8 +462,10 @@ bool Csv::readFile()
                         {
                             // check for Indentation
                             token = mylex.getNextToken(in);
-                            if (token != Indentation)
+                            if (token != Indentation && token != UnitType)
                             {
+                                showError("CSV parser error at line " + QString::number(mylex.getLine())
+                                          + " with lexem " + QString(mylex.getLexem().c_str()));
                                 return false;
                             }
 
@@ -457,6 +475,11 @@ bool Csv::readFile()
                             // read the Z values
                             QStringList list;
                             token = mylex.getNextToken(in);
+                            while(token == Indentation)
+                            {
+                                token = mylex.getNextToken(in);
+                            }
+
                             mylex.initialize();
                             while (token ==  Integer || token == Float || token  == String)
                             {
@@ -466,7 +489,7 @@ bool Csv::readFile()
                                 list.append(str);
                                 token = mylex.getNextToken(in);
                                 // check for Indentation
-                                if (token == Indentation)
+                                if (token == Indentation || token == UnitType)
                                 {
                                     token = mylex.getNextToken(in);
                                 }
@@ -507,14 +530,21 @@ bool Csv::readFile()
                         {
                             // check for Indentation
                             token = mylex.getNextToken(in);
-                            if (token != Indentation)
+                            if (token != Indentation && token != UnitType)
                             {
+                                showError("CSV parser error at line " + QString::number(mylex.getLine())
+                                          + " with lexem " + QString(mylex.getLexem().c_str()));
                                 return false;
                             }
 
                             // read the Z values
                             QStringList list;
                             token = mylex.getNextToken(in);
+                            while(token == Indentation)
+                            {
+                                token = mylex.getNextToken(in);
+                            }
+
                             while (token ==  Integer || token == Float || token  == String)
                             {
                                 QString str = mylex.getLexem().c_str();
@@ -555,13 +585,20 @@ bool Csv::readFile()
                         {
                             // check for Indentation
                             token = mylex.getNextToken(in);
-                            if (token != Indentation)
+                            if (token != Indentation && token != UnitType)
                             {
+                                showError("CSV parser error at line " + QString::number(mylex.getLine())
+                                          + " with lexem " + QString(mylex.getLexem().c_str()));
                                 return false;
                             }
 
                             QStringList list;
                             token = mylex.getNextToken(in);
+                            while(token == Indentation)
+                            {
+                                token = mylex.getNextToken(in);
+                            }
+
                             while (token == Integer || token == Float || token == String)
                             {
                                 QString str = mylex.getLexem().c_str();
@@ -593,15 +630,21 @@ bool Csv::readFile()
                         {
                             // check for Indentation
                             token = mylex.getNextToken(in);
-                            if (token != Indentation)
+                            if (token != Indentation && token != UnitType)
                             {
+                                showError("CSV parser error at line " + QString::number(mylex.getLine())
+                                          + " with lexem " + QString(mylex.getLexem().c_str()));
                                 return false;
                             }
 
                             QStringList list;
                             token = mylex.getNextToken(in);
-                            while (token == Integer ||token == Float ||
-                                   token == String)
+                            while(token == Indentation)
+                            {
+                                token = mylex.getNextToken(in);
+                            }
+
+                            while (token == Integer ||token == Float || token == String)
                             {
                                 QString str = mylex.getLexem().c_str();
                                 str.replace(",",".");
@@ -633,8 +676,10 @@ bool Csv::readFile()
 
                             // check for Indentation
                             token = mylex.getNextToken(in);
-                            if (token != Indentation)
+                            if (token != Indentation && token != UnitType)
                             {
+                                showError("CSV parser error at line " + QString::number(mylex.getLine())
+                                          + " with lexem " + QString(mylex.getLexem().c_str()));
                                 return false;
                             }
 
@@ -644,6 +689,11 @@ bool Csv::readFile()
                             // read the ASCII text
                             QString text;
                             token = mylex.getNextToken(in);
+                            while(token == Indentation)
+                            {
+                                token = mylex.getNextToken(in);
+                            }
+
                             if (token == String)
                             {
                                 text = mylex.getLexem().c_str();
@@ -679,6 +729,8 @@ bool Csv::readFile()
                         }
                         else
                         {
+                            showError("CSV parser error at line " + QString::number(mylex.getLine())
+                                      + " with lexem " + QString(mylex.getLexem().c_str()));
                             return false;
                         }
                     }
@@ -698,6 +750,8 @@ bool Csv::readFile()
             }
             else
             {
+                showError("CSV parser error at line " + QString::number(mylex.getLine())
+                          + " with lexem " + QString(mylex.getLexem().c_str()));
                 return false;
             }
         }
@@ -707,6 +761,8 @@ bool Csv::readFile()
     }
     else
     {
+        showError("CSV parser error at line " + QString::number(mylex.getLine())
+                  + " with lexem " + QString(mylex.getLexem().c_str()));
         return false;
     }
 }

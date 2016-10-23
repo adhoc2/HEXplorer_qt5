@@ -2,6 +2,7 @@
 #include "workproject.h"
 #include "qdebug.h"
 #include <QStringList>
+#include <treedirectory.h>
 
 
 WorkingDirectory::WorkingDirectory(QString rootPath, A2lTreeModel *model = NULL, MDImain *parent = 0 ) : Node()
@@ -62,7 +63,7 @@ void WorkingDirectory::parseDir(QString dirPath, WorkProject *wp)
     QFileInfoList listDatasets;
     QFileInfoList listDirs;
 
-    Node* subDir = nullptr;
+    TreeDirectory* subDir = nullptr;
 
     bool dirHasA2l = 0;
     if (wp)
@@ -72,7 +73,8 @@ void WorkingDirectory::parseDir(QString dirPath, WorkProject *wp)
         //create a node subFolder
         char* name = new char[dir.dirName().length() + 1];
         strcpy(name, dir.dirName().toLocal8Bit().data());
-        subDir = new Node(name);
+        subDir = new TreeDirectory(name);
+        subDir->setPath(dirPath);
         subDir->setParentNode(wp);
         wp->addChildNode(subDir);
         wp->sortChildrensName();

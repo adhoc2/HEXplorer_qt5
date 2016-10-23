@@ -79,6 +79,7 @@
 #include "dialoghttpupdate.h"
 #include "workingdirectory.h"
 #include "deletefiledialog.h"
+#include "treedirectory.h"
 
 #include "qdebug.h"
 
@@ -175,7 +176,6 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
 
     //check for updates
     //connect(this, SIGNAL(checkUpdates()), this, SLOT(initCheckHttpUpdates()), Qt::QueuedConnection);
-    //connect(this, SIGNAL(checkUpdates()), this, SLOT(initCheckGitUpdates()), Qt::QueuedConnection);
     QSettings settings(qApp->organizationName(), qApp->applicationName());
     if ((settings.value("Update/automatic") == true) || (!settings.contains("Update/automatic")))
         emit checkUpdates();
@@ -261,6 +261,10 @@ void MDImain::createActions()
         recentFileActs[i]->setVisible(false);
         connect(recentFileActs[i], SIGNAL(triggered()), this, SLOT(openRecentFile()));
     }
+
+    createDirectory = new QAction(tr("Add a new directory"), this);
+    connect(createDirectory, SIGNAL(triggered()), this, SLOT(onCreateDirectory()));
+    createDirectory->setDisabled(true);
 
     copyDataset = new QAction(tr("Copy"), this);
     copyDataset->setIcon(QIcon(":/icones/copy.png"));
@@ -592,6 +596,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionUpdateWorkingDirectory->setEnabled(false);
         copyDataset->setEnabled(false);
         pasteDataset->setEnabled(true);
+        createDirectory->setEnabled(false);
     }
     else if (name.endsWith("WorkProject"))
     {
@@ -627,6 +632,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionUpdateWorkingDirectory->setEnabled(false);
         copyDataset->setEnabled(false);
         pasteDataset->setEnabled(true);
+        createDirectory->setEnabled(true);
     }
     else if (name.endsWith("DBFILE"))
     {
@@ -662,6 +668,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionUpdateWorkingDirectory->setEnabled(false);
         copyDataset->setEnabled(false);
         pasteDataset->setEnabled(false);
+        createDirectory->setEnabled(false);
     }
     else if (name.endsWith("HexFile"))
     {
@@ -696,6 +703,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionUpdateWorkingDirectory->setEnabled(false);
         copyDataset->setEnabled(true);
         pasteDataset->setEnabled(true);
+        createDirectory->setEnabled(false);
 
         ui->toolBar_data->show();
 
@@ -733,7 +741,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionUpdateWorkingDirectory->setEnabled(false);
         copyDataset->setEnabled(true);
         pasteDataset->setEnabled(true);
-
+        createDirectory->setEnabled(false);
 
         ui->toolBar_data->show();
 
@@ -771,6 +779,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionUpdateWorkingDirectory->setEnabled(false);
         copyDataset->setEnabled(false);
         pasteDataset->setEnabled(false);
+        createDirectory->setEnabled(false);
 
         ui->toolBar_data->show();
     }
@@ -806,6 +815,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionUpdateWorkingDirectory->setEnabled(false);
         copyDataset->setEnabled(false);
         pasteDataset->setEnabled(false);
+        createDirectory->setEnabled(false);
 
         ui->toolBar_data->show();
     }  
@@ -841,6 +851,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         ui->actionUpdateWorkingDirectory->setEnabled(false);
         copyDataset->setEnabled(false);
         pasteDataset->setEnabled(false);
+        createDirectory->setEnabled(false);
 
         ui->toolBar_data->show();
     }
@@ -879,7 +890,43 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         editInHDrive->setEnabled(true);
         copyDataset->setEnabled(false);
         pasteDataset->setEnabled(false);
+        createDirectory->setEnabled(false);
 
+    }
+    else if (name.toLower().endsWith("treedirectory"))
+    {
+        ui->actionUpdateWorkingDirectory->setEnabled(false);
+        importSubsets->setEnabled(false);
+        exportSubsets->setEnabled(false);
+        addCdfxFile->setEnabled(false);
+        addCsvFile->setEnabled(false);
+        addDcmFile->setEnabled(false);
+        editChanged->setEnabled(false);
+        addHexFile->setEnabled(false);
+        addSrecFile->setEnabled(false);
+        deleteProject->setEnabled(false);
+        deleteFile->setEnabled(false);
+        editFile->setEnabled(false);
+        childCount->setEnabled(false);
+        showParam->setEnabled(false);
+        resetAllChangedData->setEnabled(false);
+        sortBySubset->setEnabled(false);
+        saveFile->setEnabled(false);
+        saveAsFile->setEnabled(false);
+        quicklook->setEnabled(false);
+        readValuesFromCsv->setEnabled(false);
+        readValuesFromCdfx->setEnabled(false);
+        editMeasChannels->setEnabled(false);
+        editCharacteristics->setEnabled(false);
+        openJScript->setEnabled(false);
+        saveA2lDB->setEnabled(false);
+        ui->actionClose_Working_Directory->setEnabled(true);
+        ui->actionRename_file->setEnabled(false);
+        duplicateDatacontainer->setEnabled(false);
+        editInHDrive->setEnabled(false);
+        copyDataset->setEnabled(false);
+        pasteDataset->setEnabled(true);
+        createDirectory->setEnabled(false);
     }
     else
     {
@@ -912,6 +959,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         duplicateDatacontainer->setEnabled(false);
         ui->actionLoad_DB->setEnabled(false);
         ui->actionUpdateWorkingDirectory->setEnabled(false);
+        createDirectory->setEnabled(false);
     }
 
     //get the full path of the index into treeView
@@ -1189,6 +1237,8 @@ void MDImain::showContextMenu(QPoint)
                     menu.addAction(editFile);
                     menu.addAction(editInHDrive);
                     menu.addSeparator();
+                    menu.addAction(createDirectory);
+
                     menu.addAction(addHexFile);
                     menu.addAction(addSrecFile);
                     menu.addAction(addCsvFile);
@@ -1298,6 +1348,10 @@ void MDImain::showContextMenu(QPoint)
                 menu.addAction(ui->actionClose_Working_Directory);
                 menu.addAction(editInHDrive);
 
+            }
+            else if (name.toLower().endsWith("treedirectory"))
+            {
+                menu.addAction(pasteDataset);
             }
             else
             {
@@ -2470,6 +2524,10 @@ void MDImain::addCsvFile2Project()
                         {
                             //remove csv from the workProject
                              wp->removeCsv(csv);
+                             foreach (QString str, *csv->errorList)
+                             {
+                                writeOutput(str);
+                             }
                              writeOutput("CSV file " + fullCsvName + "  NOT added to project due to wrong format ");
                         }
 
@@ -3767,6 +3825,7 @@ void MDImain::editMeasuringChannels()
             //create a new spreadSheet
             SpreadsheetView *view = new SpreadsheetView();
             view->setModel(measModel);
+            wp->attach(view);
 
 //            FreezeTableWidget *view = new FreezeTableWidget(measModel);
             view->setAlternatingRowColors(true);
@@ -3898,6 +3957,7 @@ void MDImain::editChar()
             //create a new spreadSheet
             SpreadsheetView *view = new SpreadsheetView();
             view->setModel(charModel);
+            wp->attach(view);
 
             view->setAlternatingRowColors(true);
 
@@ -5847,7 +5907,6 @@ void MDImain::quicklookFile()
 
     QString str1 = model->getFullNodeTreePath(index);
 
-
      if (index.isValid())
     {
         //get a pointer on the selected item
@@ -6668,131 +6727,196 @@ void MDImain::onPasteDataset()
     }
     else
     {
-            Node* nodeParent = nodeClipBoard->getParentNode();
-            QString name = typeid(*nodeClipBoard).name();
+        QModelIndex index  = ui->treeView->selectionModel()->currentIndex();
+        Node *nodePaste =  model->getNode(index);
+        Node *nodePasteParent = nodePaste->getParentNode();
+        QString nameNodePaste = typeid(*nodePaste).name();
+        QString newPath = "";
+        if (nameNodePaste.toLower().endsWith("hexfile") || nameNodePaste.toLower().endsWith("srecfile") )
+        {
+            newPath = QFileInfo(nodePaste->fullName()).path();
+        }
+        else if (nameNodePaste.toLower().endsWith("treedirectory"))
+        {
+            TreeDirectory *dir = static_cast<TreeDirectory*>(nodePaste);
+            newPath = dir->getPath();
+            nodePasteParent = nodePaste;
+        }
 
-            if (name.toLower().endsWith("hexfile"))
+        QString name = typeid(*nodeClipBoard).name();
+
+        if (name.toLower().endsWith("hexfile"))
+        {
+            //As the selected node is an Hex file we can cast the node into its real type : HexFile
+            HexFile *orgHex = dynamic_cast<HexFile *> (nodeClipBoard);
+
+            //get the parentWp of the HexFile
+            WorkProject *wp = orgHex->getParentWp();
+
+            // copy the file
+            QString orgName = orgHex->fullName();
+            QString extension = QFileInfo(orgName).suffix();
+            QString baseOrgName = QFileInfo(orgName).baseName();
+            QString baseName = baseOrgName;
+            QString newName = orgName;
+            int i = 1;
+            bool check = true;
+            while (check)
             {
-                //As the selected node is an Hex file we can cast the node into its real type : HexFile
-                HexFile *orgHex = dynamic_cast<HexFile *> (nodeClipBoard);
+                //newName = newName.replace(baseName, baseOrgName + " (" + QString::number(i) + ")");
+                newName = newPath + "/" + baseOrgName + " (" + QString::number(i) + ")." + extension;
+                baseName = QFileInfo(newName).baseName();
+                check = QFile(newName).exists();
+                i++;
+            }
 
-                //get the parentWp of the HexFile
-                WorkProject *wp = orgHex->getParentWp();
 
-                // copy the file
-                QString orgName = orgHex->fullName();
-                QString baseOrgName = QFileInfo(orgName).baseName();
-                QString baseName = baseOrgName;
-                QString newName = orgName;
-                int i = 1;
-                bool check = true;
-                while (check)
+            if (QFile::copy(orgHex->fullName(), newName ))
+            {
+                HexFile *cloneHex = new HexFile(newName, wp);
+                wp->addHex(cloneHex, nodePasteParent);
+
+                //if changes in orgSrec => copy changes to cloneSrec
+                if (!orgHex->childNodes.isEmpty())
                 {
-                    newName = newName.replace(baseName, baseOrgName + " (" + QString::number(i) + ")");
-                    baseName = QFileInfo(newName).baseName();
-                    check = QFile(newName).exists();
-                    i++;
-                }
+                    //read file
+                    HexFile* hex= readHexFile(cloneHex);
 
-
-                if (QFile::copy(orgHex->fullName(), newName ))
-                {
-                    HexFile *cloneHex = new HexFile(newName, wp);
-                    wp->addHex(cloneHex, nodeParent);
-
-                    //if changes in orgSrec => copy changes to cloneSrec
-                    if (!orgHex->childNodes.isEmpty())
+                    //get source and destination dataList and copy
+                    QList<Data*> listCopySrc = orgHex->getModifiedData();
+                    foreach (Data* dataSrc, listCopySrc)
                     {
-                        //read file
-                        HexFile* hex= readHexFile(cloneHex);
-
-                        //get source and destination dataList and copy
-                        QList<Data*> listCopySrc = orgHex->getModifiedData();
-                        foreach (Data* dataSrc, listCopySrc)
+                        Data *dataTrg = hex->getData(dataSrc->getName());
+                        if (dataTrg)
                         {
-                            Data *dataTrg = hex->getData(dataSrc->getName());
-                            if (dataTrg)
-                            {
-                                dataTrg->copyAllFrom(dataSrc);
-                            }
+                            dataTrg->copyAllFrom(dataSrc);
                         }
-
-                        writeOutput("action paste file : performed with success");
-
-                        return;
                     }
-                    else
-                        return;
+
+                    writeOutput("action paste file : performed with success");
+
+                    return;
+                }
+                else
+                    return;
+            }
+            else
+            {
+                writeOutput("action paste file : not possible");
+                return;
+            }
+
+        }
+        else if (name.toLower().endsWith("srecfile"))
+        {
+            //As the selected node is an Hex file we can cast the node into its real type : HexFile
+            SrecFile *orgSrec = dynamic_cast<SrecFile *> (nodeClipBoard);
+
+            //get the parentWp of the HexFile
+            WorkProject *wp = orgSrec->getParentWp();
+
+            // copy the file
+            QString orgName = orgSrec->fullName();
+            QString extension = QFileInfo(orgName).suffix();
+            QString baseOrgName = QFileInfo(orgName).baseName();
+            QString baseName = baseOrgName;
+            QString newName = orgName;
+            int i = 1;
+            bool check = true;
+            while (check)
+            {
+                //newName = newName.replace(baseName, baseOrgName + " (" + QString::number(i) + ")");
+                newName = newPath + "/" + baseOrgName + " (" + QString::number(i) + ")." + extension ;
+                baseName = QFileInfo(newName).baseName();
+                check = QFile(newName).exists();
+                i++;
+            }
+
+            if (QFile::copy(orgSrec->fullName(), newName ))
+            {
+                SrecFile *cloneSrec = new SrecFile(newName, wp);
+                wp->addSrec(cloneSrec, nodePasteParent);
+
+                //if changes in orgSrec => copy changes to cloneSrec
+                if (!orgSrec->childNodes.isEmpty())
+                {
+                    //read file
+                    SrecFile* srec= readSrecFile(cloneSrec);
+
+                    //get source and destination dataList and copy
+                    QList<Data*> listCopySrc = orgSrec->getModifiedData();
+                    foreach (Data* dataSrc, listCopySrc)
+                    {
+                        Data *dataTrg = srec->getData(dataSrc->getName());
+                        if (dataTrg)
+                        {
+                            dataTrg->copyAllFrom(dataSrc);
+                        }
+                    }
+
+                    writeOutput("action paste file : performed with success");
+                    return;
                 }
                 else
                 {
-                    writeOutput("action paste file : not possible");
+                    writeOutput("action paste file : performed with success");
                     return;
                 }
-
             }
-            else if (name.toLower().endsWith("srecfile"))
+            else
             {
-                //As the selected node is an Hex file we can cast the node into its real type : HexFile
-                SrecFile *orgSrec = dynamic_cast<SrecFile *> (nodeClipBoard);
-
-                //get the parentWp of the HexFile
-                WorkProject *wp = orgSrec->getParentWp();
-
-                // copy the file
-                QString orgName = orgSrec->fullName();
-                QString baseOrgName = QFileInfo(orgName).baseName();
-                QString baseName = baseOrgName;
-                QString newName = orgName;
-                int i = 1;
-                bool check = true;
-                while (check)
-                {
-                    newName = newName.replace(baseName, baseOrgName + " (" + QString::number(i) + ")");
-                    baseName = QFileInfo(newName).baseName();
-                    check = QFile(newName).exists();
-                    i++;
-                }
-
-                if (QFile::copy(orgSrec->fullName(), newName ))
-                {
-                    SrecFile *cloneSrec = new SrecFile(newName, wp);
-                    wp->addSrec(cloneSrec, nodeParent);
-
-                    //if changes in orgSrec => copy changes to cloneSrec
-                    if (!orgSrec->childNodes.isEmpty())
-                    {
-                        //read file
-                        SrecFile* srec= readSrecFile(cloneSrec);
-
-                        //get source and destination dataList and copy
-                        QList<Data*> listCopySrc = orgSrec->getModifiedData();
-                        foreach (Data* dataSrc, listCopySrc)
-                        {
-                            Data *dataTrg = srec->getData(dataSrc->getName());
-                            if (dataTrg)
-                            {
-                                dataTrg->copyAllFrom(dataSrc);
-                            }
-                        }
-
-                        writeOutput("action paste file : performed with success");
-                        return;
-                    }
-                    else
-                    {
-                        writeOutput("action paste file : performed with success");
-                        return;
-                    }
-                }
-                else
-                {
-                    writeOutput("action paste file : not possible");
-                    return;
-                }
-
+                writeOutput("action paste file : not possible");
+                return;
             }
+
+        }
     }
+}
+
+void MDImain::onCreateDirectory()
+{
+    QModelIndex index  = ui->treeView->selectionModel()->currentIndex();
+    Node *wp =  model->getNode(index);
+    QString name = typeid(*wp).name();
+    QString dirPath = "";
+    if (name.toLower().endsWith("workproject"))
+    {
+        dirPath = QFileInfo(wp->fullName()).path();
+    }
+    else
+        return;
+
+    QString dirName = "new Dir";
+    QDir dir(dirPath);
+    int i = 1;
+    while (dir.entryList().contains(dirName))
+    {
+        dirName = dirName + " (" + QString::number(i) + ")";
+        i++;
+    }
+    bool bl = dir.mkdir(dirName);
+    if (!bl)
+    {
+        QMessageBox::warning(this, "HEXplorer::newDirectory",
+                             "HEXplorer could not create the new Directory.");
+    }
+    else
+    {
+        char* name = new char[dirName.length() + 1];
+        strcpy(name, dirName.toLocal8Bit().data());
+        TreeDirectory *subDir = new TreeDirectory(name);
+        subDir->setPath(dirPath);
+
+        subDir->setParentNode(wp);
+        wp->addChildNode(subDir);
+        wp->sortChildrensName();
+        model->dataInserted(wp, wp->childNodes.indexOf(subDir));
+
+        ui->treeView->expand(index);
+        QModelIndex indexSubDir = model->getIndex(subDir);
+        ui->treeView->edit(indexSubDir);
+    }
+
 }
 
 //-------------------- TabList ---------------------//
@@ -6964,21 +7088,12 @@ QString MDImain::strippedName(const QString &fullFileName)
     return QFileInfo(fullFileName).fileName();
 }
 
-void MDImain::initCheckGitUpdates()
-{
-    //check for updates on Git : https://github.com/adhoc2/HEXplorer/releases/latest
-
-    //if update is available display a message
-    QUrl url("https://github.com/adhoc2/HEXplorer/tree/master/src/update.xml");
-    DialogHttpUpdate updater(url, true, this);
-}
-
 void MDImain::on_actionCheck_for_updates_triggered()
 {
-    //remove the old installer file used for previous Update
-    QFile::remove(qApp->applicationDirPath() + "/update_HEXplorer.exe");
+    // https://drive.google.com/file/d/0B50gqVnb9xkLVDBLTzFWTU8xQU0
 
-    QUrl url("https://github.com/adhoc2/HEXplorer/tree/master/src/update.xml");
+    // QUrl url("https://www.googleapis.com/drive/v3/files/0B50gqVnb9xkLVDBLTzFWTU8xQU0");
+    QUrl url("https://www.googleapis.com/drive/v3/files\?access_token=1/0B50gqVnb9xkLVDBLTzFWTU8xQU0");
     DialogHttpUpdate updater(url, false, this);
 }
 

@@ -20,11 +20,11 @@
 #include <QtCore>
 #include <QPixmap>
 
-
 #include "a2ltreemodel.h"
 #include "node.h"
 #include "hexfile.h"
 #include "srecfile.h"
+#include "treedirectory.h"
 #include <typeinfo>
 
 using namespace std;
@@ -447,6 +447,22 @@ bool A2lTreeModel::setData(const QModelIndex &index, const QVariant &value, int 
                 return false;
             }
 
+        }
+        else if (name.toLower().endsWith("treedirectory"))
+        {
+            TreeDirectory *dir = dynamic_cast<TreeDirectory*>(node);
+            newFullName = dir->getPath() + "/" + newName;
+            qDebug() << oldFullName << newFullName;
+            if (QFile::rename(oldFullName, newFullName))
+            {
+                renameNode(index, newName);
+                dir->setPath(newFullName);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         else
             return false;

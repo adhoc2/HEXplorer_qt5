@@ -84,7 +84,7 @@ public:
     ~DialogHttpUpdate(void);
 
 private:
-    HttpUpdater *d;
+    HttpUpdater *updater;
 
 };
 

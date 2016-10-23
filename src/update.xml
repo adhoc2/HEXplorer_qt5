@@ -1,14 +1,15 @@
 <HEXplorer application="HEXplorer">
     <revision version="0.7.13">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
     <details>revision 0.7.13 (Q4/2016) :
-    TODO:
-    - bug : update workind directory and read a2l with char or meas edited from a2l.
-    - improvement : manage tree structure (dataset copy/paste, create new folder,...) directly from treeview.
-    - improvement : create kind of experiments...
+    TODO:    
     - improvement : inform user when opening a WD on the net which takes a lot of time.
-    - improvement : compare a2l - measurement channels.
+    - bug correction : improve CVX parser to allow unit/ or axis in GMAP.
+    - improvement : automatic check for updates on Github.
 
     DONE:
+    - improvement : create persistent directory directly in treeView.
+    - improvement : copy/paste from a folder to another.
+    - improvement : compare a2l - measurement channels.
     - improvement : manage better end of file in A2L.
     - improvement : copy/paste dataset in treeview.
     - improvement : function save dataset improved.
@@ -16,10 +17,11 @@
     - improvement : "save_as" dataset create a new node instead of renaming original.
     - improvement : display files in treeview into OS hardisk file manager.
     - improvement : shortcut "F5" for reload working directory.
-    - bug correction : A2L containing lots of balnk lines.
+    - bug correction : A2L containing lots of blank lines (out of memory Quex).
     - bug correction : duplicate dataset when changes are in.
     - bug correction : display menu delete file when selecting a non-read data file.    
     - bug correction : when "save as" data file, retrieve the correct treemodel path.
+    - bug correction : update workingdirectory and read a2l with char or meas edited from a2l previously read.
 
 revision 0.7.12 (Q3/2016) :
     - bug correction : ensure files are still present on disk before parsing.
@@ -27,7 +29,7 @@ revision 0.7.12 (Q3/2016) :
     - bug correction : prevent 2 different a2l files with the same fileName to have the same path in treeview model.
     - bug correction : importing dcm where ST/X or ST/Y are splitted in more lines.
     - bug correction : treeview display sorted when using subfolder.
-    - bug correction : quicklool cdfx point on cdfx and not dcm.
+    - bug correction : quicklook cdfx point on cdfx and not dcm.
     - Improvement : lineEdit for treeView search => expand corrisponding node.
     - bug corection : edit label from diff label after compare.
     - bug correction : read dcm file when label not in dataset available.

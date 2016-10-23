@@ -29,6 +29,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QAuthenticator>
+#include "oauth2service.h"
 
 DialogHttpUpdate::DialogHttpUpdate(const QUrl& cfgUrl, bool display, QWidget *mdiMain)
 {
@@ -48,7 +49,7 @@ DialogHttpUpdate::DialogHttpUpdate(const QUrl& cfgUrl, bool display, QWidget *md
         settings.setValue("Proxy/User", "");
 
      //QNetworkManager
-    d = new HttpUpdater(mdiMain, display, this);
+    updater = new HttpUpdater(mdiMain, display, this);
 
     //configure proxy
     bool bl = settings.value("Proxy/behindProxy").toBool();
@@ -58,11 +59,34 @@ DialogHttpUpdate::DialogHttpUpdate(const QUrl& cfgUrl, bool display, QWidget *md
         proxy.setType(QNetworkProxy::HttpCachingProxy);
         proxy.setHostName(settings.value("Proxy/HostName").toString());
         proxy.setPort(settings.value("Proxy/Port").toInt());
-        d->manager.setProxy(proxy);
+        updater->manager.setProxy(proxy);
     }
 
-    //check if updates are available
-    d->getXml(cfgUrl);
+    /** https://developers.google.com/identity/protocols/OAuth2InstalledApp#redirect-uri_custom-scheme
+     * client_id = 554660036943-ous5oec45o9k567rs1adr8sc9thuvnek.apps.googleusercontent.com
+     * client_secret = V8nPoYK7LC-x21IRNj-4zZjO
+     * project_id = hexplorer-146709
+     * auth_uri = https://accounts.google.com/o/oauth2/auth
+     * token_uri = https://accounts.google.com/o/oauth2/token
+     * auth_provider_x509_cert_url = https://www.googleapis.com/oauth2/v1/certs
+     * redirect_uri = urn:ietf:wg:oauth:2.0:oob
+     * grant_type = authorization_code
+    */
+    ///1-get authorisation code
+     GoogleOAuth2Service *oAuth2Service = new GoogleOAuth2Service("554660036943-ous5oec45o9k567rs1adr8sc9thuvnek.apps.googleusercontent.com",
+       "V8nPoYK7LC-x21IRNj-4zZjO",
+       "https://www.googleapis.com/auth/drive.readonly");
+     oAuth2Service->retrieveUserCode();
+
+     ///2-exchane with access token
+     oAuth2Service->retrieveAccessToken("4/Uav_gVS9nD38uWdKTdx3HPwxS7cTbVWdVzUimmUWjZw");
+
+     ///3-use the access token to have access to the file
+
+
+     //check if updates are available
+     updater->getXml(cfgUrl);
+
 }
 
 DialogHttpUpdate::~DialogHttpUpdate(void)
@@ -80,8 +104,7 @@ HttpUpdater::HttpUpdater(QWidget *mainApp, bool display, DialogHttpUpdate *par)
     parent = par;
     mdiMain = (MDImain*)mainApp;
 
-    connect(&manager, SIGNAL(finished(QNetworkReply*)),
-            this, SLOT(getXmlFinished(QNetworkReply*)));
+    connect(&manager, SIGNAL(finished(QNetworkReply*)),this, SLOT(getXmlFinished(QNetworkReply*)));
     connect(&manager, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)),
             this, SLOT(authenticationRequired(QNetworkReply*,QAuthenticator*)));
     connect(&manager, SIGNAL(proxyAuthenticationRequired(QNetworkProxy,QAuthenticator*)),
@@ -91,6 +114,7 @@ HttpUpdater::HttpUpdater(QWidget *mainApp, bool display, DialogHttpUpdate *par)
 void HttpUpdater::getXml(const QUrl& url)
 {
     QNetworkRequest request(url);
+
     requestXml = manager.get(request);
 }
 
@@ -194,6 +218,7 @@ void HttpUpdater::getXmlFinished(QNetworkReply *reply)
         else
         {
             QByteArray data = reply->readAll();
+            qDebug() << QString(data);
             QXmlStreamReader reader(data);
 
             while (!reader.atEnd())

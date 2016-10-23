@@ -40,7 +40,6 @@ class LexerCsv : public QObject
         std::string getLexem();
         TokenTyp getToken() {return actToken;}
         int getLine();
-        int getIndex();
         void initialize();
         void backward(QTextStream &in);
 
@@ -48,6 +47,7 @@ class LexerCsv : public QObject
         char decimalPointSeparator;
         char commentIndicator;
         char stringDelimiter;
+        char unitDelimiter;
 
     private:
 
@@ -62,6 +62,7 @@ class LexerCsv : public QObject
         TokenTyp indentation(QTextStream &in, char &ch);
         TokenTyp identifier(QTextStream &in, char &ch);
         TokenTyp  string(QTextStream &in);
+        TokenTyp  unit(QTextStream &in);
         TokenTyp  commentL(QTextStream &in);
         TokenTyp  commentM(QTextStream &in);
         TokenTyp  number(QTextStream &in, char &ch);
@@ -69,6 +70,7 @@ class LexerCsv : public QObject
         TokenTyp  block(QTextStream &in, char &ch);
         bool isNewLine(char ch);
         bool isValueSeparator(char ch);
+        bool isUnitDelimiter(char ch);
         bool isDigit(char ch);
         bool isHexDigit(char ch);
         bool isLetter(char ch);

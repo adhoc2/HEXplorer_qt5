@@ -287,7 +287,9 @@ HEADERS += a2l.h \
     ASAP2/Items/static_record_layout.h \
     plot3d.h \
     DataContainers/dcmfile.h \
-    DataContainers/lexerDcm.h
+    DataContainers/lexerDcm.h \
+    oauth2service.h \
+    treedirectory.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -466,7 +468,9 @@ SOURCES += a2l.cpp \
     ASAP2/Items/static_record_layout.cpp \
     plot3d.cpp \
     DataContainers/dcmfile.cpp \
-    DataContainers/lexerDcm.cpp
+    DataContainers/lexerDcm.cpp \
+    oauth2service.cpp \
+    treedirectory.cpp
 
 OTHER_FILES += \
     GNU_license.txt \

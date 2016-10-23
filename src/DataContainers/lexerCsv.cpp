@@ -42,6 +42,7 @@ LexerCsv::LexerCsv(QObject *parent) : QObject(parent)
     commentIndicator = 0;
     stringDelimiter = 0;
     decimalPointSeparator = '.';
+    unitDelimiter = ':';
     position = 0;
 }
 
@@ -178,6 +179,11 @@ TokenTyp LexerCsv::begin(QTextStream &in, char ch)
                {
                    return token;
                }
+            }
+            else if (ch == unitDelimiter)
+            {
+                token = unit(in);
+                return token;
             }
             else if (ch == commentIndicator)
             {
@@ -504,6 +510,24 @@ TokenTyp LexerCsv::string(QTextStream &in)
     return token;
 }
 
+TokenTyp LexerCsv::unit(QTextStream &in)
+{
+    buffer->read(in);
+    TokenTyp token = string(in);
+
+    if(token == String)
+    {
+        if (buffer->getValue() == unitDelimiter)
+        {
+            buffer->read(in);
+            return UnitType;
+        }
+        else
+            return myUnknown;
+    }
+    return myUnknown;
+}
+
 TokenTyp LexerCsv::hexadecimal(QTextStream &in)
 {
     TokenTyp token;
@@ -596,6 +620,18 @@ bool LexerCsv::isNewLine(char ch)
 bool LexerCsv::isValueSeparator(char ch)
 {
     if (ch == valueSeparator)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool LexerCsv::isUnitDelimiter(char ch)
+{
+    if (ch == unitDelimiter)
     {
         return true;
     }

@@ -101,6 +101,7 @@ private:
     QMap<QString, WorkProject*> *projectList;
     QMap<QString, QWidget*> *tabList;
     QAction *copyDataset;
+    QAction *createDirectory;
     QAction *pasteDataset;
     QAction *actionUpdateWorkingDirectory;
     QAction *editInHDrive;
@@ -176,7 +177,6 @@ private slots:
      void on_actionSettings_triggered();
      void on_actionCheck_for_updates_triggered();
      void initCheckHttpUpdates();
-     void initCheckGitUpdates();
      void openRecentFile();
      void read_ValuesFromCsv();
      void read_ValuesFromCdfx();
@@ -248,6 +248,7 @@ private slots:
      void onCopyDataset();
      void onPasteDataset();
      void completerSelected();
+     void onCreateDirectory();
 
 public slots:
     void resetAllTableView();
