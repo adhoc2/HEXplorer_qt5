@@ -1,9 +1,9 @@
 <HEXplorer application="HEXplorer">
-    <revision version="0.7.13">http://hexplorer.googlecode.com/files/update_HEXplorer.exe</revision>
+    <revision version="0.7.13"> https://api.github.com/repos/adhoc2/HEXplorer/contents/releases/download/v0.7.12/setup_HEXplorer_0712.exe</revision>
     <details>revision 0.7.13 (Q4/2016) :
-    TODO:    
-    - improvement : inform user when opening a WD on the net which takes a lot of time.
+    TODO:
     - bug correction : improve CVX parser to allow unit/ or axis in GMAP.
+    - improvement : inform user when opening a WD on the net which takes a lot of time.
     - improvement : automatic check for updates on Github.
 
     DONE:
