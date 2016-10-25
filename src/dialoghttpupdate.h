@@ -54,7 +54,7 @@ public:
     QString updateDetails;
 
 public slots:
-    void getXmlFinished(QNetworkReply *reply);
+    void managerRequestFinished(QNetworkReply *reply);
     void downloadReadyRead();
     void downloadFinished();
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);

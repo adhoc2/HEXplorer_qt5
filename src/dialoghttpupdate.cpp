@@ -29,7 +29,6 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QAuthenticator>
-#include "oauth2service.h"
 
 DialogHttpUpdate::DialogHttpUpdate(const QUrl& cfgUrl, bool display, QWidget *mdiMain)
 {
@@ -62,28 +61,6 @@ DialogHttpUpdate::DialogHttpUpdate(const QUrl& cfgUrl, bool display, QWidget *md
         updater->manager.setProxy(proxy);
     }
 
-    /** https://developers.google.com/identity/protocols/OAuth2InstalledApp#redirect-uri_custom-scheme
-     * client_id = 554660036943-ous5oec45o9k567rs1adr8sc9thuvnek.apps.googleusercontent.com
-     * client_secret = V8nPoYK7LC-x21IRNj-4zZjO
-     * project_id = hexplorer-146709
-     * auth_uri = https://accounts.google.com/o/oauth2/auth
-     * token_uri = https://accounts.google.com/o/oauth2/token
-     * auth_provider_x509_cert_url = https://www.googleapis.com/oauth2/v1/certs
-     * redirect_uri = urn:ietf:wg:oauth:2.0:oob
-     * grant_type = authorization_code
-    */
-    ///1-get authorisation code
-     GoogleOAuth2Service *oAuth2Service = new GoogleOAuth2Service("554660036943-ous5oec45o9k567rs1adr8sc9thuvnek.apps.googleusercontent.com",
-       "V8nPoYK7LC-x21IRNj-4zZjO",
-       "https://www.googleapis.com/auth/drive.readonly");
-     oAuth2Service->retrieveUserCode();
-
-     ///2-exchane with access token
-     oAuth2Service->retrieveAccessToken("4/Uav_gVS9nD38uWdKTdx3HPwxS7cTbVWdVzUimmUWjZw");
-
-     ///3-use the access token to have access to the file
-
-
      //check if updates are available
      updater->getXml(cfgUrl);
 
@@ -104,7 +81,7 @@ HttpUpdater::HttpUpdater(QWidget *mainApp, bool display, DialogHttpUpdate *par)
     parent = par;
     mdiMain = (MDImain*)mainApp;
 
-    connect(&manager, SIGNAL(finished(QNetworkReply*)),this, SLOT(getXmlFinished(QNetworkReply*)));
+    connect(&manager, SIGNAL(finished(QNetworkReply*)),this, SLOT(managerRequestFinished(QNetworkReply*)));
     connect(&manager, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)),
             this, SLOT(authenticationRequired(QNetworkReply*,QAuthenticator*)));
     connect(&manager, SIGNAL(proxyAuthenticationRequired(QNetworkProxy,QAuthenticator*)),
@@ -114,7 +91,6 @@ HttpUpdater::HttpUpdater(QWidget *mainApp, bool display, DialogHttpUpdate *par)
 void HttpUpdater::getXml(const QUrl& url)
 {
     QNetworkRequest request(url);
-
     requestXml = manager.get(request);
 }
 
@@ -145,14 +121,16 @@ void HttpUpdater::downloadInstaller(const QUrl& url)
 
         return;
 
-        return;
     }
 
     QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    request.setHeader(QNetworkRequest::UserAgentHeader, "HEXplorer");
+    request.setRawHeader("Accept", "application/octet-stream");
     requestInstaller = manager.get(request);
 
+
     connect(requestInstaller, SIGNAL(downloadProgress(qint64,qint64)), SLOT(downloadProgress(qint64,qint64)));
-    connect(requestInstaller, SIGNAL(finished()), SLOT(downloadFinished()));
     connect(requestInstaller, SIGNAL(readyRead()), this, SLOT(downloadReadyRead()));
 
     downloadTime.start();
@@ -190,7 +168,7 @@ void HttpUpdater::proxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthe
     auth->setPassword(settings.value("Proxy/Password").toString());
 }
 
-void HttpUpdater::getXmlFinished(QNetworkReply *reply)
+void HttpUpdater::managerRequestFinished(QNetworkReply *reply)
 {
     if (reply == requestXml)
     {
@@ -217,8 +195,10 @@ void HttpUpdater::getXmlFinished(QNetworkReply *reply)
         }
         else
         {
-            QByteArray data = reply->readAll();
-            qDebug() << QString(data);
+            QJsonDocument jsonDocument = QJsonDocument::fromJson(reply->readAll());
+            QJsonObject rootObject = jsonDocument.object();
+            QByteArray data = QByteArray::fromBase64(rootObject.value("content").toVariant().toByteArray());
+
             QXmlStreamReader reader(data);
 
             while (!reader.atEnd())
@@ -302,13 +282,52 @@ void HttpUpdater::getXmlFinished(QNetworkReply *reply)
 
                 if (ret == QMessageBox::Yes)
                 {
-                    binUrl.setUrl(updateFilePath);
-                    downloadInstaller(binUrl);;
+                    //binUrl.setUrl(updateFilePath);
+                    binUrl.setUrl("https://api.github.com/repos/adhoc2/HEXplorer/releases/assets/2328230");
+                    downloadInstaller(binUrl);
                 }
                 else
                     return;
             }
+
         }
+    }
+    else if (reply == requestInstaller)
+    {
+        progressBar.hide();
+        binFile.close();
+
+        if (reply->error())
+        {
+            QMessageBox::warning(0, "HEXplorer::update", QString(reply->errorString()) +
+                                  "\n\n" +
+                                  "Please control your internet connection \n" +
+                                  "or set the proxy parameters properly into Edit/Settings",
+                                  QMessageBox::Ok, QMessageBox::Cancel);
+
+            return; //exit
+        }
+
+        QJsonDocument jsonDocument = QJsonDocument::fromJson(reply->readAll());
+        QJsonObject rootObject = jsonDocument.object();
+        qDebug() << jsonDocument.toJson();
+
+        QMessageBox msgBox;
+        msgBox.setIconPixmap(QPixmap(":/icones/updates.png").scaled(80,80));
+        msgBox.setText("Download completed.");
+        msgBox.setInformativeText("Would you like to install ?");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::Yes);
+        int ret = msgBox.exec();
+
+        //update user_List
+        if (ret == QMessageBox::Yes)
+        {
+            //execute the downloaded file
+            launchInstaller();
+        }
+        else
+            return;
     }
 }
 

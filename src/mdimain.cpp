@@ -7090,11 +7090,8 @@ QString MDImain::strippedName(const QString &fullFileName)
 
 void MDImain::on_actionCheck_for_updates_triggered()
 {
-    // https://drive.google.com/file/d/0B50gqVnb9xkLVDBLTzFWTU8xQU0
-
-    // QUrl url("https://www.googleapis.com/drive/v3/files/0B50gqVnb9xkLVDBLTzFWTU8xQU0");
-    QUrl url("https://www.googleapis.com/drive/v3/files\?access_token=1/0B50gqVnb9xkLVDBLTzFWTU8xQU0");
-    DialogHttpUpdate updater(url, false, this);
+    QUrl url("https://api.github.com/repos/adhoc2/HEXplorer/contents/src/update.xml");
+    DialogHttpUpdate updater(url, true, this);
 }
 
 void MDImain::initCheckHttpUpdates()

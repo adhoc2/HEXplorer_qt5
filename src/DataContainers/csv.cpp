@@ -170,11 +170,11 @@ bool Csv::readFile()
         if (mylex.getToken() == Float)
         {
             mylex.getNextToken(in);
-            if (mylex.getToken() == myUnknown && (mylex.getLexem() == "," || mylex.getLexem() == ";" || mylex.getLexem() == "\t"))
+            if (mylex.getToken() == ValueSeparator && (mylex.getLexem() == "," || mylex.getLexem() == ";" || mylex.getLexem() == "\t"))
             {
                 mylex.valueSeparator = mylex.getLexem().at(0);
                 mylex.getNextToken(in);
-                if (mylex.getToken() == myUnknown && (mylex.getLexem() == "," || mylex.getLexem() == "."))
+                if (mylex.getToken() == Text && (mylex.getLexem() == "," || mylex.getLexem() == "."))
                 {
                     mylex.decimalPointSeparator = mylex.getLexem().at(0);
                     in >> ch;
@@ -219,6 +219,7 @@ bool Csv::readFile()
                       + " with lexem " + QString(mylex.getLexem().c_str()));
             return false;
         }
+        mylex.getNextToken(in); //valueSeparator
 
         //parse data
         TokenTyp token;
@@ -226,23 +227,34 @@ bool Csv::readFile()
 
         while (!in.atEnd())
         {
-            if (token == Keyword && mylex.getLexem() == "FUNCTION_HDR")
+            while (token == Eol)
             {
                 token = mylex.getNextToken(in);
-                if (token == Indentation)
-                {                    
+            }
+
+            if (token == Keyword && mylex.getLexem() == "FUNCTION_HDR")
+            {
+                //parse until Eol
+                token = mylex.getNextToken(in);
+                if (token == ValueSeparator)
+                {
+                    while (token != Eol)
+                    {
+                        token = mylex.getNextToken(in);
+                    }
                 }
                 token = mylex.getNextToken(in);
-                while (token == String)
+
+                //parse the <Function Block record> until Eol
+                while (token != Eol)
                 {
-                    //function_hdr = mylex.getLexem().data();
                     token = mylex.getNextToken(in);
                 }
             }
             else if (token == Keyword && mylex.getLexem() == "VARIANT_HDR")
             {
                 token = mylex.getNextToken(in);
-                while (token == String)
+                while (token != Eol && token != Eof)
                 {
                     token = mylex.getNextToken(in);
                 }
@@ -250,19 +262,9 @@ bool Csv::readFile()
             else if (token == Keyword && mylex.getLexem() == "FUNCTION")
             {
                 token = mylex.getNextToken(in);
-                if (token == Indentation)
+                while (token != Eol && token != Eof)
                 {
                     token = mylex.getNextToken(in);
-                    while (token == String || token == Comment )
-                    {
-                        token = mylex.getNextToken(in);
-                    }
-                }
-                else
-                {
-                    showError("CSV parser error at line " + QString::number(mylex.getLine())
-                              + " with lexem " + QString(mylex.getLexem().c_str()));
-                    return false;
                 }
             }
             else if (token == Identifier)
@@ -315,17 +317,74 @@ bool Csv::readFile()
                         // Z values
                         token = mylex.getNextToken(in);
 
-                        if (token == Keyword && (mylex.getLexem() == "CURVE" ||
-                                                          mylex.getLexem() == "MAP" ||
-                                                          mylex.getLexem() == "VALUE"))
+                        //parse the line until Eol
+                        while (token != Eol && token != Eof)
                         {
-                            // check for Indentation
                             token = mylex.getNextToken(in);
-                            if (token != Indentation && token != UnitType)
+                        }
+                        token = mylex.getNextToken(in);
+
+                        if (token == Keyword && mylex.getLexem() == "VALUE")
+                        {
+                            int count = 0;
+                            while (count < 2)
                             {
-                                showError("CSV parser error at line " + QString::number(mylex.getLine())
-                                          + " with lexem " + QString(mylex.getLexem().c_str()));
-                                return false;
+                                token = mylex.getNextToken(in);
+                                if (token == ValueSeparator)
+                                    count++;
+                            }
+
+                            // in case a label is twice in the subset!!
+                            data->clearZ();
+
+                            // read the Z values
+                            QStringList list;
+                            token = mylex.getNextToken(in);
+
+                            mylex.initialize();
+                            if (token ==  Integer || token == Float || token  == String)
+                            {
+                                QString str = mylex.getLexem().c_str();
+                                str.replace(",",".");
+                                str.remove("\"");
+                                list.append(str);
+                                token = mylex.getNextToken(in);
+                            }
+
+                            // copy z values to data
+                            foreach (QString str, list)
+                            {
+                                // convert PHYS value from Csv into HEX value
+                                QString hex = data->phys2hex(str, "z");
+
+                                // convert HEX value into PHYS value
+                                QString phys = data->hex2phys(hex, "z");
+
+                                // copy PHYS value into Zaxis
+                                data->appendZ(phys);
+                            }
+
+                            // define size (lines)
+                            data->updateSize();
+
+                            // exit loop                            
+                            ok = true;                            
+
+                        }
+                        else if (token == Keyword && mylex.getLexem() == "CURVE")
+                        {
+                            //parse the line where identifier CURVE until EOL
+                            token = mylex.getNextToken(in);
+                            while (token != Eol && token != Eof)
+                                token = mylex.getNextToken(in);
+
+                            // check for 2x Indentation : [<Anything>]<value separator>[<Anything>]<value separator>
+                            int count = 0;
+                            while (count < 2)
+                            {
+                                token = mylex.getNextToken(in);
+                                if (token == ValueSeparator)
+                                    count++;
                             }
 
                             // increment the number of rows
@@ -335,13 +394,8 @@ bool Csv::readFile()
                             data->clearZ();
 
                             // read the Z values
-                            QStringList list;
                             token = mylex.getNextToken(in);
-                            while(token == Indentation)
-                            {
-                                token = mylex.getNextToken(in);
-                            }
-
+                            QStringList list;
                             mylex.initialize();
                             while (token ==  Integer || token == Float || token  == String)
                             {
@@ -350,13 +404,131 @@ bool Csv::readFile()
                                 str.remove("\"");
                                 list.append(str);
                                 token = mylex.getNextToken(in);
-                                // check for Indentation
-                                if (token == Indentation || token == UnitType)
+                                if (token == ValueSeparator)
+                                    token = mylex.getNextToken(in);
+                            }
+                            int nCols = list.count() / nRows;
+
+                            // copy z values to data
+                            foreach (QString str, list)
+                            {
+                                // convert PHYS value from Csv into HEX value
+                                QString hex = data->phys2hex(str, "z");
+
+                                // convert HEX value into PHYS value
+                                QString phys = data->hex2phys(hex, "z");
+
+                                // copy PHYS value into Zaxis
+                                data->appendZ(phys);
+                            }
+
+                            // create the x-points if it is a curve
+                            AXIS_DESCR *axisDescrX = data->getAxisDescrX();
+                            if (axisDescrX)
+                            {
+                                QString typeAxisX = axisDescrX->getPar("Attribute");
+                                if (typeAxisX == "FIX_AXIS")
+                                {
+                                    //OFFSET, SHIFT and NUMBERAPO
+                                    FIX_AXIS_PAR *fixAxisPar = (FIX_AXIS_PAR*)axisDescrX->getItem("FIX_AXIS_PAR");
+                                    QString off = fixAxisPar->getPar("Offset");
+                                    QString sft = fixAxisPar->getPar("Shift");
+                                    QString napo = fixAxisPar->getPar("Numberapo");
+                                    bool bl;
+                                    int offset = off.toInt(&bl, 10);
+                                    int shift = sft.toInt(&bl, 10);
+                                    int nPtsX = napo.toUInt(&bl, 10);
+
+                                    //check if nPts < nPtsmax
+                                    QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
+                                    double nmaxPts = maxAxisPts.toDouble();
+                                    if (nPtsX > nmaxPts)
+                                        nPtsX = nmaxPts;
+
+                                    QString str;
+                                    for (int i = 0; i < nPtsX; i++)
+                                    {
+                                        str.setNum((int)(offset + i * qPow(2, shift)), 16);
+                                        data->appendX(data->hex2phys(str, "x"));
+                                    }
+                                }
+                                else
+                                {
+                                    for (int i = 0; i < nCols; i++)
+                                    {
+                                        data->appendX(QString::number(i));
+                                    }
+                                }
+                            }
+
+                            // define size (lines)
+                            data->updateSize();
+
+                            // exit loop
+                            ok = true;
+
+                        }
+                        else if (token == Keyword && mylex.getLexem() == "MAP")
+                        {
+                            //count 2 lines forward
+                            int count = 0;
+                            while (count < 2)
+                            {
+                                 token = mylex.getNextToken(in);
+                                 if (token == Eol)
+                                     count++;
+                            }
+
+                            //count 2 identation forward
+                            count = 0;
+                            while (count < 2)
+                            {
+                                 token = mylex.getNextToken(in);
+                                 if (token == ValueSeparator)
+                                     count++;
+                            }
+
+                            // increment the number of rows
+                            int nRows = 0;
+
+                            // in case a label is twice in the subset!!
+                            data->clearZ();
+
+                            // read the Z values
+                            QStringList list;
+                            token = mylex.getNextToken(in);
+
+                            while (token ==  Integer || token == Float || token  == String)
+                            {
+                                QString str = mylex.getLexem().c_str();
+                                str.replace(",",".");
+                                str.remove("\"");
+                                list.append(str);
+                                token = mylex.getNextToken(in);
+                                if (token == ValueSeparator)
+                                    token = mylex.getNextToken(in);
+                                else if (token == Eol) //new line
                                 {
                                     nRows++;
                                     token = mylex.getNextToken(in);
+                                    if (token != Eol)
+                                    {
+                                        //count 2 identation forward
+                                        count = 0;
+                                        if (token == ValueSeparator)
+                                            count = 1;
+                                        while (count < 2)
+                                        {
+                                             token = mylex.getNextToken(in);
+                                             if (token == ValueSeparator)
+                                                 count++;
+                                        }
+                                        token = mylex.getNextToken(in);
+                                    }
                                 }
                             }
+                            if (nRows == 0)
+                                nRows++;
                             int nCols = list.count() / nRows;
 
                             // copy z values to data
@@ -454,33 +626,27 @@ bool Csv::readFile()
                             // define size (lines)
                             data->updateSize();
 
-                            // exit loop                            
-                            ok = true;                            
+                            // exit loop
+                            ok = true;
 
                         }
                         else if (token == Keyword && ( mylex.getLexem() == "VAL_BLK"))
                         {
                             // check for Indentation
-                            token = mylex.getNextToken(in);
-                            if (token != Indentation && token != UnitType)
+                            int count = 0;
+                            while (count < 2)
                             {
-                                showError("CSV parser error at line " + QString::number(mylex.getLine())
-                                          + " with lexem " + QString(mylex.getLexem().c_str()));
-                                return false;
+                                token = mylex.getNextToken(in);
+                                if (token == ValueSeparator)
+                                    count++;
                             }
+                            token = mylex.getNextToken(in);
 
                             // in case a label is twice in the subset!!
                             data->clearZ();
 
                             // read the Z values
                             QStringList list;
-                            token = mylex.getNextToken(in);
-                            while(token == Indentation)
-                            {
-                                token = mylex.getNextToken(in);
-                            }
-
-                            mylex.initialize();
                             while (token ==  Integer || token == Float || token  == String)
                             {
                                 QString str = mylex.getLexem().c_str();
@@ -488,8 +654,7 @@ bool Csv::readFile()
                                 str.remove("\"");
                                 list.append(str);
                                 token = mylex.getNextToken(in);
-                                // check for Indentation
-                                if (token == Indentation || token == UnitType)
+                                if (token == ValueSeparator)
                                 {
                                     token = mylex.getNextToken(in);
                                 }
@@ -529,22 +694,17 @@ bool Csv::readFile()
                         else if (token == Keyword && mylex.getLexem() == "AXIS_PTS")
                         {
                             // check for Indentation
-                            token = mylex.getNextToken(in);
-                            if (token != Indentation && token != UnitType)
+                            int count = 0;
+                            while (count < 2)
                             {
-                                showError("CSV parser error at line " + QString::number(mylex.getLine())
-                                          + " with lexem " + QString(mylex.getLexem().c_str()));
-                                return false;
+                                token = mylex.getNextToken(in);
+                                if (token == ValueSeparator)
+                                    count++;
                             }
+                            token = mylex.getNextToken(in);
 
                             // read the Z values
                             QStringList list;
-                            token = mylex.getNextToken(in);
-                            while(token == Indentation)
-                            {
-                                token = mylex.getNextToken(in);
-                            }
-
                             while (token ==  Integer || token == Float || token  == String)
                             {
                                 QString str = mylex.getLexem().c_str();
@@ -552,6 +712,8 @@ bool Csv::readFile()
                                 str.remove("\"");
                                 list.append(str);
                                 token = mylex.getNextToken(in);
+                                if (token == ValueSeparator)
+                                    token = mylex.getNextToken(in);
                             }
 
                             // add Z values to data
@@ -584,21 +746,16 @@ bool Csv::readFile()
                         else if (token == Keyword && mylex.getLexem() == "X_AXIS_PTS")
                         {
                             // check for Indentation
-                            token = mylex.getNextToken(in);
-                            if (token != Indentation && token != UnitType)
-                            {
-                                showError("CSV parser error at line " + QString::number(mylex.getLine())
-                                          + " with lexem " + QString(mylex.getLexem().c_str()));
-                                return false;
-                            }
-
-                            QStringList list;
-                            token = mylex.getNextToken(in);
-                            while(token == Indentation)
+                            int count = 0;
+                            while (count < 2)
                             {
                                 token = mylex.getNextToken(in);
+                                if (token == ValueSeparator)
+                                    count++;
                             }
+                            token = mylex.getNextToken(in);
 
+                            QStringList list;
                             while (token == Integer || token == Float || token == String)
                             {
                                 QString str = mylex.getLexem().c_str();
@@ -606,6 +763,8 @@ bool Csv::readFile()
                                 str.remove("\"");
                                 list.append(str);
                                 token = mylex.getNextToken(in);
+                                if (token == ValueSeparator)
+                                    token = mylex.getNextToken(in);
                             }
 
                             data->clearX();
@@ -629,21 +788,16 @@ bool Csv::readFile()
                         else if (token == Keyword && mylex.getLexem() == "Y_AXIS_PTS")
                         {
                             // check for Indentation
-                            token = mylex.getNextToken(in);
-                            if (token != Indentation && token != UnitType)
-                            {
-                                showError("CSV parser error at line " + QString::number(mylex.getLine())
-                                          + " with lexem " + QString(mylex.getLexem().c_str()));
-                                return false;
-                            }
-
-                            QStringList list;
-                            token = mylex.getNextToken(in);
-                            while(token == Indentation)
+                            int count = 0;
+                            while (count < 2)
                             {
                                 token = mylex.getNextToken(in);
+                                if (token == ValueSeparator)
+                                    count++;
                             }
+                            token = mylex.getNextToken(in);
 
+                            QStringList list;
                             while (token == Integer ||token == Float || token == String)
                             {
                                 QString str = mylex.getLexem().c_str();
@@ -651,6 +805,8 @@ bool Csv::readFile()
                                 str.remove("\"");
                                 list.append(str);
                                 token = mylex.getNextToken(in);
+                                if (token == ValueSeparator)
+                                    token = mylex.getNextToken(in);
                             }
 
                             data->clearY();
@@ -675,12 +831,12 @@ bool Csv::readFile()
                         {
 
                             // check for Indentation
-                            token = mylex.getNextToken(in);
-                            if (token != Indentation && token != UnitType)
+                            int count = 0;
+                            while (count < 2)
                             {
-                                showError("CSV parser error at line " + QString::number(mylex.getLine())
-                                          + " with lexem " + QString(mylex.getLexem().c_str()));
-                                return false;
+                                token = mylex.getNextToken(in);
+                                if (token == ValueSeparator)
+                                    count++;
                             }
 
                             // in case a label is twice in the subset!!
@@ -689,14 +845,10 @@ bool Csv::readFile()
                             // read the ASCII text
                             QString text;
                             token = mylex.getNextToken(in);
-                            while(token == Indentation)
-                            {
-                                token = mylex.getNextToken(in);
-                            }
-
                             if (token == String)
                             {
                                 text = mylex.getLexem().c_str();
+                                token = mylex.getNextToken(in);
                             }
 
                             // convert text to char array
@@ -716,9 +868,6 @@ bool Csv::readFile()
 
                             // define size (lines)
                             data->updateSize();
-
-                            //get next token
-                            token = mylex.getNextToken(in);
 
                             // exit loop
                             ok = true;
@@ -745,6 +894,14 @@ bool Csv::readFile()
                 }
             }
             else if (token == Comment)
+            {
+                token = mylex.getNextToken(in);
+            }
+            else if (token == Eof)
+            {
+                return true;
+            }
+            else if (token == ValueSeparator)
             {
                 token = mylex.getNextToken(in);
             }

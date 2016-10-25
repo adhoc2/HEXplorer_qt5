@@ -288,7 +288,6 @@ HEADERS += a2l.h \
     plot3d.h \
     DataContainers/dcmfile.h \
     DataContainers/lexerDcm.h \
-    oauth2service.h \
     treedirectory.h
 FORMS += formeditor.ui \
     mdimain.ui \
@@ -469,7 +468,6 @@ SOURCES += a2l.cpp \
     plot3d.cpp \
     DataContainers/dcmfile.cpp \
     DataContainers/lexerDcm.cpp \
-    oauth2service.cpp \
     treedirectory.cpp
 
 OTHER_FILES += \

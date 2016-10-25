@@ -31,7 +31,7 @@ class A2lGrammar;
 enum TokenTyp
 {
     Identifier ,String, StringFormat, Float, Integer, Comment, Hex, myUnknown, Plus, Minus, BlockComment,
-    BlockBegin, BlockEnd, Eof,
+    BlockBegin, BlockEnd, Eof, Eol, ValueSeparator, Text,
     Keyword, DataType, Datasize, Addrtype, Byteorder, Indexorder, ConversionType, Type, Attribute, Mode,
     PrgType, MemoryType, MemAttribute, IndexMode, Indentation, UnitType
 };

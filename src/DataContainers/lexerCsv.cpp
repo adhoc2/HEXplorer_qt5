@@ -38,7 +38,7 @@ LexerCsv::LexerCsv(QObject *parent) : QObject(parent)
 
     // --- initialize members
     buffer = new Buffer();
-    valueSeparator = 0;
+    valueSeparator = ';';
     commentIndicator = 0;
     stringDelimiter = 0;
     decimalPointSeparator = '.';
@@ -105,6 +105,15 @@ std::string LexerCsv::toString(TokenTyp type)
         case Keyword:
             return "Keyword";
             break;
+        case Eol:
+            return "Eol";
+            break;
+        case ValueSeparator:
+            return "ValueSeparator";
+            break;
+        case Text:
+            return "Text";
+            break;
         default:
             return "Unknown";
     }
@@ -146,76 +155,63 @@ TokenTyp LexerCsv::getNextToken(QTextStream &in)
         position = in.pos();
     }
 
-
+    qDebug() << toString(token).c_str() << lexem.c_str();
     return token;
 }
 
 TokenTyp LexerCsv::begin(QTextStream &in, char ch)
 {
-    TokenTyp token = myUnknown;
+    TokenTyp token = Text;
 
-    while(1)
+    if (ch == 0)
     {
-        //count new lines
-        while (isNewLine(ch))
-        {
-            if (ch == '\n') incLine();
-            in >> ch;
-        }
-
-        //if at end of file
-        if (ch == 0)
-        {
-            token = Eof;
-            buffer->clear();
-            return token;
-        }
-        else
-        {
-            if (isValueSeparator(ch))
-            {
-               token = indentation(in, ch);
-               if (token == Indentation)
-               {
-                   return token;
-               }
-            }
-            else if (ch == unitDelimiter)
-            {
-                token = unit(in);
-                return token;
-            }
-            else if (ch == commentIndicator)
-            {
-                 token = commentL(in);
-                 return token;
-            }
-            else if (ch == stringDelimiter)
-            {
-                token = string(in);
-                return token;
-            }
-            else if (ch == '+' || ch == '-' || isDigit(ch))
-            {
-                token = number(in, ch);
-                return token;
-            }
-            else if(isLetter(ch) || ch == '_')
-            {
-                token = identifier(in, ch);
-                return token;
-            }
-            else if (isNewLine(ch))
-            {
-            }
-            else
-            {
-                lexem += ch;
-                buffer->clear();
-                return token;
-            }
-        }
+        token = Eof;
+        buffer->clear();
+        return token;
     }
+    else if (ch == valueSeparator)
+    {
+        lexem = ch;
+        return ValueSeparator;
+    }
+    else if (ch == unitDelimiter)
+    {
+        token = unit(in);
+        return Text;
+    }
+    else if (ch == commentIndicator)
+    {
+         token = commentL(in);
+         return token;
+    }
+    else if (ch == stringDelimiter)
+    {
+        token = string(in);
+        return token;
+    }
+    else if (ch == '+' || ch == '-' || isDigit(ch))
+    {
+        token = number(in, ch);
+        return token;
+    }
+    else if (isLetter(ch) || ch == '_')
+    {
+        token = identifier(in, ch);
+        return token;
+    }
+    else if (isNewLine(ch))
+    {
+        buffer->clear();
+        token = Eol;
+        return token;
+    }
+    else
+    {
+        lexem += ch;
+        buffer->clear();
+        return token;
+    }
+
 }
 
 TokenTyp LexerCsv::indentation(QTextStream &in, char &ch)
@@ -378,7 +374,7 @@ TokenTyp LexerCsv::identifier(QTextStream &in, char &ch)
 
 TokenTyp LexerCsv::number(QTextStream &in, char &ch)
 {
-    TokenTyp token;
+    TokenTyp token = Float;
     lexem = "";
     lexem += ch;
 
@@ -412,24 +408,50 @@ TokenTyp LexerCsv::number(QTextStream &in, char &ch)
                     lexem += buffer->getAndClear();
                     buffer->read(in);
                 }
+                if (buffer->getValue() == valueSeparator || buffer->getValue() == '\n')
+                {
+                    token = Float;
+                    return token;
+                }
+                else
+                {
+                    while (buffer->getValue() != valueSeparator && buffer->getValue() != Eol)
+                    {
+                        lexem += buffer->getAndClear();
+                        buffer->read(in);
+                    }
+                    token = Text;
+                    return token;
+
+                }
+            }
+            else
+            {
+                token = Text;
+                return token;
+            }
+        }
+        else
+        {
+            if (buffer->getValue() == valueSeparator || buffer->getValue() == '\n')
+            {
                 token = Float;
                 return token;
             }
             else
             {
-                token = myUnknown;
+                while (buffer->getValue() != valueSeparator && buffer->getValue() != '\n')
+                {
+                    lexem += buffer->getAndClear();
+                    buffer->read(in);
+                }
+                token = Text;
                 return token;
+
             }
-
         }
-        else
-        {
-            token = Float;
-            return token;
-        }
-
     }
-    else if(buffer->getValue() == 'E' || buffer->getValue() == 'e')
+    if (buffer->getValue() == 'E' || buffer->getValue() == 'e')
     {
         lexem += buffer->getAndClear();
         buffer->read(in);
@@ -442,23 +464,37 @@ TokenTyp LexerCsv::number(QTextStream &in, char &ch)
                 lexem += buffer->getAndClear();
                 buffer->read(in);
             }
-            token = Float;
-            return token;
+            if (buffer->getValue() == valueSeparator || buffer->getValue() == Eol)
+            {
+                token = Float;
+                return token;
+            }
+            else
+            {
+                while (buffer->getValue() != valueSeparator && buffer->getValue() != Eol)
+                {
+                    lexem += buffer->getAndClear();
+                    buffer->read(in);
+                }
+                token = Text;
+                return token;
+
+            }
         }
         else
         {
-            token = myUnknown;
+            token = Text;
             return token;
         }
     }
-    else if (buffer->getValue() == 'x')
-    {
-         token = hexadecimal(in);
-         return token;
-    }
     else
     {
-        token = Integer;
+        while (buffer->getValue() != valueSeparator && buffer->getValue() != Eol)
+        {
+            lexem += buffer->getAndClear();
+            buffer->read(in);
+        }
+        token = Text;
         return token;
     }
 }
@@ -474,7 +510,11 @@ TokenTyp LexerCsv::string(QTextStream &in)
     bool exit = false;
     while (!exit)
     {        
-        while (buffer->getValue() != stringDelimiter && buffer->getValue() != '\\' && buffer->getValue() != '\n' && buffer->getValue() != 0 )
+        while (buffer->getValue() != stringDelimiter &&
+               buffer->getValue() != '\\' &&
+               buffer->getValue() != '\n' &&
+               buffer->getValue() != 0 &&
+               buffer->getValue() != valueSeparator)
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
@@ -502,7 +542,7 @@ TokenTyp LexerCsv::string(QTextStream &in)
         }
         else
         {
-            token = myUnknown;
+            token = Text;
             exit = true;
         }
     }
@@ -514,18 +554,54 @@ TokenTyp LexerCsv::unit(QTextStream &in)
 {
     buffer->read(in);
     TokenTyp token = string(in);
+    lexem = unitDelimiter + lexem;
 
     if(token == String)
     {
         if (buffer->getValue() == unitDelimiter)
         {
+            lexem += buffer->getAndClear();
             buffer->read(in);
-            return UnitType;
+            if (buffer->getValue() == valueSeparator)
+            {
+                return UnitType;
+            }
+            else
+            {
+                lexem += buffer->getAndClear();
+                buffer->read(in);
+                while (buffer->getValue() != valueSeparator)
+                {
+                    lexem += buffer->getAndClear();
+                    buffer->read(in);
+                }
+
+                return Text;
+            }
         }
         else
-            return myUnknown;
+        {
+            lexem += buffer->getAndClear();
+            buffer->read(in);
+            while (buffer->getValue() != valueSeparator)
+            {
+                lexem += buffer->getAndClear();
+                buffer->read(in);
+            }
+            return Text;
+        }
     }
-    return myUnknown;
+    else
+    {
+        lexem += buffer->getAndClear();
+        buffer->read(in);
+        while (buffer->getValue() != valueSeparator)
+        {
+            lexem += buffer->getAndClear();
+            buffer->read(in);
+        }
+        return Text;
+    }
 }
 
 TokenTyp LexerCsv::hexadecimal(QTextStream &in)
@@ -612,9 +688,13 @@ void LexerCsv::backward(QTextStream &in)
 bool LexerCsv::isNewLine(char ch)
 {
     if (ch == '\r' || ch == '\n')
+    {
         return true;
+    }
     else
+    {
         return false;
+    }
 }
 
 bool LexerCsv::isValueSeparator(char ch)

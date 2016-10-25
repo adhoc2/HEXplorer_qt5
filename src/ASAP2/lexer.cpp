@@ -56,28 +56,6 @@ void Buffer::read(QTextStream *in)
             value = 0;
             state = false;
         }
-
-
-//    QChar c;
-//    in >> c;
-
-    
-//    if (c != 0 && c.unicode() < 128)
-//    {
-//        value = c.toLatin1();
-//        state = true;
-//    }
-//    else if (c.unicode() > 127)
-//    {
-//        value = '?';
-//        state = true;
-//    }
-
-//    else
-//    {
-//        value = 0;
-//        state = false;
-//    }
 }
 
 void Buffer::read(QTextStream &in)
