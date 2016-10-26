@@ -271,10 +271,12 @@ void HttpUpdater::managerRequestFinished(QNetworkReply *reply)
             {
                 QMessageBox msgBox;
                 msgBox.setIconPixmap(QPixmap(":/icones/updates.png").scaled(80,80));
-                msgBox.setText("A new update is available :\n - current version : " + qApp->applicationVersion() + "\n - new version : " + newVersion);
-                msgBox.setInformativeText("would you like to download it?");
-                msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-                msgBox.setDefaultButton(QMessageBox::Yes);
+                msgBox.setText("A new update is available :\n - current version installed: " + qApp->applicationVersion() + "\n - new version available: " + newVersion);
+                //msgBox.setInformativeText("would you like to download it?");
+                msgBox.setInformativeText("Download at https://github.com/adhoc2/HEXplorer/releases/");
+                //msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                //msgBox.setDefaultButton(QMessageBox::Yes);
+                msgBox.setDefaultButton(QMessageBox::Ok);
                 msgBox.setDetailedText(updateDetails);
                 int ret = msgBox.exec();
 

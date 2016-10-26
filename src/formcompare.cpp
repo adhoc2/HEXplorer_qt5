@@ -614,6 +614,11 @@ void FormCompare::checkDroppedFile_2(QString str)
             cdfx2->detach(this);
             cdfx2->getParentWp()->detach(this);
         }
+        else if (dcm2)
+        {
+            dcm2->getParentWp()->detach(this);
+            dcm2->detach(this);
+        }
 
         // attach this to the new dropped hex file
         if (name.toLower().endsWith("hexfile"))
@@ -671,6 +676,17 @@ void FormCompare::checkDroppedFile_2(QString str)
             cdfx2->attach(this);
             cdfx2->getParentWp()->attach(this);
             a2l2 = cdfx2->getParentWp()->a2lFile;
+        }
+        else if(name.toLower().endsWith("dcm"))
+        {
+            hex2 = NULL;
+            srec2 = NULL;
+            csv2 = NULL;
+            cdfx2 = NULL;
+            dcm2 = (Dcm*)node;
+            dcm2->attach(this);
+            dcm2->getParentWp()->attach(this);
+            a2l2 =dcm2->getParentWp()->a2lFile;
         }
 
         delete tableModel;
