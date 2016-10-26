@@ -339,12 +339,40 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
                 if (nPtsAxisX > nPtsAxisX_Max)
                     nPtsAxisX = nPtsAxisX_Max;
 
-                QString str;
+
+                QList<int> numberApo;
                 for (int i = 0; i < nPtsAxisX; i++)
                 {
-                    str.setNum((int)(offset + i * qPow(2, shift)), 10);
-                    listX.append(str);
+                    //str.setNum((int)(offset + i * qPow(2, shift)), 10);
+                    //listX.append(str);
+                    numberApo.append((int)(offset + i * qPow(2, shift)));
                 }
+
+                QString compu_method = axisDescrX->getPar("Conversion");
+                COMPU_METHOD *cmp = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu_method);
+                QString convType = cmp->getPar("ConversionType");
+
+                if (convType.toLower() == "tab_verb")
+                {
+                    COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+                    QString compuTabRef = item->getPar("ConversionTable");
+                    compuVTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+
+                    for (int i = 0; i < nPtsAxisX; i++)
+                    {
+                        listX.append(compuVTabAxisX->getValue(numberApo.at(i)));
+                    }
+                }
+                else
+                {
+                    QString str;
+                    for (int i = 0; i < nPtsAxisX; i++)
+                    {
+                        str.setNum(numberApo.at(i), 10);
+                        listX.append(str);
+                    }
+                }
+
 
                 addressX = 0;
             }
@@ -513,11 +541,37 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : N
                 if (nPtsAxisY > nPtsAxisY_Max)
                     nPtsAxisY = nPtsAxisY_Max;
 
-                QString str;
+                QList<int> numberApo;
                 for (int i = 0; i < nPtsAxisY; i++)
                 {
-                     str.setNum((int)(offset + i * qPow(2, shift)), 10);
-                    listY.append(str);
+                    //str.setNum((int)(offset + i * qPow(2, shift)), 10);
+                    //listX.append(str);
+                    numberApo.append((int)(offset + i * qPow(2, shift)));
+                }
+
+                QString compu_method = axisDescrY->getPar("Conversion");
+                COMPU_METHOD *cmp = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu_method);
+                QString convType = cmp->getPar("ConversionType");
+
+                if (convType.toLower() == "tab_verb")
+                {
+                    COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+                    QString compuTabRef = item->getPar("ConversionTable");
+                    compuVTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+
+                    for (int i = 0; i < nPtsAxisY; i++)
+                    {
+                        listY.append(compuVTabAxisY->getValue(numberApo.at(i)));
+                    }
+                }
+                else
+                {
+                    QString str;
+                    for (int i = 0; i < nPtsAxisY; i++)
+                    {
+                        str.setNum(numberApo.at(i), 10);
+                        listY.append(str);
+                    }
                 }
 
                 addressY = 0;
@@ -1025,11 +1079,37 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
             if (nPtsAxisX > nPtsAxisX_Max)
                 nPtsAxisX = nPtsAxisX_Max;
 
-            QString str;
+            QList<int> numberApo;
             for (int i = 0; i < nPtsAxisX; i++)
             {
-                str.setNum((int)(offset + i * qPow(2, shift)), 16);
-                listX.append(str);
+                //str.setNum((int)(offset + i * qPow(2, shift)), 10);
+                //listX.append(str);
+                numberApo.append((int)(offset + i * qPow(2, shift)));
+            }
+
+            QString compu_method = axisDescrX->getPar("Conversion");
+            COMPU_METHOD *cmp = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu_method);
+            QString convType = cmp->getPar("ConversionType");
+
+            if (convType.toLower() == "tab_verb")
+            {
+                COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+                QString compuTabRef = item->getPar("ConversionTable");
+                compuVTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+
+                for (int i = 0; i < nPtsAxisX; i++)
+                {
+                    listX.append(compuVTabAxisX->getValue(numberApo.at(i)));
+                }
+            }
+            else
+            {
+                QString str;
+                for (int i = 0; i < nPtsAxisX; i++)
+                {
+                    str.setNum(numberApo.at(i), 10);
+                    listX.append(str);
+                }
             }
 
             addressX = 0;
@@ -1173,11 +1253,37 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
             if (nPtsAxisY > nPtsAxisY_Max)
                 nPtsAxisY = nPtsAxisY_Max;
 
-            QString str;
+            QList<int> numberApo;
             for (int i = 0; i < nPtsAxisY; i++)
             {
-                 str.setNum((int)(offset + i * qPow(2, shift)), 16);
-                listY.append(str);
+                //str.setNum((int)(offset + i * qPow(2, shift)), 10);
+                //listX.append(str);
+                numberApo.append((int)(offset + i * qPow(2, shift)));
+            }
+
+            QString compu_method = axisDescrY->getPar("Conversion");
+            COMPU_METHOD *cmp = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu_method);
+            QString convType = cmp->getPar("ConversionType");
+
+            if (convType.toLower() == "tab_verb")
+            {
+                COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+                QString compuTabRef = item->getPar("ConversionTable");
+                compuVTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+
+                for (int i = 0; i < nPtsAxisY; i++)
+                {
+                    listY.append(compuVTabAxisY->getValue(numberApo.at(i)));
+                }
+            }
+            else
+            {
+                QString str;
+                for (int i = 0; i < nPtsAxisY; i++)
+                {
+                    str.setNum(numberApo.at(i), 10);
+                    listY.append(str);
+                }
             }
 
             addressY = 0;
@@ -4807,6 +4913,9 @@ QString Data::dec2hex(double dec, std::string type, int base)
 {
     QString qHex = "";
     char hex[31];
+
+    if (type == "")
+        type = "UBYTE";
 
     if(type == "SBYTE")
     {

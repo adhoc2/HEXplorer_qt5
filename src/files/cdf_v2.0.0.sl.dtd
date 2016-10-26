@@ -1,0 +1,755 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--DOCTYPE MSRSW [
+*******************************************************************
+ASAM Automotive Electronics - Calibration Data Format 2.0.0 [CDF 2.0.0]
+
+CONTACT: If you want to read more about ASAM Automotive Electronics and their documentation
+check out the website below:
+
+http://www.asam.net/
+
+COPYRIGHT: Copyright 2006 ASAM e.V
+All rights reserved.
+
+
+DISCLAIMER OF WARRANTY
+
+ALTHOUGH THIS XML MODEL WAS CREATED WITH THE UTMOST CARE IT CANNOT
+BE GUARANTEED THAT IT IS COMPLETELY FREE OF ERRORS OR INCONSISTENCIES.
+ASAM E.V. MAKES NO REPRESENTATIONS OR WARRANTIES WITH RESPECT TO THE
+CONTENTS OR USE OF THIS XML MODEL, AND SPECIFICALLY DISCLAIMS ANY
+EXPRESSED OR IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR ANY
+PARTICULAR PURPOSE. NEITHER ASAM NOR THE AUTHOR(S) THEREFORE ACCEPT
+ANY LIABILITY FOR DAMAGES OR OTHER CONSEQUENCES THAT ARISE FROM THE
+USE OF THIS XML MODEL AND IT'S DOCUMENTATION.
+ASAM E.V. RESERVES THE RIGHT TO REVISE THIS PUBLICATION AND TO MAKE
+CHANGES TO ITS CONTENT, AT ANY TIME, WITHOUT OBLIGATION TO NOTIFY
+ANY PERSON OR ENTITY OF SUCH REVISIONS OR CHANGES.
+
+Contributed by Herbert Klein (XI-Works)
+
+$Id:$
+$Log:$
+
+*******************************************************************
+-->
+<!ELEMENT MSRSW  (SHORT-NAME?,CATEGORY?,SW-SYSTEMS?,SDGS?,LOCS?) >
+
+<!ATTLIST MSRSW
+               C  CDATA    #IMPLIED 
+               CREATOR  CDATA    #IMPLIED 
+               CREATOR-VERSION  CDATA    #IMPLIED 
+               F-CM-TOOL-ID  CDATA    #FIXED "$Id$"
+               F-DTD-BUILD  CDATA    #FIXED "9"
+               F-DTD-VERSION  CDATA    #FIXED "3.0.0"
+               F-PUBID  CDATA    #FIXED "-//ASAM//DTD MSR SOFTWARE DTD:V3.0.0:LAI:IAI:XML:MSRSW.DTD//EN"                             
+               LC  CDATA    #IMPLIED
+               PUBID  CDATA "-//ASAM//DTD CALIBRATION DATA FORMAT:V2.0.0:LAI:IAI:XML:CDF200.XSD//EN"
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SHORT-NAME  (#PCDATA) >
+
+<!ATTLIST SHORT-NAME
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT CATEGORY  (#PCDATA) >
+
+<!ATTLIST CATEGORY
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-SYSTEMS  (SW-SYSTEM*) >
+
+<!ATTLIST SW-SYSTEMS
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SDGS  (SDG+) >
+
+<!ATTLIST SDGS
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT LOCS  (NAMELOC+) >
+
+<!ATTLIST LOCS
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-SYSTEM  (SHORT-NAME,LONG-NAME?,CATEGORY?,SW-INSTANCE-SPEC?) >
+
+<!ATTLIST SW-SYSTEM
+               C  CDATA    #IMPLIED 
+               F-ID-CLASS  NMTOKEN    #FIXED "SW-SYSTEM"
+               F-NAMESPACE  NMTOKENS    #FIXED 
+               "BASE-TYPE CHAPTER COMPU-METHOD CONF-ITEM CONF-RULE DATA-CONSTR DEF-ITEM FIGURE FORMULA PHYSICAL-DIMENSION PRM SDG STD SW-ADDR-METHOD SW-AXIS-TYPE SW-CALIBRATION-METHOD SW-CALPRM SW-CALPRM-PROTOTYPE SW-CLASS SW-CLASS-ATTR-IMPL SW-CLASS-INSTANCE SW-CLASS-PROTOTYPE SW-CODE-SYNTAX SW-COLLECTION SW-CPU-MEM-SEG SW-EVENT SW-EVENT-SOURCE SW-FEATURE SW-FEATURE-INTERFACE SW-FEATURE-VARIANT SW-GENERIC-AXIS-PARAM-TYPE SW-INSTANCE SW-INSTANCE-TREE SW-OPER-MODE SW-RECORD-LAYOUT SW-SERVICE SW-SERVICE-ARG SW-SERVICE-PROTOTYPE SW-SERVICE-RETURN SW-SYSTEMCONST SW-TASK SW-TEMPLATE SW-USER-ACCESS-CASE SW-USER-GROUP SW-VARIABLE SW-VARIABLE-PROTOTYPE SW-VCD-CRITERION SYNOPSIS TABLE TOPIC UNIT-GROUP UNIT XDOC XFILE XREF-TARGET"
+               
+               ID  ID    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SDG  (SDG-CAPTION?,(SD? | SDG?)*) >
+
+<!ATTLIST SDG
+               C  CDATA    #IMPLIED 
+               GID  CDATA    #REQUIRED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT NAMELOC  (SHORT-NAME,LONG-NAME?,NMLIST) >
+
+<!ATTLIST NAMELOC
+               C  CDATA    #IMPLIED 
+               EXT-ID-CLASS  NMTOKEN    #IMPLIED 
+               F-ID-CLASS  NMTOKEN    #FIXED "EXTERNAL"
+               HYTIME  NMTOKEN    #FIXED "NAMELOC"
+               ID  ID    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT LONG-NAME  (#PCDATA) >
+
+<!ATTLIST LONG-NAME
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-INSTANCE-SPEC  (SW-INSTANCE-TREE?) >
+
+<!ATTLIST SW-INSTANCE-SPEC
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SDG-CAPTION  (SHORT-NAME,LONG-NAME?) >
+
+<!ATTLIST SDG-CAPTION
+               C  CDATA    #IMPLIED 
+               F-ID-CLASS  NMTOKEN    #FIXED "SDG"
+               ID  ID    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SD  (#PCDATA) >
+
+<!ATTLIST SD
+               C  CDATA    #IMPLIED 
+               GID  CDATA    #REQUIRED 
+               ID-CLASS  NMTOKEN    #IMPLIED 
+               ID-REF  IDREF    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT NMLIST  (#PCDATA) >
+
+<!ATTLIST NMLIST
+               C  CDATA    #IMPLIED 
+               DOCORSUB  CDATA    #IMPLIED 
+               HYTIME  NMTOKEN    #FIXED "NMLIST"
+               LC  CDATA    #IMPLIED 
+               NAMETYPE (ENTITY | ELEMENT)  "ELEMENT"
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-INSTANCE-TREE  (SHORT-NAME,LONG-NAME?,CATEGORY?,
+               SW-INSTANCE-TREE-ORIGIN?,SW-CS-COLLECTIONS?,SW-INSTANCE*) >
+
+<!ATTLIST SW-INSTANCE-TREE
+               C  CDATA    #IMPLIED 
+               F-ID-CLASS  NMTOKEN    #FIXED "SW-INSTANCE-TREE"
+               F-NAMESPACE  NMTOKEN    #FIXED "SW-INSTANCE"
+               ID  ID    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-INSTANCE-TREE-ORIGIN  (SYMBOLIC-FILE?,DATA-FILE?) >
+
+<!ATTLIST SW-INSTANCE-TREE-ORIGIN
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-CS-COLLECTIONS  (SW-CS-COLLECTION+) >
+
+<!ATTLIST SW-CS-COLLECTIONS
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-INSTANCE  ((SHORT-NAME | SW-ARRAY-INDEX),LONG-NAME?,DISPLAY-NAME?,
+               CATEGORY?,SW-FEATURE-REF?,((SW-VALUE-CONT?,SW-AXIS-CONTS?,
+               SW-CS-HISTORY?,SW-CS-FLAGS?) | SW-INSTANCE-PROPS-VARIANTS?),
+               SW-INSTANCE*) >
+
+<!ATTLIST SW-INSTANCE
+               C  CDATA    #IMPLIED 
+               F-ID-CLASS  CDATA    #FIXED "SW-INSTANCE"
+               F-NAMESPACE  NMTOKEN    #FIXED "SW-INSTANCE"
+               ID  ID    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               PW (NOT-PRECISE | PRECISE)  "PRECISE"
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SYMBOLIC-FILE  (#PCDATA) >
+
+<!ATTLIST SYMBOLIC-FILE
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT DATA-FILE  (#PCDATA) >
+
+<!ATTLIST DATA-FILE
+               C  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-CS-COLLECTION
+        (
+          CATEGORY? ,
+          SW-FEATURE-REF? ,
+          REVISION? ,
+          SW-COLLECTION-REF? ,
+          SW-CS-HISTORY?
+        )
+>
+
+<!ATTLIST SW-CS-COLLECTION
+
+          C               CDATA     #IMPLIED
+          LC              CDATA     #IMPLIED
+          S               CDATA     #IMPLIED
+          SI              CDATA     #IMPLIED
+          T               CDATA     #IMPLIED
+          TI              CDATA     #IMPLIED
+          VIEW            CDATA     #IMPLIED
+>
+
+<!ELEMENT SW-ARRAY-INDEX  (#PCDATA) >
+
+<!ATTLIST SW-ARRAY-INDEX
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+
+<!ELEMENT DISPLAY-NAME  (#PCDATA) >
+
+<!ATTLIST DISPLAY-NAME
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-FEATURE-REF  (#PCDATA) >
+
+<!ATTLIST SW-FEATURE-REF
+               C  CDATA    #IMPLIED 
+               F-ID-CLASS  NMTOKEN    #FIXED "SW-FEATURE"
+               HYNAMES  NMTOKENS    #FIXED "LINKEND ID-REF"
+               HYTIME  NMTOKEN    #FIXED "CLINK"
+               ID-REF  IDREF    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED >
+
+
+<!ELEMENT REVISION
+        (
+          #PCDATA
+        )
+>
+
+<!ATTLIST REVISION
+
+          C               CDATA     #IMPLIED
+          LC              CDATA     #IMPLIED
+          S               CDATA     #IMPLIED
+          SI              CDATA     #IMPLIED
+          SYSCOND         CDATA     #IMPLIED
+          T               CDATA     #IMPLIED
+          TI              CDATA     #IMPLIED
+          VIEW            CDATA     #IMPLIED
+>
+
+
+<!ELEMENT SW-VALUE-CONT  (UNIT-DISPLAY-NAME?,SW-ARRAYSIZE?,SW-VALUES-PHYS?) >
+
+<!ATTLIST SW-VALUE-CONT
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-AXIS-CONTS  (SW-AXIS-CONT*) >
+
+<!ATTLIST SW-AXIS-CONTS
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-CS-HISTORY  (CS-ENTRY*) >
+
+<!ATTLIST SW-CS-HISTORY
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-CS-FLAGS  (SW-CS-FLAG+) >
+
+<!ATTLIST SW-CS-FLAGS
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-INSTANCE-PROPS-VARIANTS  (SW-INSTANCE-PROPS-VARIANT*) >
+
+<!ATTLIST SW-INSTANCE-PROPS-VARIANTS
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-COLLECTION-REF  (#PCDATA) >
+
+<!ATTLIST SW-COLLECTION-REF
+               C  CDATA    #IMPLIED 
+               F-ID-CLASS  NMTOKEN    #FIXED "SW-COLLECTION"
+               HYNAMES  NMTOKENS    #FIXED "LINKEND ID-REF"
+               HYTIME  NMTOKEN    #FIXED "CLINK"
+               ID-REF  IDREF    #IMPLIED 
+               INVERT (INVERT | NO-INVERT)  "NO-INVERT"
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT UNIT-DISPLAY-NAME  (#PCDATA) >
+
+<!ATTLIST UNIT-DISPLAY-NAME
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED 
+               xml:space (preserve)   #FIXED "preserve" >
+
+<!ELEMENT SW-ARRAYSIZE  (V*) >
+
+<!ATTLIST SW-ARRAYSIZE
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-VALUES-PHYS  (VT | V | VG)* >
+
+<!ATTLIST SW-VALUES-PHYS
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-AXIS-CONT  (CATEGORY?,UNIT-DISPLAY-NAME?,SW-INSTANCE-REF?,SW-ARRAYSIZE?,
+               SW-VALUES-PHYS?) >
+
+<!ATTLIST SW-AXIS-CONT
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT CS-ENTRY  (STATE,DATE,CSUS,CSPR?,CSWP?,CSTO?,CSTV?,CSPI?,CSDI?,REMARK?,SD*) >
+
+<!ATTLIST CS-ENTRY
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-CS-FLAG  (CATEGORY?,FLAG?,CSUS?,DATE?,REMARK?) >
+
+<!ATTLIST SW-CS-FLAG
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-INSTANCE-PROPS-VARIANT  (SW-VCD-CRITERION-VALUES?,SW-VALUE-CONT?,
+               SW-AXIS-CONTS?,SW-CS-HISTORY?,SW-CS-FLAGS?) >
+
+<!ATTLIST SW-INSTANCE-PROPS-VARIANT
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT V  (#PCDATA) >
+
+<!ATTLIST V
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT VT  (#PCDATA) >
+
+<!ATTLIST VT
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED 
+               xml:space (preserve)   #FIXED "preserve" >
+
+<!ELEMENT VG  (LABEL?,(VT | V | VG)*) >
+
+<!ATTLIST VG
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-INSTANCE-REF  (#PCDATA) >
+
+<!ATTLIST SW-INSTANCE-REF
+               C  CDATA    #IMPLIED 
+               F-ID-CLASS  NMTOKEN    #FIXED "SW-INSTANCE"
+               HYNAMES  NMTOKENS    #FIXED "LINKEND ID-REF"
+               HYTIME  NMTOKEN    #FIXED "CLINK"
+               ID-REF  IDREF    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT STATE  (#PCDATA) >
+
+<!ATTLIST STATE
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT DATE  (#PCDATA) >
+
+<!ATTLIST DATE
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT CSUS  (#PCDATA) >
+
+<!ATTLIST CSUS
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT CSPR  (#PCDATA) >
+
+<!ATTLIST CSPR
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT CSWP  (#PCDATA) >
+
+<!ATTLIST CSWP
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT CSTO  (#PCDATA) >
+
+<!ATTLIST CSTO
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT CSTV  (#PCDATA) >
+
+<!ATTLIST CSTV
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT CSPI  (#PCDATA) >
+
+<!ATTLIST CSPI
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT CSDI  (#PCDATA) >
+
+<!ATTLIST CSDI
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT REMARK  (P+) >
+
+<!ATTLIST REMARK
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT FLAG  (#PCDATA) >
+
+<!ATTLIST FLAG
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-VCD-CRITERION-VALUES  (SW-VCD-CRITERION-VALUE*) >
+
+<!ATTLIST SW-VCD-CRITERION-VALUES
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT LABEL  (#PCDATA) >
+
+<!ATTLIST LABEL
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT P  (#PCDATA) >
+
+<!ATTLIST P
+               C  CDATA    #IMPLIED 
+               HELP-ENTRY  CDATA    #IMPLIED 
+               KEEP-WITH-PREVIOUS (KEEP | NO-KEEP)   #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-VCD-CRITERION-VALUE  (SW-VCD-CRITERION-REF,VT) >
+
+<!ATTLIST SW-VCD-CRITERION-VALUE
+               C  CDATA    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+<!ELEMENT SW-VCD-CRITERION-REF  (#PCDATA) >
+
+<!ATTLIST SW-VCD-CRITERION-REF
+               C  CDATA    #IMPLIED 
+               F-ID-CLASS  NMTOKEN    #FIXED "SW-VCD-CRITERION"
+               HYNAMES  NMTOKENS    #FIXED "LINKEND ID-REF"
+               HYTIME  NMTOKEN    #FIXED "CLINK"
+               ID-REF  IDREF    #IMPLIED 
+               LC  CDATA    #IMPLIED 
+               S  CDATA    #IMPLIED 
+               SI  CDATA    #IMPLIED 
+               T  CDATA    #IMPLIED 
+               TI  CDATA    #IMPLIED 
+               VIEW  CDATA    #IMPLIED  >
+
+
+<!--]-->

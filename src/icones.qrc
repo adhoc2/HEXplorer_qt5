@@ -183,5 +183,7 @@
         <file>icones/zoom_out.xpm</file>
         <file>icones/content-download.png</file>
         <file>icones/milky_importDcm.png</file>
+        <file>files/cdf_v2.0.0.sl.dtd</file>
+        <file>files/msrsw_v222_lai_iai_normalized.xml.dtd</file>
     </qresource>
 </RCC>

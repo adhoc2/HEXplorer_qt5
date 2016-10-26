@@ -451,7 +451,7 @@ TokenTyp LexerCsv::number(QTextStream &in, char &ch)
             }
         }
     }
-    if (buffer->getValue() == 'E' || buffer->getValue() == 'e')
+    else if (buffer->getValue() == 'E' || buffer->getValue() == 'e')
     {
         lexem += buffer->getAndClear();
         buffer->read(in);
@@ -487,15 +487,18 @@ TokenTyp LexerCsv::number(QTextStream &in, char &ch)
             return token;
         }
     }
+    else if (buffer->getValue() == valueSeparator || buffer->getValue() == '\n')
+    {
+        return Float;
+    }
     else
     {
-        while (buffer->getValue() != valueSeparator && buffer->getValue() != Eol)
+        while (buffer->getValue() != valueSeparator && buffer->getValue() != '\n')
         {
             lexem += buffer->getAndClear();
             buffer->read(in);
         }
-        token = Text;
-        return token;
+        return Text;
     }
 }
 

@@ -44,8 +44,8 @@ public:
 
     QNetworkProxy proxy;
     QNetworkAccessManager manager;
-    QNetworkReply *requestXml;
-    QNetworkReply *requestInstaller;
+    QNetworkReply *replyXml;
+    QNetworkReply *replyDownloader;
     QFile binFile;
     int cfgId;
     int binId;
@@ -56,7 +56,6 @@ public:
 public slots:
     void managerRequestFinished(QNetworkReply *reply);
     void downloadReadyRead();
-    void downloadFinished();
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
 
 private:

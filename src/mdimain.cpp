@@ -175,7 +175,7 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
     pathClipBoard = "";
 
     //check for updates
-    //connect(this, SIGNAL(checkUpdates()), this, SLOT(initCheckHttpUpdates()), Qt::QueuedConnection);
+    connect(this, SIGNAL(checkUpdates()), this, SLOT(initCheckHttpUpdates()), Qt::QueuedConnection);
     QSettings settings(qApp->organizationName(), qApp->applicationName());
     if ((settings.value("Update/automatic") == true) || (!settings.contains("Update/automatic")))
         emit checkUpdates();
@@ -7099,7 +7099,8 @@ void MDImain::initCheckHttpUpdates()
    //remove the old installer file used for previous Update
    QFile::remove(qApp->applicationDirPath() + "/update_HEXplorer.exe");
 
-   QUrl url("http://hexplorer.googlecode.com/svn/trunk/src/update.xml");
+   //QUrl url("http://hexplorer.googlecode.com/svn/trunk/src/update.xml");
+   QUrl url("https://api.github.com/repos/adhoc2/HEXplorer/contents/src/update.xml");
    DialogHttpUpdate updater(url, false, this);
 }
 

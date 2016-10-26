@@ -31,7 +31,7 @@ LexerDcm::LexerDcm(QObject *parent) : QObject(parent)
          << "DISPLAYNAME" << "VAR" << "FUNKTION" << "EINHEIT_W" << "WERT" << "TEXT"
          << "FESTWERTEBLOCK" << "ST/X" << "EINHEIT_X" << "KENNFELD" << "EINHEIT_Y" << "ST/Y"
          << "FESTKENNLINIE" << "FESTKENNFELD" << "GRUPPENKENNLINIE" << "GRUPPENKENNFELD"
-         << "STUETZSTELLENVERTEILUNG";
+         << "STUETZSTELLENVERTEILUNG" << "TEXTSTRING" << "ST_TX/X" << "ST_TX/Y";
 
     foreach (std::string str, list)
     {

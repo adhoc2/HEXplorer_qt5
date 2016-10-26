@@ -91,7 +91,7 @@ HttpUpdater::HttpUpdater(QWidget *mainApp, bool display, DialogHttpUpdate *par)
 void HttpUpdater::getXml(const QUrl& url)
 {
     QNetworkRequest request(url);
-    requestXml = manager.get(request);
+    replyXml = manager.get(request);
 }
 
 QString HttpUpdater::saveFileName(const QUrl &url)
@@ -124,14 +124,12 @@ void HttpUpdater::downloadInstaller(const QUrl& url)
     }
 
     QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    request.setHeader(QNetworkRequest::UserAgentHeader, "HEXplorer");
     request.setRawHeader("Accept", "application/octet-stream");
-    requestInstaller = manager.get(request);
+    replyDownloader = manager.get(request);
 
 
-    connect(requestInstaller, SIGNAL(downloadProgress(qint64,qint64)), SLOT(downloadProgress(qint64,qint64)));
-    connect(requestInstaller, SIGNAL(readyRead()), this, SLOT(downloadReadyRead()));
+    connect(replyDownloader, SIGNAL(downloadProgress(qint64,qint64)), SLOT(downloadProgress(qint64,qint64)));
+    connect(replyDownloader, SIGNAL(readyRead()), this, SLOT(downloadReadyRead()));
 
     downloadTime.start();
 }
@@ -170,7 +168,7 @@ void HttpUpdater::proxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthe
 
 void HttpUpdater::managerRequestFinished(QNetworkReply *reply)
 {
-    if (reply == requestXml)
+    if (reply == replyXml)
     {
         //if xml file could not be downloaded
         if (reply->error())
@@ -284,6 +282,7 @@ void HttpUpdater::managerRequestFinished(QNetworkReply *reply)
                 {
                     //binUrl.setUrl(updateFilePath);
                     binUrl.setUrl("https://api.github.com/repos/adhoc2/HEXplorer/releases/assets/2328230");
+                    //binUrl.setUrl("https://github.com/adhoc2/HEXplorer/releases/download/v0.7.12/setup_HEXplorer_0712.exe");
                     downloadInstaller(binUrl);
                 }
                 else
@@ -292,7 +291,7 @@ void HttpUpdater::managerRequestFinished(QNetworkReply *reply)
 
         }
     }
-    else if (reply == requestInstaller)
+    else if (reply == replyDownloader)
     {
         progressBar.hide();
         binFile.close();
@@ -307,10 +306,6 @@ void HttpUpdater::managerRequestFinished(QNetworkReply *reply)
 
             return; //exit
         }
-
-        QJsonDocument jsonDocument = QJsonDocument::fromJson(reply->readAll());
-        QJsonObject rootObject = jsonDocument.object();
-        qDebug() << jsonDocument.toJson();
 
         QMessageBox msgBox;
         msgBox.setIconPixmap(QPixmap(":/icones/updates.png").scaled(80,80));
@@ -333,7 +328,7 @@ void HttpUpdater::managerRequestFinished(QNetworkReply *reply)
 
 void HttpUpdater::downloadReadyRead()
 {
-    binFile.write(requestInstaller->readAll());
+    binFile.write(replyDownloader->readAll());
 }
 
 void HttpUpdater::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
@@ -357,38 +352,4 @@ void HttpUpdater::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
     progressBar.setMessage(QFileInfo(updateFilePath).fileName() + " " + QString::fromLatin1("%1 %2")
                           .arg(speed, 3, 'f', 1).arg(unit));
 
-}
-
-void HttpUpdater::downloadFinished()
-{
-    progressBar.hide();
-    binFile.close();
-
-    if (requestInstaller->error())
-    {
-        QMessageBox::warning(0, "HEXplorer::update", QString(requestInstaller->errorString()) +
-                              "\n\n" +
-                              "Please control your internet connection \n" +
-                              "or set the proxy parameters properly into Edit/Settings",
-                              QMessageBox::Ok, QMessageBox::Cancel);
-
-        return; //exit
-    }
-
-    QMessageBox msgBox;
-    msgBox.setIconPixmap(QPixmap(":/icones/updates.png").scaled(80,80));
-    msgBox.setText("Download completed.");
-    msgBox.setInformativeText("Would you like to install ?");
-    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    msgBox.setDefaultButton(QMessageBox::Yes);
-    int ret = msgBox.exec();
-
-    //update user_List
-    if (ret == QMessageBox::Yes)
-    {
-        //execute the downloaded file
-        launchInstaller();
-    }
-    else
-        return;
 }

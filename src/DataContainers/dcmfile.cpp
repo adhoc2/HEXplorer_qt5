@@ -354,6 +354,153 @@ bool Dcm::readFile()
 
             }
         }
+        else if (token == Keyword && mylex.getLexem() == "TEXTSTRING")
+        {
+            token = mylex.getNextToken(in);
+            qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+
+            if (token == Identifier)
+            {
+                // create a data if not already created
+                Data *data = NULL;
+                if (!getData(mylex.getLexem().c_str()))
+                {
+                    //get the characteristic node from a2l
+                    Node *nodeChar = a2lProject->getNode("MODULE/" + getModuleName() + "/CHARACTERISTIC");
+                    Node *nodeAxis = a2lProject->getNode("MODULE/" + getModuleName() + "/AXIS_PTS");
+                    Node *label = nodeChar->getNode(mylex.getLexem().c_str());
+                    if (label)
+                    {
+                        //create a data
+                        data = new Data((CHARACTERISTIC*)label, a2lProject, this, false);
+                        data->isSortedByRow = 1;
+                        //QList<Data*>::iterator i = qLowerBound(listData.begin(), listData.end(), data, comp);
+                        QList<Data*>::iterator i = std::lower_bound(listData.begin(), listData.end(), data, compDcm);
+                        listData.insert(i, data);
+                    }
+                    else
+                    {
+                        Node *label2 = nodeAxis->getNode(mylex.getLexem().c_str());
+                        if (label2)
+                        {
+                            //create a data
+                            data = new Data((AXIS_PTS*)label2, a2lProject, this, false);
+                            //QList<Data*>::iterator i = qLowerBound(listData.begin(), listData.end(), data, comp);
+                            QList<Data*>::iterator i = std::lower_bound(listData.begin(), listData.end(), data, compDcm);
+                            listData.insert(i, data);
+                        }
+                        else
+                        {
+                            outList.append("read Dcm file : " + QString(mylex.getLexem().c_str()) + " not found into "
+                                           + QString(this->getParentWp()->a2lFile->name));
+                        }
+                    }
+                }
+                else
+                {
+                    data = getData(mylex.getLexem().c_str());
+                }
+
+                bool ok = false;
+                if (data)
+                {
+                    //do not use longname, unit,...
+                    qDebug() << "data created";
+                    token = mylex.getNextToken(in);
+                    while(token != Keyword || (mylex.getLexem() != "WERT" && mylex.getLexem() != "TEXT"))
+                    {
+                        token = mylex.getNextToken(in);
+                    }
+
+                    //read Z values
+                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+
+                    if (token == Keyword && ( mylex.getLexem() == "WERT"))
+                    {
+                        // in case a label is twice in the subset!!
+                        data->clearZ();
+
+                        // read the Z values
+                        QStringList list;
+                        token = mylex.getNextToken(in);
+                        while (token ==  Integer || token == Float)
+                        {
+                            QString str = mylex.getLexem().c_str();
+                            list.append(str);
+                            token = mylex.getNextToken(in);
+                        }
+
+                        // copy z values to data
+                        foreach (QString str, list)
+                        {
+                            // convert PHYS value from Dcm into HEX value
+                            QString hex = data->phys2hex(str, "z");
+
+                            // convert HEX value into PHYS value
+                            QString phys = data->hex2phys(hex, "z");
+
+                            // copy PHYS value into Zaxis
+                            qDebug() << phys;
+                            data->appendZ(phys);
+                        }
+
+                    }
+                    else if (token == Keyword && ( mylex.getLexem() == "TEXT"))
+                    {
+                        // in case a label is twice in the subset!!
+                        data->clearZ();
+
+                        // read the Z values
+                        token = mylex.getNextToken(in);
+                        QString text;
+                        if (token ==  String)
+                        {
+                            text = mylex.getLexem().c_str();
+                            qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                            token = mylex.getNextToken(in);
+                        }                   
+
+                        // convert text to char array
+                        int asciiVal;
+                        for(int i = 0; i < data->xCount(); i++)
+                        {
+                            if (i < text.length())
+                            {
+                                asciiVal = text.at(i).toLatin1();
+                                data->appendZ(QString::number(asciiVal));
+                            }
+                            else
+                            {
+                                data->appendZ("0");
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    token = mylex.getNextToken(in);
+                    while (token != Keyword ||  mylex.getLexem() != "END")
+                    {
+                       token = mylex.getNextToken(in);
+                    }
+                }
+
+                //check for Keyword END
+                if (token == Keyword && ( mylex.getLexem() == "END"))
+                {
+
+                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    token = mylex.getNextToken(in);
+                }
+
+
+            }
+        }
         else if (token == Keyword && mylex.getLexem() == "FESTWERTEBLOCK")
         {
             token = mylex.getNextToken(in);
@@ -555,7 +702,7 @@ bool Dcm::readFile()
                     //do not use longname, unit,...
                     qDebug() << "data created";
                     token = mylex.getNextToken(in);
-                    while(token != Keyword || mylex.getLexem() != "ST/X")
+                    while(token != Keyword || (mylex.getLexem() != "ST/X" && mylex.getLexem() != "ST_TX/X"))
                     {
                         token = mylex.getNextToken(in);
 
@@ -563,7 +710,7 @@ bool Dcm::readFile()
 
                     //read axis X values
                     qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
-                    if (token == Keyword && ( mylex.getLexem() == "ST/X"))
+                    if (token == Keyword && ( mylex.getLexem() == "ST/X" || mylex.getLexem() == "ST_TX/X"))
                     {
                         // in case a label is twice in the subset!!
                         data->clearX();
@@ -571,11 +718,15 @@ bool Dcm::readFile()
                         // read the Z values
                         QStringList list;
                         token = mylex.getNextToken(in);
-                        while (token ==  Integer || token == Float)
+                        while (token ==  Integer || token == Float || token == String)
                         {
                             QString str = mylex.getLexem().c_str();
                             list.append(str);
                             token = mylex.getNextToken(in);
+                            if (mylex.getLexem() == "ST/X" || mylex.getLexem() == "ST_TX/X")
+                            {
+                                token = mylex.getNextToken(in);
+                            }
                         }
 
                         // copy x values to data
@@ -600,7 +751,7 @@ bool Dcm::readFile()
 
                     //read Z values
                     qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
-                    if (token == Keyword && ( mylex.getLexem() == "WERT"))
+                    if (token == Keyword && ( mylex.getLexem() == "WERT" || mylex.getLexem() == "TEXT"))
                     {
                         // in case a label is twice in the subset!!
                         data->clearZ();
@@ -608,11 +759,174 @@ bool Dcm::readFile()
                         // read the Z values
                         QStringList list;
                         token = mylex.getNextToken(in);
-                        while (token ==  Integer || token == Float)
+                        while (token ==  Integer || token == Float || token == String)
                         {
                             QString str = mylex.getLexem().c_str();
                             list.append(str);
                             token = mylex.getNextToken(in);
+                            if (mylex.getLexem() == "WERT" || mylex.getLexem() == "TEXT")
+                            {
+                                token = mylex.getNextToken(in);
+                            }
+                        }
+
+                        // copy x values to data
+                        foreach (QString str, list)
+                        {
+                            // convert PHYS value from Dcm into HEX value
+                            QString hex = data->phys2hex(str, "z");
+
+                            // convert HEX value into PHYS value
+                            QString phys = data->hex2phys(hex, "z");
+
+                            // copy PHYS value into Zaxis
+                            qDebug() << phys;
+                            data->appendZ(phys);
+                        }
+
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    token = mylex.getNextToken(in);
+                    while (token != Keyword ||  mylex.getLexem() != "END")
+                    {
+                       token = mylex.getNextToken(in);
+                    }
+                }
+
+                //check for Keyword END
+                if (token == Keyword && ( mylex.getLexem() == "END"))
+                {
+
+                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    token = mylex.getNextToken(in);
+                }
+
+            }
+        }
+        else if (token == Keyword && mylex.getLexem() == "FESTKENNLINIE")
+        {
+            token = mylex.getNextToken(in);
+            qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+
+            if (token == Identifier)
+            {
+                // create a data if not already created
+                Data *data = NULL;
+                if (!getData(mylex.getLexem().c_str()))
+                {
+                    //get the characteristic node from a2l
+                    Node *nodeChar = a2lProject->getNode("MODULE/" + getModuleName() + "/CHARACTERISTIC");
+                    Node *nodeAxis = a2lProject->getNode("MODULE/" + getModuleName() + "/AXIS_PTS");
+                    Node *label = nodeChar->getNode(mylex.getLexem().c_str());
+                    if (label)
+                    {
+                        //create a data
+                        data = new Data((CHARACTERISTIC*)label, a2lProject, this, false);
+                        data->isSortedByRow = 1;
+                        //QList<Data*>::iterator i = qLowerBound(listData.begin(), listData.end(), data, comp);
+                        QList<Data*>::iterator i = std::lower_bound(listData.begin(), listData.end(), data, compDcm);
+                        listData.insert(i, data);
+                    }
+                    else
+                    {
+                        Node *label2 = nodeAxis->getNode(mylex.getLexem().c_str());
+                        if (label2)
+                        {
+                            //create a data
+                            data = new Data((AXIS_PTS*)label2, a2lProject, this, false);
+                            //QList<Data*>::iterator i = qLowerBound(listData.begin(), listData.end(), data, comp);
+                            QList<Data*>::iterator i = std::lower_bound(listData.begin(), listData.end(), data, compDcm);
+                            listData.insert(i, data);
+                        }
+                        else
+                        {
+                            outList.append("read Dcm file : " + QString(mylex.getLexem().c_str()) + " not found into "
+                                           + QString(this->getParentWp()->a2lFile->name));
+                        }
+                    }
+                }
+                else
+                {
+                    data = getData(mylex.getLexem().c_str());
+                }
+
+                if (data)
+                {
+                    //do not use longname, unit,...
+                    qDebug() << "data created";
+                    token = mylex.getNextToken(in);
+                    while(token != Keyword || (mylex.getLexem() != "ST/X" && mylex.getLexem() != "ST_TX/X"))
+                    {
+                        token = mylex.getNextToken(in);
+
+                    }
+
+                    //read axis X values
+                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    if (token == Keyword && ( mylex.getLexem() == "ST/X" || mylex.getLexem() == "ST_TX/X"))
+                    {
+                        // in case a label is twice in the subset!!
+                        data->clearX();
+
+                        // read the Z values
+                        QStringList list;
+                        token = mylex.getNextToken(in);
+                        while (token ==  Integer || token == Float || token == String)
+                        {
+                            QString str = mylex.getLexem().c_str();
+                            list.append(str);
+                            token = mylex.getNextToken(in);
+                            if (mylex.getLexem() == "ST/X" || mylex.getLexem() == "ST_TX/X")
+                            {
+                                token = mylex.getNextToken(in);
+                            }
+                        }
+
+                        // copy x values to data
+                        foreach (QString str, list)
+                        {
+                            // convert PHYS value from Dcm into HEX value
+                            QString hex = data->phys2hex(str, "x");
+
+                            // convert HEX value into PHYS value
+                            QString phys = data->hex2phys(hex, "x");
+
+                            // copy PHYS value into Zaxis
+                            qDebug() << str << hex << phys;
+                            data->appendX(phys);
+                        }
+
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                    //read Z values
+                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    if (token == Keyword && ( mylex.getLexem() == "WERT" || mylex.getLexem() == "TEXT"))
+                    {
+                        // in case a label is twice in the subset!!
+                        data->clearZ();
+
+                        // read the Z values
+                        QStringList list;
+                        token = mylex.getNextToken(in);
+                        while (token ==  Integer || token == Float || token == String)
+                        {
+                            QString str = mylex.getLexem().c_str();
+                            list.append(str);
+                            token = mylex.getNextToken(in);
+                            if (mylex.getLexem() == "WERT" || mylex.getLexem() == "TEXT")
+                            {
+                                token = mylex.getNextToken(in);
+                            }
                         }
 
                         // copy x values to data
@@ -903,7 +1217,7 @@ bool Dcm::readFile()
                     //do not use longname, unit,...
                     qDebug() << "data created";
                     token = mylex.getNextToken(in);
-                    while(token != Keyword || mylex.getLexem() != "ST/X")
+                    while(token != Keyword || (mylex.getLexem() != "ST/X" && mylex.getLexem() != "ST_TX/X"))
                     {
                         token = mylex.getNextToken(in);
 
@@ -913,11 +1227,11 @@ bool Dcm::readFile()
                     qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     data->clearX();
                     QStringList listX;
-                    while (token == Keyword && ( mylex.getLexem() == "ST/X"))
+                    while (token == Keyword && ( mylex.getLexem() == "ST/X" || mylex.getLexem() == "ST_TX/X" ))
                     {
 
                         token = mylex.getNextToken(in);
-                        while (token ==  Integer || token == Float)
+                        while (token ==  Integer || token == Float || token == String)
                         {
                             QString str = mylex.getLexem().c_str();
                             listX.append(str);
@@ -939,11 +1253,6 @@ bool Dcm::readFile()
                         data->appendX(phys);
                     }
 
-//                    }
-//                    else
-//                    {
-//                        return false;
-//                    }
 
                     //read Y and Z values
                     qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
@@ -952,13 +1261,13 @@ bool Dcm::readFile()
                     data->clearZ();
                     while (token == Keyword && ( mylex.getLexem() != "END"))
                     {
-                        if (token == Keyword && ( mylex.getLexem() == "WERT"))
+                        if (token == Keyword && ( mylex.getLexem() == "WERT" || mylex.getLexem() == "TEXT"))
                         {
 
                             // read the Z values
                             QStringList list;
                             token = mylex.getNextToken(in);
-                            while (token ==  Integer || token == Float)
+                            while (token ==  Integer || token == Float || token == String)
                             {
                                 QString str = mylex.getLexem().c_str();
                                 list.append(str);
@@ -980,13 +1289,13 @@ bool Dcm::readFile()
                             }
 
                         }
-                        else if (token == Keyword && ( mylex.getLexem() == "ST/Y"))
+                        else if (token == Keyword && ( mylex.getLexem() == "ST/Y" || mylex.getLexem() == "ST_TX/Y"))
                         {
 
                             // read the Y values
                             QStringList list;
                             token = mylex.getNextToken(in);
-                            while (token ==  Integer || token == Float)
+                            while (token ==  Integer || token == Float || token == String)
                             {
                                 QString str = mylex.getLexem().c_str();
                                 list.append(str);
@@ -1355,7 +1664,7 @@ bool Dcm::readFile()
                     //do not use longname, unit,...
                     qDebug() << "data created";
                     token = mylex.getNextToken(in);
-                    while(token != Keyword || mylex.getLexem() != "ST/X")
+                    while(token != Keyword || (mylex.getLexem() != "ST/X" && mylex.getLexem() != "ST_TX/X"))
                     {
                         token = mylex.getNextToken(in);
 
@@ -1365,15 +1674,19 @@ bool Dcm::readFile()
                     qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     data->clearZ();
                     QStringList listZ;
-                    while (token == Keyword && ( mylex.getLexem() == "ST/X"))
+                    while (token == Keyword && ( mylex.getLexem() == "ST/X" || mylex.getLexem() == "ST_TX/X"))
                     {
                         // read the Z values                        
                         token = mylex.getNextToken(in);
-                        while (token ==  Integer || token == Float)
+                        while (token ==  Integer || token == Float || token == String)
                         {
                             QString str = mylex.getLexem().c_str();
                             listZ.append(str);
                             token = mylex.getNextToken(in);
+                            if (mylex.getLexem() == "ST/X" || mylex.getLexem() == "ST_TX/X")
+                            {
+                                token = mylex.getNextToken(in);
+                            }
                         }
                     }
 

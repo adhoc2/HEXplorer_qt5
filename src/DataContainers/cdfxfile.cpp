@@ -873,9 +873,9 @@ void CdfxFile::swInstance2Data()
                         QStringList list;
                         for(int i = 0; i < data->xCount(); i++)
                         {
-                            if (i < text.length() - 2)
+                            if (i < text.length())
                             {
-                                asciiVal = text.at(i + 1).toLatin1();
+                                asciiVal = text.at(i).toLatin1();
                                 list.append(QString::number(asciiVal));
                             }
                             else
