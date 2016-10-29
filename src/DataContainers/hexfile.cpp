@@ -945,7 +945,10 @@ QList<double> HexFile::getDecValues(double IAddr, int nByte, int count, std::str
     //if address is outside the Hex file address range => exit
     if (block >= blockList.count())
     {
-        decList.append(0);
+        for (int i = 0; i < count; i++)
+        {
+            decList.append(0);
+        }
         return decList;
     }
 
