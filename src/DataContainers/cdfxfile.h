@@ -87,6 +87,8 @@ public:
     bool isRead;
     int getNumByte(std::string str);
 
+    bool readFile();
+
 public slots:
     void attach(QObject*o);
     void detach(QObject*o);
@@ -101,11 +103,12 @@ private:
     QList<SwInstance*> listSwInstance;
     QString byteOrderCommon;
     QHash<QString,int> nByte;
+    int valueProgBar;
+    int maxValueProgbar;
 
     SwInstance *getSwInstance(QString str);
     void checkConsistency(Data* data, SwInstance* instance);
-    void swInstance2Data();
-    bool readFile();
+    void swInstance2Data();    
     void updateChildNodes(Data* data, bool add);
     bool validate(QFile *file);
     void parseMSRSW(QDomNode &node);
@@ -116,7 +119,13 @@ private:
     void parseSwValueCont(QDomNode &node, SwInstance *instance);
     void parseSwAxisCont(QDomNode &node, SwInstance *instance, int i);
 
-public slots:
+
+
+signals:
+    void incProgressBar(int,int);
+
+private slots:
+    void checkProgressStream(int);
 
 };
 

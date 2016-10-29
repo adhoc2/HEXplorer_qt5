@@ -642,11 +642,15 @@ bool Csv::readFile()
                             }
                             token = mylex.getNextToken(in);
 
+                            // increment the number of rows
+                            int nRows = 0;
+
                             // in case a label is twice in the subset!!
                             data->clearZ();
 
                             // read the Z values
                             QStringList list;
+
                             while (token ==  Integer || token == Float || token  == String)
                             {
                                 QString str = mylex.getLexem().c_str();
@@ -658,7 +662,29 @@ bool Csv::readFile()
                                 {
                                     token = mylex.getNextToken(in);
                                 }
+                                else if (token == Eol) //new line
+                                {
+                                    nRows++;
+                                    token = mylex.getNextToken(in);
+                                    if (token != Eol)
+                                    {
+                                        //count 2 identation forward
+                                        count = 0;
+                                        if (token == ValueSeparator)
+                                            count = 1;
+                                        while (count < 2)
+                                        {
+                                             token = mylex.getNextToken(in);
+                                             if (token == ValueSeparator)
+                                                 count++;
+                                        }
+                                        token = mylex.getNextToken(in);
+                                    }
+                                }
                             }
+                            if (nRows == 0)
+                                nRows++;
+                            int nCols = list.count() / nRows;
 
                             // copy z values to data
                             foreach (QString str, list)
@@ -675,14 +701,14 @@ bool Csv::readFile()
 
                             // check length of axisX (when import Csv into project, it is possible that
                             // the length specified into the A2l is longer than the ine into csv
-                            if (data->xCount() > data->zCount())
-                            {
-                                while (data->zCount() != data->xCount())
-                                {
-                                    data->removeIndexX(data->xCount() - 1);
-                                }
+//                            if (data->xCount() > data->zCount())
+//                            {
+//                                while (data->zCount() != data->xCount())
+//                                {
+//                                    data->removeIndexX(data->xCount() - 1);
+//                                }
 
-                            }
+//                            }
 
                             // define size (lines)
                             data->updateSize();

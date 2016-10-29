@@ -2843,9 +2843,14 @@ void MDImain::addCdfxFile2Project()
                             }
                         }
 
+                        // display status bar
+                        statusBar()->show();
+                        progBar->reset();
 
                         CdfxFile *cdfx = new CdfxFile(fullCdfxName, wp, moduleName);
-                        if (cdfx->isRead)
+                        connect(cdfx, SIGNAL(incProgressBar(int,int)), this, SLOT(setValueProgressBar(int,int)), Qt::DirectConnection);
+
+                        if (cdfx->readFile())
                         {
                             //add csv to the workProject
                             wp->addCdfx(cdfx);
@@ -2871,6 +2876,11 @@ void MDImain::addCdfxFile2Project()
                              //remove cdfx from the workProject
                              wp->removeCdfxFile(cdfx);
                         }
+
+                        // hide the statusbar
+                        statusBar()->hide();
+                        progBar->reset();
+
                     }
                 }
             }

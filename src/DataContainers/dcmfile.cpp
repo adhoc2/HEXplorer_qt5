@@ -1019,7 +1019,7 @@ bool Dcm::readFile()
                     //do not use longname, unit,...
                     qDebug() << "data created";
                     token = mylex.getNextToken(in);
-                    while(token != Keyword || mylex.getLexem() != "ST/X")
+                    while(token != Keyword || (mylex.getLexem() != "ST/X" && mylex.getLexem() != "ST_TX/X"))
                     {
                         token = mylex.getNextToken(in);
 
@@ -1029,15 +1029,19 @@ bool Dcm::readFile()
                     qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     data->clearX();
                     QStringList listX;
-                    while (token == Keyword && ( mylex.getLexem() == "ST/X"))
+                    while (token == Keyword && ( mylex.getLexem() == "ST/X" ||mylex.getLexem() == "ST_TX/X" ))
                     {
                         // read the Z values
                         token = mylex.getNextToken(in);
-                        while (token ==  Integer || token == Float)
+                        while (token ==  Integer || token == Float || token == String)
                         {
                             QString str = mylex.getLexem().c_str();
                             listX.append(str);
                             token = mylex.getNextToken(in);
+                            if (mylex.getLexem() == "ST/X" || mylex.getLexem() == "ST_TX/X")
+                            {
+                                token = mylex.getNextToken(in);
+                            }
                         }
                     }
 
@@ -1055,11 +1059,6 @@ bool Dcm::readFile()
                         data->appendX(phys);
                     }
 
-//                    }
-//                    else
-//                    {
-//                        return false;
-//                    }
 
                     //read Z values
                     qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
@@ -1068,17 +1067,21 @@ bool Dcm::readFile()
                     data->clearZ();
                     while (token == Keyword && ( mylex.getLexem() != "END"))
                     {
-                        if (token == Keyword && ( mylex.getLexem() == "WERT"))
+                        if (token == Keyword && ( mylex.getLexem() == "WERT" || mylex.getLexem() == "TEXT"))
                         {
 
                             // read the Z values
                             QStringList list;
                             token = mylex.getNextToken(in);
-                            while (token ==  Integer || token == Float)
+                            while (token ==  Integer || token == Float || token == String)
                             {
                                 QString str = mylex.getLexem().c_str();
                                 list.append(str);
                                 token = mylex.getNextToken(in);
+                                if (mylex.getLexem() == "WERT" || mylex.getLexem() == "TEXT")
+                                {
+                                    token = mylex.getNextToken(in);
+                                }
                             }
 
                             // copy x values to data

@@ -144,14 +144,17 @@ CdfxFile::CdfxFile(QString fullCdfxFileFileName, WorkProject *parentWP, QString 
     name = new char[(QFileInfo(fullPath).fileName()).toLocal8Bit().count() + 1];
     strcpy(name, (QFileInfo(fullPath).fileName()).toLocal8Bit().data());
 
-    if (readFile())
-    {
-        isRead = true;
-    }
-    else
-    {
+    valueProgBar = 0;
+    maxValueProgbar = 0;
+
+//    if (readFile())
+//    {
+//        isRead = true;
+//    }
+//    else
+//    {
         isRead = false;
-    }
+//    }
 
     //get the byte_order
     MOD_COMMON *modCommon = (MOD_COMMON*)a2lProject->getNode("MODULE/" + getModuleName() + "/MOD_COMMON");
@@ -273,6 +276,7 @@ bool CdfxFile::readFile()
         if (errorList.isEmpty())
         {
             swInstance2Data();
+            isRead = true;
             return true;
         }
         else
@@ -324,6 +328,7 @@ void CdfxFile::parseMSRSW(QDomNode &node)
 {
     //parse the childNodes
     QDomNodeList childMSRSW = node.childNodes();
+
     for (int i = 0; i < childMSRSW.count(); i++)
     {
         QDomNode node = childMSRSW.at(i);
@@ -377,6 +382,7 @@ void CdfxFile::parseSwSystem(QDomNode &node)
 {
     //parse the childNodes
     QDomNodeList childSwSystem = node.childNodes();
+
     for (int i = 0; i < childSwSystem.count(); i++)
     {
 
@@ -422,9 +428,14 @@ void CdfxFile::parseSwInstanceTree(QDomNode &node)
 {
     //parse the childNodes
     QDomNodeList childSwInstanceTree = node.childNodes();
+    valueProgBar = 0;
+    maxValueProgbar = childSwInstanceTree.count();
+
     for (int i = 0; i < childSwInstanceTree.count(); i++)
     {
         QDomNode node = childSwInstanceTree.at(i);
+
+        checkProgressStream(1);
 
         //SHORT-NAME (1)
         if (node.nodeName() == "SHORT-NAME")
@@ -1368,4 +1379,11 @@ SwInstance *CdfxFile::getSwInstance(QString str)
             return *i;
         }
     }
+}
+
+void CdfxFile::checkProgressStream(int n)
+{
+    valueProgBar += n;
+    emit incProgressBar(valueProgBar, maxValueProgbar);
+
 }

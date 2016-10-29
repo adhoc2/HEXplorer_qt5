@@ -1556,6 +1556,15 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, Csv *csv, bool modif) : Node(node
             listX.append(str.setNum(i));
         }
 
+        //AXIS_PTS_Y
+        if (nPtsAxisY > 1)
+        {
+            for (int i = 0; i < nPtsAxisY; i++)
+            {
+                listY.append(str.setNum(i));
+            }
+        }
+
         size = 4;
     }
     else if (type.toLower() == "ascii")
@@ -1771,6 +1780,15 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, CdfxFile *cdfx, bool modif) : Nod
         for (int i = 0; i < nPtsAxisX; i++)
         {
             listX.append(str.setNum(i));
+        }
+
+        //AXIS_PTS_Y
+        if (nPtsAxisY > 1)
+        {
+            for (int i = 0; i < nPtsAxisY; i++)
+            {
+                listY.append(str.setNum(i));
+            }
         }
 
         size = 4;
@@ -1989,6 +2007,15 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, Dcm *dcm, bool modif) : Node(node
         for (int i = 0; i < nPtsAxisX; i++)
         {
             listX.append(str.setNum(i));
+        }
+
+        //AXIS_PTS_Y
+        if (nPtsAxisY > 1)
+        {
+            for (int i = 0; i < nPtsAxisY; i++)
+            {
+                listY.append(str.setNum(i));
+            }
         }
 
         size = 4;
