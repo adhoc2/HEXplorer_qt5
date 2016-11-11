@@ -471,8 +471,10 @@ SOURCES += a2l.cpp \
     treedirectory.cpp
 
 OTHER_FILES += \
-    GNU_license.txt \
     update.xml
+
+DISTFILES += \
+    GNU_GPL_V3.txt
 
 
 
