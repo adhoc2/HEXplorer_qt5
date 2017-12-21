@@ -39,6 +39,7 @@
 #include "measmodel.h"
 #include "charmodel.h"
 #include "dialogdatadimension.h"
+#include "labelproperties.h"
 //#include "excel.h"
 
 
@@ -174,25 +175,32 @@ void SpreadsheetView::createActions()
     this->addAction(plotAction);
 
     editText = new QAction(tr("&Text"), this);
-    editText->setShortcut(Qt::Key_F5);
+    editText->setShortcut(Qt::CTRL+Qt::Key_T);
     editText->setIcon(QIcon(":/icones/Text-64.png"));
     editText->setShortcutContext(Qt::WidgetShortcut);
     connect(editText, SIGNAL(triggered()), this, SLOT(editAsText()));
     this->addAction(editText);
 
     editBit = new QAction(tr("&Bit"), this);
-    editBit->setShortcut(Qt::Key_F6);
+    editBit->setShortcut(Qt::CTRL+Qt::Key_B);
     editBit->setIcon(QIcon(":/icones/binary.png"));
     editBit->setShortcutContext(Qt::WidgetShortcut);
     connect(editBit, SIGNAL(triggered()), this, SLOT(editAsBit()));
     this->addAction(editBit);
 
     editHex = new QAction(tr("&Hex"), this);
-    editHex->setShortcut(Qt::Key_F7);
+    editHex->setShortcut(Qt::CTRL+Qt::Key_H);
     editHex->setIcon(QIcon(":/icones/binary.png"));
     editHex->setShortcutContext(Qt::WidgetShortcut);
     connect(editHex, SIGNAL(triggered()), this, SLOT(editAsHex()));
     this->addAction(editHex);
+
+    editProperties = new QAction(tr("&Edit properties"), this);
+    editProperties->setShortcut(Qt::CTRL+Qt::Key_I);
+    //editProperties->setIcon(QIcon(":/icones/binary.png"));
+    editProperties->setShortcutContext(Qt::WidgetShortcut);
+    connect(editProperties, SIGNAL(triggered()), this, SLOT(editProp()));
+    this->addAction(editProperties);
 
 }
 
@@ -220,13 +228,15 @@ void SpreadsheetView::contextMenuEvent ( QPoint p )
             CompareModel *spModel = (CompareModel*)model();
             data = spModel->getLabel(index, Qt::EditRole);
         }
-        else if (name.toLower().endsWith("measmodel") || name.toLower().endsWith("charmodel"))
+        else if (name.toLower().endsWith("measmodel") || name.toLower().endsWith("charmodel")
+                 || name.toLower().endsWith("fandrmodel"))
         {
             menu->addAction(copyAction);
         }
         else
             return;
 
+        // create the menus
         if (name.toLower().endsWith("comparemodel") ||
                  name.toLower().endsWith("sptablemodel"))
         {
@@ -244,6 +254,7 @@ void SpreadsheetView::contextMenuEvent ( QPoint p )
             menu->addAction(interpolateX);
             menu->addAction(interpolateY);
             menu->addSeparator();
+            menu->addAction(editProperties);
 
             //get type of data
             if (data)
@@ -1337,6 +1348,45 @@ void SpreadsheetView::editAsHex()
 
 }
 
+void SpreadsheetView::editProp()
+{
+    // select the area and paste
+    QModelIndexList indexList = selectedIndexes();
+    if (indexList.isEmpty())
+    {
+        return;
+    }
+    QModelIndex topLeft = indexList.at(0);
+
+
+    Data *data = NULL;
+    QString name = typeid(*model()).name();
+    if (name.toLower().endsWith("sptablemodel"))
+    {
+        // get the data
+        QModelIndex index = model()->index(topLeft.row(), topLeft.column());
+        data = ((SpTableModel*)model())->getLabel(index, Qt::EditRole);
+    }
+    else if (name.toLower().endsWith("comparemodel"))
+    {
+        // get the data
+        QModelIndex index = model()->index(topLeft.row(), topLeft.column());
+        data = ((CompareModel*)model())->getLabel(index, Qt::EditRole);
+
+    }
+    else if (name.toLower().endsWith("graphmodel"))
+    {
+        // get the data
+        data = ((GraphModel*)model())->getLabel();
+    }
+
+    if (data)
+    {
+        LabelProperties *prop = new LabelProperties(data, this);
+        prop->exec();
+    }
+}
+
 void SpreadsheetView::selectAll_label()
 {
     QModelIndexList indexList = this->selectedIndexes();
@@ -1356,6 +1406,7 @@ void SpreadsheetView::selectAll_label()
     {
         SpTableModel *spModel = (SpTableModel*)model();
         Data *data = spModel->getLabel(index, Qt::EditRole);
+        QString toto =  data->getName();
         QModelIndex firstZIndex = spModel->getFirstZindex(data);
 
         if (index.row() == firstZIndex.row() - 1 && index.column() == firstZIndex.column() - 1)

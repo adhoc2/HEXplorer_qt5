@@ -9,6 +9,12 @@ contains(QT_CONFIG, scripttools): QT += scripttools
 RESOURCES += icones.qrc
 RC_FILE = myappicon.rc
 
+QT += datavisualization
+
+contains(TARGET, qml.*) {
+    QT += qml quick
+}
+
 
 #-------------------------------------------------#
 #------------ cl microsoft compiler --------------#
@@ -84,17 +90,15 @@ equals( QMAKE_CXX, cl) {
     QSCINTILLA_ROOT = ../../HEXplorer_wd/LIBS/QScintilla-gpl-2.9
     QWT_ROOT = ../../HEXplorer_wd/LIBS/qwt-6.1.2
     QWT3D_ROOT = ../../HEXplorer_wd/LIBS/qwtplot3d-master_build322
-    win32:QUEX_ROOT = "C:\quex_0.65.10\quex-0.65.10"
     MATHGL_ROOT = ../../HEXplorer_wd/LIBS/mathgl-2_3_5_1-mingw
 
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT_DLL
 
-    INCLUDEPATH += . \
+    INCLUDEPATH += . "C:/quex_0.65.10/quex-0.65.10" \
     ./ASAP2 \
     ./sqlite  \
     ./Quex \
     ./DataContainers \
-    $${QUEX_ROOT} \
     $${QWT_ROOT}/src \
     $${QSCINTILLA_ROOT}/Qt4Qt5 \
     $${MATHGL_ROOT}/include \
@@ -288,7 +292,10 @@ HEADERS += a2l.h \
     plot3d.h \
     DataContainers/dcmfile.h \
     DataContainers/lexerDcm.h \
-    treedirectory.h
+    treedirectory.h \
+    labelproperties.h \
+    surfacegraph.h \
+    FandRmodel.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -306,7 +313,8 @@ FORMS += formeditor.ui \
     dialogchooseexportformat.ui \
     dialogdatadimension.ui \
     dialogprogressdownload.ui \
-    deletefiledialog.ui
+    deletefiledialog.ui \
+    labelproperties.ui
 SOURCES += a2l.cpp \
     formeditor.cpp \
     main.cpp \
@@ -468,7 +476,10 @@ SOURCES += a2l.cpp \
     plot3d.cpp \
     DataContainers/dcmfile.cpp \
     DataContainers/lexerDcm.cpp \
-    treedirectory.cpp
+    treedirectory.cpp \
+    labelproperties.cpp \
+    surfacegraph.cpp \
+    FandRmodel.cpp
 
 OTHER_FILES += \
     update.xml

@@ -65,6 +65,7 @@
 #include <QtConcurrentRun>
 #include "measmodel.h"
 #include "charmodel.h"
+#include "FandRmodel.h"
 #include <Qsci/qscilexerjavascript.h>
 #include "formscript.h"
 #include "cdfxfile.h"
@@ -306,6 +307,11 @@ void MDImain::createActions()
     editCharacteristics->setIcon(QIcon(":/icones/milky_outils.png"));
     connect(editCharacteristics, SIGNAL(triggered()), this, SLOT(editChar()));
     editCharacteristics->setDisabled(true);
+
+    editFnR = new QAction(tr("Edit FnR"), this);
+    editFnR->setIcon(QIcon(":/icones/milky_outils.png"));
+    connect(editFnR, SIGNAL(triggered()), this, SLOT(editFandR()));
+    editFnR->setDisabled(true);
 
     exportListData = new QAction(tr("Export list"), this);
     exportListData->setIcon(QIcon(":/icones/export.png"));
@@ -1108,6 +1114,7 @@ void MDImain::showContextMenu(QPoint)
                 menu.addAction(resetAllChangedData);
                 menu.addAction(sortBySubset);
                 menu.addMenu(toolsMenu);
+                menu.addAction(editFnR);
                 menu.addSeparator();
                 menu.addAction(copyDataset);
                 menu.addAction(pasteDataset);
@@ -1125,6 +1132,7 @@ void MDImain::showContextMenu(QPoint)
                 // if Srecfile not read do not open context menu
                 if (srec->isRead())
                 {
+                    editFnR->setDisabled(false);
                     if (srec->getModifiedData().isEmpty())
                     {
                         sortBySubset->setDisabled(true);
@@ -1132,7 +1140,7 @@ void MDImain::showContextMenu(QPoint)
                         editChanged->setDisabled(true);
                     }
                     else
-                    {
+                    {                        
                         sortBySubset->setDisabled(false);
                         resetAllChangedData->setDisabled(false);
                         editChanged->setDisabled(false);
@@ -3984,6 +3992,62 @@ void MDImain::editChar()
 
         }
     }
+}
+
+void MDImain::editFandR()
+{
+    // check if a file is selected in treeWidget
+    QModelIndex index  = ui->treeView->selectionModel()->currentIndex();
+
+    if (index.isValid())
+    {
+        //get a pointer on the selected item
+        Node *node =  model->getNode(index);
+        QString name = typeid(*node).name();
+
+        if (!name.endsWith("SrecFile"))
+        {
+            QMessageBox::warning(this, "HEXplorer::edit measuring channels", "Please select first a dataset.",
+                                             QMessageBox::Ok);
+            return;
+        }
+
+        int row = index.row();
+        if ( row < 0)
+        {
+            QMessageBox::information(this,"HEXplorer","please first select a file to be edited");
+            writeOutput("action edit  file cancelled: no project first selected");
+            return;
+        }
+        else
+        {
+            //get the Wp
+            SrecFile *srec = (SrecFile*)node;
+
+            //display the characterisitc channels in view
+            FandRModel *fnrModel = new FandRModel(srec);
+
+            //create a new spreadSheet
+            SpreadsheetView *view = new SpreadsheetView();
+            view->setModel(fnrModel);
+            srec->attach(view);
+
+            view->setAlternatingRowColors(true);
+
+            //add a new tab with the spreadsheet
+            QIcon icon;
+            icon.addFile(":/icones/milky_outils.png");
+            ui->tabWidget->addTab(view, icon, srec->name);
+
+            //set new FormCompare as activated
+            ui->tabWidget->setCurrentWidget(view);
+
+            //write output
+            writeOutput("failure and reaction edited.");
+
+        }
+    }
+
 }
 
 void MDImain::newFormScript()

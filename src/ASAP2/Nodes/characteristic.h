@@ -46,6 +46,7 @@ class CHARACTERISTIC : public Node
         ~CHARACTERISTIC();
 
         QMap<std::string, std::string> *getParameters();
+        QMap<QString, QString> *getOptItems();
         static Factory<Node,CHARACTERISTIC> nodeFactory;
         std::string pixmap();
         char* getPar(std::string str);

@@ -1,10 +1,15 @@
 <HEXplorer application="HEXplorer">
     <revision version="0.7.13">https://api.github.com/repos/adhoc2/HEXplorer/releases/latest</revision>
-    <details>revision 0.7.13 (Q4/2016) :
-    TODO:    
+    <details>revision 0.7.14 (Q1/2017) :
+    TODO:
     - improvement : inform user when opening a WD on the net which takes a lot of time.
+    - improvement : display/compare/copy choosing Phys or Hex values.
 
     DONE:
+    - improvement : Qt5.8.0
+    - improvement : Qt Data Visualization.
+
+revision 0.7.13 (Q4/2016) :
     - improvement : automatic check for updates on Github.
     - improvement : create persistent directory directly in treeView.
     - improvement : copy/paste from a folder to another.
@@ -14,8 +19,9 @@
     - improvement : function save dataset improved.
     - improvement : action "duplicate" dataset, do no save changes in original file and paste new with differences.
     - improvement : "save_as" dataset create a new node instead of renaming original.
-    - improvement : display files in treeview into OS hardisk file manager.
+    - improvement : display files in treeview into OS harddisk file manager.
     - improvement : shortcut "F5" for reload working directory.
+    - bug correction : CVX/CDFX with FIX_AXIS for curves and maps.
     - bug correction : improve CVX parser to better fit to CVX_SPEC.DOC V2.1 and Inca format.
     - bug correction : CDFX,DCM parsing errors.
     - bug correction : A2L containing lots of blank lines (out of memory Quex).

@@ -110,6 +110,7 @@ private:
     QAction *openJScript;
     QAction *editMeasChannels;
     QAction *editCharacteristics;
+    QAction *editFnR;
     QAction *addCsvFile;
     QAction *addDcmFile;
     QAction *addCdfxFile;
@@ -174,6 +175,7 @@ private slots:
      void checkDroppedFile(QString str);
      void editMeasuringChannels();
      void editChar();
+     void editFandR();
      void on_actionSettings_triggered();
      void on_actionCheck_for_updates_triggered();
      void initCheckHttpUpdates();

@@ -52,6 +52,7 @@ class SpreadsheetView : public QTableView
         QAction *editText;
         QAction *editBit;
         QAction *editHex;
+        QAction *editProperties;
         void createActions();
         QString getExcelCell(int row, int col);
 
@@ -65,6 +66,7 @@ class SpreadsheetView : public QTableView
         void editAsText();
         void editAsBit();
         void editAsHex();
+        void editProp();
         void interpAxisX();
         void interpAxisY();
         void interpX();

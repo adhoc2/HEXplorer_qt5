@@ -98,6 +98,7 @@ class Data : public QObject, public Node
         QString getByteOrderX();
         QString getOrgX(int i);
         QString getX(int i);
+        QString getHexX(int i);
         QStringList getX();
         void setX(int i, QString str);
         void appendX(QString str);
@@ -119,6 +120,7 @@ class Data : public QObject, public Node
         QString getByteOrderY();
         QString getOrgY(int i);
         QString getY(int i);
+        QString getHexY(int i);
         QStringList getY();
         void setY(int i, QString str);
         void appendY(QString str);

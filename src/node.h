@@ -58,9 +58,12 @@ class Node
             QMap<std::string, std::string> *map = new QMap<std::string, std::string>;
             return map;
         }
+        virtual QMap<QString, QString> *getOptItems(){
+            QMap<QString, QString> *map = new QMap<QString, QString>;
+            return map;
+        }
+
         std::string fixPar(QString str);
-
-
         QString getFullTreePath();
         void addChildNode (Node *child);
         void insertChildNode (Node *child);

@@ -1677,12 +1677,20 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, Csv *csv, bool modif) : Node(node
     FORMAT *format = (FORMAT*)node->getItem("FORMAT");
     if (format)
     {
+        //        QString f = format->getPar("FormatString");
+        //        QStringList list = f.split(QRegExp("\\D+"));
+        //        if (list.count() < 3)
+        //            precisionZ = 0;
+        //        else
+        //            precisionZ = list.at(2).toInt();
         QString f = format->getPar("FormatString");
-        QStringList list = f.split(QRegExp("\\D+"));
-        if (list.count() < 3)
-            precisionZ = 0;
-        else
-            precisionZ = list.at(2).toInt();
+        QRegExp rx("%\\d*.(\\d*)");
+        rx.indexIn(f);
+        QStringList list = rx.capturedTexts();
+        if (!list.at(1).isEmpty())
+        {
+            precisionZ = list.at(1).toInt();
+        }
     }
     else
     {
@@ -1690,12 +1698,21 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, Csv *csv, bool modif) : Node(node
         COMPU_METHOD *cmp = (COMPU_METHOD*)pro->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu);
         if (cmp)
         {
+//            QString f = cmp->getPar("Format");
+//            QStringList list = f.split(QRegExp("\\D+"));
+//            if (list.count() < 3)
+//                precisionZ = 0;
+//            else
+//                precisionZ = list.at(2).toInt();
             QString f = cmp->getPar("Format");
-            QStringList list = f.split(QRegExp("\\D+"));
-            if (list.count() < 3)
-                precisionZ = 0;
-            else
-                precisionZ = list.at(2).toInt();
+            QRegExp rx("%\\d*.(\\d*)");
+            rx.indexIn(f);
+            QStringList list = rx.capturedTexts();
+            if (!list.at(1).isEmpty())
+            {
+                precisionZ = list.at(1).toInt();
+            }
+
         }
     }
 
@@ -1904,12 +1921,20 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, CdfxFile *cdfx, bool modif) : Nod
     FORMAT *format = (FORMAT*)node->getItem("FORMAT");
     if (format)
     {
+//        QString f = format->getPar("FormatString");
+//        QStringList list = f.split(QRegExp("\\D+"));
+//        if (list.count() < 3)
+//            precisionZ = 0;
+//        else
+//            precisionZ = list.at(2).toInt();
         QString f = format->getPar("FormatString");
-        QStringList list = f.split(QRegExp("\\D+"));
-        if (list.count() < 3)
-            precisionZ = 0;
-        else
-            precisionZ = list.at(2).toInt();
+        QRegExp rx("%\\d*.(\\d*)");
+        rx.indexIn(f);
+        QStringList list = rx.capturedTexts();
+        if (!list.at(1).isEmpty())
+        {
+            precisionZ = list.at(1).toInt();
+        }
     }
     else
     {
@@ -1917,12 +1942,20 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, CdfxFile *cdfx, bool modif) : Nod
         COMPU_METHOD *cmp = (COMPU_METHOD*)pro->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu);
         if (cmp)
         {
+//            QString f = cmp->getPar("Format");
+//            QStringList list = f.split(QRegExp("\\D+"));
+//            if (list.count() < 3)
+//                precisionZ = 0;
+//            else
+//                precisionZ = list.at(2).toInt();
             QString f = cmp->getPar("Format");
-            QStringList list = f.split(QRegExp("\\D+"));
-            if (list.count() < 3)
-                precisionZ = 0;
-            else
-                precisionZ = list.at(2).toInt();
+            QRegExp rx("%\\d*.(\\d*)");
+            rx.indexIn(f);
+            QStringList list = rx.capturedTexts();
+            if (!list.at(1).isEmpty())
+            {
+                precisionZ = list.at(1).toInt();
+            }
         }
     }
 
@@ -2130,12 +2163,20 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, Dcm *dcm, bool modif) : Node(node
     FORMAT *format = (FORMAT*)node->getItem("FORMAT");
     if (format)
     {
+        //        QString f = format->getPar("FormatString");
+        //        QStringList list = f.split(QRegExp("\\D+"));
+        //        if (list.count() < 3)
+        //            precisionZ = 0;
+        //        else
+        //            precisionZ = list.at(2).toInt();
         QString f = format->getPar("FormatString");
-        QStringList list = f.split(QRegExp("\\D+"));
-        if (list.count() < 3)
-            precisionZ = 0;
-        else
-            precisionZ = list.at(2).toInt();
+        QRegExp rx("%\\d*.(\\d*)");
+        rx.indexIn(f);
+        QStringList list = rx.capturedTexts();
+        if (!list.at(1).isEmpty())
+        {
+            precisionZ = list.at(1).toInt();
+        }
     }
     else
     {
@@ -2143,12 +2184,20 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, Dcm *dcm, bool modif) : Node(node
         COMPU_METHOD *cmp = (COMPU_METHOD*)pro->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu);
         if (cmp)
         {
+//            QString f = cmp->getPar("Format");
+//            QStringList list = f.split(QRegExp("\\D+"));
+//            if (list.count() < 3)
+//                precisionZ = 0;
+//            else
+//                precisionZ = list.at(2).toInt();
             QString f = cmp->getPar("Format");
-            QStringList list = f.split(QRegExp("\\D+"));
-            if (list.count() < 3)
-                precisionZ = 0;
-            else
-                precisionZ = list.at(2).toInt();
+            QRegExp rx("%\\d*.(\\d*)");
+            rx.indexIn(f);
+            QStringList list = rx.capturedTexts();
+            if (!list.at(1).isEmpty())
+            {
+                precisionZ = list.at(1).toInt();
+            }
         }
     }
 
@@ -3194,81 +3243,88 @@ QString Data::hex2phys(QString hex, QString axis)
         //dec2phys
         QString compu_method = axisDescrX->getPar("Conversion");
         COMPU_METHOD *cmp = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu_method);
-        QString convType = cmp->getPar("ConversionType");
-
-        bool bl;
-        if (convType.toLower() == "rat_func")
+        if (cmp)
         {
-            COEFFS *item = (COEFFS*)cmp->getItem("COEFFS");
-            double a = ((QString)item->getPar("float1")).toDouble(&bl);
-            double b = ((QString)item->getPar("float2")).toDouble(&bl);
-            double c = ((QString)item->getPar("float3")).toDouble(&bl);
-            double d = ((QString)item->getPar("float4")).toDouble(&bl);
-            double e = ((QString)item->getPar("float5")).toDouble(&bl);
-            double f = ((QString)item->getPar("float6")).toDouble(&bl);
+            QString convType = cmp->getPar("ConversionType");
 
-            if (dec * d - a == 0)
+            bool bl;
+            if (convType.toLower() == "rat_func")
             {
-                phys.setNum((c - dec * f) / (dec * e - b),'f', precisionX);
-            }
-            else
-            {
-                phys.setNum(((b - dec * e) + sqrt(pow((dec * e - b), 2) - 4 * (dec * d - a) * (dec * f - c))) / (2 * (dec * d - a)),'f', precisionX);
-            }
+                COEFFS *item = (COEFFS*)cmp->getItem("COEFFS");
+                double a = ((QString)item->getPar("float1")).toDouble(&bl);
+                double b = ((QString)item->getPar("float2")).toDouble(&bl);
+                double c = ((QString)item->getPar("float3")).toDouble(&bl);
+                double d = ((QString)item->getPar("float4")).toDouble(&bl);
+                double e = ((QString)item->getPar("float5")).toDouble(&bl);
+                double f = ((QString)item->getPar("float6")).toDouble(&bl);
 
-            double dbl = phys.toDouble();
-            if (dbl == 0)
-            {
-                return QString::number(0,'f', precisionX);
-            }
-            else
-            {
-                return phys;
-            }
-        }
-        else if (convType.toLower() == "tab_verb")
-        {
-            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
-            QString compuTabRef = item->getPar("ConversionTable");
-            compuVTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
-
-            phys = compuVTabAxisX->getValue(dec);
-            return phys;
-
-        }
-        else if (convType.toLower() == "tab_intp")
-        {
-            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
-            QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisX = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPUTAB/" + compuTabRef);
-
-            QList<float> list = compuTabAxisX->getKeys();
-
-            //get the position of the decimal into the keys
-            QList<float>::iterator pos = std::lower_bound(list.begin(), list.end(), dec);
-
-            //if dec is not included into the keys
-            if (pos == list.end())
-                return compuTabAxisX->getValueList().last();
-            else if (pos == list.begin())
-                return compuTabAxisX->getValueList().first();
-            else
-            {
-                //interpolate (checking that denominator is difefrent to 0)
-                float x1,x2,y1,y2 = 0;
-                x1 = *(pos - 1);
-                x2 = *pos;
-                y1 = compuTabAxisX->getValue(x1).toFloat();
-                y2 = compuTabAxisX->getValue(x2).toFloat();
-                float denom = (x2 - x1);
-                if (denom)
-                    return QString::number(y1 + (dec - x1)*(y2 - y1)/denom, 'f', precisionX);
+                if (dec * d - a == 0)
+                {
+                    phys.setNum((c - dec * f) / (dec * e - b),'f', precisionX);
+                }
                 else
-                    return QString::number(0, 'f', precisionX);
+                {
+                    phys.setNum(((b - dec * e) + sqrt(pow((dec * e - b), 2) - 4 * (dec * d - a) * (dec * f - c))) / (2 * (dec * d - a)),'f', precisionX);
+                }
+
+                double dbl = phys.toDouble();
+                if (dbl == 0)
+                {
+                    return QString::number(0,'f', precisionX);
+                }
+                else
+                {
+                    return phys;
+                }
             }
+            else if (convType.toLower() == "tab_verb")
+            {
+                COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+                QString compuTabRef = item->getPar("ConversionTable");
+                compuVTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+
+                phys = compuVTabAxisX->getValue(dec);
+                return phys;
+
+            }
+            else if (convType.toLower() == "tab_intp")
+            {
+                COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+                QString compuTabRef = item->getPar("ConversionTable");
+                compuTabAxisX = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPUTAB/" + compuTabRef);
+
+                QList<float> list = compuTabAxisX->getKeys();
+
+                //get the position of the decimal into the keys
+                QList<float>::iterator pos = std::lower_bound(list.begin(), list.end(), dec);
+
+                //if dec is not included into the keys
+                if (pos == list.end())
+                    return compuTabAxisX->getValueList().last();
+                else if (pos == list.begin())
+                    return compuTabAxisX->getValueList().first();
+                else
+                {
+                    //interpolate (checking that denominator is difefrent to 0)
+                    float x1,x2,y1,y2 = 0;
+                    x1 = *(pos - 1);
+                    x2 = *pos;
+                    y1 = compuTabAxisX->getValue(x1).toFloat();
+                    y2 = compuTabAxisX->getValue(x2).toFloat();
+                    float denom = (x2 - x1);
+                    if (denom)
+                        return QString::number(y1 + (dec - x1)*(y2 - y1)/denom, 'f', precisionX);
+                    else
+                        return QString::number(0, 'f', precisionX);
+                }
+            }
+            else
+                return hex;
         }
         else
-            return hex;
+        {
+            return QString::number(dec,'f', precisionX);
+        }
     }
     else if (axis == "y" && axisDescrY)
     {
@@ -3278,81 +3334,88 @@ QString Data::hex2phys(QString hex, QString axis)
         //dec2phys
         QString compu_method = axisDescrY->getPar("Conversion");
         COMPU_METHOD *cmp = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu_method);
-        QString convType = cmp->getPar("ConversionType");
-
-        bool bl;
-        if (convType.toLower() == "rat_func")
+        if (cmp)
         {
-            COEFFS *item = (COEFFS*)cmp->getItem("COEFFS");
-            double a = ((QString)item->getPar("float1")).toDouble(&bl);
-            double b = ((QString)item->getPar("float2")).toDouble(&bl);
-            double c = ((QString)item->getPar("float3")).toDouble(&bl);
-            double d = ((QString)item->getPar("float4")).toDouble(&bl);
-            double e = ((QString)item->getPar("float5")).toDouble(&bl);
-            double f = ((QString)item->getPar("float6")).toDouble(&bl);
+            QString convType = cmp->getPar("ConversionType");
 
-            if (dec * d - a == 0)
+            bool bl;
+            if (convType.toLower() == "rat_func")
             {
-                phys.setNum((c - dec * f) / (dec * e - b),'f', precisionY);
-            }
-            else
-            {
-                phys.setNum(((b - dec * e) + sqrt(pow((dec * e - b), 2) - 4 * (dec * d - a) * (dec * f - c))) / (2 * (dec * d - a)),'f', precisionY);
-            }
+                COEFFS *item = (COEFFS*)cmp->getItem("COEFFS");
+                double a = ((QString)item->getPar("float1")).toDouble(&bl);
+                double b = ((QString)item->getPar("float2")).toDouble(&bl);
+                double c = ((QString)item->getPar("float3")).toDouble(&bl);
+                double d = ((QString)item->getPar("float4")).toDouble(&bl);
+                double e = ((QString)item->getPar("float5")).toDouble(&bl);
+                double f = ((QString)item->getPar("float6")).toDouble(&bl);
 
-            double dbl = phys.toDouble();
-            if (dbl == 0)
-            {
-                return QString::number(0,'f', precisionY);
-            }
-            else
-            {
-                return phys;
-            }
-        }
-        else if (convType.toLower() == "tab_verb")
-        {
-            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
-            QString compuTabRef = item->getPar("ConversionTable");
-            compuVTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
-
-            phys = compuVTabAxisY->getValue(dec);
-            return phys;
-
-        }
-        else if (convType.toLower() == "tab_intp")
-        {
-            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
-            QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisY = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPUTAB/" + compuTabRef);
-
-            QList<float> list = compuTabAxisY->getKeys();
-
-            //get the position of the decimal into the keys
-            QList<float>::iterator pos = std::lower_bound(list.begin(), list.end(), dec);
-
-            //if dec is not included into the keys
-            if (pos == list.end())
-                return compuTabAxisY->getValueList().last();
-            else if (pos == list.begin())
-                return compuTabAxisY->getValueList().first();
-            else
-            {
-                //interpolate (checking that denominator is difefrent to 0)
-                float x1,x2,y1,y2 = 0;
-                x1 = *(pos - 1);
-                x2 = *pos;
-                y1 = compuTabAxisY->getValue(x1).toFloat();
-                y2 = compuTabAxisY->getValue(x2).toFloat();
-                float denom = (x2 - x1);
-                if (denom)
-                    return QString::number(y1 + (dec - x1)*(y2 - y1)/denom, 'f', precisionY);
+                if (dec * d - a == 0)
+                {
+                    phys.setNum((c - dec * f) / (dec * e - b),'f', precisionY);
+                }
                 else
-                    return QString::number(0, 'f', precisionY);
+                {
+                    phys.setNum(((b - dec * e) + sqrt(pow((dec * e - b), 2) - 4 * (dec * d - a) * (dec * f - c))) / (2 * (dec * d - a)),'f', precisionY);
+                }
+
+                double dbl = phys.toDouble();
+                if (dbl == 0)
+                {
+                    return QString::number(0,'f', precisionY);
+                }
+                else
+                {
+                    return phys;
+                }
             }
+            else if (convType.toLower() == "tab_verb")
+            {
+                COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+                QString compuTabRef = item->getPar("ConversionTable");
+                compuVTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+
+                phys = compuVTabAxisY->getValue(dec);
+                return phys;
+
+            }
+            else if (convType.toLower() == "tab_intp")
+            {
+                COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+                QString compuTabRef = item->getPar("ConversionTable");
+                compuTabAxisY = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPUTAB/" + compuTabRef);
+
+                QList<float> list = compuTabAxisY->getKeys();
+
+                //get the position of the decimal into the keys
+                QList<float>::iterator pos = std::lower_bound(list.begin(), list.end(), dec);
+
+                //if dec is not included into the keys
+                if (pos == list.end())
+                    return compuTabAxisY->getValueList().last();
+                else if (pos == list.begin())
+                    return compuTabAxisY->getValueList().first();
+                else
+                {
+                    //interpolate (checking that denominator is difefrent to 0)
+                    float x1,x2,y1,y2 = 0;
+                    x1 = *(pos - 1);
+                    x2 = *pos;
+                    y1 = compuTabAxisY->getValue(x1).toFloat();
+                    y2 = compuTabAxisY->getValue(x2).toFloat();
+                    float denom = (x2 - x1);
+                    if (denom)
+                        return QString::number(y1 + (dec - x1)*(y2 - y1)/denom, 'f', precisionY);
+                    else
+                        return QString::number(0, 'f', precisionY);
+                }
+            }
+            else
+                return hex;
         }
         else
-            return hex;
+        {
+            return QString::number(dec,'f', precisionY);
+        }
     }
     else if (axis == "z")
     {
@@ -3452,7 +3515,10 @@ QString Data::hex2phys(QString hex, QString axis)
             return hex;
         }
         else
-            return QString::number((uint)dec);
+        {
+            //return QString::number((uint)dec);
+            return QString::number(dec,'f', precisionZ);
+        }
     }
     else
         return hex;
@@ -3913,87 +3979,98 @@ QStringList Data::dec2Phys(QList<double> decValues, QString axis)
     {
         QString compu_method = axisDescrX->getPar("Conversion");
         COMPU_METHOD *cmp = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu_method);
-        QString convType = cmp->getPar("ConversionType");
-
-        bool bl;
-        double dec;
-        if (convType.toLower() == "rat_func")
+        if (cmp)
         {
-            COEFFS *item = (COEFFS*)cmp->getItem("COEFFS");
-            double a = ((QString)item->getPar("float1")).toDouble(&bl);
-            double b = ((QString)item->getPar("float2")).toDouble(&bl);
-            double c = ((QString)item->getPar("float3")).toDouble(&bl);
-            double d = ((QString)item->getPar("float4")).toDouble(&bl);
-            double e = ((QString)item->getPar("float5")).toDouble(&bl);
-            double f = ((QString)item->getPar("float6")).toDouble(&bl);
+            QString convType = cmp->getPar("ConversionType");
 
-            for (int i = 0; i < decValues.count(); i++)
+            bool bl;
+            double dec;
+            if (convType.toLower() == "rat_func")
             {
-                dec = decValues.at(i);
-                QString phys;
-                if (dec * d - a == 0)
-                {
-                    phys = QString::number((c - dec * f) / (dec * e - b),'f', precisionX);
-                }
-                else
-                {
-                    phys = QString::number(((b - dec * e) + sqrt(pow((dec * e - b), 2) - 4 * (dec * d - a) * (dec * f - c))) / (2 * (dec * d - a)),'f', precisionX);
-                }
+                COEFFS *item = (COEFFS*)cmp->getItem("COEFFS");
+                double a = ((QString)item->getPar("float1")).toDouble(&bl);
+                double b = ((QString)item->getPar("float2")).toDouble(&bl);
+                double c = ((QString)item->getPar("float3")).toDouble(&bl);
+                double d = ((QString)item->getPar("float4")).toDouble(&bl);
+                double e = ((QString)item->getPar("float5")).toDouble(&bl);
+                double f = ((QString)item->getPar("float6")).toDouble(&bl);
 
-                double dbl = phys.toDouble();
-                if (dbl == 0)
+                for (int i = 0; i < decValues.count(); i++)
                 {
-                    list.append(QString::number(0,'f', precisionX));
-                }
-                else
-                {
-                    list.append(phys);
-                }
-            }
-        }
-        else if (convType.toLower() == "tab_verb")
-        {
-            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
-            QString compuTabRef = item->getPar("ConversionTable");
-            compuVTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
-
-            for (int i = 0; i < decValues.count(); i++)
-            {
-                dec = decValues.at(i);
-                list.append(compuVTabAxisX->getValue(dec));
-            }
-        }
-        else if (convType.toLower() == "tab_intp")
-        {
-            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
-            QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisX = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPU_TAB/" + compuTabRef);
-
-            QList<float> listKeys = compuTabAxisX->getKeys();
-            foreach (double dec, decValues)
-            {
-                //get the position of the decimal into the keys
-                QList<float>::iterator pos = std::lower_bound(listKeys.begin(), listKeys.end(), dec);
-
-                //if dec is not included into the keys
-                if (pos == listKeys.end())
-                    list.append(compuTabAxisX->getValueList().last());
-                else if (pos == listKeys.begin())
-                    list.append(compuTabAxisX->getValueList().first());
-                else
-                {
-                    //interpolate (checking that denominator is difefrent to 0)
-                    float x1,x2,y1,y2 = 0;
-                    x1 = *(pos - 1);
-                    x2 = *pos;
-                    y1 = compuTabAxisX->getValue(x1).toFloat();
-                    y2 = compuTabAxisX->getValue(x2).toFloat();
-                    float denom = (x2 - x1);
-                    if (denom)
-                        list.append(QString::number(y1 + (dec - x1)*(y2 - y1)/denom, 'f', precisionX));
+                    dec = decValues.at(i);
+                    QString phys;
+                    if (dec * d - a == 0)
+                    {
+                        phys = QString::number((c - dec * f) / (dec * e - b),'f', precisionX);
+                    }
                     else
-                        list.append(QString::number(0, 'f', precisionX));
+                    {
+                        phys = QString::number(((b - dec * e) + sqrt(pow((dec * e - b), 2) - 4 * (dec * d - a) * (dec * f - c))) / (2 * (dec * d - a)),'f', precisionX);
+                    }
+
+                    double dbl = phys.toDouble();
+                    if (dbl == 0)
+                    {
+                        list.append(QString::number(0,'f', precisionX));
+                    }
+                    else
+                    {
+                        list.append(phys);
+                    }
                 }
+            }
+            else if (convType.toLower() == "tab_verb")
+            {
+                COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+                QString compuTabRef = item->getPar("ConversionTable");
+                compuVTabAxisX = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+
+                for (int i = 0; i < decValues.count(); i++)
+                {
+                    dec = decValues.at(i);
+                    list.append(compuVTabAxisX->getValue(dec));
+                }
+            }
+            else if (convType.toLower() == "tab_intp")
+            {
+                COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+                QString compuTabRef = item->getPar("ConversionTable");
+                compuTabAxisX = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPU_TAB/" + compuTabRef);
+
+                QList<float> listKeys = compuTabAxisX->getKeys();
+                foreach (double dec, decValues)
+                {
+                    //get the position of the decimal into the keys
+                    QList<float>::iterator pos = std::lower_bound(listKeys.begin(), listKeys.end(), dec);
+
+                    //if dec is not included into the keys
+                    if (pos == listKeys.end())
+                        list.append(compuTabAxisX->getValueList().last());
+                    else if (pos == listKeys.begin())
+                        list.append(compuTabAxisX->getValueList().first());
+                    else
+                    {
+                        //interpolate (checking that denominator is difefrent to 0)
+                        float x1,x2,y1,y2 = 0;
+                        x1 = *(pos - 1);
+                        x2 = *pos;
+                        y1 = compuTabAxisX->getValue(x1).toFloat();
+                        y2 = compuTabAxisX->getValue(x2).toFloat();
+                        float denom = (x2 - x1);
+                        if (denom)
+                            list.append(QString::number(y1 + (dec - x1)*(y2 - y1)/denom, 'f', precisionX));
+                        else
+                            list.append(QString::number(0, 'f', precisionX));
+                    }
+                }
+            }
+        }
+        else
+        {
+            int cnt = decValues.count();
+            for (int i = 0; i < cnt; i++)
+            {
+                list.append(QString::number(decValues.at(i),'f', precisionY));
             }
         }
     }
@@ -4001,91 +4078,102 @@ QStringList Data::dec2Phys(QList<double> decValues, QString axis)
     {
         QString compu_method = axisDescrY->getPar("Conversion");
         COMPU_METHOD *cmp = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + compu_method);
-        QString convType = cmp->getPar("ConversionType");
-
-        bool bl;
-        double dec;
-        if (convType.toLower() == "rat_func")
+        if (cmp)
         {
-            COEFFS *item = (COEFFS*)cmp->getItem("COEFFS");
-            double a = ((QString)item->getPar("float1")).toDouble(&bl);
-            double b = ((QString)item->getPar("float2")).toDouble(&bl);
-            double c = ((QString)item->getPar("float3")).toDouble(&bl);
-            double d = ((QString)item->getPar("float4")).toDouble(&bl);
-            double e = ((QString)item->getPar("float5")).toDouble(&bl);
-            double f = ((QString)item->getPar("float6")).toDouble(&bl);
+            QString convType = cmp->getPar("ConversionType");
 
-            for (int i = 0; i < decValues.count(); i++)
+            bool bl;
+            double dec;
+            if (convType.toLower() == "rat_func")
             {
-                dec = decValues.at(i);
-                QString phys;
-                if (dec * d - a == 0)
-                {
-                    phys = QString::number((c - dec * f) / (dec * e - b),'f', precisionY);
-                }
-                else
-                {
-                    phys = QString::number(((b - dec * e) + sqrt(pow((dec * e - b), 2) - 4 * (dec * d - a) * (dec * f - c))) / (2 * (dec * d - a)),'f', precisionY);
-                }
+                COEFFS *item = (COEFFS*)cmp->getItem("COEFFS");
+                double a = ((QString)item->getPar("float1")).toDouble(&bl);
+                double b = ((QString)item->getPar("float2")).toDouble(&bl);
+                double c = ((QString)item->getPar("float3")).toDouble(&bl);
+                double d = ((QString)item->getPar("float4")).toDouble(&bl);
+                double e = ((QString)item->getPar("float5")).toDouble(&bl);
+                double f = ((QString)item->getPar("float6")).toDouble(&bl);
 
-                double dbl = phys.toDouble();
-                if (dbl == 0)
+                for (int i = 0; i < decValues.count(); i++)
                 {
-                    list.append(QString::number(0,'f', precisionY));
-                }
-                else
-                {
-                    list.append(phys);
-                }
-            }
-        }
-        else if (convType.toLower() == "tab_verb")
-        {
-            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
-            QString compuTabRef = item->getPar("ConversionTable");
-            compuVTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
-
-            for (int i = 0; i < decValues.count(); i++)
-            {
-                dec = decValues.at(i);
-                list.append(compuVTabAxisY->getValue(dec));
-            }
-        }
-        else if (convType.toLower() == "tab_intp")
-        {
-            COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
-            QString compuTabRef = item->getPar("ConversionTable");
-            compuTabAxisY = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPU_TAB/" + compuTabRef);
-
-            QList<float> listKeys = compuTabAxisY->getKeys();
-            foreach (double dec, decValues)
-            {
-                //get the position of the decimal into the keys
-                QList<float>::iterator pos = std::lower_bound(listKeys.begin(), listKeys.end(), dec);
-
-                //if dec is not included into the keys
-                if (pos == listKeys.end())
-                    list.append(compuTabAxisY->getValueList().last());
-                else if (pos == listKeys.begin())
-                    list.append(compuTabAxisY->getValueList().first());
-                else
-                {
-                    //interpolate (checking that denominator is difefrent to 0)
-                    float x1,x2,y1,y2 = 0;
-                    x1 = *(pos - 1);
-                    x2 = *pos;
-                    y1 = compuTabAxisY->getValue(x1).toFloat();
-                    y2 = compuTabAxisY->getValue(x2).toFloat();
-                    float denom = (x2 - x1);
-                    if (denom)
-                        list.append(QString::number(y1 + (dec - x1)*(y2 - y1)/denom, 'f', precisionY));
+                    dec = decValues.at(i);
+                    QString phys;
+                    if (dec * d - a == 0)
+                    {
+                        phys = QString::number((c - dec * f) / (dec * e - b),'f', precisionY);
+                    }
                     else
-                        list.append(QString::number(0, 'f', precisionY));
+                    {
+                        phys = QString::number(((b - dec * e) + sqrt(pow((dec * e - b), 2) - 4 * (dec * d - a) * (dec * f - c))) / (2 * (dec * d - a)),'f', precisionY);
+                    }
+
+                    double dbl = phys.toDouble();
+                    if (dbl == 0)
+                    {
+                        list.append(QString::number(0,'f', precisionY));
+                    }
+                    else
+                    {
+                        list.append(phys);
+                    }
                 }
+            }
+            else if (convType.toLower() == "tab_verb")
+            {
+                COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+                QString compuTabRef = item->getPar("ConversionTable");
+                compuVTabAxisY = (COMPU_VTAB*)project->getNode("MODULE/" + moduleName + "/COMPU_VTAB/" + compuTabRef);
+
+                for (int i = 0; i < decValues.count(); i++)
+                {
+                    dec = decValues.at(i);
+                    list.append(compuVTabAxisY->getValue(dec));
+                }
+            }
+            else if (convType.toLower() == "tab_intp")
+            {
+                COMPU_TAB_REF *item = (COMPU_TAB_REF*)cmp->getItem("COMPU_TAB_REF");
+                QString compuTabRef = item->getPar("ConversionTable");
+                compuTabAxisY = (COMPU_TAB*)project->getNode("MODULE/" + moduleName + "/COMPU_TAB/" + compuTabRef);
+
+                QList<float> listKeys = compuTabAxisY->getKeys();
+                foreach (double dec, decValues)
+                {
+                    //get the position of the decimal into the keys
+                    QList<float>::iterator pos = std::lower_bound(listKeys.begin(), listKeys.end(), dec);
+
+                    //if dec is not included into the keys
+                    if (pos == listKeys.end())
+                        list.append(compuTabAxisY->getValueList().last());
+                    else if (pos == listKeys.begin())
+                        list.append(compuTabAxisY->getValueList().first());
+                    else
+                    {
+                        //interpolate (checking that denominator is difefrent to 0)
+                        float x1,x2,y1,y2 = 0;
+                        x1 = *(pos - 1);
+                        x2 = *pos;
+                        y1 = compuTabAxisY->getValue(x1).toFloat();
+                        y2 = compuTabAxisY->getValue(x2).toFloat();
+                        float denom = (x2 - x1);
+                        if (denom)
+                            list.append(QString::number(y1 + (dec - x1)*(y2 - y1)/denom, 'f', precisionY));
+                        else
+                            list.append(QString::number(0, 'f', precisionY));
+                    }
+                }
+            }
+        }
+        else
+        {
+            int cnt = decValues.count();
+            for (int i = 0; i < cnt; i++)
+            {
+                list.append(QString::number(decValues.at(i),'f', precisionY));
             }
         }
     }
-    else
+    else if (axis == "z")
     {
         if (compu_methodZ)
         {
@@ -5324,9 +5412,44 @@ bool Data::checkValues()
     return false;
 }
 
+//--- X ---//
+
+int Data::xCount()
+{
+    return listX.count();
+}
+
+double Data::getAddressX()
+{
+    return addressX;
+}
+
+AXIS_DESCR *Data::getAxisDescrX()
+{
+    return axisDescrX;
+}
+
+COMPU_METHOD *Data::getCompuMethodAxisX()
+{
+    if (axisDescrX)
+    {
+        QString conversion = axisDescrX->getPar("Conversion");
+        COMPU_METHOD *cpm = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + conversion);
+
+        return cpm;
+    }
+    else
+        return NULL;
+}
+
 QString Data::getByteOrderX()
 {
     return byteOrderX;
+}
+
+COMPU_VTAB *Data::getCompuTabAxisX()
+{
+    return compuVTabAxisX;
 }
 
 QString Data::getOrgX(int i)
@@ -5487,6 +5610,17 @@ QString Data::getX(int i)
         return listX.at(i);
 }
 
+QString Data::getHexX(int col)
+{
+    QString str = getX(col);
+    if (!str.isEmpty())
+        str = phys2hex(str,"x");
+    else
+        return "";
+
+    return str;
+}
+
 QStringList Data::getX()
 {
     if (axisDescrX)
@@ -5581,6 +5715,41 @@ QList<double> Data::getXtoDouble()
         list.append(str.toDouble());
     }
     return list;
+}
+
+//--- Y ---//
+
+int Data::yCount()
+{
+    return listY.count();
+}
+
+double Data::getAddressY()
+{
+    return addressY;
+}
+
+COMPU_METHOD *Data::getCompuMethodAxisY()
+{
+    if (axisDescrY)
+    {
+        QString conversion = axisDescrY->getPar("Conversion");
+        COMPU_METHOD *cpm = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + conversion);
+
+        return cpm;
+    }
+    else
+        return NULL;
+}
+
+AXIS_DESCR *Data::getAxisDescrY()
+{
+    return axisDescrY;
+}
+
+COMPU_VTAB *Data::getCompuTabAxisY()
+{
+    return compuVTabAxisY;
 }
 
 QString Data::getByteOrderY()
@@ -5747,6 +5916,17 @@ QString Data::getY(int i)
         return listY.at(i);
 }
 
+QString Data::getHexY(int row)
+{
+    QString str = getY(row);
+    if (!str.isEmpty())
+        str = phys2hex(str,"y");
+    else
+        return "";
+
+    return str;
+}
+
 QStringList Data::getY()
 {
     if (axisDescrY)
@@ -5842,6 +6022,8 @@ QList<double> Data::getYtoDouble()
     }
     return list;
 }
+
+//--- Z ---//
 
 QString Data::getByteOrderZ()
 {
@@ -6001,29 +6183,9 @@ double Data::getMaxZ()
     return d;
 }
 
-int Data::xCount()
-{
-    return listX.count();
-}
-
-int Data::yCount()
-{
-    return listY.count();
-}
-
 int Data::zCount()
 {
     return listZ.count();
-}
-
-double Data::getAddressX()
-{
-    return addressX;
-}
-
-double Data::getAddressY()
-{
-    return addressY;
 }
 
 double Data::getAddressZ()
@@ -6034,52 +6196,6 @@ double Data::getAddressZ()
 QString  Data::getType()
 {
     return type;
-}
-
-AXIS_DESCR *Data::getAxisDescrX()
-{
-    return axisDescrX;
-}
-
-COMPU_METHOD *Data::getCompuMethodAxisX()
-{
-    if (axisDescrX)
-    {
-        QString conversion = axisDescrX->getPar("Conversion");
-        COMPU_METHOD *cpm = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + conversion);
-
-        return cpm;
-    }
-    else
-        return NULL;
-}
-
-COMPU_METHOD *Data::getCompuMethodAxisY()
-{
-    if (axisDescrY)
-    {
-        QString conversion = axisDescrY->getPar("Conversion");
-        COMPU_METHOD *cpm = (COMPU_METHOD*)project->getNode("MODULE/" + moduleName + "/COMPU_METHOD/" + conversion);
-
-        return cpm;
-    }
-    else
-        return NULL;
-}
-
-AXIS_DESCR *Data::getAxisDescrY()
-{
-    return axisDescrY;
-}
-
-COMPU_VTAB *Data::getCompuTabAxisX()
-{
-    return compuVTabAxisX;
-}
-
-COMPU_VTAB *Data::getCompuTabAxisY()
-{
-    return compuVTabAxisY;
 }
 
 COMPU_VTAB *Data::getCompuTabAxisZ()

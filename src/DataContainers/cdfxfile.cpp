@@ -907,17 +907,19 @@ void CdfxFile::swInstance2Data()
                 // copy the listValues into data.z
                 foreach (QString str, instance->Zvalues)
                 {
-                    // convert PHYS value from Csv into HEX value
-                    QString hex = data->phys2hex(str, "z");
+                    // convert PHYS value from Phys into HEX value
+                    QString hex = data->phys2hex(str, "z");                    
 
                     // convert HEX value into PHYS value
                     QString phys = data->hex2phys(hex, "z");
+
+                    qDebug() << "QString" <<str << "Hex" << hex << "Phys" << phys;
 
                     // copy PHYS value into Zaxis
                     data->appendZ(phys);
                 }
 
-                // fill in axis for : AXIS_PTS / CURVE / MAP
+                // fill in axisX,Y for : AXIS_PTS / CURVE / MAP
                 if (type == "AXIS_PTS")
                 {
                     // axisX
@@ -928,22 +930,112 @@ void CdfxFile::swInstance2Data()
                 }
                 else if (type == "CURVE")
                 {
-                    if (QString(data->getAxisDescrX()->getPar("Attribute")) == "COM_AXIS")
-                    {                        
-                        //get dataName corrisponding to the AXIS_PTS
-                        AXIS_PTS_REF *axisPtsRef = (AXIS_PTS_REF*)data->getAxisDescrX()->getItem("AXIS_PTS_REF");
-                        QString nameAxisX = axisPtsRef->getPar("AxisPoints");
+                    //axisX
+                    if (data->getAxisDescrX())
+                    {
+                        if (QString(data->getAxisDescrX()->getPar("Attribute")) == "COM_AXIS")
+                        {
+                            //get dataName corrisponding to the AXIS_PTS
+                            AXIS_PTS_REF *axisPtsRef = (AXIS_PTS_REF*)data->getAxisDescrX()->getItem("AXIS_PTS_REF");
+                            QString nameAxisX = axisPtsRef->getPar("AxisPoints");
 
-                        //check if ref_axis is present
-                        SwInstance *axisXInstance = getSwInstance(nameAxisX);
-                        if (axisXInstance)
+                            //check if ref_axis is present
+                            SwInstance *axisXInstance = getSwInstance(nameAxisX);
+                            if (axisXInstance)
+                            {
+                                //check if axisX and Zvalues have the same length
+                                if ( instance->Zvalues.count() == axisXInstance->Zvalues.count() )
+                                {
+                                    for (int i = 0; i < axisXInstance->Zvalues.count(); i++)
+                                    {
+                                        data->appendX(QString::number(i));
+                                    }
+                                }
+                                else
+                                {
+                                    // page 40 "Calibration data format V2.0.0"
+                                    swInstanceStatus = false;
+                                    infoList.append("label " + instanceName + " : different axisX and axisZ length.");
+                                }
+                            }
+                            else
+                            {
+                                // page 41 "Calibration data format V2.0.0"
+                                //if the object type and the including axis type description defines referenced
+                                //axis and the values are not available, this parameter is not valid
+
+                                swInstanceStatus = false;
+                                infoList.append("label " + instanceName + " : axisX reference is missing.");
+                            }
+
+                        }
+                        else if (QString(data->getAxisDescrX()->getPar("Attribute")) == "FIX_AXIS")
+                        {
+                            //OFFSET, SHIFT and NUMBERAPO
+                            FIX_AXIS_PAR *fixAxisPar = (FIX_AXIS_PAR*)data->getAxisDescrX()->getItem("FIX_AXIS_PAR");
+                            FIX_AXIS_PAR_DIST *fixAxisParDist = (FIX_AXIS_PAR_DIST*)data->getAxisDescrX()->getItem("FIX_AXIS_PAR_DIST");
+                            if (fixAxisPar)
+                            {
+                                QString off = fixAxisPar->getPar("Offset");
+                                QString sft = fixAxisPar->getPar("Shift");
+                                QString napo = fixAxisPar->getPar("Numberapo");
+                                bool bl;
+                                int offset = off.toInt(&bl, 10);
+                                int shift = sft.toInt(&bl, 10);
+                                int nPtsX = napo.toUInt(&bl, 10);
+
+                                //check if nPts < nPtsmax
+                                QString maxAxisPts = data->getAxisDescrX()->getPar("MaxAxisPoints");
+                                double nmaxPts = maxAxisPts.toDouble();
+                                if (nPtsX > nmaxPts)
+                                    nPtsX = nmaxPts;
+
+                                QString str;
+                                for (int i = 0; i < nPtsX; i++)
+                                {
+                                    str.setNum((int)(offset + i * qPow(2, shift)));
+                                    data->appendX(data->hex2phys(str, "x"));
+                                }
+                            }
+                            else if (fixAxisParDist)
+                            {
+                                QString off = fixAxisParDist->getPar("Offset");
+                                QString dist = fixAxisParDist->getPar("Distance");
+                                QString napo = fixAxisParDist->getPar("Numberapo");
+                                bool bl;
+                                int offset = off.toInt(&bl, 10);
+                                int distance = dist.toInt(&bl, 10);
+                                int nPtsX = napo.toUInt(&bl, 10);
+
+                                //check if nPts < nPtsmax
+                                QString maxAxisPts = data->getAxisDescrX()->getPar("MaxAxisPoints");
+                                double nmaxPts = maxAxisPts.toDouble();
+                                if (nPtsX > nmaxPts)
+                                    nPtsX = nmaxPts;
+
+                                QString str;
+                                for (int i = 0; i < nPtsX; i++)
+                                {
+                                    str.setNum((int)(offset + i * distance));
+                                    data->appendX(data->hex2phys(str, "x"));
+                                }
+                            }
+                        }
+                        else if (QString(data->getAxisDescrX()->getPar("Attribute")) == "STD_AXIS")
                         {
                             //check if axisX and Zvalues have the same length
-                            if ( instance->Zvalues.count() == axisXInstance->Zvalues.count() )
+                            if ( instance->Zvalues.count() == instance->axisXvalues.count() )
                             {
-                                for (int i = 0; i < axisXInstance->Zvalues.count(); i++)
+                                foreach (QString str, instance->axisXvalues)
                                 {
-                                    data->appendX(QString::number(i));
+                                    // convert PHYS value from Csv into HEX value
+                                    QString hex = data->phys2hex(str, "x");
+
+                                    // convert HEX value into PHYS value
+                                    QString phys = data->hex2phys(hex, "x");
+
+                                    // copy PHYS value into Zaxis
+                                    data->appendX(phys);
                                 }
                             }
                             else
@@ -953,46 +1045,93 @@ void CdfxFile::swInstance2Data()
                                 infoList.append("label " + instanceName + " : different axisX and axisZ length.");
                             }
                         }
-                        else
-                        {
-                            // page 41 "Calibration data format V2.0.0"
-                            //if the object type and the including axis type description defines referenced
-                            //axis and the values are not available, this parameter is not valid
-
-                            swInstanceStatus = false;
-                            infoList.append("label " + instanceName + " : axisX reference is missing.");
-                        }
-
                     }
-                    else if (QString(data->getAxisDescrX()->getPar("Attribute")) == "FIX_AXIS")
+                }
+                else if (type == "MAP")
+                {
+                    //axisX
+                    if (data->getAxisDescrX())
                     {
-                        //OFFSET, SHIFT and NUMBERAPO
-                        FIX_AXIS_PAR *fixAxisPar = (FIX_AXIS_PAR*)data->getAxisDescrX()->getItem("FIX_AXIS_PAR");
-                        QString off = fixAxisPar->getPar("Offset");
-                        QString sft = fixAxisPar->getPar("Shift");
-                        QString napo = fixAxisPar->getPar("Numberapo");
-                        bool bl;
-                        int offset = off.toInt(&bl, 10);
-                        int shift = sft.toInt(&bl, 10);
-                        int nPtsX = napo.toUInt(&bl, 10);
-
-                        //check if nPts < nPtsmax
-                        QString maxAxisPts = data->getAxisDescrX()->getPar("MaxAxisPoints");
-                        double nmaxPts = maxAxisPts.toDouble();
-                        if (nPtsX > nmaxPts)
-                            nPtsX = nmaxPts;
-
-                        QString str;
-                        for (int i = 0; i < nPtsX; i++)
+                        if (QString(data->getAxisDescrX()->getPar("Attribute")) == "COM_AXIS")
                         {
-                            str.setNum((int)(offset + i * qPow(2, shift)), 16);
-                            data->appendX(data->hex2phys(str, "x"));
+                            //get dataName corrisponding to the AXIS_PTS
+                            AXIS_PTS_REF *axisPtsRef = (AXIS_PTS_REF*)data->getAxisDescrX()->getItem("AXIS_PTS_REF");
+                            QString nameAxisX = axisPtsRef->getPar("AxisPoints");
+                            SwInstance *axisXInstance = getSwInstance(nameAxisX);
+
+                            //check if ref_axis is present
+                            if (axisXInstance)
+                            {
+                                for (int i = 0; i < axisXInstance->Zvalues.count(); i++)
+                                {
+                                    data->appendX(QString::number(i));
+                                }
+                            }
+                            else
+                            {
+                                // page 41 "Calibration data format V2.0.0"
+                                //if the object type and the including axis type description defines referenced
+                                //axis and the values are not available, this parameter is not valid
+
+                                swInstanceStatus = false;
+                                infoList.append("label " + instanceName + " : axisX reference is missing.");
+                            }
                         }
-                    }
-                    else if (QString(data->getAxisDescrX()->getPar("Attribute")) == "STD_AXIS")
-                    {
-                        //check if axisX and Zvalues have the same length
-                        if ( instance->Zvalues.count() == instance->axisXvalues.count() )
+                        else if (QString(data->getAxisDescrX()->getPar("Attribute")) == "FIX_AXIS")
+                        {
+                            //OFFSET, SHIFT and NUMBERAPO
+                            FIX_AXIS_PAR *fixAxisPar = (FIX_AXIS_PAR*)data->getAxisDescrX()->getItem("FIX_AXIS_PAR");
+                            FIX_AXIS_PAR_DIST *fixAxisParDist = (FIX_AXIS_PAR_DIST*)data->getAxisDescrX()->getItem("FIX_AXIS_PAR_DIST");
+                            if (fixAxisPar)
+                            {
+                                QString off = fixAxisPar->getPar("Offset");
+                                QString sft = fixAxisPar->getPar("Shift");
+                                QString napo = fixAxisPar->getPar("Numberapo");
+                                bool bl;
+                                int offset = off.toInt(&bl, 10);
+                                int shift = sft.toInt(&bl, 10);
+                                int nPtsX = napo.toUInt(&bl, 10);
+
+                                //check if nPts < nPtsmax
+                                QString maxAxisPts = data->getAxisDescrX()->getPar("MaxAxisPoints");
+                                double nmaxPts = maxAxisPts.toDouble();
+                                if (nPtsX > nmaxPts)
+                                    nPtsX = nmaxPts;
+
+                                QString str;
+                                for (int i = 0; i < nPtsX; i++)
+                                {
+                                    str.setNum((int)(offset + i * qPow(2, shift)));
+                                    data->appendX(data->hex2phys(str, "x"));
+                                }
+
+                            }
+                            else if (fixAxisParDist)
+                            {
+                                QString off = fixAxisParDist->getPar("Offset");
+                                QString dist = fixAxisParDist->getPar("Distance");
+                                QString napo = fixAxisParDist->getPar("Numberapo");
+                                bool bl;
+                                int offset = off.toInt(&bl, 10);
+                                int distance = dist.toInt(&bl, 10);
+                                int nPtsX = napo.toUInt(&bl, 10);
+
+                                //check if nPts < nPtsmax
+                                QString maxAxisPts = data->getAxisDescrX()->getPar("MaxAxisPoints");
+                                double nmaxPts = maxAxisPts.toDouble();
+                                if (nPtsX > nmaxPts)
+                                    nPtsX = nmaxPts;
+
+                                QString str;
+                                for (int i = 0; i < nPtsX; i++)
+                                {
+                                    str.setNum((int)(offset + i * distance));
+                                    data->appendX(data->hex2phys(str, "x"));
+                                }
+
+                            }
+                        }
+                        else if (QString(data->getAxisDescrX()->getPar("Attribute")) == "STD_AXIS")
                         {
                             foreach (QString str, instance->axisXvalues)
                             {
@@ -1006,145 +1145,103 @@ void CdfxFile::swInstance2Data()
                                 data->appendX(phys);
                             }
                         }
-                        else
-                        {
-                            // page 40 "Calibration data format V2.0.0"
-                            swInstanceStatus = false;
-                            infoList.append("label " + instanceName + " : different axisX and axisZ length.");
-                        }
-                    }
-                }
-                else if (type == "MAP")
-                {
-                    //axisX
-                    if (QString(data->getAxisDescrX()->getPar("Attribute")) == "COM_AXIS")
-                    {
-                        //get dataName corrisponding to the AXIS_PTS
-                        AXIS_PTS_REF *axisPtsRef = (AXIS_PTS_REF*)data->getAxisDescrX()->getItem("AXIS_PTS_REF");
-                        QString nameAxisX = axisPtsRef->getPar("AxisPoints");
-                        SwInstance *axisXInstance = getSwInstance(nameAxisX);
-
-                        //check if ref_axis is present
-                        if (axisXInstance)
-                        {
-                            for (int i = 0; i < axisXInstance->Zvalues.count(); i++)
-                            {
-                                data->appendX(QString::number(i));
-                            }
-                        }
-                        else
-                        {
-                            // page 41 "Calibration data format V2.0.0"
-                            //if the object type and the including axis type description defines referenced
-                            //axis and the values are not available, this parameter is not valid
-
-                            swInstanceStatus = false;
-                            infoList.append("label " + instanceName + " : axisX reference is missing.");
-                        }
-                    }
-                    else if (QString(data->getAxisDescrX()->getPar("Attribute")) == "FIX_AXIS")
-                    {
-                        //OFFSET, SHIFT and NUMBERAPO
-                        FIX_AXIS_PAR *fixAxisPar = (FIX_AXIS_PAR*)data->getAxisDescrX()->getItem("FIX_AXIS_PAR");
-                        QString off = fixAxisPar->getPar("Offset");
-                        QString sft = fixAxisPar->getPar("Shift");
-                        QString napo = fixAxisPar->getPar("Numberapo");
-                        bool bl;
-                        int offset = off.toInt(&bl, 10);
-                        int shift = sft.toInt(&bl, 10);
-                        int nPtsX = napo.toUInt(&bl, 10);
-
-                        //check if nPts < nPtsmax
-                        QString maxAxisPts = data->getAxisDescrX()->getPar("MaxAxisPoints");
-                        double nmaxPts = maxAxisPts.toDouble();
-                        if (nPtsX > nmaxPts)
-                            nPtsX = nmaxPts;
-
-                        QString str;
-                        for (int i = 0; i < nPtsX; i++)
-                        {
-                            str.setNum((int)(offset + i * qPow(2, shift)), 16);
-                            data->appendX(data->hex2phys(str, "x"));
-                        }
-                    }
-                    else if (QString(data->getAxisDescrX()->getPar("Attribute")) == "STD_AXIS")
-                    {
-                        foreach (QString str, instance->axisXvalues)
-                        {
-                            // convert PHYS value from Csv into HEX value
-                            QString hex = data->phys2hex(str, "x");
-
-                            // convert HEX value into PHYS value
-                            QString phys = data->hex2phys(hex, "x");
-
-                            // copy PHYS value into Zaxis
-                            data->appendX(phys);
-                        }
-                    }
+                     }
 
                     // axisY
-                    if (QString(data->getAxisDescrY()->getPar("Attribute")) == "COM_AXIS")
+                    if (data->getAxisDescrY())
                     {
-                        //get dataName corrisponding to the AXIS_PTS
-                        AXIS_PTS_REF *axisPtsRef = (AXIS_PTS_REF*)data->getAxisDescrY()->getItem("AXIS_PTS_REF");
-                        QString nameAxisY = axisPtsRef->getPar("AxisPoints");
-                        SwInstance *axisYInstance = getSwInstance(nameAxisY);
-
-                        //check if ref_axis is present
-                        if (axisYInstance)
+                        if (QString(data->getAxisDescrY()->getPar("Attribute")) == "COM_AXIS")
                         {
-                            for (int i = 0; i < axisYInstance->Zvalues.count(); i++)
+                            //get dataName corrisponding to the AXIS_PTS
+                            AXIS_PTS_REF *axisPtsRef = (AXIS_PTS_REF*)data->getAxisDescrY()->getItem("AXIS_PTS_REF");
+                            QString nameAxisY = axisPtsRef->getPar("AxisPoints");
+                            SwInstance *axisYInstance = getSwInstance(nameAxisY);
+
+                            //check if ref_axis is present
+                            if (axisYInstance)
                             {
-                                data->appendY(QString::number(i));
+                                for (int i = 0; i < axisYInstance->Zvalues.count(); i++)
+                                {
+                                    data->appendY(QString::number(i));
+                                }
+                            }
+                            else
+                            {
+                                // page 41 "Calibration data format V2.0.0"
+                                //if the object type and the including axis type description defines referenced
+                                //axis and the values are not available, this parameter is not valid
+
+                                swInstanceStatus = false;
+                                infoList.append("label " + instanceName + " : axisY reference is missing.");
                             }
                         }
-                        else
+                        else if (QString(data->getAxisDescrY()->getPar("Attribute")) == "FIX_AXIS")
                         {
-                            // page 41 "Calibration data format V2.0.0"
-                            //if the object type and the including axis type description defines referenced
-                            //axis and the values are not available, this parameter is not valid
+                            //OFFSET, SHIFT and NUMBERAPO
+                            FIX_AXIS_PAR *fixAxisPar = (FIX_AXIS_PAR*)data->getAxisDescrY()->getItem("FIX_AXIS_PAR");
+                            FIX_AXIS_PAR_DIST *fixAxisParDist = (FIX_AXIS_PAR_DIST*)data->getAxisDescrY()->getItem("FIX_AXIS_PAR_DIST");
+                            if (fixAxisPar)
+                            {
+                                QString off = fixAxisPar->getPar("Offset");
+                                QString sft = fixAxisPar->getPar("Shift");
+                                QString napo = fixAxisPar->getPar("Numberapo");
+                                bool bl;
+                                int offset = off.toInt(&bl, 10);
+                                int shift = sft.toInt(&bl, 10);
+                                int nPtsX = napo.toUInt(&bl, 10);
 
-                            swInstanceStatus = false;
-                            infoList.append("label " + instanceName + " : axisY reference is missing.");
+                                //check if nPts < nPtsmax
+                                QString maxAxisPts = data->getAxisDescrY()->getPar("MaxAxisPoints");
+                                double nmaxPts = maxAxisPts.toDouble();
+                                if (nPtsX > nmaxPts)
+                                    nPtsX = nmaxPts;
+
+                                QString str;
+                                for (int i = 0; i < nPtsX; i++)
+                                {
+                                    str.setNum((int)(offset + i * qPow(2, shift)), 16);
+                                    data->appendY(data->hex2phys(str, "y"));
+                                }
+                            }
+                            else if (fixAxisParDist)
+                            {
+                                QString off = fixAxisParDist->getPar("Offset");
+                                QString dist = fixAxisParDist->getPar("Distance");
+                                QString napo = fixAxisParDist->getPar("Numberapo");
+                                bool bl;
+                                int offset = off.toInt(&bl, 10);
+                                int distance = dist.toInt(&bl, 10);
+                                int nPtsX = napo.toUInt(&bl, 10);
+
+                                //check if nPts < nPtsmax
+                                QString maxAxisPts = data->getAxisDescrY()->getPar("MaxAxisPoints");
+                                double nmaxPts = maxAxisPts.toDouble();
+                                if (nPtsX > nmaxPts)
+                                    nPtsX = nmaxPts;
+
+                                QString str;
+                                for (int i = 0; i < nPtsX; i++)
+                                {
+                                    str.setNum((int)(offset + i * distance));
+                                    data->appendY(data->hex2phys(str, "y"));
+                                }
+
+                            }
+
                         }
-                    }
-                    else if (QString(data->getAxisDescrY()->getPar("Attribute")) == "FIX_AXIS")
-                    {
-                        //OFFSET, SHIFT and NUMBERAPO
-                        FIX_AXIS_PAR *fixAxisPar = (FIX_AXIS_PAR*)data->getAxisDescrY()->getItem("FIX_AXIS_PAR");
-                        QString off = fixAxisPar->getPar("Offset");
-                        QString sft = fixAxisPar->getPar("Shift");
-                        QString napo = fixAxisPar->getPar("Numberapo");
-                        bool bl;
-                        int offset = off.toInt(&bl, 10);
-                        int shift = sft.toInt(&bl, 10);
-                        int nPtsX = napo.toUInt(&bl, 10);
-
-                        //check if nPts < nPtsmax
-                        QString maxAxisPts = data->getAxisDescrY()->getPar("MaxAxisPoints");
-                        double nmaxPts = maxAxisPts.toDouble();
-                        if (nPtsX > nmaxPts)
-                            nPtsX = nmaxPts;
-
-                        QString str;
-                        for (int i = 0; i < nPtsX; i++)
+                        else if (QString(data->getAxisDescrY()->getPar("Attribute")) == "STD_AXIS")
                         {
-                            str.setNum((int)(offset + i * qPow(2, shift)), 16);
-                            data->appendY(data->hex2phys(str, "x"));
-                        }
-                    }
-                    else if (QString(data->getAxisDescrY()->getPar("Attribute")) == "STD_AXIS")
-                    {
-                        foreach (QString str, instance->axisYvalues)
-                        {
-                            // convert PHYS value from Csv into HEX value
-                            QString hex = data->phys2hex(str, "y");
+                            foreach (QString str, instance->axisYvalues)
+                            {
+                                // convert PHYS value from Csv into HEX value
+                                QString hex = data->phys2hex(str, "y");
 
-                            // convert HEX value into PHYS value
-                            QString phys = data->hex2phys(hex, "y");
+                                // convert HEX value into PHYS value
+                                QString phys = data->hex2phys(hex, "y");
 
-                            // copy PHYS value into Zaxis
-                            data->appendY(phys);
+                                // copy PHYS value into Zaxis
+                                data->appendY(phys);
+                            }
                         }
                     }
 

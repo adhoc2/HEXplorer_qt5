@@ -132,7 +132,7 @@ QVariant SpTableModelHex::data(const QModelIndex &index, int role) const
             else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() == 0) //Curve
             {
                 if (row - sum == 2 && column >= 1 && column <= listDataModel->at(ind)->xCount())
-                    return listDataModel->at(ind)->getX(column - 1);                
+                    return listDataModel->at(ind)->getHexX(column - 1);
                 else if (row - sum == 2 && column == 0)
                 {
                     return listDataModel->at(ind)->getInputQuantityX();
@@ -143,7 +143,7 @@ QVariant SpTableModelHex::data(const QModelIndex &index, int role) const
             else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() > 0) //Map
             {                
                 if (row - sum == 2 && column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
-                    return listDataModel->at(ind)->getX(column - 2);
+                    return listDataModel->at(ind)->getHexX(column - 2);
                 else if (row - sum == 2 && column == 0)
                 {
                     return listDataModel->at(ind)->getInputQuantityX();
@@ -158,7 +158,7 @@ QVariant SpTableModelHex::data(const QModelIndex &index, int role) const
                     {
 
                         //qDebug()<< "i : " << row - sum - 3 << " and max : " << listDataModel->at(ind)->yCount();
-                        return listDataModel->at(ind)->getY(row - sum - 3);
+                        return listDataModel->at(ind)->getHexY(row - sum - 3);
                     }
                     else if (column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
                     {
@@ -192,19 +192,19 @@ QVariant SpTableModelHex::data(const QModelIndex &index, int role) const
             else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() == 0) //Curve
             {
                 if (row - sum == 2 && column >= 1 && column <= listDataModel->at(ind)->xCount())
-                    return listDataModel->at(ind)->getX(column - 1);
+                    return listDataModel->at(ind)->getHexX(column - 1);
                 else if (row - sum == 3 && column >= 1 &&  column <= listDataModel->at(ind)->zCount())
                     return listDataModel->at(ind)->getHexZ(column - 1);
             }
             else if (listDataModel->at(ind)->xCount() > 0 && listDataModel->at(ind)->yCount() > 0) //Map
             {
                 if (row - sum == 2 && column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
-                    return listDataModel->at(ind)->getX(column - 2);
+                    return listDataModel->at(ind)->getHexX(column - 2);
                 if (row - sum >= 3 && row - sum < listDataModel->at(ind)->size - 1)
                 {
                     if (column == 1)
                     {
-                        return listDataModel->at(ind)->getY(row - sum - 3);
+                        return listDataModel->at(ind)->getHexY(row - sum - 3);
                     }
                     else if (column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
                     {

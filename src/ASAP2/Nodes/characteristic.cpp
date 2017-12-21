@@ -256,6 +256,25 @@ QMap<std::string, std::string> *CHARACTERISTIC::getParameters()
     return par;
 }
 
+QMap<QString, QString> *CHARACTERISTIC::getOptItems()
+{
+   QMap<QString, QString> *par = new QMap<QString, QString>;
+
+    for (int i = 0; i < optItems.count(); i++)
+    {
+        Item* item = optItems.at(i);
+        QMap<std::string, std::string> map = item->getParameters();
+        for (int i = 0; i < map.count(); i++)
+        {
+            par->insert(map.keys().at(i).c_str(), map.values().at(i).c_str());
+        }
+    }
+
+    return par;
+
+}
+
+
 char* CHARACTERISTIC::getPar(std::string str)
 {
     int i = namePar->indexOf(str);    

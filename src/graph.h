@@ -57,7 +57,7 @@ signals:
 
 private slots:
     void plot3D_qwt();
-    void plot3D_mathgl();
+    void plot3D_q3dsurface();
     void showData(bool);
     void invertXY(bool);
 };

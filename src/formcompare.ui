@@ -67,7 +67,7 @@
      <item>
       <widget class="QToolButton" name="choose">
        <property name="toolTip">
-        <string>choose labels</string>
+        <string>choose labels to display  from label list</string>
        </property>
        <property name="text">
         <string>choose</string>
@@ -207,6 +207,33 @@
         <bool>true</bool>
        </property>
       </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QRadioButton" name="radioButton_Phys">
+         <property name="toolTip">
+          <string>Display the values in physical format.</string>
+         </property>
+         <property name="text">
+          <string>Phys</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioButton_Hex">
+         <property name="toolTip">
+          <string>Display the values in hexadecimal format.</string>
+         </property>
+         <property name="text">
+          <string>Hex</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>

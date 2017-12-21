@@ -35,7 +35,7 @@
 
 #include "a2l_quex_lexer-configuration"
 
-#include <quex/code_base/definitions>
+#include <C:/quex_0.65.10/quex-0.65.10/quex/code_base/definitions>
 
 QUEX_NAMESPACE_MAIN_OPEN 
     struct QUEX_NAME(Engine_tag);

@@ -1175,7 +1175,10 @@ Data *SpTableModel::getLabel(const QModelIndex &index, int role)
             }
         }
 
-        return listDataModel->at(ind);
+        if (found)
+            return listDataModel->at(ind);
+        else
+            return 0;
 
     }
     else
@@ -1255,6 +1258,13 @@ QModelIndexList SpTableModel::selectAllZ(Data *data)
 {
     QModelIndexList listIndex;
     QModelIndex index = getFirstZindex(data);
+
+    if (data->xCount() == 0)
+    {
+        QModelIndex ind = createIndex(index.row(), index.column());
+        listIndex.append(ind);
+        return listIndex;
+    }
 
     int line = 0;
     if (data->yCount() == 0)

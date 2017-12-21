@@ -431,25 +431,52 @@ bool Csv::readFile()
                                 {
                                     //OFFSET, SHIFT and NUMBERAPO
                                     FIX_AXIS_PAR *fixAxisPar = (FIX_AXIS_PAR*)axisDescrX->getItem("FIX_AXIS_PAR");
-                                    QString off = fixAxisPar->getPar("Offset");
-                                    QString sft = fixAxisPar->getPar("Shift");
-                                    QString napo = fixAxisPar->getPar("Numberapo");
-                                    bool bl;
-                                    int offset = off.toInt(&bl, 10);
-                                    int shift = sft.toInt(&bl, 10);
-                                    int nPtsX = napo.toUInt(&bl, 10);
-
-                                    //check if nPts < nPtsmax
-                                    QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
-                                    double nmaxPts = maxAxisPts.toDouble();
-                                    if (nPtsX > nmaxPts)
-                                        nPtsX = nmaxPts;
-
-                                    QString str;
-                                    for (int i = 0; i < nPtsX; i++)
+                                    FIX_AXIS_PAR_DIST *fixAxisParDist = (FIX_AXIS_PAR_DIST*)axisDescrX->getItem("FIX_AXIS_PAR_DIST");
+                                    if (fixAxisPar)
                                     {
-                                        str.setNum((int)(offset + i * qPow(2, shift)), 16);
-                                        data->appendX(data->hex2phys(str, "x"));
+                                        QString off = fixAxisPar->getPar("Offset");
+                                        QString sft = fixAxisPar->getPar("Shift");
+                                        QString napo = fixAxisPar->getPar("Numberapo");
+                                        bool bl;
+                                        int offset = off.toInt(&bl, 10);
+                                        int shift = sft.toInt(&bl, 10);
+                                        int nPtsX = napo.toUInt(&bl, 10);
+
+                                        //check if nPts < nPtsmax
+                                        QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
+                                        double nmaxPts = maxAxisPts.toDouble();
+                                        if (nPtsX > nmaxPts)
+                                            nPtsX = nmaxPts;
+
+                                        QString str;
+                                        for (int i = 0; i < nPtsX; i++)
+                                        {
+                                            str.setNum((int)(offset + i * qPow(2, shift)), 16);
+                                            data->appendX(data->hex2phys(str, "x"));
+                                        }
+                                    }
+                                    else if (fixAxisParDist)
+                                    {
+                                        QString off = fixAxisParDist->getPar("Offset");
+                                        QString dist = fixAxisParDist->getPar("Distance");
+                                        QString napo = fixAxisParDist->getPar("Numberapo");
+                                        bool bl;
+                                        int offset = off.toInt(&bl, 10);
+                                        int distance = dist.toInt(&bl, 10);
+                                        int nPtsX = napo.toUInt(&bl, 10);
+
+                                        //check if nPts < nPtsmax
+                                        QString maxAxisPts = data->getAxisDescrX()->getPar("MaxAxisPoints");
+                                        double nmaxPts = maxAxisPts.toDouble();
+                                        if (nPtsX > nmaxPts)
+                                            nPtsX = nmaxPts;
+
+                                        QString str;
+                                        for (int i = 0; i < nPtsX; i++)
+                                        {
+                                            str.setNum((int)(offset + i * distance));
+                                            data->appendX(data->hex2phys(str, "x"));
+                                        }
                                     }
                                 }
                                 else
@@ -553,25 +580,52 @@ bool Csv::readFile()
                                 {
                                     //OFFSET, SHIFT and NUMBERAPO
                                     FIX_AXIS_PAR *fixAxisPar = (FIX_AXIS_PAR*)axisDescrX->getItem("FIX_AXIS_PAR");
-                                    QString off = fixAxisPar->getPar("Offset");
-                                    QString sft = fixAxisPar->getPar("Shift");
-                                    QString napo = fixAxisPar->getPar("Numberapo");
-                                    bool bl;
-                                    int offset = off.toInt(&bl, 10);
-                                    int shift = sft.toInt(&bl, 10);
-                                    int nPtsX = napo.toUInt(&bl, 10);
-
-                                    //check if nPts < nPtsmax
-                                    QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
-                                    double nmaxPts = maxAxisPts.toDouble();
-                                    if (nPtsX > nmaxPts)
-                                        nPtsX = nmaxPts;
-
-                                    QString str;
-                                    for (int i = 0; i < nPtsX; i++)
+                                    FIX_AXIS_PAR_DIST *fixAxisParDist = (FIX_AXIS_PAR_DIST*)axisDescrX->getItem("FIX_AXIS_PAR_DIST");
+                                    if (fixAxisPar)
                                     {
-                                        str.setNum((int)(offset + i * qPow(2, shift)), 16);
-                                        data->appendX(data->hex2phys(str, "x"));
+                                        QString off = fixAxisPar->getPar("Offset");
+                                        QString sft = fixAxisPar->getPar("Shift");
+                                        QString napo = fixAxisPar->getPar("Numberapo");
+                                        bool bl;
+                                        int offset = off.toInt(&bl, 10);
+                                        int shift = sft.toInt(&bl, 10);
+                                        int nPtsX = napo.toUInt(&bl, 10);
+
+                                        //check if nPts < nPtsmax
+                                        QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
+                                        double nmaxPts = maxAxisPts.toDouble();
+                                        if (nPtsX > nmaxPts)
+                                            nPtsX = nmaxPts;
+
+                                        QString str;
+                                        for (int i = 0; i < nPtsX; i++)
+                                        {
+                                            str.setNum((int)(offset + i * qPow(2, shift)), 16);
+                                            data->appendX(data->hex2phys(str, "x"));
+                                        }
+                                    }
+                                    else if (fixAxisParDist)
+                                    {
+                                        QString off = fixAxisParDist->getPar("Offset");
+                                        QString dist = fixAxisParDist->getPar("Distance");
+                                        QString napo = fixAxisParDist->getPar("Numberapo");
+                                        bool bl;
+                                        int offset = off.toInt(&bl, 10);
+                                        int distance = dist.toInt(&bl, 10);
+                                        int nPtsX = napo.toUInt(&bl, 10);
+
+                                        //check if nPts < nPtsmax
+                                        QString maxAxisPts = data->getAxisDescrX()->getPar("MaxAxisPoints");
+                                        double nmaxPts = maxAxisPts.toDouble();
+                                        if (nPtsX > nmaxPts)
+                                            nPtsX = nmaxPts;
+
+                                        QString str;
+                                        for (int i = 0; i < nPtsX; i++)
+                                        {
+                                            str.setNum((int)(offset + i * distance));
+                                            data->appendX(data->hex2phys(str, "x"));
+                                        }
                                     }
                                 }
                                 else
@@ -591,28 +645,54 @@ bool Csv::readFile()
                                 if (typeAxisY == "FIX_AXIS")
                                 {
                                     //OFFSET, SHIFT and NUMBERAPO
-                                    FIX_AXIS_PAR *fixAxisPar = (FIX_AXIS_PAR*)axisDescrX->getItem("FIX_AXIS_PAR");
-                                    QString off = fixAxisPar->getPar("Offset");
-                                    QString sft = fixAxisPar->getPar("Shift");
-                                    QString napo = fixAxisPar->getPar("Numberapo");
-                                    bool bl;
-                                    int offset = off.toInt(&bl, 10);
-                                    int shift = sft.toInt(&bl, 10);
-                                    int nPtsX = napo.toUInt(&bl, 10);
-
-                                    //check if nPts < nPtsmax
-                                    QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
-                                    double nmaxPts = maxAxisPts.toDouble();
-                                    if (nPtsX > nmaxPts)
-                                        nPtsX = nmaxPts;
-
-                                    QString str;
-                                    for (int i = 0; i < nPtsX; i++)
+                                    FIX_AXIS_PAR *fixAxisPar = (FIX_AXIS_PAR*)axisDescrY->getItem("FIX_AXIS_PAR");
+                                    FIX_AXIS_PAR_DIST *fixAxisParDist = (FIX_AXIS_PAR_DIST*)axisDescrY->getItem("FIX_AXIS_PAR_DIST");
+                                    if (fixAxisPar)
                                     {
-                                        str.setNum((int)(offset + i * qPow(2, shift)), 16);
-                                        data->appendY(data->hex2phys(str, "y"));
-                                    }
+                                        QString off = fixAxisPar->getPar("Offset");
+                                        QString sft = fixAxisPar->getPar("Shift");
+                                        QString napo = fixAxisPar->getPar("Numberapo");
+                                        bool bl;
+                                        int offset = off.toInt(&bl, 10);
+                                        int shift = sft.toInt(&bl, 10);
+                                        int nPtsY = napo.toUInt(&bl, 10);
 
+                                        //check if nPts < nPtsmax
+                                        QString maxAxisPts = axisDescrY->getPar("MaxAxisPoints");
+                                        double nmaxPts = maxAxisPts.toDouble();
+                                        if (nPtsY > nmaxPts)
+                                            nPtsY = nmaxPts;
+
+                                        QString str;
+                                        for (int i = 0; i < nPtsY; i++)
+                                        {
+                                            str.setNum((int)(offset + i * qPow(2, shift)));
+                                            data->appendY(data->hex2phys(str, "y"));
+                                        }
+                                    }
+                                    else if (fixAxisParDist)
+                                    {
+                                        QString off = fixAxisParDist->getPar("Offset");
+                                        QString dist = fixAxisParDist->getPar("Distance");
+                                        QString napo = fixAxisParDist->getPar("Numberapo");
+                                        bool bl;
+                                        int offset = off.toInt(&bl, 10);
+                                        int distance = dist.toInt(&bl, 10);
+                                        int nPtsY = napo.toUInt(&bl, 10);
+
+                                        //check if nPts < nPtsmax
+                                        QString maxAxisPts = data->getAxisDescrY()->getPar("MaxAxisPoints");
+                                        double nmaxPts = maxAxisPts.toDouble();
+                                        if (nPtsY > nmaxPts)
+                                            nPtsY = nmaxPts;
+
+                                        QString str;
+                                        for (int i = 0; i < nPtsY; i++)
+                                        {
+                                            str.setNum((int)(offset + i * distance));
+                                            data->appendY(data->hex2phys(str, "y"));
+                                        }
+                                    }
                                 }
                                 else
                                 {
