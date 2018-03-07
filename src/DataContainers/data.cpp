@@ -36,11 +36,11 @@
 #include "csv.h"
 #include "cdfxfile.h"
 #include "dcmfile.h"
-#include <QScriptEngine>
 #include <QtCore/qmath.h>
 #include "qdebug.h"
 #include <stdint.h>
 #include <QTextCodec>
+#include <QScriptEngine>
 
 // --- initialise static variables
 bool Data::showWeakBoundsExceeded = true;
@@ -8129,7 +8129,7 @@ QDomElement Data::writeValue2Node(QDomDocument &doc)
     if (unit.endsWith('\"'))
         unit.chop(1);
 
-    //added for \u00B0 unicode for °  when unit is "°C"
+    //added for \u00B0 unicode for ï¿½  when unit is "ï¿½C"
     QChar *data = unit.data();
     QString str;
     while (!data->isNull())

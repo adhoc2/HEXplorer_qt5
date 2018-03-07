@@ -61,6 +61,7 @@ void A2LFILE::parser()
     TokenTyp token = nextToken();
     while (token == Keyword)
     {
+        qDebug() << lex->getLexem().c_str();
         if (lex->getLexem() == "ASAP2_VERSION")
             getAsap2Version();
         else if (lex->getLexem() == "A2ML_VERSION")

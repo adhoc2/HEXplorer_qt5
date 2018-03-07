@@ -27,6 +27,7 @@
 #include <QScriptValue>
 #include <QScriptContext>
 #include <QScriptEngine>
+#include <QScriptValue>
 #include <QTextEdit>
 
 class FormScript : public QMainWindow, private Ui::FormScript

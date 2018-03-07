@@ -755,7 +755,7 @@ void A2lLexer::backward(int i)
 
 /**********  Class Quex Lexer *************/
 
-A2lQuexLexer::A2lQuexLexer(std::istringstream &in, QObject *parent) : A2lLexer()
+A2lQuexLexer::A2lQuexLexer(a2l_quex_lexer_ByteLoader *byteLoader, QObject *parent) : A2lLexer()
 {
     grammar = new A2lGrammar();
     keywordsList = grammar->initKeywords();
@@ -764,7 +764,7 @@ A2lQuexLexer::A2lQuexLexer(std::istringstream &in, QObject *parent) : A2lLexer()
     previousLine = 0;
 
     //std::istringstream* in = new std::istringstream(strr);
-    qlex = new quex::a2l_quex_lexer(&in);
+    qlex = new quex::a2l_quex_lexer(byteLoader);
     token_p = qlex->token_p();
 }
 
@@ -791,7 +791,8 @@ TokenTyp A2lQuexLexer::getNextToken()
 
 std::string A2lQuexLexer::getLexem()
 {
-    return token_p->pretty_char_text();
+    //return token_p->pretty_char_text();
+    return (char*)token_p->get_text();
 }
 
 std::string A2lQuexLexer::toString(TokenTyp type)

@@ -1,0 +1,3 @@
+a2l_quex_lexer.qx:245:warning: Suspicious 'RETURN' in event handler 'MATCH_FAILURE'.
+a2l_quex_lexer.qx:245:warning: This statement will trigger 'on_after_match' handler.
+a2l_quex_lexer.qx:245:warning: May be, use plain return instead.

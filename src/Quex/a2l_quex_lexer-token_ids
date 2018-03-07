@@ -6,10 +6,10 @@
  * NOTE: This file has been created automatically by Quex.
  *       Visit quex.org for further info.
  *
- * DATE: Fri Oct 14 22:22:27 2016
+ * DATE: Mon Feb 26 15:05:18 2018
  *
  * (C) 2005-2010 Frank-Rene Schaefer
- * ABSOLUTELY NO WARRANTY                                           */
+ * ABSOLUTELY NO WARRANTY                                                     */
 #ifndef __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_QUEX_A2L_QUEX_LEXER__QUEX_TOKEN__
 #define __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_QUEX_A2L_QUEX_LEXER__QUEX_TOKEN__
 
@@ -19,11 +19,8 @@
 #   include<stdio.h> 
 #endif
 
-/* The token class definition file can only be included after 
- * the definition on TERMINATION and UNINITIALIZED.          
- * (fschaef 12y03m24d: "I do not rememember why I wrote this.")    */
-#include "a2l_quex_lexer-token"
-
+/* Note: When multiple lexical analyzers are included, then their
+ *       token prefix must differ! Use '--token-id-prefix'.                   */
 const QUEX_TYPE_TOKEN_ID QUEX_TKN_ADDRTYPE       = ((QUEX_TYPE_TOKEN_ID)10004);
 const QUEX_TYPE_TOKEN_ID QUEX_TKN_ATTRIBUTE      = ((QUEX_TYPE_TOKEN_ID)10005);
 const QUEX_TYPE_TOKEN_ID QUEX_TKN_BLOCKBEGIN     = ((QUEX_TYPE_TOKEN_ID)10006);
@@ -56,8 +53,4 @@ const QUEX_TYPE_TOKEN_ID QUEX_TKN_UNITTYPE       = ((QUEX_TYPE_TOKEN_ID)10027);
 const QUEX_TYPE_TOKEN_ID QUEX_TKN_UNKNOWN        = ((QUEX_TYPE_TOKEN_ID)10028);
 
 
-QUEX_NAMESPACE_TOKEN_OPEN
-extern const char* QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID);
-QUEX_NAMESPACE_TOKEN_CLOSE
-
-#endif /* __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_QUEX_A2L_QUEX_LEXER__QUEX_TOKEN__ */
+#endif /* __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_QUEX_A2L_QUEX_LEXER__QUEX_TOKEN__        */

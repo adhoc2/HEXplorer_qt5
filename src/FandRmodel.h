@@ -37,6 +37,7 @@ class FandRModel : public QAbstractTableModel
         Qt::ItemFlags flags(const QModelIndex &index) const;
 
     private:
+        QMap<QString, Data*> listDataPrio;
         QMap<QString, Data*> listDataFnR0;
         QMap<QString, Data*> listDataFnR1;
         QMap<QString, Data*> listDataFnR2;

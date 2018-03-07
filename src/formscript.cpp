@@ -26,8 +26,10 @@
 #include <Qsci/qscilexerjavascript.h>
 #include <Qsci/qsciapis.h>
 #include <QScriptEngine>
-#include <QtScriptTools/QScriptEngineDebugger>
+#include <QScriptValue>
+//#include <QtScriptTools/QScriptEngineDebugger>
 #include <QScriptValueIterator>
+#include <QScriptContext>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_grid.h>
@@ -82,7 +84,6 @@ QScriptValue myPrintFunction(QScriptContext *context, QScriptEngine *engine)
 
     QScriptValue calleeData = context->callee().data();
     QTextEdit *edit = qobject_cast<QTextEdit*>(calleeData.toQObject());
-
     QString text = edit->toPlainText().append(">> " + result + "\n");
     edit->setText(text);
     edit->moveCursor(QTextCursor::End);
@@ -91,7 +92,7 @@ QScriptValue myPrintFunction(QScriptContext *context, QScriptEngine *engine)
     return engine->undefinedValue();
 }
 
-QScriptValue includeFunction(QScriptContext *context, QScriptEngine *engine)
+QScriptValue includeFunction(QScriptContext *context,  QScriptEngine *engine)
 {
 
     for (int i = 0; i < context->argumentCount(); ++i)
@@ -137,7 +138,7 @@ QScriptValue includeFunction(QScriptContext *context, QScriptEngine *engine)
 }
 
 QList<QwtPlot*> listPlot;
-QScriptValue plotFunction(QScriptContext *context, QScriptEngine *engine)
+QScriptValue plotFunction(QScriptContext *context,  QScriptEngine *engine)
 {
     //check number of arguments
     if (context->argumentCount() < 2)
@@ -307,7 +308,7 @@ QScriptValue plotFunction(QScriptContext *context, QScriptEngine *engine)
     return engine->undefinedValue();
 }
 
-QScriptValue linspaceFunction(QScriptContext *context, QScriptEngine *engine)
+QScriptValue linspaceFunction(QScriptContext *context,  QScriptEngine *engine)
 {
     //check number of arguments
     if (context->argumentCount() < 3)
@@ -353,7 +354,8 @@ QScriptValue closeAllFunction(QScriptContext *context, QScriptEngine *engine)
     }
     listPlot.clear();
 
-    return context->throwValue("all figures are closed.");
+     return context->throwValue("all figures are closed.");
+
 }
 
 QScriptValue figureFunction(QScriptContext *context, QScriptEngine *engine)

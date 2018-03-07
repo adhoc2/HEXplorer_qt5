@@ -4,7 +4,7 @@
 TEMPLATE = app
 DEPENDPATH += .
 INCLUDEPATH += .
-QT       += core gui opengl network script xml xmlpatterns widgets concurrent printsupport axcontainer sql
+QT       += core gui opengl network xml xmlpatterns widgets concurrent printsupport axcontainer sql script
 contains(QT_CONFIG, scripttools): QT += scripttools
 RESOURCES += icones.qrc
 RC_FILE = myappicon.rc
@@ -94,7 +94,7 @@ equals( QMAKE_CXX, cl) {
 
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT_DLL
 
-    INCLUDEPATH += . "C:/quex_0.65.10/quex-0.65.10" \
+    INCLUDEPATH += . "C:\Users\lmbhoc2\Documents\ADHOC2_docs\programs\quex-0.68.2" \
     ./ASAP2 \
     ./sqlite  \
     ./Quex \
@@ -248,7 +248,6 @@ HEADERS += a2l.h \
     ASAP2/Nodes/sub_function.h \
     measmodel.h \
     ctabwidget.h \
-    formscript.h \
     dialogchooseexportformat.h \
     DataContainers/datacontainer.h \
     DataContainers/data.h \
@@ -295,7 +294,8 @@ HEADERS += a2l.h \
     treedirectory.h \
     labelproperties.h \
     surfacegraph.h \
-    FandRmodel.h
+    FandRmodel.h \
+    formscript.h
 FORMS += formeditor.ui \
     mdimain.ui \
     dialog.ui \
@@ -431,7 +431,6 @@ SOURCES += a2l.cpp \
     ASAP2/Nodes/sub_function.cpp \
     measmodel.cpp \
     ctabwidget.cpp \
-    formscript.cpp \
     dialogchooseexportformat.cpp \
     DataContainers/hexfile.cpp \
     DataContainers/datacontainer.cpp \
@@ -479,7 +478,8 @@ SOURCES += a2l.cpp \
     treedirectory.cpp \
     labelproperties.cpp \
     surfacegraph.cpp \
-    FandRmodel.cpp
+    FandRmodel.cpp \
+    formscript.cpp
 
 OTHER_FILES += \
     update.xml

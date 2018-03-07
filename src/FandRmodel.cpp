@@ -32,10 +32,14 @@ FandRModel::FandRModel(SrecFile *srecFile, QObject *parent)
     foreach (Data *data, srec->listData)
     {
         QString nameStr(data->name);
-        if (nameStr.toLower().endsWith("a[0].fltreactnid"))
+        if (nameStr.toLower().endsWith(".prio"))
+        {
+            listDataPrio.insert(data->getComment(), data);
+        }
+        else if (nameStr.toLower().endsWith("a[0].fltreactnid"))
         {
             listDataFnR0.insert(data->getComment(), data);
-        }
+        }       
         else if (nameStr.toLower().endsWith("a[1].fltreactnid"))
         {
             listDataFnR1.insert(data->getComment(), data);
@@ -55,7 +59,7 @@ FandRModel::FandRModel(SrecFile *srecFile, QObject *parent)
     }
 
     nRow = listDataFnR0.count();
-    nColumn = 7;
+    nColumn = 8;
 
 }
 
@@ -92,17 +96,16 @@ QVariant FandRModel::data(const QModelIndex &index, int role) const
         {
         case Qt::DisplayRole :
             {
-                if (column == 1)
+                if (column == 0)
+                {
+                    return key.remove("DTC-ID: ");
+                }
+                else if (column == 1)
                 {
                     if (label0)
                         return label0->name;
                 }
-                else if (column == 0)
-                {
-
-                    return key.remove("DTC-ID: ");
-                }
-                else if (column == 2)
+                else if (column == 3)
                 {
                     if (label0)
                     {
@@ -110,7 +113,16 @@ QVariant FandRModel::data(const QModelIndex &index, int role) const
                         return str;
                     }
                 }
-                else if (column == 3)
+                else if (column == 2)
+                {
+                    Data *labelPrio = listDataPrio.value(key, nullptr);
+                    if (labelPrio)
+                    {
+                        QString str = labelPrio->getZ(0);
+                        return str;
+                    }
+                }
+                else if (column == 4)
                 {
                     Data *label1 = listDataFnR1.value(key, nullptr);
                     if (label1)
@@ -119,7 +131,7 @@ QVariant FandRModel::data(const QModelIndex &index, int role) const
                         return str;
                     }
                 }
-                else if (column == 4)
+                else if (column == 5)
                 {
 
                     Data *label2 = listDataFnR2.value(key, nullptr);
@@ -129,7 +141,7 @@ QVariant FandRModel::data(const QModelIndex &index, int role) const
                         return str;
                     }
                 }
-                else if (column == 5)
+                else if (column == 6)
                 {
 
                     Data *label3 = listDataFnR3.value(key, nullptr);
@@ -139,7 +151,7 @@ QVariant FandRModel::data(const QModelIndex &index, int role) const
                         return str;
                     }
                 }
-                else if (column == 6)
+                else if (column == 7)
                 {
 
                     Data *label4 = listDataFnR4.value(key, nullptr);
@@ -230,21 +242,25 @@ QVariant FandRModel::headerData(int section, Qt::Orientation orientation, int ro
                 }
                 else if (section == 2)
                 {
-                    return "reaction #1";
+                    return "Prio";
                 }
                 else if (section == 3)
                 {
-                    return "reaction #2";
+                    return "reaction #1";
                 }
                 else if (section == 4)
                 {
-                    return "reaction #3";
+                    return "reaction #2";
                 }
                 else if (section == 5)
                 {
-                    return "reaction #4";
+                    return "reaction #3";
                 }
                 else if (section == 6)
+                {
+                    return "reaction #4";
+                }
+                else if (section == 7)
                 {
                     return "reaction #5";
                 }

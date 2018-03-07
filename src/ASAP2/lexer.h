@@ -26,6 +26,9 @@
 #include <QHash>
 #include "a2l_quex_lexer"
 
+using namespace quex;
+
+
 class A2lGrammar;
 
 enum TokenTyp
@@ -62,6 +65,7 @@ class A2lLexer : public QObject
     Q_OBJECT
 
     public:
+        //A2lLexer(QTextStream &in, QObject *parent = 0);
         A2lLexer(QTextStream &in, QObject *parent = 0);
         A2lLexer(QObject *parent = 0);
         ~A2lLexer();
@@ -111,7 +115,9 @@ class A2lQuexLexer : public A2lLexer
      Q_OBJECT
 
     public:
-        A2lQuexLexer(std::istringstream &in, QObject *parent = 0);
+        //A2lQuexLexer(std::istringstream &in, QObject *parent = 0);
+        A2lQuexLexer(QUEX_NAME(ByteLoader)* byteLoader, QObject *parent = 0);
+
         ~A2lQuexLexer();
 
         TokenTyp getNextToken();
