@@ -30,6 +30,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QSettings>
+#include <QAction>
 #include <qdebug.h>
 
 ChooseLabel::ChooseLabel(A2LFILE *_a2l, HexFile *_hex, QWidget *parent) :

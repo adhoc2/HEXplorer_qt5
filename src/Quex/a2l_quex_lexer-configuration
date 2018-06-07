@@ -325,6 +325,6 @@
 #   define QUEX_TYPE_TOKEN_COLUMN_N  size_t
 #endif
 
-#include <C:/Users\lmbhoc2\Documents\ADHOC2_docs\programs\quex-0.68.2\quex/code_base/analyzer/configuration/derived>
+#include <C:/Users\lmbhoc2\programs\quex-0.68.2\quex/code_base/analyzer/configuration/derived>
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____A2L_QUEX_LEXER */

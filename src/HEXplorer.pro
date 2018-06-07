@@ -94,7 +94,7 @@ equals( QMAKE_CXX, cl) {
 
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT_DLL
 
-    INCLUDEPATH += . "C:\Users\lmbhoc2\Documents\ADHOC2_docs\programs\quex-0.68.2" \
+    INCLUDEPATH += . "C:\Users\lmbhoc2\programs\quex-0.68.2" \
     ./ASAP2 \
     ./sqlite  \
     ./Quex \

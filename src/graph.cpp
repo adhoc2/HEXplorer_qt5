@@ -29,6 +29,7 @@
 #include <qstatusbar.h>
 #include "canvaspicker.h"
 #include <qmessagebox.h>
+#include <QHeaderView>
 #include "qdebug.h"
 
 #include "surfacegraph.h"

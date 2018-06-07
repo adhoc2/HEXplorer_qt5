@@ -27,6 +27,7 @@
 #include "mdimain.h"
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QAction>
 
 ChooseSubset::ChooseSubset(A2LFILE *_a2l, HexFile *_hex, QStringList &list, QWidget *parent) : QDialog(parent), ui(new Ui::ChooseSubset)
 {    

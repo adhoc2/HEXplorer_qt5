@@ -42,6 +42,7 @@
 #include <qwt_math.h>
 #include <qwt_picker_machine.h>
 #include <QInputDialog>
+#include <QHeaderView>
 #include "qdebug.h"
 
 class Zoomer: public QwtPlotZoomer
