@@ -111,6 +111,7 @@ private:
     QAction *editMeasChannels;
     QAction *editCharacteristics;
     QAction *editFnR;
+    QAction *spaceRecover;
     QAction *addCsvFile;
     QAction *addDcmFile;
     QAction *addCdfxFile;
@@ -176,6 +177,7 @@ private slots:
      void editMeasuringChannels();
      void editChar();
      void editFandR();
+     void spaceRecovery();
      void on_actionSettings_triggered();
      void on_actionCheck_for_updates_triggered();
      void initCheckHttpUpdates();
