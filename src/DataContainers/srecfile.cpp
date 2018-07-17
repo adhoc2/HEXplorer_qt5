@@ -225,9 +225,11 @@ bool SrecFile::read()
         if (isA2lCombined())
         {
             readAllData();
+            this->_read = true;
             return true;
         }
     }
+    this->_read = false;
     return false;
 }
 

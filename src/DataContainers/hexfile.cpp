@@ -237,10 +237,13 @@ bool HexFile::read()
         if (isA2lCombined())
         {
             readAllData();
+            this->_read = true;
             return true;
         }
+        this->_read = false;
         return false;
     }
+    this->_read = false;
     return false;
 }
 

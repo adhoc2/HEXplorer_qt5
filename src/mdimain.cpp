@@ -4742,7 +4742,6 @@ SrecFile* MDImain::readSrecFile(SrecFile* srec)
         readA2l(wp);
     }
 
-
     //check if A2l parsing was successfull
     if (!wp->isOk())
     {
@@ -4754,7 +4753,7 @@ SrecFile* MDImain::readSrecFile(SrecFile* srec)
     //get the index of the orginal hex node in treeview
     QModelIndex index = model->getIndex(srec);
 
-    //read hex file
+    //read srec file
     QList<MODULE*> list = wp->a2lFile->getProject()->listModule();
     if (list.count() == 0)
     {
@@ -6069,7 +6068,6 @@ void MDImain::quicklookFile()
         {
             //read hex file if not read
             SrecFile *srec = dynamic_cast<SrecFile*>(node);
-
             if (!srec->isRead())
             {
                 if (readSrecFile(srec) == NULL)
@@ -7339,8 +7337,12 @@ void MDImain::checkDroppedFile(QString str)
         HexFile* hex = dynamic_cast<HexFile*>(node);
         if (!hex->isRead())
         {
-            readHexFile(hex);
-        }
+            HexFile* h = readHexFile(hex);
+            //exit if a2l and hex are not combined() otherwise crashes
+            if (!h->isRead())
+                return;
+         }
+
 
         //create a new FormCompare
         FormCompare *fComp = on_actionCompare_dataset_triggered();
@@ -7357,7 +7359,10 @@ void MDImain::checkDroppedFile(QString str)
         SrecFile* srec = dynamic_cast<SrecFile*>(node);
         if (!srec->isRead())
         {
-            readSrecFile(srec);
+           SrecFile* s19 = readSrecFile(srec);
+           //exit if a2l and srec are not combined() otherwise crashes
+           if (!s19->isRead())
+               return;
         }
 
         //create a new FormCompare
