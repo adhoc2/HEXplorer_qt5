@@ -104,10 +104,10 @@ equals( QMAKE_CXX, cl) {
     $${MATHGL_ROOT}/include \
     $${QWT3D_ROOT}/include
 
-    LIBS += -L$${QSCINTILLA_ROOT}/Qt4Qt5/lib \
-    -L$${QWT_ROOT}/lib \
+    LIBS += -L$${QSCINTILLA_ROOT}/Qt4Qt5/lib_64 \
+    -L$${QWT_ROOT}/lib_64 \
     -L$${MATHGL_ROOT}/lib \
-    -L$${QWT3D_ROOT}/lib_mingw
+    -L$${QWT3D_ROOT}/lib_64
 
     # --- debug config --- #
     CONFIG( debug, debug|release ) {
