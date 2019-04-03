@@ -1,0 +1,360 @@
+/* vim: set ft=cpp: -*- C++ -*- 
+ *
+ * PURPOSE: Buffer handling, loading and maintanance
+ *
+ * All lexical analysis in Quex happens on content located in a region of 
+ * memory, which is quickly accessible by the processor: The buffer. This 
+ * file-and all files prefixed by 'Buffer'-implement what is required from
+ * such an entity, as is:
+ *
+ *  -- pointers which are relevant to the analysis:
+ *     '_read_p', '_lexatom_at_lexeme_start', etc.
+ *  -- relation between buffer content and the stream which feeds it.
+ *  -- the buffer's memory.
+ *  -- loading procedures to read from a stream.
+ *  -- functions which allow to fill content into the buffer.
+ *  -- callbacks on buffer events.
+ *  -- functions to manage the buffer's memory.
+ *
+ * A special feauture of the buffer management, is that it may split buffers
+ * in case that it is required for 'include' handling, i.e. when streams
+ * include other streams and come back. This is referred to as 'nesting'.
+ *
+ * (C) Frank-Rene Schaefer                                                    */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER
+
+#include "a2l_quex_lexer\lib\definitions"
+#include "a2l_quex_lexer\lib\quex/MemoryManager"
+
+
+
+struct a2l_quex_lexer_Buffer_tag;
+struct a2l_quex_lexer_LexatomLoader_tag;
+
+
+typedef struct QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT { 
+    E_Ownership                    ownership;
+    /* ownership == E_Ownership_INCLUDING_BUFFER means that the memory is 
+     *              split from an including buffer.                          
+     * else:        including_buffer = 0.                                    */
+    struct a2l_quex_lexer_Buffer_tag*  including_buffer;  
+
+    /* (*) Buffer Memory Setup:
+     *      memory[0]             = lower buffer limit code lexatom
+     *      memory[1]             = first char of content
+     *      ...
+     *      memory[BUFFER_SIZE-2] = last char of content
+     *      memory[BUFFER_SIZE-1] = upper buffer limit code lexatom          */
+    a2l_quex_lexer_lexatom_t*  _front;         /* first lexatom in buffer (BLC)     */
+    a2l_quex_lexer_lexatom_t*  _back;          /* last lexatom in buffer  (BLC)     */
+
+} a2l_quex_lexer_BufferMemory;
+
+inline void    a2l_quex_lexer_BufferMemory_construct(a2l_quex_lexer_BufferMemory*      me, 
+                                                      a2l_quex_lexer_lexatom_t*            Memory, 
+                                                      const size_t                  Size,
+                                                      E_Ownership                   Ownership,
+                                                      struct a2l_quex_lexer_Buffer_tag* IncludingBuffer);
+inline void    a2l_quex_lexer_BufferMemory_destruct(a2l_quex_lexer_BufferMemory* me);
+
+inline size_t  a2l_quex_lexer_BufferMemory_size(a2l_quex_lexer_BufferMemory*);
+inline void    a2l_quex_lexer_BufferMemory_adapt_to_new_memory_location(a2l_quex_lexer_BufferMemory*  me, 
+                                                                         a2l_quex_lexer_lexatom_t*        NewMemoryP); 
+inline void    a2l_quex_lexer_BufferMemory_resources_absent_mark(a2l_quex_lexer_BufferMemory* me);
+inline bool    a2l_quex_lexer_BufferMemory_resources_absent(a2l_quex_lexer_BufferMemory* me); 
+inline bool    a2l_quex_lexer_BufferMemory_check_chunk(const a2l_quex_lexer_lexatom_t* Front, 
+                                                        size_t                   Size, 
+                                                        const a2l_quex_lexer_lexatom_t* EndOfFileP);
+inline void    a2l_quex_lexer_BufferMemory_print_this(a2l_quex_lexer_BufferMemory* me);
+
+typedef struct {
+    /* Event handlers:                                          
+     *
+     * on_buffer_before_change: If the user maintained pointers into the 
+     *     buffer, this callback indicates that everything from 'BeginP' to 
+     *     'EndP' needs to be copied somewhere else.
+     *
+     * on_buffer_overflow: Distance between current '_read_p' and the lexeme 
+     *     start plus the fallback region are too big for the current 
+     *     buffer's size.                                                 
+     *                                                                    */
+    void   (*on_buffer_before_change)(void* aux);
+    void   (*on_buffer_overflow)(void* aux);
+
+    /* Auxiliary data passed to handlers. This is probably the 'lexer'.   */
+    void*  aux; 
+} a2l_quex_lexer_Buffer_event_callbacks;
+
+typedef struct QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT a2l_quex_lexer_Buffer_tag { 
+/* Buffer of lexatoms on which the lexical analyzer is running. 
+ *
+ * Character Stream:
+ * (by LexatomLoader)     
+ *     
+ *    lexatom_index_end_of_stream ------------------------.
+ *    lexatom_index_begin -----------------.              |
+ *                                         |              |
+ *    lexatom index:   0  1  2  3  4  6  6  7  8  9  10 11 12 13 14 ...
+ *  
+ *    stream:           [aa.bb.cc.dd.ee.ff:gg.hh.ii.jj.kk.ll:mm.nn.oo.pp.qq ...
+ *                              .---------'                 |
+ * Buffer:                      |                 .---------' 
+ *                           [00|gg.hh.ii.jj.kk.ll|00.??.??.??.??|00]
+ *                            |                    |              |
+ *           _front ----------'                    |              |
+ *           input.end_p --------------------------'              |
+ *           _back -----------------------------------------------'
+ * 
+ * 'lexatom_index_end_of_stream == -1' => end of stream has not yet been
+ * detected.                                                                  */
+                                                                             
+    a2l_quex_lexer_BufferMemory               _memory;                                        
+    struct a2l_quex_lexer_LexatomLoader_tag*  filler;
+
+                                                                             
+    /* Information about content loaded into the buffer.                      */
+    struct {                                                                 
+        a2l_quex_lexer_lexatom_t*        end_p;                                     
+        a2l_quex_lexer_stream_position_t lexatom_index_begin;                     
+        /* Character index + 1 of the last lexatom in the stream.             */
+        a2l_quex_lexer_stream_position_t lexatom_index_end_of_stream; 
+    } input;
+
+    /* (*) Iterator positions for lexical analysis                            */
+    a2l_quex_lexer_lexatom_t*       _read_p;                                        
+    a2l_quex_lexer_lexatom_t*       _lexeme_start_p;                                
+    /* If, for a given mode, the pre-contexts have a definite maximum length,
+     * then the number of lexatoms to be maintained backwards upon reload can
+     * be determined: the 'fallback number'. Even if not, the fallback number
+     * may prevent costly reload procedures.                                 */
+    ptrdiff_t                _fallback_n;
+
+    /* (*) When data from a different stream position is loaded than what is 
+     *     required for the current analysis step, the current position is 
+     *     stored in '', so that it can be 
+     *     restored before the analysis forward step starts.                  */
+    a2l_quex_lexer_stream_position_t _backup_lexatom_index_of_lexeme_start_p;
+                                                                             
+    /* (*) Information about previous content:
+     *
+     * _lexatom_at_lexeme_start: lexatom that has been covered by a 
+     *                           terminating zero. Reset upon restart of 
+     *                           analysis.
+     * _lexatom_before_lexeme_start: Used to check whether the lexeme's 
+     *                             preceeding lexatom was newline. 
+     *                             (i.e. for begin-of-line pre-context).      */
+    a2l_quex_lexer_lexatom_t      _lexatom_at_lexeme_start;      
+    
+
+    const void*          (*fill)(struct a2l_quex_lexer_Buffer_tag*  me, 
+                                 const void*                    ContentBegin,
+                                 const void*                    ContentEnd);
+    bool                 (*fill_prepare)(struct a2l_quex_lexer_Buffer_tag*  me, 
+                                         void**                         begin_p, 
+                                         const void**                   end_p);
+    void                 (*fill_finish)(struct a2l_quex_lexer_Buffer_tag* me,
+                                        const void*                   FilledEndP);
+
+    a2l_quex_lexer_lexatom_t*   (*begin)(const struct a2l_quex_lexer_Buffer_tag* me);
+    a2l_quex_lexer_lexatom_t*   (*end)(const struct a2l_quex_lexer_Buffer_tag* me);
+    ptrdiff_t            (*size)(const struct a2l_quex_lexer_Buffer_tag* me);
+
+    a2l_quex_lexer_lexatom_t*   (*content_space_end)(const struct a2l_quex_lexer_Buffer_tag* me);
+    ptrdiff_t            (*content_space_size)(const struct a2l_quex_lexer_Buffer_tag* me);
+
+    a2l_quex_lexer_lexatom_t*   (*content_begin)(const struct a2l_quex_lexer_Buffer_tag* me);
+    a2l_quex_lexer_lexatom_t*   (*content_end)(const struct a2l_quex_lexer_Buffer_tag* me);
+    ptrdiff_t            (*content_size)(const struct a2l_quex_lexer_Buffer_tag* me);
+
+    a2l_quex_lexer_Buffer_event_callbacks event;
+
+} a2l_quex_lexer_Buffer;
+
+typedef struct {
+    a2l_quex_lexer_lexatom_t*         front_p;
+    a2l_quex_lexer_lexatom_t*         back_p;
+    a2l_quex_lexer_lexatom_t*         read_p;
+    a2l_quex_lexer_lexatom_t*         end_p;
+    a2l_quex_lexer_lexatom_t*         lexeme_start_p;
+    a2l_quex_lexer_stream_position_t  lexatom_index_begin;
+} a2l_quex_lexer_BufferInvariance;
+
+/* Constructor, Destructor ___________________________________________________*/
+inline void  a2l_quex_lexer_Buffer_construct(a2l_quex_lexer_Buffer*                    me, 
+                                              struct a2l_quex_lexer_LexatomLoader_tag*  filler,
+                                              a2l_quex_lexer_lexatom_t*                    memory,
+                                              const size_t                          MemorySize,
+                                              a2l_quex_lexer_lexatom_t*                    EndOfFileP,
+                                              const ptrdiff_t                       FallbackN,
+                                              E_Ownership                           Ownership,
+                                              a2l_quex_lexer_Buffer*                    IncludingBuffer);
+inline bool  a2l_quex_lexer_Buffer_nested_construct(a2l_quex_lexer_Buffer*                   me,
+                                                     a2l_quex_lexer_Buffer*                   nested,
+                                                     struct a2l_quex_lexer_LexatomLoader_tag* filler);
+inline void  a2l_quex_lexer_Buffer_destruct(a2l_quex_lexer_Buffer* me);
+
+inline void  a2l_quex_lexer_Buffer_init(a2l_quex_lexer_Buffer* me,
+                                         a2l_quex_lexer_lexatom_t* EndOfFileP); 
+inline void  a2l_quex_lexer_Buffer_shallow_copy(a2l_quex_lexer_Buffer*       drain, 
+                                                 const a2l_quex_lexer_Buffer* source);
+
+/* States: 'resources absent' and 'dysfunctional'                             */
+inline void  a2l_quex_lexer_Buffer_resources_absent_mark(a2l_quex_lexer_Buffer* me);
+inline bool  a2l_quex_lexer_Buffer_resources_absent(a2l_quex_lexer_Buffer* me);
+inline void  a2l_quex_lexer_Buffer_dysfunctional_set(a2l_quex_lexer_Buffer*  me);
+inline bool  a2l_quex_lexer_Buffer_dysfunctional(a2l_quex_lexer_Buffer*  me);
+
+/* Move ______________________________________________________________________*/
+inline ptrdiff_t  a2l_quex_lexer_Buffer_move_towards_begin(a2l_quex_lexer_Buffer*  me, 
+                                                            ptrdiff_t           MoveDistance,
+                                                            a2l_quex_lexer_lexatom_t** position_register,
+                                                            const size_t        PositionRegisterN);
+inline ptrdiff_t  a2l_quex_lexer_Buffer_move_towards_begin_undo(a2l_quex_lexer_Buffer*           me,
+                                                                 a2l_quex_lexer_BufferInvariance* bi,
+                                                                 ptrdiff_t                    move_distance);
+inline ptrdiff_t  a2l_quex_lexer_Buffer_move_towards_end(a2l_quex_lexer_Buffer* me, 
+                                                          ptrdiff_t          move_distance);
+inline ptrdiff_t  a2l_quex_lexer_Buffer_move_get_max_distance_towards_begin(a2l_quex_lexer_Buffer*   me); 
+inline ptrdiff_t  a2l_quex_lexer_Buffer_move_get_max_distance_towards_end(a2l_quex_lexer_Buffer* me);
+inline ptrdiff_t  a2l_quex_lexer_Buffer_move_size_towards_begin(a2l_quex_lexer_Buffer* me, 
+                                                                 ptrdiff_t move_distance);
+inline ptrdiff_t  a2l_quex_lexer_Buffer_move_get_distance_forward_to_contain(a2l_quex_lexer_Buffer*         me,
+                                                                              a2l_quex_lexer_stream_position_t* lexatom_index_to_be_contained);
+inline void       a2l_quex_lexer_Buffer_move_backup_lexatom_index_of_lexeme_start(a2l_quex_lexer_Buffer* me,
+                                                                                   ptrdiff_t          move_distance);
+
+/* Buffer pointers ___________________________________________________________*/
+inline void  a2l_quex_lexer_Buffer_pointers_add_offset(a2l_quex_lexer_Buffer*  me,
+                                                        ptrdiff_t           offset,
+                                                        a2l_quex_lexer_lexatom_t** position_register,
+                                                        const size_t        PositionRegisterN);
+inline bool  a2l_quex_lexer_Buffer_adapt_to_new_memory_location(a2l_quex_lexer_Buffer* me,
+                                                                 a2l_quex_lexer_lexatom_t* new_memory,
+                                                                 ptrdiff_t          NewSize);
+inline bool  a2l_quex_lexer_Buffer_has_intersection(a2l_quex_lexer_Buffer*       me,
+                                                     const a2l_quex_lexer_lexatom_t* Begin,
+                                                     ptrdiff_t                Size);
+inline bool  a2l_quex_lexer_Buffer_is_end_of_stream_inside(a2l_quex_lexer_Buffer* me);
+
+/* Memory nesting ____________________________________________________________*/
+inline bool   a2l_quex_lexer_Buffer_nested_extend(a2l_quex_lexer_Buffer*  me,
+                                                 ptrdiff_t           SizeAdd);
+inline bool   a2l_quex_lexer_Buffer_nested_negotiate_extend(a2l_quex_lexer_Buffer*  me, 
+                                                             float               Factor);
+inline bool   a2l_quex_lexer_Buffer_nested_migrate(a2l_quex_lexer_Buffer*  me,
+                                                    a2l_quex_lexer_lexatom_t*  memory,
+                                                    ptrdiff_t           MemoryLexatomN,
+                                                    E_Ownership         Ownership);
+inline 
+a2l_quex_lexer_Buffer* a2l_quex_lexer_Buffer_nested_find_root(a2l_quex_lexer_Buffer* me);
+inline 
+ptrdiff_t          a2l_quex_lexer_Buffer_nested_free_front(a2l_quex_lexer_Buffer* me);
+inline 
+a2l_quex_lexer_Buffer* a2l_quex_lexer_Buffer_nested_get(a2l_quex_lexer_Buffer* me, 
+                                                a2l_quex_lexer_Buffer* tail);
+
+
+/* Loading ___________________________________________________________________*/
+inline 
+E_LoadResult  a2l_quex_lexer_Buffer_load_forward(a2l_quex_lexer_Buffer*  me,
+                                             a2l_quex_lexer_lexatom_t** position_register,
+                                             const size_t        PositionRegisterN);
+inline 
+bool          a2l_quex_lexer_Buffer_load_forward_to_contain(a2l_quex_lexer_Buffer* me, 
+                                                        a2l_quex_lexer_stream_position_t LexatomIndexToBeContained);
+inline 
+E_LoadResult  a2l_quex_lexer_Buffer_load_backward(a2l_quex_lexer_Buffer* me);
+inline 
+bool          a2l_quex_lexer_Buffer_load_backward_to_contain(a2l_quex_lexer_Buffer* me, 
+                                                         a2l_quex_lexer_stream_position_t LexatomIndexToBeContained);
+inline 
+bool          a2l_quex_lexer_Buffer_move_and_load(a2l_quex_lexer_Buffer*  me, 
+                                              a2l_quex_lexer_lexatom_t** position_register,
+                                              size_t              PositionRegisterN,
+                                              ptrdiff_t           move_distance, 
+                                              bool*               encoding_error_f, 
+                                              ptrdiff_t*          loaded_n);
+inline 
+ptrdiff_t     a2l_quex_lexer_Buffer_move_and_load_backward(a2l_quex_lexer_Buffer* me, 
+                                                       ptrdiff_t          move_distance,
+                                                       bool*              encoding_error_f, 
+                                                       ptrdiff_t*         load_request_n);
+
+/* Member attributes. */
+inline bool       a2l_quex_lexer_Buffer_is_empty(a2l_quex_lexer_Buffer* me);
+inline bool       a2l_quex_lexer_Buffer_is_end_of_stream(a2l_quex_lexer_Buffer*);
+inline bool       a2l_quex_lexer_Buffer_is_begin_of_stream(a2l_quex_lexer_Buffer*);
+
+inline void       a2l_quex_lexer_Buffer_register_content(a2l_quex_lexer_Buffer* me,
+                                                          a2l_quex_lexer_lexatom_t*        EndOfInputP,
+                                                          a2l_quex_lexer_stream_position_t CharacterIndexBegin);
+inline void       a2l_quex_lexer_Buffer_register_eos(a2l_quex_lexer_Buffer* me,
+                                                      a2l_quex_lexer_stream_position_t CharacterIndexEndOfStream);
+inline a2l_quex_lexer_stream_position_t  
+                       a2l_quex_lexer_Buffer_input_lexatom_index_end(a2l_quex_lexer_Buffer* me);
+inline a2l_quex_lexer_stream_position_t  
+                       a2l_quex_lexer_Buffer_input_lexatom_index_begin(a2l_quex_lexer_Buffer* me);
+
+/* Tell & seek '_read_p' to/from lexatom index. ______________________________*/
+inline a2l_quex_lexer_stream_position_t  
+                       a2l_quex_lexer_Buffer_tell(a2l_quex_lexer_Buffer*);
+inline bool       a2l_quex_lexer_Buffer_seek(a2l_quex_lexer_Buffer*, 
+                                              const a2l_quex_lexer_stream_position_t LexatomIndex);
+inline bool       a2l_quex_lexer_Buffer_seek_forward(a2l_quex_lexer_Buffer*, const ptrdiff_t CharacterN);
+inline bool       a2l_quex_lexer_Buffer_seek_backward(a2l_quex_lexer_Buffer*, const ptrdiff_t CharacterN);
+inline bool       a2l_quex_lexer_Buffer_finish_seek_based_on_read_p(a2l_quex_lexer_Buffer* me);
+
+/* Callbacks _________________________________________________________________*/
+inline bool       a2l_quex_lexer_Buffer_callbacks_on_cannot_move_towards_begin(a2l_quex_lexer_Buffer*  me, 
+                                                                                ptrdiff_t*          move_distance);
+inline void       a2l_quex_lexer_Buffer_callbacks_set(a2l_quex_lexer_Buffer* me,
+                                                       void   (*on_buffer_before_change)(void* aux),
+                                                       void   (*on_buffer_overflow)(void* aux),
+                                                       void*  aux);
+inline void       a2l_quex_lexer_Buffer_callbacks_on_buffer_before_change(a2l_quex_lexer_Buffer* me);
+inline void       a2l_quex_lexer_Buffer_callbacks_on_buffer_overflow(a2l_quex_lexer_Buffer* me);
+
+/* Member functions __________________________________________________________*/
+
+/* User's manual buffer filling.                                              */
+inline const void*          a2l_quex_lexer_Buffer_fill(a2l_quex_lexer_Buffer*  me, 
+                                                        const void*         ContentBegin,
+                                                        const void*         ContentEnd);
+inline bool                 a2l_quex_lexer_Buffer_fill_prepare(a2l_quex_lexer_Buffer*  me, 
+                                                                void**              begin_p, 
+                                                                const void**        end_p);
+inline void                 a2l_quex_lexer_Buffer_fill_finish(a2l_quex_lexer_Buffer* me,
+                                                               const void*        FilledEndP);
+
+/* Memory access.                                                             */
+inline a2l_quex_lexer_lexatom_t*   a2l_quex_lexer_Buffer_memory_begin(const a2l_quex_lexer_Buffer* me);
+inline a2l_quex_lexer_lexatom_t*   a2l_quex_lexer_Buffer_memory_end(const a2l_quex_lexer_Buffer* me);
+inline ptrdiff_t            a2l_quex_lexer_Buffer_memory_size(const a2l_quex_lexer_Buffer* me);
+
+inline a2l_quex_lexer_lexatom_t*   a2l_quex_lexer_Buffer_memory_content_space_end(const a2l_quex_lexer_Buffer* me);
+inline ptrdiff_t            a2l_quex_lexer_Buffer_memory_content_space_size(const a2l_quex_lexer_Buffer* me);
+
+inline a2l_quex_lexer_lexatom_t*   a2l_quex_lexer_Buffer_memory_content_begin(const a2l_quex_lexer_Buffer* me);
+inline a2l_quex_lexer_lexatom_t*   a2l_quex_lexer_Buffer_memory_content_end(const a2l_quex_lexer_Buffer* me);
+inline ptrdiff_t            a2l_quex_lexer_Buffer_memory_content_size(const a2l_quex_lexer_Buffer* me);
+
+
+/* Print _____________________________________________________________________*/
+inline void a2l_quex_lexer_Buffer_print_this(a2l_quex_lexer_Buffer*);
+inline void a2l_quex_lexer_Buffer_print_content(a2l_quex_lexer_Buffer*);
+
+
+/* BufferInvariance __________________________________________________________*/
+inline void a2l_quex_lexer_BufferInvariance_construct(a2l_quex_lexer_BufferInvariance* me, 
+                                                       a2l_quex_lexer_Buffer*           subject);
+inline void a2l_quex_lexer_BufferInvariance_assert(a2l_quex_lexer_BufferInvariance* me, 
+                                                    a2l_quex_lexer_Buffer*           subject,
+                                                    bool                         SameF);
+inline void a2l_quex_lexer_BufferInvariance_restore(a2l_quex_lexer_BufferInvariance* me, 
+                                                     a2l_quex_lexer_Buffer*           subject);
+
+
+#include "a2l_quex_lexer\lib\buffer/lexatoms/LexatomLoader"
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER */

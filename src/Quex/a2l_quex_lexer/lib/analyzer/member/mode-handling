@@ -1,0 +1,27 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY              */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__MODE_HANDLING
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__MODE_HANDLING
+
+#include "a2l_quex_lexer\lib\definitions"
+#include "a2l_quex_lexer\lib\analyzer/Mode"
+
+
+
+/* Read Access */
+inline const a2l_quex_lexer_Mode*   a2l_quex_lexer_MF_mode(a2l_quex_lexer* me);
+inline void               a2l_quex_lexer_MF_set_mode_brutally(a2l_quex_lexer*     me,
+                                                               const a2l_quex_lexer_Mode*  Mode);
+inline void               a2l_quex_lexer_MF_enter_mode(a2l_quex_lexer*    me,
+                                                        const a2l_quex_lexer_Mode* TargetMode);
+
+/* Changing Modes with stack */ 
+inline void        a2l_quex_lexer_MF_pop_mode(a2l_quex_lexer* me);
+inline void        a2l_quex_lexer_MF_pop_drop_mode(a2l_quex_lexer* me);
+inline void        a2l_quex_lexer_MF_push_mode(a2l_quex_lexer* me, a2l_quex_lexer_Mode* new_mode);
+  
+
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__MODE_HANDLING */
+

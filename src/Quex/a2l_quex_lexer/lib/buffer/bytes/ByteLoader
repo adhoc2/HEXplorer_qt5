@@ -1,0 +1,115 @@
+/* vim: set ft=c: 
+ *
+ * ByteLoader: Loading bytes into a buffer from some arbitrary source.
+ *
+ * The 'ByteLoader' is the interface class that defines the API to load bytes
+ * into a buffer. The bytes at this point are not interpreted or related to 
+ * 'lexatoms'. All processes provided input must be derived from this class.
+ *
+ * Examples:
+ *
+ *     'ByteLoader_FILE' loads content from a Standard C-lib FILE.
+ *     'ByteLoader_stream' loads content from a 'std::stream' object.
+ *     'ByteLoader_wstream' loads content from a 'std::wstream' object.
+ *     'ByteLoader_POSIX' loads content from a 'POSIX' file descriptor.
+ *
+ * Ownership of file/stream/socket handles is passed to the 'ByteLoader'. The
+ * handle is closed and destructed along with the ByteLoader's destruction.
+ *
+ * (C) Frank-Rene Schaefer                                                    */
+#ifndef  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER
+#define  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER
+
+#include "a2l_quex_lexer\lib\definitions"
+#include "a2l_quex_lexer\lib\quex/MemoryManager"
+#include "a2l_quex_lexer\lib\quex/compatibility/stdbool.h"
+
+
+
+typedef struct QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT a2l_quex_lexer_ByteLoader_tag {
+    a2l_quex_lexer_stream_position_t (*tell)(struct a2l_quex_lexer_ByteLoader_tag* me);
+    void                      (*seek)(struct a2l_quex_lexer_ByteLoader_tag* me, 
+                                      a2l_quex_lexer_stream_position_t Pos);
+    size_t                    (*load)(struct a2l_quex_lexer_ByteLoader_tag*, 
+                                      void*, const size_t,
+                                      bool*  end_of_stream_f);
+    void                      (*delete_self)(struct a2l_quex_lexer_ByteLoader_tag*);
+    void                      (*print_this)(struct a2l_quex_lexer_ByteLoader_tag*);
+
+    /* .compare_handle(A, B):
+     *
+     * Quex checks whether A and B are of the same class (comparing the
+     * function pointer '.load'). The derived class can safely cast both
+     * to its pointer type.
+     *
+     * Upon reset, the the new input handle might be the same as the old one.
+     * Such a usage is against the design of the reset functions! To detect
+     * these situations, the byte loader provides '.compare_handle()'.
+     *
+     * In case of doubt, return always 'false'. The only disadvantage is that
+     * if the user makes the aforementioned error, he will not get a nice hint
+     * upon crash.                                                           
+     *
+     * ByteLoader_FILE, ByteLoader_stream, and ByteLoader_POSIX implement the
+     * function propperly.                                                    */
+    bool  (*compare_handle)(const struct a2l_quex_lexer_ByteLoader_tag* A, 
+                            const struct a2l_quex_lexer_ByteLoader_tag* B);
+
+    /* .on_nothing(...)
+     * 
+     * When '.load' cannot provide anymore data, customized actions may be 
+     * performed. 
+     *
+     * -- If '.on_nothing' is not defined, '.load' returns zero and the
+     *    caller must assume that the stream terminated. 
+     * -- Else, the user defined '.no_nothing()' function is called. If it
+     *    returns 'true', '.load' tries again to load data. Else, '.load()'
+     *    returns with zero. Then, the caller, again, must assume that the
+     *    end of stream has been reached.                                     */
+    bool  (*on_nothing)(struct a2l_quex_lexer_ByteLoader_tag*, size_t TryN, size_t RequestN);
+
+    E_Ownership               handle_ownership;
+
+    /* Upon construction, the stream handle may be setup to a particular 
+     * position in the stream. This is going to be the reference position.   
+     * The consideration of offsets is handled in this base class' functions.
+     * The derived class does not need to know about an initial offset.       */
+    a2l_quex_lexer_stream_position_t initial_position;
+
+    /* It is crucial for 'seeking' in the stream whether the stream is in 
+     * binary mode or not. If not, then character/byte number is not const.   */
+    bool                      binary_mode_f;    /* In doubt, say 'false'.     */
+
+    size_t                    element_size;     /* Granularity in bytes.      */
+
+    struct {
+        a2l_quex_lexer_stream_position_t (*tell)(struct a2l_quex_lexer_ByteLoader_tag*);
+        void                      (*seek)(struct a2l_quex_lexer_ByteLoader_tag*, 
+                                          a2l_quex_lexer_stream_position_t);
+        size_t                    (*load)(struct a2l_quex_lexer_ByteLoader_tag*, void*, const size_t, 
+                                          bool*);
+        void                      (*print_this)(struct a2l_quex_lexer_ByteLoader_tag*);
+    } derived;
+} a2l_quex_lexer_ByteLoader;
+
+inline void  a2l_quex_lexer_ByteLoader_construct(a2l_quex_lexer_ByteLoader*                me, 
+                                       a2l_quex_lexer_stream_position_t  (*tell)(a2l_quex_lexer_ByteLoader* me),
+                                       void                       (*seek)(a2l_quex_lexer_ByteLoader* me, a2l_quex_lexer_stream_position_t Pos),
+                                       size_t                     (*load)(a2l_quex_lexer_ByteLoader*, void*, const size_t, bool*),
+                                       void                       (*delete_self)(a2l_quex_lexer_ByteLoader*),
+                                       void                       (*print_this)(a2l_quex_lexer_ByteLoader*),
+                                       bool                       (*compare_handle)(const a2l_quex_lexer_ByteLoader*, 
+                                                                                    const a2l_quex_lexer_ByteLoader*));
+inline void  a2l_quex_lexer_ByteLoader_seek_disable(a2l_quex_lexer_ByteLoader* me);
+inline bool  a2l_quex_lexer_ByteLoader_seek_is_enabled(a2l_quex_lexer_ByteLoader* me);
+inline bool  a2l_quex_lexer_ByteLoader_is_equivalent(const a2l_quex_lexer_ByteLoader* A, 
+                                                      const a2l_quex_lexer_ByteLoader* B);
+inline void  a2l_quex_lexer_ByteLoader_delete(a2l_quex_lexer_ByteLoader** me);
+
+
+
+#include "a2l_quex_lexer\lib\buffer/bytes/ByteLoader_FILE"
+#include "a2l_quex_lexer\lib\buffer/bytes/ByteLoader_stream"
+#include "a2l_quex_lexer\lib\buffer/bytes/ByteLoader_wstream"
+
+#endif /*  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER */

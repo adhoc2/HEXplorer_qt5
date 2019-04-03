@@ -1,0 +1,188 @@
+#ifndef QUEX_INCLUDE_GUARD_LIB_QUEX__DEBUG_PRINT
+#define QUEX_INCLUDE_GUARD_LIB_QUEX__DEBUG_PRINT
+
+#define QUEX_STRING(X)            #X
+#define QUEX_NUMBER_TO_STRING(x)  QUEX_STRING(x)
+#define QUEX_SOURCE_POS()         __FILE__ ":" QUEX_NUMBER_TO_STRING(__LINE__) ": "
+
+#define __QUEX_PRINT_SOURCE_POSITION()                             \
+        QUEX_DEBUG_PRINT2("%s:%i:\t", __FILE__, (int)__LINE__) 
+
+
+#define QUEX_ERROR_EXIT(Msg) \
+        do { \
+            __QUEX_PRINT_SOURCE_POSITION(); \
+            throw std::runtime_error(Msg); \
+        } while(0)
+
+
+
+#if defined(QUEX_OPTION_DEBUG_SHOW_EXT)
+
+#include "a2l_quex_lexer\lib\buffer/Buffer_print"
+
+#   define __quex_debug(Str)                                        \
+           __QUEX_PRINT_SOURCE_POSITION();                          \
+           QUEX_DEBUG_PRINT(Str) 
+#   define __quex_debug1(Str)                                       \
+           __QUEX_PRINT_SOURCE_POSITION();                          \
+           QUEX_DEBUG_PRINT1("%s\n", (Str))
+#   define __quex_debug2(FormatStr, Arg)                            \
+           __QUEX_PRINT_SOURCE_POSITION();                          \
+           QUEX_DEBUG_PRINT1(FormatStr "\n", Arg)
+#   define __quex_debug3(FormatStr, Arg0, Arg1)                     \
+           __QUEX_PRINT_SOURCE_POSITION();                          \
+           QUEX_DEBUG_PRINT2(FormatStr "\n", Arg0, Arg1)
+#   define __quex_debug4(FormatStr, Arg0, Arg1, Arg2)               \
+           __QUEX_PRINT_SOURCE_POSITION();                          \
+           QUEX_DEBUG_PRINT3(FormatStr "\n", Arg0, Arg1, Arg2)
+
+#   define __QUEX_PRINT_CHAR(C)                             \
+             (C) == '\n' ? QUEX_DEBUG_PRINT1("%02X '\\n'\n", (int)(C)) \
+           : (C) == '\t' ? QUEX_DEBUG_PRINT1("%02X '\\t'\n", (int)(C)) \
+           : (C) == '\r' ? QUEX_DEBUG_PRINT1("%02X '\\r'\n", (int)(C)) \
+           : (C) == '\a' ? QUEX_DEBUG_PRINT1("%02X '\\a'\n", (int)(C)) \
+           : (C) == '\v' ? QUEX_DEBUG_PRINT1("%02X '\\v'\n", (int)(C)) \
+           :               QUEX_DEBUG_PRINT2("%02X '%c'\n",  (int)(C), (C) < 0xFF ? (char)(C) : '?')
+
+#   define __quex_debug_buffer_load(BUFFER, Msg)                        \
+           QUEX_DEBUG_PRINT(Msg);  \
+           a2l_quex_lexer_Buffer_print_content_detailed(BUFFER);            \
+           QUEX_DEBUG_PRINT("\n");
+
+#   define __quex_debug_core(DebugUnit, StateIdx, Message)           \
+           __quex_debug4("%s:state %i ____%s", DebugUnit, (int)(StateIdx), (Message)) 
+
+#   define __quex_debug_input(StateIdx)                              \
+           __quex_debug("input:           ");                        \
+           __QUEX_PRINT_CHAR(*(me->buffer._read_p));                 \
+           __quex_debug2("input position:  %i",                      \
+                         (int)(me->buffer._read_p - me->buffer.begin(&me->buffer))); \
+           __quex_optional_statistics((StateIdx))
+
+#   define __quex_debug_path_walker_core(DebugUnit, PathWalkerIdx, PathBase, PathIterator, Message)             \
+           __quex_debug_core(DebugUnit, __QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(PathIterator-PathBase), (Message)); \
+           __quex_assert(PathIterator <  &PathBase[sizeof(PathBase)/sizeof(a2l_quex_lexer_lexatom_t)]);   \
+           __quex_assert(PathIterator >= &PathBase[0]);                                              \
+           __quex_debug4("(path walker: %i, path: %i, offset: %i)",                                  \
+                         (int)PathWalkerIdx,                                                         \
+                         (int)__QUEX_DEBUG_MAP_PATH_BASE_TO_PATH_ID(PathBase),                       \
+                         (int)(PathIterator-PathBase)); 
+
+#   define __quex_debug_template_core(DebugUnit, TemplateIdx, StateKey, Message)                     \
+           __quex_debug_core(DebugUnit, __QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(StateKey), (Message));   \
+           __quex_assert(__QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(StateKey) != 0);             \
+           __quex_debug3("(template: %i, state key=%i)", (int)TemplateIdx, (int)StateKey)
+
+#   define __quex_debug_state(StateIdx)                \
+           __quex_debug_core("", StateIdx, "__________");  \
+           __quex_debug_input(StateIdx)
+
+#   define __quex_debug_init_state(DebugUnit, StateIdx) \
+           __quex_debug_core(DebugUnit, StateIdx, "___________________________( Init State )"); \
+           __quex_debug_input(StateIdx)
+
+#   define __quex_debug_path_walker_state(DebugUnit, PathWalkerIdx, PathBase, PathIterator)               \
+           __quex_debug_path_walker_core(DebugUnit, PathWalkerIdx, PathBase, PathIterator, "__________"); \
+           __quex_debug_input(__QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(PathIterator-PathBase))
+
+#   define __quex_debug_template_state(DebugUnit, TemplateIdx, StateKey)                      \
+           __quex_debug_template_core(DebugUnit, TemplateIdx, StateKey, "__________");        \
+           __quex_debug_input(__QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(StateIdx))
+
+#   define __quex_debug_drop_out(StateIdx)            \
+           __quex_debug_core(StateIdx, "<DROP OUT>");  
+
+#   define __quex_debug_path_walker_drop_out(DebugUnit, PathWalkerIdx, PathBase, PathIterator) \
+           __quex_debug_path_walker_core(DebugUnit, PathWalkerIdx, PathBase, PathIterator, "<DROP OUT>")        
+
+#   define __quex_debug_template_drop_out(DebugUnit, TemplateIdx, StateKey)            \
+           __quex_debug_template_core(DebugUnit, TemplateIdx, StateKey, "<DROP OUT>")           
+
+#   define __quex_debug_buffer_info(B)                                        \
+           __quex_debug2("input position:  %i",                               \
+                         (int)((B)._read_p        - (B).content_begin(&B)));  \
+           __quex_debug2("lexeme start:    %i",                               \
+                         (int)((B)._lexeme_start_p - (B).content_begin(&B))); \
+           __quex_debug2("buffer size:     %i",                               \
+                         (int)((B).content_space_end(&B) - (B).begin(&B))); 
+
+#   define __quex_debug_reload_before()                              \
+           __quex_debug1("reload ________________");                 \
+           __quex_debug2("fallback bytes:  %i", (int)(me->buffer._fallback_n)); \
+           __quex_debug1("(before)\n");                              \
+           __quex_debug_buffer_info(me->buffer);
+           
+#   define __quex_debug_reload_after(LR)                        \
+           __quex_debug2("(after): %s", E_LoadResult_NAME(LR)); \
+           __quex_debug_buffer_info(me->buffer);                \
+           __quex_debug1("reload terminated _____"); 
+
+#   define __quex_debug_counter()                        \
+           a2l_quex_lexer_Counter_print_this(&self.counter)
+
+#else /* not defined(QUEX_OPTION_DEBUG_SHOW_EXT) */
+
+#   define __quex_debug(FormatStr)                /* empty */
+#   define __quex_debug1(Str)                     /* empty */
+#   define __quex_debug2(FormatStr, Arg)          /* empty */
+#   define __quex_debug3(FormatStr, Arg0, Arg1)   /* empty */
+
+#   define __quex_debug_state(StateIdx)           \
+           __quex_optional_statistics(StateIdx)
+#   define __quex_debug_init_state(DebugUnit, StateIdx)      \
+           __quex_optional_statistics(StateIdx)
+#   define __quex_debug_path_walker_state(DebugUnit, PathWalkerIdx, PathBase, PathIterator) \
+           __quex_optional_statistics(StateIdx)
+#   define __quex_debug_template_state(DebugUnit, TemplateID, StateKey) \
+           __quex_optional_statistics(StateIdx)
+
+#   define __quex_debug_drop_out(StateIdx)                                          /* empty */
+#   define __quex_debug_path_walker_drop_out(PathWalkerIdx, PathBase, PathIterator) /* empty */
+#   define __quex_debug_template_drop_out(TemplateID, StateKey)                     /* empty */ 
+
+#   define __quex_debug_reload_before()           /* empty */
+#   define __quex_debug_reload_after(LR)          /* empty */
+#   define __quex_debug_counter()                 /* empty */
+
+#   define __quex_debug_buffer_load(BUFFER, Msg) /* empty */
+
+#endif /* ! QUEX_OPTION_DEBUG_SHOW_EXT */
+
+#ifdef QUEX_OPTION_NOT_YET_IMPLEMENTED_STATISTICS_EXT
+#    define __quex_optional_statistics(StateIdx) \
+            a2l_quex_lexer_statistics_state_count(QUEX_NAME(statistics_state_ ## StateIdx), \
+                                              *(me->buffer._read_p));
+#else
+#    define __quex_optional_statistics(StateIdx) /* empty */
+#endif
+
+#ifdef     QUEX_OPTION_DEBUG_SHOW_MODES_EXT
+#    define __quex_debug_show_mode_transition(me, ModeP)                              \
+        if( me->__current_mode_p != 0x0 ) {                                           \
+            QUEX_DEBUG_PRINT1("| Mode change from %s\n", me->__current_mode_p->name); \
+            QUEX_DEBUG_PRINT1("|             to   %s\n", ModeP->name);                \
+        } else {                                                                      \
+            QUEX_DEBUG_PRINT1("| Mode change to %s\n", ModeP->name);                  \
+        }                                                                                
+#else
+#    define __quex_debug_show_mode_transition(me, ModeP)                              \
+        /* empty */
+#endif
+
+#define __QUEX_MESSAGE_ASSERTS_INFO \
+        "## Disable this message by compile option\n"                               \
+        "##        '-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED_EXT'\n"          \
+        "##\n"                                                                      \
+        "## Asserts activated! Lexical analyzer is 'paranoid'!\n"                   \
+        "## => Even smallest misbehavior causes program exit.\n"                    \
+        "##    This helps to find subtle errors.\n"                                 \
+        "##\n"                                                                      \
+        "## Note however: the paranoia is a heavy load on performance!\n"           \
+        "##\n"                                                                      \
+        "## Disable asserts by '-DQUEX_OPTION_ASSERTS_DISABLED_EXT'\n"                  \
+        "##\n"                                                                      \
+        "## Report any bug at\n"                                                    \
+        "##        http://sourceforge.net/tracker/?group_id=168259&atid=846112\n" 
+
+#endif /* QUEX_INCLUDE_GUARD_LIB_QUEX__DEBUG_PRINT */

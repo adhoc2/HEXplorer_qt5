@@ -1,0 +1,98 @@
+/* vim: ft=c: 
+ *
+ *  PURPOSE: This ByteLoader probes and adapts the functionality of another.
+ *
+ *  The main purpose of this byte loader type is to monitor the activity of 
+ *  an underlying ByteLoader. All main ByteLoader functions are equipped with
+ *  user callbacks that report and allow to modify its behavior, as they are:
+ *
+ * on_tell():        'Position' = what 'me->source->tell()' has returned.
+ *
+ *     RETURNS: what is to be returned by 'me->tell()'.            
+ *
+ * on_seek():        'Position' = what the user wants to be sought by 
+ *                                'me->seek()'.
+ *
+ *     RETURNS: what is to be sought by 'me->source->seek()'.     
+ *
+ * on_before_load(): 'ByteN' = what the user wants to be loaded by 
+ *                             'me->load()'.
+ *
+ *     RETURNS: what is to be loaded by 'me->source->load()'.    
+ *
+ * on_after_load():  'LoadedN' = what has been loaded by 
+ *                               'me->source->load()'.
+ *                   'buffer'  = where content has been loaded.
+ *                   'end_of_stream_f' as set by 'me->source->load(). 
+ *                                    (can be modified).
+ *
+ *     RETURNS: what is to be returned by by 'me->load()'.      
+ *
+ * Additionally, the ByteLoader maintains the following tracking data:
+ *
+ * .load_n        = total number of calls to 'load()'
+ * .seek_n        = total number of calls to 'seek()'
+ * .tell_n        = total number of calls to 'tell()'
+ * .loaded_byte_n      = total number of bytes loaded by 'source->load()'
+ * .position_last_tell = last position repoted by 'source->tell()'
+ * .position_last_seek = last position requested to 'source->seek()'
+ *
+ * This type of loader is, obviously, designed for testing purposes. An 
+ * application, for example would be to provoke load failures, or to report
+ * inconsistent data.
+ *
+ * (C) Frank-Rene Schaefer                                                   */
+#ifndef  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_PROBE
+#define  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_PROBE
+
+#include "a2l_quex_lexer\lib\buffer/bytes/ByteLoader"
+
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <stdio.h>
+#include "a2l_quex_lexer\lib\quex/MemoryManager"
+#ifdef __cplusplus
+}
+#endif
+
+typedef struct QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT a2l_quex_lexer_ByteLoader_Probe_tag { 
+    a2l_quex_lexer_ByteLoader  base;
+    a2l_quex_lexer_ByteLoader* source;
+
+    ptrdiff_t                   load_n;
+    ptrdiff_t                   seek_n;
+    ptrdiff_t                   tell_n;
+
+    size_t                      loaded_byte_n;
+    a2l_quex_lexer_stream_position_t   position_last_tell;
+    a2l_quex_lexer_stream_position_t   position_last_seek;
+    
+    void*     reference_object; /* User specified reference object.           */
+    
+    /* User callbacks:                                                        */
+    a2l_quex_lexer_stream_position_t (*on_tell)(struct a2l_quex_lexer_ByteLoader_Probe_tag*  me,
+                                         a2l_quex_lexer_stream_position_t                Position);
+
+    a2l_quex_lexer_stream_position_t (*on_seek)(struct a2l_quex_lexer_ByteLoader_Probe_tag* me, 
+                                         a2l_quex_lexer_stream_position_t Pos);
+
+    size_t                    (*on_before_load)(struct a2l_quex_lexer_ByteLoader_Probe_tag*, 
+                                                const size_t ByteN);
+
+    size_t                    (*on_after_load)(struct a2l_quex_lexer_ByteLoader_Probe_tag*, 
+                                               void*        buffer, 
+                                               const size_t LoadedN, 
+                                               bool*        end_of_stream_f);
+    void                      (*on_delete_self)(struct a2l_quex_lexer_ByteLoader_Probe_tag*);
+
+} a2l_quex_lexer_ByteLoader_Probe;
+
+inline a2l_quex_lexer_ByteLoader*    a2l_quex_lexer_ByteLoader_Probe_new(a2l_quex_lexer_ByteLoader* source,
+                                                                      void*                  reference_object);
+
+
+
+#endif /*  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_PROBE */

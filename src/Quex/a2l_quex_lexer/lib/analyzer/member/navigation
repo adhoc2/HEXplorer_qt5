@@ -1,0 +1,21 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY              */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__NAVIGATION
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__NAVIGATION
+
+#include "a2l_quex_lexer\lib\definitions"
+
+
+
+/* Tell/Seek/Move on basis of character index */
+inline size_t  a2l_quex_lexer_MF_tell(a2l_quex_lexer* me);
+inline void    a2l_quex_lexer_MF_seek(a2l_quex_lexer* me, const size_t);
+inline void    a2l_quex_lexer_MF_seek_forward(a2l_quex_lexer*  me, const size_t);
+inline void    a2l_quex_lexer_MF_seek_backward(a2l_quex_lexer* me, const size_t);
+inline void    a2l_quex_lexer_MF_undo(a2l_quex_lexer* me);
+inline void    a2l_quex_lexer_MF_undo_n(a2l_quex_lexer* me, size_t DeltaN_Backward);
+
+
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__NAVIGATION */

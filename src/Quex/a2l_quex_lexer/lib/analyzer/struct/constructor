@@ -1,0 +1,48 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY              */
+#ifndef  QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__CONSTRUCTOR
+#define  QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__CONSTRUCTOR
+
+#include "a2l_quex_lexer\lib\definitions"
+#include "a2l_quex_lexer\lib\buffer/Buffer"
+
+ 
+
+inline void a2l_quex_lexer_from_file_name(
+                                  a2l_quex_lexer*     me,
+                                  const char*             Filename, 
+                                  a2l_quex_lexer_Converter*   converter);
+
+inline void a2l_quex_lexer_from_ByteLoader(
+                                  a2l_quex_lexer*     me,
+                                  a2l_quex_lexer_ByteLoader*  byte_loader,
+                                  a2l_quex_lexer_Converter*   converter);
+
+inline void a2l_quex_lexer_from_memory(
+                                  a2l_quex_lexer* me,
+                                  a2l_quex_lexer_lexatom_t*  BufferMemoryBegin, 
+                                  size_t              BufferMemorySize,
+                                  a2l_quex_lexer_lexatom_t*  BufferEndOfFileP); 
+
+/* Basic constructions ________________________________________________________
+ *                                                                           */
+inline bool a2l_quex_lexer_construct_all_but_buffer(a2l_quex_lexer* me, 
+                                                     bool                CallUserConstructorF);
+inline void a2l_quex_lexer_destruct(a2l_quex_lexer* me); 
+inline void a2l_quex_lexer_destruct_all_but_buffer(a2l_quex_lexer* me);
+inline void a2l_quex_lexer_all_but_buffer_resources_absent_mark(a2l_quex_lexer* me);
+
+inline void a2l_quex_lexer_MF_collect_user_memory(a2l_quex_lexer* me, 
+                                                   a2l_quex_lexer_lexatom_t** user_buffer_memory_p);
+inline bool a2l_quex_lexer_MF_resources_absent(a2l_quex_lexer* me);
+inline void a2l_quex_lexer_MF_resources_absent_mark(a2l_quex_lexer* me);
+
+
+extern      bool a2l_quex_lexer_user_constructor(a2l_quex_lexer*);
+extern      void a2l_quex_lexer_user_destructor(a2l_quex_lexer*);
+
+ 
+
+#endif /*  QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__CONSTRUCTOR */
+

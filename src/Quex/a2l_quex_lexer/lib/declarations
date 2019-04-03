@@ -1,0 +1,45 @@
+/* -*- C++ -*-   vim: set syntax=cpp:
+ * (C) Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY                      */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__DECLARATIONS
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__DECLARATIONS
+
+/* NOT: "#include "a2l_quex_lexer\lib\lexeme"
+ *
+ * Lexemes 'live' in the namespace of the token class. The token class 
+ * determines when the converters and helpers need to be included.            */
+
+#include "a2l_quex_lexer\lib\analyzer/asserts"
+
+#include "a2l_quex_lexer\lib\definitions"
+
+
+extern a2l_quex_lexer_lexatom_t a2l_quex_lexer_LexemeNull;
+
+
+#include "a2l_quex_lexer\lib\quex/StrangeStream"
+
+#include "a2l_quex_lexer\a2l_quex_lexer-token"
+#include "a2l_quex_lexer\lib\token/TokenQueue"
+#include "a2l_quex_lexer\lib\token/receiving"
+
+#include "a2l_quex_lexer\lib\analyzer/member/misc"
+#include "a2l_quex_lexer\lib\analyzer/member/navigation"
+#include "a2l_quex_lexer\lib\analyzer/member/mode-handling"
+
+#include "a2l_quex_lexer\lib\analyzer/struct/constructor"
+#include "a2l_quex_lexer\lib\analyzer/struct/include-stack"
+#include "a2l_quex_lexer\lib\analyzer/struct/reset"
+
+#include "a2l_quex_lexer\lib\buffer/Buffer"
+#include "a2l_quex_lexer\lib\buffer/lexatoms/LexatomLoader"
+#include "a2l_quex_lexer\lib\buffer/bytes/ByteLoader"
+
+#include "a2l_quex_lexer\lib\analyzer/Mode"
+
+#include "a2l_quex_lexer\lib\analyzer/Counter"
+#include "a2l_quex_lexer\lib\lexeme/basics"
+
+#include "a2l_quex_lexer\lib\quex/MemoryManager"
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer__DECLARATIONS */

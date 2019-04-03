@@ -24,7 +24,8 @@
 #include <QString>
 #include <QTextStream>
 #include <QHash>
-#include "a2l_quex_lexer"
+#include <a2l_quex_lexer/a2l_quex_lexer>
+#include <a2l_quex_lexer/a2l_quex_lexer-token_ids>
 
 using namespace quex;
 
@@ -66,8 +67,8 @@ class A2lLexer : public QObject
 
     public:
         //A2lLexer(QTextStream &in, QObject *parent = 0);
-        A2lLexer(QTextStream &in, QObject *parent = 0);
-        A2lLexer(QObject *parent = 0);
+        A2lLexer(QTextStream &in, QObject *parent = nullptr);
+        A2lLexer(QObject *parent = nullptr);
         ~A2lLexer();
 
         virtual TokenTyp getNextToken();
@@ -116,7 +117,7 @@ class A2lQuexLexer : public A2lLexer
 
     public:
         //A2lQuexLexer(std::istringstream &in, QObject *parent = 0);
-        A2lQuexLexer(QUEX_NAME(ByteLoader)* byteLoader, QObject *parent = 0);
+        A2lQuexLexer(a2l_quex_lexer_ByteLoader* byteLoader, QObject *parent = 0);
 
         ~A2lQuexLexer();
 
@@ -129,15 +130,15 @@ class A2lQuexLexer : public A2lLexer
         void backward(int i = 0);
 
     private:
-        quex::a2l_quex_lexer  *qlex;
-        quex::Token *token_p;
+        a2l_quex_lexer  *qlex;
+        a2l_quex_lexer_Token *token_p;
         int position;
         int line;
         int index;
         int previousLine;
         std::string lexem;
         QHash<QString, TokenTyp> keywordsList;
-        TokenTyp myToken(quex::Token* token_p);
+        TokenTyp myToken(a2l_quex_lexer_Token* token_p);
 
 };
 

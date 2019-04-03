@@ -1,0 +1,102 @@
+/* -*- C++ -*-  vim:set syntax=cpp: 
+ *
+ * (C) 2004-2009 Frank-Rene Schaefer
+ *
+ * QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ACCUMULATOR may be undefined in case
+ *    that multiple lexical analyzers are used. Then, the name of the
+ *    a2l_quex_lexer_Accumulator must be different.                               */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__EXTRA__ACCUMULATOR__ACCUMULATOR
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__EXTRA__ACCUMULATOR__ACCUMULATOR
+
+/* Initial size of memory to hold accumulated text.                           */
+#if   defined(QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE_EXT)
+#   define QUEX_a2l_quex_lexer_SETTING_ACCUMULATOR_INITIAL_SIZE QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE_EXT
+#elif defined(QUEX_a2l_quex_lexer_SETTING_ACCUMULATOR_INITIAL_SIZE_EXT)
+#   define QUEX_a2l_quex_lexer_SETTING_ACCUMULATOR_INITIAL_SIZE QUEX_a2l_quex_lexer_SETTING_ACCUMULATOR_INITIAL_SIZE_EXT
+#else
+#   define QUEX_a2l_quex_lexer_SETTING_ACCUMULATOR_INITIAL_SIZE 256
+#endif
+
+/* Granularity of memory allocation:
+ * Upon overload: new memory's size = current memory's size * (1 + factor)    */
+#if   defined(QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR_EXT)
+#   define QUEX_a2l_quex_lexer_SETTING_ACCUMULATOR_GRANULARITY_FACTOR QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR_EXT
+#elif defined(QUEX_a2l_quex_lexer_SETTING_ACCUMULATOR_GRANULARITY_FACTOR_EXT)
+#   define QUEX_a2l_quex_lexer_SETTING_ACCUMULATOR_GRANULARITY_FACTOR QUEX_a2l_quex_lexer_SETTING_ACCUMULATOR_GRANULARITY_FACTOR_EXT
+#else
+#   define QUEX_a2l_quex_lexer_SETTING_ACCUMULATOR_GRANULARITY_FACTOR 0.8
+#endif
+
+#include "a2l_quex_lexer\lib\definitions"
+
+
+
+
+
+class a2l_quex_lexer;
+class QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT a2l_quex_lexer_Accumulator {
+public:
+
+       size_t  _begin_line;
+     size_t  _begin_column;
+
+    struct { 
+        a2l_quex_lexer_lexatom_t* begin;
+        a2l_quex_lexer_lexatom_t* end;
+        a2l_quex_lexer_lexatom_t* memory_end;
+    }                   text;
+    a2l_quex_lexer* the_lexer;     
+
+
+    a2l_quex_lexer_Accumulator();
+    ~a2l_quex_lexer_Accumulator();
+
+    void   clear();
+    void   add(const a2l_quex_lexer_lexatom_t* Begin, 
+               const a2l_quex_lexer_lexatom_t* End);
+    void   add_character(const a2l_quex_lexer_lexatom_t Character);
+    bool   extend(size_t MinAddSize);
+    bool   flush(a2l_quex_lexer_token_id_t);
+    void   print_this();
+
+
+};
+
+inline bool
+a2l_quex_lexer_Accumulator_construct(a2l_quex_lexer_Accumulator*, a2l_quex_lexer*);
+
+inline void
+a2l_quex_lexer_Accumulator_destruct(a2l_quex_lexer_Accumulator* me);
+                      
+inline void      
+a2l_quex_lexer_Accumulator__clear(a2l_quex_lexer_Accumulator* me);
+                      
+inline void      
+a2l_quex_lexer_Accumulator__add(a2l_quex_lexer_Accumulator*  me,
+                            const a2l_quex_lexer_lexatom_t* Begin, 
+                            const a2l_quex_lexer_lexatom_t* End);
+                      
+inline void      
+a2l_quex_lexer_Accumulator__add_character(a2l_quex_lexer_Accumulator*  me,
+                                      const a2l_quex_lexer_lexatom_t  Character);
+
+inline bool
+a2l_quex_lexer_Accumulator__flush(a2l_quex_lexer_Accumulator*   me,
+                              const a2l_quex_lexer_token_id_t  TokenID);
+                      
+inline void
+a2l_quex_lexer_Accumulator_resources_absent_mark(a2l_quex_lexer_Accumulator* me);
+
+inline bool
+a2l_quex_lexer_Accumulator_resources_absent(a2l_quex_lexer_Accumulator* me);
+
+inline bool
+a2l_quex_lexer_Accumulator_init_memory(a2l_quex_lexer_Accumulator*   me);
+
+inline void      
+a2l_quex_lexer_Accumulator_print_this(a2l_quex_lexer_Accumulator* me);
+                      
+
+
+
+#endif /*  QUEX_INCLUDE_GUARD_a2l_quex_lexer__EXTRA__ACCUMULATOR__ACCUMULATOR */

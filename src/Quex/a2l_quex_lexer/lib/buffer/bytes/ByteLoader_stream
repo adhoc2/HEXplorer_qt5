@@ -1,0 +1,26 @@
+#ifndef  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_STREAM
+#define  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_STREAM
+#ifdef __cplusplus
+
+#include "a2l_quex_lexer\lib\buffer/bytes/ByteLoader"
+
+
+
+template <class StreamType>
+class a2l_quex_lexer_ByteLoader_stream { 
+public:
+    a2l_quex_lexer_ByteLoader  base;
+    StreamType*            input_handle;
+};
+
+template <class StreamType> inline void
+a2l_quex_lexer_ByteLoader_stream_construct(a2l_quex_lexer_ByteLoader_stream<StreamType>* me, StreamType* sh);
+template <class StreamType> inline a2l_quex_lexer_ByteLoader*
+a2l_quex_lexer_ByteLoader_stream_new(StreamType* sh);
+inline a2l_quex_lexer_ByteLoader*    
+a2l_quex_lexer_ByteLoader_stream_new_from_file_name(const char* FileName);
+
+
+
+#endif /* __cplusplus                           */
+#endif /*  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_STREAM */

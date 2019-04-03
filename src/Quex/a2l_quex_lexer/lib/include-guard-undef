@@ -1,0 +1,297 @@
+/* (C) Frank-Rene Schaefer */
+#ifndef __QUEX_INCLUDE_INDICATOR__ANALYZER__MAIN
+#   error "This file is only to be included in case that multiple lexical analyzers are used. The fact that macro __QUEX_INCLUDE_INDICATOR__ANALYZER__MAIN is not defined, tells that this is not the case."
+#endif
+
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ASSERTS
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ASSERTS
+#endif
+#ifdef    __QUEX_INCLUDE_INDICATOR__ASSERTS
+#   undef __QUEX_INCLUDE_INDICATOR__ASSERTS
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__TOKEN__TOKEN_QUEUE                                  
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__TOKEN__TOKEN_QUEUE                                  
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__HEADERS
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__HEADERS
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__HEADERS_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__HEADERS_I
+#endif
+#if 0
+/* The memory manager is the same for all analyzers.                        
+ * Thus, it is never ever included twice with different parameters.          */
+#   ifdef QUEX_INCLUDE_GUARD_a2l_quex_lexer__MEMORY_MANAGER
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__MEMORY_MANAGER
+#   endif 
+#   ifdef QUEX_INCLUDE_GUARD_a2l_quex_lexer__MEMORY_MANAGER_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__MEMORY_MANAGER_I
+#   endif 
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER                                      
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER                                      
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_I                                    
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_I                                    
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_PRINT  
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_PRINT  
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_PRINT_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_PRINT_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_MOVE_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_MOVE_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_LOAD_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_LOAD_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_NESTED_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_NESTED_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_INVARIANCE_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_INVARIANCE_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_CALLBACKS_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_CALLBACKS_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_FILL_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_FILL_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_MEMORY_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_MEMORY_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_NAVIGATION_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BUFFER_NAVIGATION_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__LEXATOM_LOADER
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__LEXATOM_LOADER
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__LEXATOM_LOADER_CONVERTER
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__LEXATOM_LOADER_CONVERTER
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__LEXATOM_LOADER_CONVERTER_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__LEXATOM_LOADER_CONVERTER_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__LEXATOM_LOADER_CONVERTER_RAW_BUFFER_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__LEXATOM_LOADER_CONVERTER_RAW_BUFFER_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__LEXATOM_LOADER_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__LEXATOM_LOADER_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__LEXATOM_LOADER_NAVIGATION_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__LEXATOM_LOADER_NAVIGATION_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__LEXATOM_LOADER_PLAIN
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__LEXATOM_LOADER_PLAIN
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__LEXATOM_LOADER_PLAIN_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__LEXATOM_LOADER_PLAIN_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__CONVERTER
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__CONVERTER
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__CONVERTER_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__CONVERTER_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__ICONV__CONVERTER_ICONV
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__ICONV__CONVERTER_ICONV
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__ICONV__CONVERTER_ICONV_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__ICONV__CONVERTER_ICONV_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__ICONV__SPECIAL_HEADERS_H
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__ICONV__SPECIAL_HEADERS_H
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__ICU__CONVERTER_ICU
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__ICU__CONVERTER_ICU
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__ICU__CONVERTER_ICU_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__ICU__CONVERTER_ICU_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__ICU__SPECIAL_HEADERS_H
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__ICU__SPECIAL_HEADERS_H
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__RECODE__CONVERTER_RECODE
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__RECODE__CONVERTER_RECODE
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__RECODE__CONVERTER_RECODE_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__RECODE__CONVERTER_RECODE_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_PROBE
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_PROBE
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_PROBE_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_PROBE_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_FILE
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_FILE
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_FILE_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_FILE_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_POSIX
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_POSIX
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_POSIX_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_POSIX_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_STREAM
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_STREAM
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_STREAM_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_STREAM_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_WSTREAM
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_WSTREAM
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_WSTREAM_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_WSTREAM_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_MEMORY
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_MEMORY
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_MEMORY_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_MEMORY_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__ASSERTS                                     
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__ASSERTS                                     
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ASSERTS                                   
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ASSERTS                                   
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MODE
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MODE
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MODE_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MODE_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STATISTICS
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STATISTICS
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STATISTICS_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STATISTICS_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__COUNTER                             
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__COUNTER                             
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__COUNTER_I                           
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__COUNTER_I                           
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__MISC
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__MISC
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__MISC_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__MISC_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__MODE_HANDLING      
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__MODE_HANDLING      
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__MODE_HANDLING_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__MODE_HANDLING_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__TOKEN_RECEIVING
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__TOKEN_RECEIVING
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__TOKEN_RECEIVING_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__TOKEN_RECEIVING_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__LEXEME_BASE
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__LEXEME_BASE
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__LEXEME_BASE_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__LEXEME_BASE_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__TOKEN__TOKEN_QUEUE_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__TOKEN__TOKEN_QUEUE_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__C_ADAPTIONS_H
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__C_ADAPTIONS_H
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__OBSERVED_STRING__STREXEME
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__OBSERVED_STRING__STREXEME
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ASSERTS_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ASSERTS_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__NAVIGATION
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__NAVIGATION
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__NAVIGATION_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__NAVIGATION_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__NAME_OBJECT
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__NAME_OBJECT
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__CONSTRUCTOR
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__CONSTRUCTOR
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__CONSTRUCTOR_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__CONSTRUCTOR_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__INCLUDE_STACK
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__INCLUDE_STACK
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__INCLUDE_STACK_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__INCLUDE_STACK_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__RESET
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__RESET
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__RESET_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__RESET_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__NAME_OBJECT
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__NAME_OBJECT
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__CONSTRUCTOR
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__CONSTRUCTOR
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__CONSTRUCTOR_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__CONSTRUCTOR_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__INCLUDE_STACK
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__INCLUDE_STACK
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__INCLUDE_STACK_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__INCLUDE_STACK_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__RESET
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__RESET
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__RESET_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__RESET_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ADAPTORS__FEEDER
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ADAPTORS__FEEDER
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ADAPTORS__FEEDER_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ADAPTORS__FEEDER_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ADAPTORS__GAVAGER
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ADAPTORS__GAVAGER
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ADAPTORS__GAVAGER_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ADAPTORS__GAVAGER_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__ASSERTS_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__ASSERTS_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__EXTRA__ACCUMULATOR__ACCUMULATOR
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__EXTRA__ACCUMULATOR__ACCUMULATOR
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__EXTRA__ACCUMULATOR__ACCUMULATOR_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__EXTRA__ACCUMULATOR__ACCUMULATOR_I
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__EXTRA__POST_CATEGORIZER__POST_CATEGORIZER
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__EXTRA__POST_CATEGORIZER__POST_CATEGORIZER
+#endif
+#ifdef    QUEX_INCLUDE_GUARD_a2l_quex_lexer__EXTRA__POST_CATEGORIZER__POST_CATEGORIZER_I
+#   undef QUEX_INCLUDE_GUARD_a2l_quex_lexer__EXTRA__POST_CATEGORIZER__POST_CATEGORIZER_I
+#endif

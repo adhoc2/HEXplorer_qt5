@@ -1,0 +1,74 @@
+/* -*- C++ -*- vim:set syntax=cpp:
+ * (C) 2009 Frank-Rene Schaefer 
+ *
+ * Undefines all macros of the lexer's configuration file. This happens in
+ * order to be able to safely include headers of multiple lexical analyzers. */
+#ifdef    QUEX_OPTION_ASSERTS
+#   undef QUEX_OPTION_ASSERTS
+#endif
+#ifdef    QUEX_a2l_quex_lexer_SETTING_BUFFER_LEXATOM_PATH_TERMINATION     
+#   undef QUEX_a2l_quex_lexer_SETTING_BUFFER_LEXATOM_PATH_TERMINATION    
+#endif
+#ifdef    QUEX_a2l_quex_lexer_SETTING_BUFFER_LEXATOM_BUFFER_BORDER     
+#   undef QUEX_a2l_quex_lexer_SETTING_BUFFER_LEXATOM_BUFFER_BORDER    
+#endif
+#ifdef    QUEX_a2l_quex_lexer_SETTING_BUFFER_SIZE 
+#   undef QUEX_a2l_quex_lexer_SETTING_BUFFER_SIZE 
+#endif
+#ifdef    QUEX_a2l_quex_lexer_SETTING_MODE_STACK_SIZE 
+#   undef QUEX_a2l_quex_lexer_SETTING_MODE_STACK_SIZE 
+#endif
+#ifdef    QUEX_a2l_quex_lexer_SETTING_TOKEN_QUEUE_SIZE 
+#   undef QUEX_a2l_quex_lexer_SETTING_TOKEN_QUEUE_SIZE  
+#endif
+#ifdef    QUEX_a2l_quex_lexer_SETTING_LEXATOM_LOADER_CONVERTER_BUFFER_SIZE
+#   undef QUEX_a2l_quex_lexer_SETTING_LEXATOM_LOADER_CONVERTER_BUFFER_SIZE 
+#endif
+#ifdef    QUEX_a2l_quex_lexer_SETTING_LEXATOM_LOADER_CONVERTER_BUFFER_SIZE 
+#   undef QUEX_a2l_quex_lexer_SETTING_LEXATOM_LOADER_CONVERTER_BUFFER_SIZE 
+#endif
+#ifdef    QUEX_a2l_quex_lexer_SETTING_INDENTATION_STACK_SIZE    
+#   undef QUEX_a2l_quex_lexer_SETTING_INDENTATION_STACK_SIZE
+#endif
+#ifdef    QUEX_a2l_quex_lexer_SETTING_MODE_INITIAL_P  
+#   undef QUEX_a2l_quex_lexer_SETTING_MODE_INITIAL_P  
+#endif
+#ifdef    QUEX_OPTION_WCHAR_T_DISABLED_EXT
+#   undef QUEX_OPTION_WCHAR_T_DISABLED_EXT
+#endif
+#ifdef    QUEX_a2l_quex_lexer_SETTING_VERSION 
+#   undef QUEX_a2l_quex_lexer_SETTING_VERSION           /* see analyzer/CppTemplate.txt */
+#endif
+#ifdef    QUEX_a2l_quex_lexer_SETTING_BUILD_DATE 
+#   undef QUEX_a2l_quex_lexer_SETTING_BUILD_DATE        /* see analyzer/CppTemplate.txt */
+#endif
+#ifdef    QUEX_a2l_quex_lexer_SETTING_ANALYZER_VERSION
+#   undef QUEX_a2l_quex_lexer_SETTING_ANALYZER_VERSION  /* see analyzer/CppTemplate.txt */
+#endif
+#ifdef    QUEX_NAMESPACE_TOKEN 
+#   undef QUEX_NAMESPACE_TOKEN 
+#endif
+#ifdef    QUEX_a2l_quex_lexer_SETTING_TOKEN_ID_REPETITION_TEST
+#   undef QUEX_a2l_quex_lexer_SETTING_TOKEN_ID_REPETITION_TEST 
+#endif
+#ifdef    __QUEX_IF_TOKEN_REPETITION_SUPPORT
+#   undef __QUEX_IF_TOKEN_REPETITION_SUPPORT 
+#endif
+#ifdef    __QUEX_IF_TOKEN_REPETITION_SUPPORT_DISABLED
+#   undef __QUEX_IF_TOKEN_REPETITION_SUPPORT_DISABLED 
+#endif
+#ifdef    __QUEX_IF_COUNT_COLUMNS_SET
+#   undef __QUEX_IF_COUNT_COLUMNS_SET 
+#endif
+#ifdef    __QUEX_RETURN
+#   undef __QUEX_RETURN
+#endif
+#ifdef    __QUEX_PURE_RETURN
+#   undef __QUEX_PURE_RETURN   
+#endif
+#ifdef    QUEX_a2l_quex_lexer_SETTING_BUFFER_LEXATOM_NEWLINE
+#   undef QUEX_a2l_quex_lexer_SETTING_BUFFER_LEXATOM_NEWLINE
+#endif
+#ifdef    QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT
+#   undef QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT
+#endif

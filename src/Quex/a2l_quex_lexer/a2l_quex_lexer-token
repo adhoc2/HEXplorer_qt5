@@ -1,0 +1,363 @@
+/* -*- C++ -*-   vim: set syntax=cpp: 
+ * (C) 2004-2009 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY
+ */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer_Token__TOKEN__TOKEN__GENERATED
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer_Token__TOKEN__TOKEN__GENERATED
+
+
+#   line 2 "C:\Program Files (x86)\quex\quex-0.69.3\quex\code_base\token\CppDefault.qx"
+
+#include <stddef.h>
+#include <iostream>
+#include <string>
+#include <a2l_quex_lexer/lib/quex/compatibility/stdint.h>
+#include <a2l_quex_lexer/lib/quex/MemoryManager>
+
+#include <a2l_quex_lexer/lib/quex/asserts>
+#include <a2l_quex_lexer/lib/lexeme/basics>
+#include <a2l_quex_lexer/lib/lexeme/converter-from-lexeme>
+
+
+
+extern a2l_quex_lexer_lexatom_t a2l_quex_lexer_LexemeNull;
+extern const char*       a2l_quex_lexer_map_token_id_to_name(const a2l_quex_lexer_token_id_t);
+
+
+
+   
+#   line 29 "a2l_quex_lexer\a2l_quex_lexer-token"
+
+ 
+#include "a2l_quex_lexer\a2l_quex_lexer-configuration"
+
+
+
+class a2l_quex_lexer_Token;
+
+inline void         a2l_quex_lexer_Token_construct(a2l_quex_lexer_Token*);
+inline void         a2l_quex_lexer_Token_copy(a2l_quex_lexer_Token*, const a2l_quex_lexer_Token*);
+inline void         a2l_quex_lexer_Token_destruct(a2l_quex_lexer_Token*);
+
+/* NOTE: Setters and getters as in the C++ version of the token class are not
+ *       necessary, since the members are accessed directly.                   */
+
+inline void         a2l_quex_lexer_Token_set(a2l_quex_lexer_Token*         me, 
+                                              const a2l_quex_lexer_token_id_t ID);
+
+
+inline bool         a2l_quex_lexer_Token_take_text(a2l_quex_lexer_Token*            me, 
+                                                    const a2l_quex_lexer_lexatom_t* Begin, 
+                                                    const a2l_quex_lexer_lexatom_t* End);
+
+
+
+
+
+class QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT a2l_quex_lexer_Token {
+public:
+    a2l_quex_lexer_Token();
+    a2l_quex_lexer_Token(const a2l_quex_lexer_Token& That);
+    /* operator=(..): USE WITH CAUTION--POSSIBLE MAJOR PERFORMANCE DECREASE! 
+     *                BETTER USE __copy(That)                                */
+    a2l_quex_lexer_Token& operator=(const a2l_quex_lexer_Token& That);
+    virtual ~a2l_quex_lexer_Token();
+
+
+#   line 27 "C:\Program Files (x86)\quex\quex-0.69.3\quex\code_base\token\CppDefault.qx"
+    const a2l_quex_lexer_lexatom_t* text;
+#   line 69 "a2l_quex_lexer\a2l_quex_lexer-token"
+
+#   line 28 "C:\Program Files (x86)\quex\quex-0.69.3\quex\code_base\token\CppDefault.qx"
+    size_t                   number;
+#   line 73 "a2l_quex_lexer\a2l_quex_lexer-token"
+
+
+public:
+
+#   line 27 "C:\Program Files (x86)\quex\quex-0.69.3\quex\code_base\token\CppDefault.qx"
+    const a2l_quex_lexer_lexatom_t* get_text() const                           { return text; }
+#   line 27 "C:\Program Files (x86)\quex\quex-0.69.3\quex\code_base\token\CppDefault.qx"
+    void                     set_text(const a2l_quex_lexer_lexatom_t*& Value)  { text = Value; }
+#   line 28 "C:\Program Files (x86)\quex\quex-0.69.3\quex\code_base\token\CppDefault.qx"
+    size_t                   get_number() const                         { return number; }
+#   line 28 "C:\Program Files (x86)\quex\quex-0.69.3\quex\code_base\token\CppDefault.qx"
+    void                     set_number(size_t Value)                   { number = Value; }
+#   line 86 "a2l_quex_lexer\a2l_quex_lexer-token"
+
+    void set(const a2l_quex_lexer_token_id_t ID) { id = ID; }
+    void set(const a2l_quex_lexer_token_id_t ID, const  a2l_quex_lexer_lexatom_t*& Value0, const size_t& Value1)
+    { id = ID; text = Value0; number = Value1; }
+
+
+    public:
+        /* _line_n, _column_n, and id are public, so that the token policy 
+         * can access it. making it private would imply complications for 
+         * user customized token classes. The token policies should be the
+         * same for C and Cpp.                                               */
+        a2l_quex_lexer_token_id_t    id;
+
+
+    public:
+        a2l_quex_lexer_token_line_n_t    _line_n;
+        a2l_quex_lexer_token_line_n_t    line_number() const                                 { return _line_n; }
+        void                      set_line_number(const a2l_quex_lexer_token_line_n_t Value) { _line_n = Value; }
+
+
+    public:
+        a2l_quex_lexer_token_column_n_t  _column_n;
+        a2l_quex_lexer_token_column_n_t  column_number() const                                   { return _column_n; }
+        void                      set_column_number(const a2l_quex_lexer_token_column_n_t Value) { _column_n = Value; }
+
+    public:
+#   define self (*this)
+
+#   line 112 "C:\Program Files (x86)\quex\quex-0.69.3\quex\code_base\token\CppDefault.qx"
+
+        operator 
+        const std::string() const
+        { return std::string(get_string()); }
+
+        const std::string   get_string() const 
+        {
+            std::string  tmp(a2l_quex_lexer_map_token_id_to_name(self.id));
+            tmp += " '" + a2l_quex_lexer_lexeme_to_pretty_char(self.text) + "'";
+            return tmp;
+        }
+        const char*        id_name() const
+        { return a2l_quex_lexer_map_token_id_to_name(id); }
+   
+#   line 130 "a2l_quex_lexer\a2l_quex_lexer-token"
+
+#   undef  self
+
+    private:
+        friend void a2l_quex_lexer_Token_copy(a2l_quex_lexer_Token*       __this, 
+                                         const a2l_quex_lexer_Token* That);
+        friend bool a2l_quex_lexer_Token_take_text(a2l_quex_lexer_Token*             __this, 
+                                              const a2l_quex_lexer_lexatom_t*  Begin, 
+                                              const a2l_quex_lexer_lexatom_t*  End);
+};
+
+
+
+
+#   line 135 "C:\Program Files (x86)\quex\quex-0.69.3\quex\code_base\token\CppDefault.qx"
+
+
+
+
+
+inline std::ostream&
+operator<<(std::ostream& ostr, const a2l_quex_lexer_Token& Tok)
+{ ostr << Tok.get_string(); return ostr; }
+
+
+#include <a2l_quex_lexer/lib/lexeme/basics.i>
+   
+#   line 158 "a2l_quex_lexer\a2l_quex_lexer-token"
+
+
+
+
+extern a2l_quex_lexer_lexatom_t a2l_quex_lexer_LexemeNull;
+
+
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer_Token__TOKEN__TOKEN__GENERATED */
+
+/* This content is pasted into header, so the include guard is superfluous. 
+ * It is left in place, so that if some time later the code generator is 
+ * adapted to generate independent files, it will still work safely.          */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer_Token__TOKEN__TOKEN__GENERATED_I
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer_Token__TOKEN__TOKEN__GENERATED_I
+
+#include "a2l_quex_lexer\a2l_quex_lexer-token"
+
+
+
+inline
+a2l_quex_lexer_Token::a2l_quex_lexer_Token()
+{
+#   define self (*this)
+#   define LexemeNull  (&a2l_quex_lexer_LexemeNull)
+
+#   line 33 "C:\Program Files (x86)\quex\quex-0.69.3\quex\code_base\token\CppDefault.qx"
+
+       self.number = 0;
+       self.text   = LexemeNull;
+   
+#   line 190 "a2l_quex_lexer\a2l_quex_lexer-token"
+
+#   undef  LexemeNull
+#   undef  self
+}
+
+inline
+a2l_quex_lexer_Token::a2l_quex_lexer_Token(const a2l_quex_lexer_Token& Other)
+{
+   a2l_quex_lexer_Token_copy(this, &Other);
+#   define self (*this)
+#   define LexemeNull  (&a2l_quex_lexer_LexemeNull)
+
+#   line 33 "C:\Program Files (x86)\quex\quex-0.69.3\quex\code_base\token\CppDefault.qx"
+
+       self.number = 0;
+       self.text   = LexemeNull;
+   
+#   line 208 "a2l_quex_lexer\a2l_quex_lexer-token"
+
+#   undef  LexemeNull
+#   undef  self
+}
+
+inline
+a2l_quex_lexer_Token::~a2l_quex_lexer_Token()
+{
+#   define self (*this)
+#   define LexemeNull  (&a2l_quex_lexer_LexemeNull)
+
+#   line 38 "C:\Program Files (x86)\quex\quex-0.69.3\quex\code_base\token\CppDefault.qx"
+
+       if( self.text != LexemeNull ) {
+           quex::MemoryManager_free((void*)self.text,
+                                      E_MemoryObjectType_TEXT);
+           self.text = LexemeNull;
+       }
+   
+#   line 228 "a2l_quex_lexer\a2l_quex_lexer-token"
+
+#   undef  LexemeNull
+#   undef  self
+}
+
+inline a2l_quex_lexer_Token& 
+a2l_quex_lexer_Token::operator=(const a2l_quex_lexer_Token& That) 
+{ /* 'this != &That' checked in 'copy' */ a2l_quex_lexer_Token_copy(this, &That); return *this; }
+
+inline void
+a2l_quex_lexer_Token_construct(a2l_quex_lexer_Token* __this)
+{
+    /* Explicit constructor call by 'placement new' */
+    new ((void*)__this) a2l_quex_lexer_Token;
+}
+
+inline void
+a2l_quex_lexer_Token_destruct(a2l_quex_lexer_Token* __this)
+{
+    if( ! __this ) return;
+    __this->a2l_quex_lexer_Token::~a2l_quex_lexer_Token();  
+}
+
+inline void
+a2l_quex_lexer_Token_copy(a2l_quex_lexer_Token* __this, const a2l_quex_lexer_Token* __That)
+{
+#   define self  (*__this)
+#   define Other (*__That)
+#   define LexemeNull  (&a2l_quex_lexer_LexemeNull)
+    if( __this == __That ) { return; }
+
+#   line 46 "C:\Program Files (x86)\quex\quex-0.69.3\quex\code_base\token\CppDefault.qx"
+
+        self.id  = Other.id;
+
+        if( self.text != LexemeNull ) {
+            quex::MemoryManager_free((void*)self.text, E_MemoryObjectType_TEXT);
+        }
+        if( Other.text != LexemeNull ) {
+            self.text = a2l_quex_lexer_lexeme_clone(self.text, 
+                                                a2l_quex_lexer_lexeme_length(Other.text));
+            if( ! self.text ) self.text = LexemeNull;
+        }
+        self.number = Other.number;
+
+           self._line_n     = Other._line_n;
+         self._column_n = Other._column_n;
+   
+#   line 277 "a2l_quex_lexer\a2l_quex_lexer-token"
+
+#   undef LexemeNull
+#   undef Other
+#   undef self
+   /* If the user even misses to copy the token id, then there's
+    * something seriously wrong.                                 */
+   __quex_assert(__this->id == __That->id);
+      __quex_assert(__this->_line_n == __That->_line_n);
+    __quex_assert(__this->_column_n == __That->_column_n);
+}
+
+
+inline bool 
+a2l_quex_lexer_Token_take_text(a2l_quex_lexer_Token*         __this, 
+                           const a2l_quex_lexer_lexatom_t* Begin, 
+                           const a2l_quex_lexer_lexatom_t* End)
+/* RETURNS: true -- if the token claims ownership over the given memory.
+ *          false -- if no ownership is claimed.                             */
+{
+#   define self      (*__this)
+#   define LexemeNull  (&a2l_quex_lexer_LexemeNull)
+    (void)__this;
+
+#   line 63 "C:\Program Files (x86)\quex\quex-0.69.3\quex\code_base\token\CppDefault.qx"
+
+
+#       if 0
+        /* Hint for debug: To check take_text change "#if 0" to "#if 1" */
+        {
+            const a2l_quex_lexer_lexatom_t* it = (void*)0x0;
+            printf("previous:  '");
+            if( self.text != LexemeNull ) {
+                for(it = self.text; *it ; ++it) printf("%04X.", (int)*it);
+                printf("%04X.", (int)*it);
+            }
+            printf("'\n");
+            printf("take_text: '");
+            for(it = Begin; it != End; ++it) printf("%04X.", (int)*it);
+            printf("%04X.", (int)*it);
+            printf("'\n");
+        }
+#       endif
+
+        if( self.text != LexemeNull ) {
+            quex::MemoryManager_free((void*)self.text, E_MemoryObjectType_TEXT);
+        }
+        if( Begin != LexemeNull ) {
+            __quex_assert(End >= Begin);
+            self.text = a2l_quex_lexer_lexeme_clone(Begin, (size_t)(End - Begin));
+            if( ! self.text ) self.text = LexemeNull;
+            *((a2l_quex_lexer_lexatom_t*)(self.text + (End - Begin))) = (a2l_quex_lexer_lexatom_t)0;
+        } else {
+            self.text = LexemeNull;
+        }
+
+#       if 0
+        /* Hint for debug: To check take_text change "#if 0" to "#if 1"       */
+        {
+            const a2l_quex_lexer_lexatom_t* it = 0x0;
+            printf("after:     '");
+            if( self.text != LexemeNull ) { 
+                for(it = self.text; *it ; ++it) printf("%04X.", (int)*it);
+                printf("%04X.", (int)*it);
+            }
+            printf("'\n");
+        }
+#       endif
+
+        /* This token copied the text from the chunk into the string, 
+         * so we do not claim ownership over it.                             */
+        return false;
+   
+#   line 350 "a2l_quex_lexer\a2l_quex_lexer-token"
+
+#   undef  LexemeNull
+#   undef  self
+    /* Default: no ownership.                                                */
+    return false;
+}
+
+
+
+
+
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer_Token__TOKEN__TOKEN__GENERATED_I */

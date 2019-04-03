@@ -1,0 +1,50 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ * PURPOSE: File containing definition of token-identifier and
+ *          a function that maps token identifiers to a string
+ *          name.
+ *
+ * NOTE: This file has been created automatically by Quex.
+ *       Visit quex.org for further info.
+ *
+ * DATE: Wed Apr  3 21:43:44 2019
+ *
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY                                                     */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__GENERATED_TOKEN_IDS
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__GENERATED_TOKEN_IDS
+
+/* Note: When multiple lexical analyzers are included, then their
+ *       token prefix must differ! Use '--token-id-prefix'.                   */
+const uint32_t QUEX_TKN_ADDRTYPE       = ((uint32_t)10004);
+const uint32_t QUEX_TKN_ATTRIBUTE      = ((uint32_t)10005);
+const uint32_t QUEX_TKN_BLOCKBEGIN     = ((uint32_t)10006);
+const uint32_t QUEX_TKN_BLOCKEND       = ((uint32_t)10007);
+const uint32_t QUEX_TKN_BYTEORDER      = ((uint32_t)10008);
+const uint32_t QUEX_TKN_COMMENT        = ((uint32_t)10009);
+const uint32_t QUEX_TKN_CONVERSIONTYPE = ((uint32_t)10010);
+const uint32_t QUEX_TKN_DATASIZE       = ((uint32_t)10011);
+const uint32_t QUEX_TKN_DATATYPE       = ((uint32_t)10012);
+const uint32_t QUEX_TKN_DEDENT         = ((uint32_t)10000);
+const uint32_t QUEX_TKN_FLOAT          = ((uint32_t)10013);
+const uint32_t QUEX_TKN_HEX            = ((uint32_t)10014);
+const uint32_t QUEX_TKN_IDENTIFIER     = ((uint32_t)10015);
+const uint32_t QUEX_TKN_INDENT         = ((uint32_t)10001);
+const uint32_t QUEX_TKN_INDEXMODE      = ((uint32_t)10016);
+const uint32_t QUEX_TKN_INDEXORDER     = ((uint32_t)10017);
+const uint32_t QUEX_TKN_INTEGER        = ((uint32_t)10018);
+const uint32_t QUEX_TKN_KEYWORD        = ((uint32_t)10019);
+const uint32_t QUEX_TKN_MEMATTRIBUTE   = ((uint32_t)10020);
+const uint32_t QUEX_TKN_MEMORYTYPE     = ((uint32_t)10021);
+const uint32_t QUEX_TKN_MODE           = ((uint32_t)10022);
+const uint32_t QUEX_TKN_NODENT         = ((uint32_t)10002);
+const uint32_t QUEX_TKN_PRGTYPE        = ((uint32_t)10023);
+const uint32_t QUEX_TKN_STRING         = ((uint32_t)10024);
+const uint32_t QUEX_TKN_STRINGFORMAT   = ((uint32_t)10025);
+const uint32_t QUEX_TKN_TERMINATION    = ((uint32_t)0);
+const uint32_t QUEX_TKN_TYPE           = ((uint32_t)10026);
+const uint32_t QUEX_TKN_UNINITIALIZED  = ((uint32_t)10003);
+const uint32_t QUEX_TKN_UNITTYPE       = ((uint32_t)10027);
+const uint32_t QUEX_TKN_UNKNOWN        = ((uint32_t)10028);
+
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer__GENERATED_TOKEN_IDS */

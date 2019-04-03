@@ -1,0 +1,42 @@
+/* -*- C++ -*- vim: set syntax=cpp: 
+ * (C) 2005-2017 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY                
+ *
+ * NOTE: '__VA_ARGS__' in macros is avoided because at the time of
+ *       this writing, even some prominent compilers choke on it. */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__DEFINITIONS
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__DEFINITIONS
+
+#include "a2l_quex_lexer\lib\quex/asserts"
+#include "a2l_quex_lexer\lib\quex/debug_print"
+#include "a2l_quex_lexer\lib\quex/compatibility/stdint.h"
+#include "a2l_quex_lexer\lib\quex/compatibility/stdbool.h"
+#include "a2l_quex_lexer\lib\quex/standard_functions"
+#include "a2l_quex_lexer\lib\quex/enums"
+#include "a2l_quex_lexer\lib\quex/operations"
+
+/* Macro to customize an epilog to the classes, such as required to specify
+ * DLL compilation for with dedicated compilers.                              */ 
+#ifndef    QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT
+#   define QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT
+#endif
+
+#define QUEX_a2l_quex_lexer_LEXEME_TERMINATING_ZERO_SET(BUFFER)                \
+     do { (BUFFER)->_lexatom_at_lexeme_start = (BUFFER)->_read_p[0]; \
+          (BUFFER)->_read_p[0]               = (a2l_quex_lexer_lexatom_t)0; } while(0)
+
+#define QUEX_a2l_quex_lexer_LEXEME_TERMINATING_ZERO_UNDO(BUFFER)                                 \
+     /* only need to reset, in case that the terminating zero was set*/           \
+     if( (BUFFER)->_lexatom_at_lexeme_start != (a2l_quex_lexer_lexatom_t)0 ) {           \
+         /* NOTE:                                                              */ \
+         /*                                                                    */ \
+         /*    __quex_assert(*((BUFFER)->_read_p) == (a2l_quex_lexer_lexatom_t)0);    */ \
+         /*                                                                    */ \
+         /* CANNOT hold, since by 'seeking' during backward lexing the read_p  */ \
+         /* might actually be loaded out and in again without setting zero.    */ \
+         (BUFFER)->_read_p[0]               = (BUFFER)->_lexatom_at_lexeme_start; \
+         (BUFFER)->_lexatom_at_lexeme_start = (a2l_quex_lexer_lexatom_t)0;               \
+     }
+
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer__DEFINITIONS */

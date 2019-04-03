@@ -1,0 +1,17 @@
+/* -*- c++ -*- vim:set syntax=cpp: 
+ *
+ * NO INCLUDE GUARDS HERE.
+ *
+ * THIS FILE ONLY CHECKS AND DOES NOT DEFINE ANYTHING.
+ *                                                                    
+ * (C) 2009-2018 Frank-Rene Schaefer                                          */
+
+#if defined(QUEX_OPTION_ASSERTS) && defined (QUEX_OPTION_ASSERTS_DISABLED_EXT)
+#   error "Ambiguous configuration options."
+#endif
+
+/* Disallow computed gotos if it is known that the compiler does not
+ * support it.                                                       */
+
+
+

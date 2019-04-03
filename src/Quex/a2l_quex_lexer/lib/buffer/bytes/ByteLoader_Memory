@@ -1,0 +1,60 @@
+/* vim: ft=c: 
+ *
+ *  PURPOSE: This ByteLoader reads directly from a chunk of memory. 
+ *
+ *  Instead of reading from a file, it reads from a byte array which is passed
+ *  to the constructor. The positioning inside the array is given by the offset
+ *  to the beginning of the byte array. As such 'tell()' returns the offset to
+ *  the beginning of the array and 'seek()' sets the offset of the array from
+ *  where the next content is to be read.
+ *
+ *         position -----------. 
+ *         Begin  ---.         |
+ *                   |         | 
+ *         array:    [*.*.*.*.*.x.x.x.x.x.x.x.*.*.*.*.*.*]
+ *                             |             |
+ *                             |--- load_n ->|  
+ *                             '-------------'
+ *                                   '---------------------->  
+ *                                         bytes transferred upon 'load()'
+ *
+ *  It is intended for testing applications where fast access to predictable 
+ *  content is required.
+ *
+ *  The 'ownership', i.e. who has to free the memory, remains in the hands of
+ *  the one who passed it to this byte loader.
+ *
+ * (C) Frank-Rene Schaefer                                                   */
+#ifndef  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_MEMORY
+#define  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_MEMORY
+
+#include "a2l_quex_lexer\lib\buffer/bytes/ByteLoader"
+
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <stdio.h>
+#include "a2l_quex_lexer\lib\quex/MemoryManager"
+#ifdef __cplusplus
+}
+#endif
+
+typedef struct QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT { 
+    a2l_quex_lexer_ByteLoader  base;
+    struct {
+        const uint8_t*     begin_p;
+        const uint8_t*     end_p;
+        const uint8_t*     position;
+    } byte_array;
+    E_Ownership            memory_ownership;
+} a2l_quex_lexer_ByteLoader_Memory;
+
+inline a2l_quex_lexer_ByteLoader*    a2l_quex_lexer_ByteLoader_Memory_new(const uint8_t*  BeginP,
+                                                                       const uint8_t*  EndP);
+inline a2l_quex_lexer_ByteLoader*    a2l_quex_lexer_ByteLoader_Memory_new_from_file_name(const char*);
+
+
+
+#endif /*  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_MEMORY */

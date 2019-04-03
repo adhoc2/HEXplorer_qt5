@@ -1,0 +1,117 @@
+/* vim: set filetype=cpp:  -*- C++ -*-
+ *
+ * Declaration of all converter functions towards 'utf8', 'utf16', 'utf32',
+ * 'char', and 'wchar_t': 
+ *
+ * (C) 2018 Frank-Rene Schaefer. 
+ *     ABSOLUTELY NO WARRANTY                                                */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__unicode__LEXEME__CONVERTER_FROM_LEXEME
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__unicode__LEXEME__CONVERTER_FROM_LEXEME
+
+
+
+extern void
+a2l_quex_lexer_lexeme_to_utf8_character(const a2l_quex_lexer_lexatom_t** input_pp, 
+                                    uint8_t**                 output_pp);
+extern void
+a2l_quex_lexer_lexeme_to_utf16_character(const a2l_quex_lexer_lexatom_t**  input_pp, 
+                                     uint16_t**                 output_pp);
+extern void
+a2l_quex_lexer_lexeme_to_utf32_character(const a2l_quex_lexer_lexatom_t**  input_pp, 
+                                     uint32_t**                 output_pp);
+extern void
+a2l_quex_lexer_lexeme_to_char_character(const a2l_quex_lexer_lexatom_t**  input_pp, 
+                                    char**                     output_pp);
+extern void
+a2l_quex_lexer_lexeme_to_pretty_char_character(const a2l_quex_lexer_lexatom_t**  input_pp, 
+                                        char**                     output_pp);
+#if ! defined(QUEX_OPTION_WCHAR_T_DISABLED_EXT)
+extern void
+a2l_quex_lexer_lexeme_to_wchar_t_character(const a2l_quex_lexer_lexatom_t**  input_pp, 
+                                       wchar_t**                 output_pp);
+#endif
+
+/* (2) String converters */
+extern void
+a2l_quex_lexer_lexeme_nnzt_to_utf8(const a2l_quex_lexer_lexatom_t**  source_pp, 
+                               const a2l_quex_lexer_lexatom_t*   SourceEnd, 
+                               uint8_t**                 drain_pp,  
+                               const uint8_t*            DrainEnd);
+extern void
+a2l_quex_lexer_lexeme_nnzt_to_utf16(const a2l_quex_lexer_lexatom_t**  source_pp, 
+                                const a2l_quex_lexer_lexatom_t*   SourceEnd, 
+                                uint16_t**                drain_pp,  
+                                const uint16_t*           DrainEnd);
+extern void
+a2l_quex_lexer_lexeme_nnzt_to_utf32(const a2l_quex_lexer_lexatom_t**  source_pp, 
+                                const a2l_quex_lexer_lexatom_t*   SourceEnd, 
+                                uint32_t**                drain_pp,  
+                                const uint32_t*           DrainEnd);
+extern void
+a2l_quex_lexer_lexeme_nnzt_to_char(const a2l_quex_lexer_lexatom_t**  source_pp, 
+                               const a2l_quex_lexer_lexatom_t*   SourceEnd, 
+                               char**                    drain_pp,  
+                               const char*               DrainEnd);
+extern void
+a2l_quex_lexer_lexeme_nnzt_to_pretty_char(const a2l_quex_lexer_lexatom_t**  source_pp, 
+                                      const a2l_quex_lexer_lexatom_t*   SourceEnd, 
+                                      char**                     drain_pp,  
+                                      const char*                DrainEnd);
+
+#if ! defined(QUEX_OPTION_WCHAR_T_DISABLED_EXT)
+extern void
+a2l_quex_lexer_lexeme_nnzt_to_wchar(const a2l_quex_lexer_lexatom_t**  source_pp, 
+                                const a2l_quex_lexer_lexatom_t*   SourceEnd, 
+                                wchar_t**                  drain_pp,  
+                                const wchar_t*             DrainEnd);
+#endif
+
+/* (2) String converters */
+extern uint8_t*
+a2l_quex_lexer_lexeme_to_utf8(const a2l_quex_lexer_lexatom_t*  SourceBegin, 
+                          uint8_t*                  drain_p,  
+                          const uint8_t*            DrainEnd);
+extern uint16_t*
+a2l_quex_lexer_lexeme_to_utf16(const a2l_quex_lexer_lexatom_t*  SourceBegin, 
+                           uint16_t*                 drain_p,  
+                           const uint16_t*           DrainEnd);
+extern uint32_t*
+a2l_quex_lexer_lexeme_to_utf32(const a2l_quex_lexer_lexatom_t*  SourceBegin, 
+                           uint32_t*                 drain_p,  
+                           const uint32_t*           DrainEnd);
+extern char*
+a2l_quex_lexer_lexeme_to_char(const a2l_quex_lexer_lexatom_t*  SourceBegin, 
+                          char*                     drain_p,  
+                          const char*               DrainEnd);
+extern char*
+a2l_quex_lexer_lexeme_to_pretty_char(const a2l_quex_lexer_lexatom_t* SourceBegin, 
+                                 char*                    drain_p,  
+                                 const char*              DrainEnd);
+
+#if ! defined(QUEX_OPTION_WCHAR_T_DISABLED_EXT)
+extern wchar_t*
+a2l_quex_lexer_lexeme_to_wchar(const a2l_quex_lexer_lexatom_t* SourceBegin, 
+                           wchar_t*                 drain_p,  
+                           const wchar_t*           DrainEnd);
+#endif
+
+
+extern std::basic_string<uint8_t>
+a2l_quex_lexer_lexeme_to_utf8(const std::basic_string<a2l_quex_lexer_lexatom_t>& Source);
+extern std::basic_string<uint16_t>
+a2l_quex_lexer_lexeme_to_utf16(const std::basic_string<a2l_quex_lexer_lexatom_t>& Source);
+extern std::basic_string<uint32_t>
+a2l_quex_lexer_lexeme_to_utf32(const std::basic_string<a2l_quex_lexer_lexatom_t>& Source);
+extern std::basic_string<char>
+a2l_quex_lexer_lexeme_to_char(const std::basic_string<a2l_quex_lexer_lexatom_t>& Source);
+extern std::basic_string<char>
+a2l_quex_lexer_lexeme_to_pretty_char(const std::basic_string<a2l_quex_lexer_lexatom_t>& Source);
+#if ! defined(QUEX_OPTION_WCHAR_T_DISABLED_EXT)
+extern std::basic_string<wchar_t>
+a2l_quex_lexer_lexeme_to_wchar(const std::basic_string<a2l_quex_lexer_lexatom_t>& Source);
+#endif
+
+
+
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer__unicode__LEXEME__CONVERTER_FROM_LEXEME */

@@ -1,0 +1,43 @@
+/* -*- C++ -*- vim: set syntax=cpp: */
+#ifndef QUEX_INCLUDE_GUARD_LIB_QUEX__MEMORY_MANAGER
+#define QUEX_INCLUDE_GUARD_LIB_QUEX__MEMORY_MANAGER
+
+#include <stddef.h>
+#include "a2l_quex_lexer\lib\quex/enums"
+#include "a2l_quex_lexer\lib\quex/compatibility/stdint.h"
+#include "a2l_quex_lexer\lib\quex/compatibility/stdbool.h"
+
+
+namespace quex {
+
+extern uint8_t*
+MemoryManager_allocate(const size_t ByteN, E_MemoryObjectType);
+
+extern uint8_t*
+MemoryManager_reallocate(void*              old_memory,
+                                     const size_t       NewByteN, 
+                                     E_MemoryObjectType Type);
+
+extern void 
+MemoryManager_free(void* Obj, E_MemoryObjectType);
+
+extern size_t
+MemoryManager_insert(uint8_t* drain_begin_p,  uint8_t* drain_end_p,
+                                 uint8_t* source_begin_p, uint8_t* source_end_p);
+
+extern char*
+MemoryManager_clone_string(const char* String);
+
+extern bool 
+system_is_little_endian(void);
+
+extern void
+print_relative_positions(const void* Begin,       const void* End, 
+                                        size_t      ElementSize, const void* P);
+
+extern ptrdiff_t
+strlcpy(char* Dest, const char* Src, size_t MaxN);
+
+} /* close quex */
+ 
+#endif /* QUEX_INCLUDE_GUARD_LIB_QUEX__MEMORY_MANAGER */

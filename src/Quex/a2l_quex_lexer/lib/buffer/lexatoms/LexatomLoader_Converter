@@ -1,0 +1,160 @@
+/* -*- C++ -*-  vim: set syntax=cpp:
+ * (C) 2007-2008 Frank-Rene Schaefer */
+#ifndef  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__LEXATOM_LOADER_CONVERTER
+#define  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__LEXATOM_LOADER_CONVERTER
+
+/*
+ *  PURPOSE: (NOTE: This has to be reworked)
+ *  
+ *  Reads data from a stream and converts the incoming lexatoms into a
+ *  lexatom format required by the user. The user can specify the coding
+ *  format of the input stream as well as the coding format in which he
+ *  wants it to be put into his buffer.
+ *
+ *  NOTE: Streams for the quex::buffer comply to three simple requirements:
+ *
+ *        tell()          returning a value of the current input position
+ *        seek(pos)       sets the the current input position in the stream
+ *        read_lexatoms(buffer, N) fills the buffer with N lexatoms from the stream.
+ *                                   returns the number of actually filled lexatoms.
+ *  
+ *
+ *  MAIN GOAL: The main goal of a 'FixedSizeCharacterStream' class is to 
+ *             fill a buffer with N lexatoms starting from consecutive 
+ *             stream positions.
+ *
+ *  ASSUMPTION: 
+ *  
+ *  -- The input lexatom format is arbitrary. It can be anything that is
+ *     supported by 'iconv'. Flexible lexatom length codings are supported.
+ *  
+ *  -- The user's lexatoms format has a fixed lexatom size for each
+ *     lexatom. Any coding that involves different byte numbers for different
+ *     lexatoms or 'history' cannot be provided as user format.
+ *  
+ *  PRINCIPLE: 
+ *  
+ *               ________             _______            ________
+ *              |        |           |       ¦          |        |
+ *              |  FILE  |  ------>  |  raw  |  ------> | Buffer |
+ *              |________|           |_______|          |________|
+ *
+ *  A data stream (FILE) delivers lexatoms in an arbitrary coding format.
+ *  These lexatoms are stored bytewise inside a 'raw buffer'. Then this data is
+ *  transformed into the users coding format. The result is directly put into
+ *  the user's buffer. 
+ *  
+ *  (1) Fill as many bytes from the stream into the raw buffer
+ *                                                                stream_position
+ *                                                                |           
+ *       Stream:         ||aa.aa.aa.bb.cc.cc.cc.cc.dd.dd.ee.ee.ee.ee.ff.ff.gg.||
+ *                         
+ *                         raw_buffer.iterator
+ *                         |                        
+ *       Raw Buffer:     ||aa.aa.aa.bb.cc.cc.cc.cc.dd.dd.ee.ee.ee||
+ *  
+ *  
+ *  (2) Convert lexatoms in the raw buffer and store into users buffer
+ *
+ *
+ *        User's Buffer: ||AA.AA.BB.BB.CC.CC________________________||
+ *  
+ *
+ *                                   yes
+ *  (2b) User's buffer is filled? --------> **EXIT/DONE**
+ *         |
+ *         |  no
+ *         *
+ *  (3a) Copy unconverted bytes to the beginning of the raw buffer
+ *  
+ *        Raw Buffer:    ||ee.ee.ee______________________________||
+ *  
+ *
+ *  (3b) Load remaining bytes from the stream into raw buffer
+ *
+ *                         raw_buffer.iterator
+ *                         |
+ *        Raw Buffer:    ||ee.ee.ee.ee.ff.ff.gg.hh.ii.ii.________||
+ *         
+ *        Goto (2)
+ *  
+ *  (4) Convert lexatoms from raw buffer and store them into user's buffer
+ *  
+ *        User's Buffer: ||AA.AA.BB.BB.CC.CC.DD.DD.EE.EE.FF.FF.GG.GG||
+ *  
+ *  (4b) goto (2b)
+ *
+ *  NOTE: The 'raw_buffer.iterator' remains between calls to "read_lexatoms()".
+ *        This is equivalent to having some bytes in the pipeline.
+ **********************************************************************************/
+
+#include <iostream> 
+#include <cerrno>
+#include <stdexcept>
+#include <cstddef>
+
+
+#include "a2l_quex_lexer\lib\definitions"
+#include "a2l_quex_lexer\lib\buffer/Buffer"
+#include "a2l_quex_lexer\lib\buffer/lexatoms/LexatomLoader"
+#include "a2l_quex_lexer\lib\buffer/lexatoms/converter/Converter"
+
+
+
+typedef struct QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT {
+    /* E_Ownership               ownership; */
+
+    uint8_t*                  begin;
+    uint8_t*                  fill_end_p;
+    uint8_t*                  memory_end;
+   
+    uint8_t*                  next_to_convert_p;
+
+} a2l_quex_lexer_RawBuffer;
+
+typedef struct QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT {
+    /* LexatomLoader_Converter:
+     *               *---------------------> QUEX_NAME(ByteLoader
+     )*               *---------------------> Converter                 
+     *                                                                   */
+    a2l_quex_lexer_LexatomLoader  base;
+
+    /* in base a2l_quex_lexer_ByteLoader*    byte_loader; */
+    a2l_quex_lexer_Converter*     converter;
+    a2l_quex_lexer_RawBuffer      raw_buffer;
+
+} a2l_quex_lexer_LexatomLoader_Converter;
+
+
+inline a2l_quex_lexer_LexatomLoader*
+a2l_quex_lexer_LexatomLoader_Converter_new(a2l_quex_lexer_ByteLoader* byte_loader,
+                                       a2l_quex_lexer_Converter*  converter);
+
+inline void    a2l_quex_lexer_LexatomLoader_Converter_move_away_passed_content(a2l_quex_lexer_LexatomLoader_Converter*);
+inline size_t  a2l_quex_lexer___LexatomLoader_Converter_fill_raw_buffer(a2l_quex_lexer_LexatomLoader_Converter*);
+
+inline void    a2l_quex_lexer_RawBuffer_init(a2l_quex_lexer_RawBuffer* me, 
+                                              uint8_t* Begin, size_t SizeInBytes);
+inline void    a2l_quex_lexer_RawBuffer_print_this(a2l_quex_lexer_RawBuffer*  me);
+
+#ifdef QUEX_OPTION_ASSERTS
+#   define QUEX_ASSERT_RAW_BUFFER(BI)                         \
+    __quex_assert(0 != BI);                                         \
+    __quex_assert((BI)->next_to_convert_p >= (BI)->begin);     \
+    __quex_assert((BI)->next_to_convert_p <= (BI)->fill_end_p);\
+    __quex_assert((BI)->fill_end_p >= (BI)->begin);            \
+    __quex_assert((BI)->fill_end_p <= (BI)->memory_end);             
+
+#   define QUEX_ASSERT_RAW_BUFFER_EASY(BI)                    \
+    __quex_assert(0 != BI);                                         \
+    __quex_assert((BI)->next_to_convert_p >= (BI)->begin);     \
+    __quex_assert((BI)->next_to_convert_p <= (BI)->fill_end_p);                     
+
+#else
+#   define QUEX_ASSERT_RAW_BUFFER(BI)      /* empty */
+#   define QUEX_ASSERT_RAW_BUFFER_EASY(BI) /* empty */
+#endif
+
+
+
+#endif /*  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__LEXATOM_LOADER_CONVERTER */

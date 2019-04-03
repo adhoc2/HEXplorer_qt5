@@ -166,7 +166,7 @@ void A2l::parseSTA2l()
     {
         //save the buffer into a stringstream qluex
         std::istringstream in(str.toStdString());
-        QUEX_NAME(ByteLoader)* byte_loader = QUEX_NAME(ByteLoader_stream_new)(&in);
+        a2l_quex_lexer_ByteLoader* byte_loader = a2l_quex_lexer_ByteLoader_stream_new(&in);
 
         //start the tokeniser Quex
         lexer = new A2lQuexLexer(byte_loader);
@@ -287,7 +287,7 @@ bool A2l::parseOpenMPA2l()
                     {
                         // create a new lexer
                         std::istringstream out1(str1.toStdString());
-                        QUEX_NAME(ByteLoader)* byte_loader1 = QUEX_NAME(ByteLoader_stream_new)(&out1);
+                        a2l_quex_lexer_ByteLoader* byte_loader1 = a2l_quex_lexer_ByteLoader_stream_new(&out1);
                         lexer1 = new A2lQuexLexer(byte_loader1);
                         connect(lexer1, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)),Qt::DirectConnection);
                         lexer1->initialize();
@@ -334,7 +334,7 @@ bool A2l::parseOpenMPA2l()
                     {
                         // create a new lexer
                         std::istringstream out2(str2.toStdString());
-                        QUEX_NAME(ByteLoader)* byte_loader2 = QUEX_NAME(ByteLoader_stream_new)(&out2);
+                        a2l_quex_lexer_ByteLoader* byte_loader2 = a2l_quex_lexer_ByteLoader_stream_new(&out2);
                         lexer2 = new A2lQuexLexer(byte_loader2);
 //                        connect(lexer2, SIGNAL(returnedToken(int)), this, SLOT(checkProgressStream(int)),
 //                                Qt::DirectConnection);

@@ -1,0 +1,28 @@
+#ifndef  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_WSTREAM
+#define  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_WSTREAM
+
+#if defined(__cplusplus) && ! defined(QUEX_OPTION_WCHAR_T_DISABLED_EXT)
+
+#include <istream>
+#include "a2l_quex_lexer\lib\buffer/bytes/ByteLoader"
+
+
+
+class a2l_quex_lexer_ByteLoader_wstream { 
+public:
+    a2l_quex_lexer_ByteLoader  base;
+    std::wistream*         input_handle;
+};
+
+inline void
+a2l_quex_lexer_ByteLoader_wstream_construct(a2l_quex_lexer_ByteLoader_wstream* me, std::wistream* sh);
+inline a2l_quex_lexer_ByteLoader*
+a2l_quex_lexer_ByteLoader_wstream_new(std::wistream* sh);
+inline a2l_quex_lexer_ByteLoader*    
+a2l_quex_lexer_ByteLoader_wstream_new_from_file_name(const char* FileName);
+
+
+
+#endif /* __cplusplus and wchar_t                                             */
+
+#endif /*  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_WSTREAM           */

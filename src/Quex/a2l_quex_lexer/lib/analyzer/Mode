@@ -1,0 +1,62 @@
+/* -*- C++ -*-  vim:set syntax=cpp: 
+ *
+ * (C) 2004-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY              */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MODE
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MODE
+
+#include "a2l_quex_lexer\lib\definitions"
+#include "a2l_quex_lexer\lib\buffer/Buffer"
+
+
+    
+ class a2l_quex_lexer;
+
+
+typedef struct QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT a2l_quex_lexer_Mode_tag {  
+    const char* name;
+
+
+    void (*on_entry)(a2l_quex_lexer*, const struct a2l_quex_lexer_Mode_tag* FromMode);
+    void (*on_exit)(a2l_quex_lexer*, const struct a2l_quex_lexer_Mode_tag* ToMode);
+#   ifdef QUEX_OPTION_ASSERTS
+    bool (*has_base)(const struct a2l_quex_lexer_Mode_tag* Mode);
+    bool (*has_entry_from)(const struct a2l_quex_lexer_Mode_tag* Mode);
+    bool (*has_exit_to)(const struct a2l_quex_lexer_Mode_tag* Mode);
+#   endif
+
+    a2l_quex_lexer_Buffer_event_callbacks buffer_callbacks;
+
+    /* Choose the analyzer function to be the last, because it has a unique
+     * signature. The function pointers are assigned in a table. If the 
+     * content of this class changes, any mismatch of pointers is likely
+     * to trigger a compilation error, thus signalling that the setup is
+     * incorrect.                                                        */
+    a2l_quex_lexer_AnalyzerFunctionP      analyzer_function;
+} a2l_quex_lexer_Mode;
+
+inline void
+a2l_quex_lexer_Mode_uncallable_analyzer_function(a2l_quex_lexer*);
+
+
+
+inline void
+a2l_quex_lexer_Mode_on_entry_exit_null_function(a2l_quex_lexer*, const a2l_quex_lexer_Mode*);
+
+typedef struct QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT {
+    const a2l_quex_lexer_Mode** begin;
+    const a2l_quex_lexer_Mode** end;
+    const a2l_quex_lexer_Mode** memory_end;
+} a2l_quex_lexer_ModeStack;
+
+inline bool  a2l_quex_lexer_ModeStack_construct(a2l_quex_lexer_ModeStack* me,
+                                                 const size_t          N);
+inline void  a2l_quex_lexer_ModeStack_destruct(a2l_quex_lexer_ModeStack* me);
+inline void  a2l_quex_lexer_ModeStack_resources_absent_mark(a2l_quex_lexer_ModeStack* me);
+inline bool  a2l_quex_lexer_ModeStack_resources_absent(a2l_quex_lexer_ModeStack* me);
+inline void  a2l_quex_lexer_ModeStack_print(a2l_quex_lexer_ModeStack* me);
+
+
+
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__QUEX_MODE */

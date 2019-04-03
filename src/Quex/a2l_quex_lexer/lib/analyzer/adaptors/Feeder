@@ -1,0 +1,50 @@
+/* -*- C++ -*-   vim:set syntax=cpp:
+ * 
+ * PURPOSE: A 'feeder' coordinates the lexical analysis based on input that
+ *          is *NOT* delivered through a byte loader in the background. 
+ *
+ * See file 'Feeder.i' for detailed descriptions.
+ *
+ * (C) 2016 Frank-Rene Schaefer.                                             */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ADAPTORS__FEEDER
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ADAPTORS__FEEDER
+
+
+
+typedef struct {
+    a2l_quex_lexer* lexer;
+    a2l_quex_lexer_lexatom_t*  last_incomplete_lexeme_p;
+    a2l_quex_lexer_token_id_t  stream_terminating_token_id;
+} a2l_quex_lexer_FeederBase;
+
+ struct QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT a2l_quex_lexer_Feeder {
+
+    a2l_quex_lexer_FeederBase  base;
+
+    struct {
+        const void* begin_p;
+        const void* end_p;
+    } external_chunk;
+
+    a2l_quex_lexer_token_id_t  stream_terminating_token_id;
+
+
+public:
+    a2l_quex_lexer_Feeder(a2l_quex_lexer*, a2l_quex_lexer_token_id_t);
+    void             feed(const void* BeginP, const void* EndP);
+    a2l_quex_lexer_Token* deliver();
+};
+
+
+
+inline void             a2l_quex_lexer_Feeder_construct(a2l_quex_lexer_Feeder*   me, 
+                                                         a2l_quex_lexer* lexer,
+                                                         a2l_quex_lexer_token_id_t  StreamTerminatingTokenId);
+inline a2l_quex_lexer_Token* a2l_quex_lexer_Feeder_deliver(a2l_quex_lexer_Feeder* me);
+inline void             a2l_quex_lexer_Feeder_feed(a2l_quex_lexer_Feeder* me,
+                                                    const void* BeginP, 
+                                                    const void* EndP);
+
+
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ADAPTORS__FEEDER */

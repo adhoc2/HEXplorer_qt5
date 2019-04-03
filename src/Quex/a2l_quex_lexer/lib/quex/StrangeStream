@@ -1,0 +1,124 @@
+/* -*- C++ -*- vim: set syntax=cpp: 
+ * (C) 2008 Frank-Rene Schaefer 
+ * MIT License -- ABSOLUTELY NO WARRANTY */
+#ifndef QUEX_INCLUDE_GUARD_LIB_QUEX__STRANGE_STREAM
+#define QUEX_INCLUDE_GUARD_LIB_QUEX__STRANGE_STREAM
+#ifdef __cplusplus
+#include <sys/types.h>
+#include <iostream>
+#include "a2l_quex_lexer\lib\quex/compatibility/stdint.h"
+
+
+
+template <class StdStreamType> class StrangeStream {
+/* PURPOSE: Implementing a class that does not increment the stream position
+ * according to the number of bytes being transferred. Instead, it increments
+ * it deterministically in a strange manner.
+ *
+ * IT HOLDS: -- When reading of N bytes starts at a distinct stream position x
+ *              then the read in segment is always the same.  
+ *           -- Characters that come later in a stream correspond to higher 
+ *              stream position. Stream position is monotonously increasing 
+ *              with the read in character number.
+ *
+ * BUT: -- There is **no** guaranty that if N letters are read, the stream 
+ *         position is increased by N.
+ *      -- If N letters were read in and the stream position after that is 'x' 
+ *         then the letter at N-1 *does not* necessarily appear at position 'x-1' 
+ *         or whatever fixed offset.                  
+ *
+ * REASON: At the time of this writing,  the Microsoft implementation of
+ * istream behaves strange. Whenever a '\r\n' occurs, it transfers a '\n' into
+ * the buffer and increments the input stream by two. This is likely to cause
+ * confusion. With this class the robustness of the system against such weird
+ * things can be tested.                                                      */ 
+
+    StdStreamType*   sh;
+    uint32_t         seed;
+
+    typedef typename   StdStreamType::pos_type   intern_pos_type;
+    typedef typename   StdStreamType::off_type   intern_off_type;
+
+    static const size_t                        CharacterSize = sizeof(typename StdStreamType::char_type);
+
+public:
+    typedef typename StdStreamType::char_type  char_type;
+    typedef uint32_t                           pos_type;
+    typedef uint32_t                           off_type;
+
+    StrangeStream(StdStreamType*);
+
+    pos_type   tellg();
+    void       seekg(pos_type);
+    void       read(char_type* buffer, size_t Size);
+    size_t     gcount();
+    
+    bool   eof();
+    bool   bad();
+    void   clear();
+    bool   fail();
+
+private:
+    intern_pos_type  __map_strange_to_real_position(pos_type Pos);
+    pos_type         __map_real_to_strange_position(intern_pos_type Pos);
+};
+
+#define TEMPLATE_IN  template <class StdStreamType> inline
+
+TEMPLATE_IN
+StrangeStream<StdStreamType>::StrangeStream(StdStreamType* SH)
+{
+    sh   = SH;
+    seed = 17;
+    /* open in _binary mode_ */
+}
+
+TEMPLATE_IN  typename StrangeStream<StdStreamType>::pos_type
+StrangeStream<StdStreamType>::__map_real_to_strange_position(StrangeStream<StdStreamType>::intern_pos_type Pos)
+{
+    uint32_t seed = 17;
+    uint32_t strange_pos = 0;
+    for(uint32_t i=0; i < Pos; ++i) {
+        seed  = (seed * seed * seed) % (2 << 24);
+        uint32_t delta = seed % 3 + 1; /* pseudo random increment */
+        strange_pos += delta;
+    }
+    return strange_pos;
+}
+
+TEMPLATE_IN typename StrangeStream<StdStreamType>::intern_pos_type
+StrangeStream<StdStreamType>::__map_strange_to_real_position(typename StrangeStream<StdStreamType>::pos_type Pos)
+{
+    uint32_t strange_pos = 0;
+    uint32_t seed = 17;
+    for(uint32_t i=0; ; ++i) {
+        seed  = (seed * seed * seed) % (2 << 24);
+        uint32_t delta = seed % 3 + 1; /* pseudo random increment */
+        strange_pos += delta;
+        if( strange_pos > Pos ) return i;
+    }
+}
+
+TEMPLATE_IN typename StrangeStream<StdStreamType>::pos_type
+StrangeStream<StdStreamType>::tellg()
+{ return __map_real_to_strange_position(sh->tellg()); }
+
+TEMPLATE_IN void
+StrangeStream<StdStreamType>::seekg(typename StrangeStream<StdStreamType>::pos_type Position)
+{ sh->seekg(__map_strange_to_real_position(Position)); }
+
+TEMPLATE_IN void   
+StrangeStream<StdStreamType>::read(typename StrangeStream<StdStreamType>::char_type* buffer, size_t Size)
+{ sh->read(buffer, Size); }
+
+TEMPLATE_IN size_t StrangeStream<StdStreamType>::gcount() { return sh->gcount(); }
+TEMPLATE_IN bool   StrangeStream<StdStreamType>::eof()    { return sh->eof(); }
+TEMPLATE_IN bool   StrangeStream<StdStreamType>::bad()    { return sh->bad(); }
+TEMPLATE_IN void   StrangeStream<StdStreamType>::clear()  { return sh->clear(); }
+TEMPLATE_IN bool   StrangeStream<StdStreamType>::fail()   { return sh->fail(); }
+
+
+#   undef TEMPLATE_IN
+
+#endif /* __cplusplus */
+#endif /* QUEX_INCLUDE_GUARD_LIB_QUEX__STRANGE_STREAM */

@@ -1,0 +1,53 @@
+#ifndef QUEX_INCLUDE_GUARD_LIB_QUEX__STANDARD_FUNCTIONS
+#define QUEX_INCLUDE_GUARD_LIB_QUEX__STANDARD_FUNCTIONS
+
+#if defined(_MSC_VER) && _MSC_VER >= 1600
+    /* Microsoft VisualStudio(tm) 2010, i.e. Version 1600:
+     * Forget about the 'CRT security enhancements' for sprintf, fopen, and setbuf. */
+#   pragma warning(disable: 4996)
+#endif
+
+
+
+#   include <cstddef>  /* gets: size_t, ptrdiff_t */
+#   include <cstring>  /* gets: memmove, memcpy   */
+#   include <cstdio>   /* gets: fprintf           */
+#   include <cstdlib>
+#   include <stdexcept>
+
+#   define __QUEX_STD_FILE     std::FILE
+#   define __QUEX_STD_STDIN    stdin
+#   define __QUEX_STD_STDERR   stderr
+#   define __QUEX_STD_STDOUT   stdout
+#   define __QUEX_STD_fopen    std::fopen
+#   define __QUEX_STD_fclose   std::fclose
+#   define __QUEX_STD_fprintf  std::fprintf
+#   define __QUEX_STD_fread    std::fread 
+#   define __QUEX_STD_fseek    std::fseek 
+#   define __QUEX_STD_ftell    std::ftell 
+#   define __QUEX_STD_memcpy   std::memcpy
+#   define __QUEX_STD_memmove  std::memmove
+#   define __QUEX_STD_memset   std::memset
+#   define __QUEX_STD_memcmp   std::memcmp
+#   define __QUEX_STD_sprintf  std::sprintf
+#   define __QUEX_STD_strcmp   std::strcmp
+#   define __QUEX_STD_strcpy   std::strcpy
+#   define __QUEX_STD_strlen   std::strlen
+#   define __QUEX_STD_malloc   std::malloc
+#   define __QUEX_STD_realloc  std::realloc
+#   define __QUEX_STD_free     std::free  
+
+
+
+#define __QUEX_STD_strlcpy(DEST, SRC, MAX) quex::strlcpy((DEST), (SRC), (size_t)(MAX))
+
+#ifndef    QUEX_a2l_quex_lexer_SETTING_DEBUG_OUTPUT_CHANNEL
+#   define QUEX_a2l_quex_lexer_SETTING_DEBUG_OUTPUT_CHANNEL __QUEX_STD_STDOUT
+#endif
+
+#define QUEX_DEBUG_PRINT(STR)           __QUEX_STD_fprintf(QUEX_a2l_quex_lexer_SETTING_DEBUG_OUTPUT_CHANNEL, "%s", (STR))
+#define QUEX_DEBUG_PRINT1(STR, X)       __QUEX_STD_fprintf(QUEX_a2l_quex_lexer_SETTING_DEBUG_OUTPUT_CHANNEL, (STR), (X))
+#define QUEX_DEBUG_PRINT2(STR, X, Y)    __QUEX_STD_fprintf(QUEX_a2l_quex_lexer_SETTING_DEBUG_OUTPUT_CHANNEL, (STR), (X), (Y))
+#define QUEX_DEBUG_PRINT3(STR, X, Y, Z) __QUEX_STD_fprintf(QUEX_a2l_quex_lexer_SETTING_DEBUG_OUTPUT_CHANNEL, (STR), (X), (Y), (Z))
+
+#endif /* QUEX_INCLUDE_GUARD_LIB_QUEX__STANDARD_FUNCTIONS */

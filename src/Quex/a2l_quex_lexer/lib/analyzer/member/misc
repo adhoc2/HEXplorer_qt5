@@ -1,0 +1,64 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ * (C) 2005-2016 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY                                                    */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__MISC
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__MISC
+
+#include "a2l_quex_lexer\lib\definitions"
+
+
+
+
+
+inline void        a2l_quex_lexer_MF_error_code_clear(a2l_quex_lexer* me);
+inline bool        a2l_quex_lexer_MF_error_code_is_void(a2l_quex_lexer* me);
+inline void        a2l_quex_lexer_MF_error_code_set_void(a2l_quex_lexer* me);
+inline void        a2l_quex_lexer_MF_error_code_set_if_first(a2l_quex_lexer* me, E_Error ErrorCode);
+
+/* Activate/deactivate byte order reversion (big-/little-endian) */
+inline bool        a2l_quex_lexer_MF_byte_order_reversion(a2l_quex_lexer* me);
+inline void        a2l_quex_lexer_MF_byte_order_reversion_set(a2l_quex_lexer* me,
+                                                            bool                Value);
+/* Version information */
+inline const char* a2l_quex_lexer_MF_version(a2l_quex_lexer* me); 
+
+inline a2l_quex_lexer_Token*  a2l_quex_lexer_MF_token_p(a2l_quex_lexer* me);
+inline void              a2l_quex_lexer_MF_send(a2l_quex_lexer* me, 
+                                                 a2l_quex_lexer_token_id_t  Id);
+inline void              a2l_quex_lexer_MF_send_n(a2l_quex_lexer* me, 
+                                                   a2l_quex_lexer_token_id_t  Id, 
+                                                   size_t              RepetitionN);
+inline bool              a2l_quex_lexer_MF_send_text(a2l_quex_lexer* me, 
+                                                      a2l_quex_lexer_token_id_t  Id,
+                                                      a2l_quex_lexer_lexatom_t*  BeginP, 
+                                                      a2l_quex_lexer_lexatom_t*  EndP);
+inline bool              a2l_quex_lexer_MF_send_string(a2l_quex_lexer* me,
+                                                        a2l_quex_lexer_token_id_t  Id,
+                                                        a2l_quex_lexer_lexatom_t*  ZeroTerminatedString);
+
+inline const char*
+                 a2l_quex_lexer_MF_input_name(a2l_quex_lexer* me);
+inline bool a2l_quex_lexer_MF_input_name_set(a2l_quex_lexer* me, 
+                                              const char*         InputNameP);
+/* Print */
+inline void    a2l_quex_lexer_MF_print_this(a2l_quex_lexer* me);
+extern      void    a2l_quex_lexer_user_print(a2l_quex_lexer* me);
+
+
+inline size_t a2l_quex_lexer_MF_line_number(const a2l_quex_lexer* me);
+inline size_t a2l_quex_lexer_MF_line_number_at_begin(const a2l_quex_lexer* me);
+inline size_t a2l_quex_lexer_MF_line_number_at_end(const a2l_quex_lexer* me);
+inline void   a2l_quex_lexer_MF_line_number_set(a2l_quex_lexer* me, size_t Y);
+
+
+inline size_t a2l_quex_lexer_MF_column_number(const a2l_quex_lexer* me);
+inline size_t a2l_quex_lexer_MF_column_number_at_begin(const a2l_quex_lexer* me);
+inline size_t a2l_quex_lexer_MF_column_number_at_end(const a2l_quex_lexer* me);
+inline void   a2l_quex_lexer_MF_column_number_set(a2l_quex_lexer* me, size_t X);
+
+
+
+
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__MEMBER__MISC */
+

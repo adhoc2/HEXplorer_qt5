@@ -1,0 +1,38 @@
+/* -*- C++ -*- vim: set syntax=cpp: */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__ASSERTS
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__ASSERTS
+
+#ifndef QUEX_OPTION_ASSERTS
+
+#define a2l_quex_lexer_BUFFER_ASSERT_INVARIANCE_SETUP(BI, ME)       /* empty */    
+#define a2l_quex_lexer_BUFFER_ASSERT_INVARIANCE_VERIFY(BI, ME)      /* empty */    
+#define a2l_quex_lexer_BUFFER_ASSERT_INVARIANCE_VERIFY_SAME(BI, ME) /* empty */    
+#define a2l_quex_lexer_Buffer_assert_pointers_in_range(ME)          /* empty */
+#define a2l_quex_lexer_Buffer_assert_consistency(ME)                /* empty */
+#define a2l_quex_lexer_Buffer_member_functions_assert(ME)           /* empty */
+
+#else
+#include "a2l_quex_lexer\lib\definitions"
+#include "a2l_quex_lexer\lib\buffer/Buffer"
+
+
+
+inline void a2l_quex_lexer_BUFFER_ASSERT_INVARIANCE_SETUP(a2l_quex_lexer_BufferInvariance* bi, 
+                                                           a2l_quex_lexer_Buffer*           me);
+inline void a2l_quex_lexer_BUFFER_ASSERT_INVARIANCE_VERIFY(a2l_quex_lexer_BufferInvariance* bi, 
+                                                            a2l_quex_lexer_Buffer*           me);
+inline void a2l_quex_lexer_BUFFER_ASSERT_INVARIANCE_VERIFY_SAME(a2l_quex_lexer_BufferInvariance* bi, 
+                                                                 a2l_quex_lexer_Buffer*           me);
+
+inline void a2l_quex_lexer_Buffer_assert_pointers_in_range(const a2l_quex_lexer_Buffer* B);                 
+inline void a2l_quex_lexer_Buffer_assert_limit_codes_in_place(const a2l_quex_lexer_Buffer* B);
+inline void a2l_quex_lexer_Buffer_assert_consistency(const a2l_quex_lexer_Buffer* B);                                            
+inline void a2l_quex_lexer_Buffer_assert_no_lexatom_is_buffer_border(const a2l_quex_lexer_lexatom_t* Begin, 
+                                                                      const a2l_quex_lexer_lexatom_t* End);
+inline void a2l_quex_lexer_Buffer_member_functions_assert(const a2l_quex_lexer_Buffer* me);
+
+
+
+#endif
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__ASSERTS */

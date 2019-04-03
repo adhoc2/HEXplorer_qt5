@@ -1,0 +1,44 @@
+/* -*- C++ -*-   vim:set syntax=cpp:
+ * 
+ * PURPOSE: Gavaging -- Running lexical analysis based on content that is fed
+ *                      via direct access to the analyzer's internal buffer.
+ *
+ * See file 'Gavager.i' for detailed description.
+ * 
+ * (C) 2016 Frank-Rene Schaefer.                                             */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ADAPTORS__GAVAGER
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ADAPTORS__GAVAGER
+
+#include "a2l_quex_lexer\lib\analyzer/adaptors/Feeder"
+
+
+
+
+struct QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT a2l_quex_lexer_Gavager {
+    a2l_quex_lexer_FeederBase  base;
+
+public:
+    a2l_quex_lexer_Gavager(a2l_quex_lexer*, a2l_quex_lexer_token_id_t);
+    bool              access(void**       begin_p, 
+                             const void** end_p);
+    bool              gavage(ptrdiff_t    ReceivedN);
+    a2l_quex_lexer_Token*  deliver();
+};
+
+
+
+
+inline void  a2l_quex_lexer_Gavager_construct(a2l_quex_lexer_Gavager*  me, 
+                                               a2l_quex_lexer*  lexer,
+                                               a2l_quex_lexer_token_id_t   StreamTerminatingTokenId);
+inline bool  a2l_quex_lexer_Gavager_access(a2l_quex_lexer_Gavager* me,
+                                            void**              begin_p, 
+                                            const void**        end_p);
+inline bool  a2l_quex_lexer_Gavager_gavage(a2l_quex_lexer_Gavager* me, 
+                                            ptrdiff_t           ReceivedN);
+inline a2l_quex_lexer_Token*  
+                  a2l_quex_lexer_Gavager_deliver(a2l_quex_lexer_Gavager* me);
+
+
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ADAPTORS__GAVAGER */

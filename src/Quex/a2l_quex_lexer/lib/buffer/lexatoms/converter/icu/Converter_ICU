@@ -1,0 +1,41 @@
+/* -*- C++ -*- vim: set syntax=cpp: 
+ * (C) 2009 Frank-Rene Schaefer
+ * NO WARRANTY */
+#ifndef  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__ICU__CONVERTER_ICU
+#define  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__ICU__CONVERTER_ICU
+
+#include "a2l_quex_lexer\lib\definitions"
+#include "a2l_quex_lexer\lib\buffer/lexatoms/converter/Converter"
+#include "a2l_quex_lexer\lib\buffer/lexatoms/converter/icu/special_headers.h"
+
+#if  defined(QUEX_a2l_quex_lexer_SETTING_ICU_PIVOT_BUFFER_SIZE_EXT)
+#    define QUEX_a2l_quex_lexer_SETTING_ICU_PIVOT_BUFFER_SIZE  QUEX_a2l_quex_lexer_SETTING_ICU_PIVOT_BUFFER_SIZE_EXT
+#else
+#    define QUEX_a2l_quex_lexer_SETTING_ICU_PIVOT_BUFFER_SIZE                               (64)
+#endif
+
+
+
+    typedef struct QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT {
+        a2l_quex_lexer_Converter  base;
+
+        UConverter*  from_handle;
+        UConverter*  to_handle;
+        UErrorCode   status;
+
+        UBool        reset_upon_next_conversion_f;
+
+        struct {
+            UChar    buffer[QUEX_a2l_quex_lexer_SETTING_ICU_PIVOT_BUFFER_SIZE];
+            UChar*   source;
+            UChar*   target;
+        } pivot;
+
+    } a2l_quex_lexer_Converter_ICU;
+
+    inline a2l_quex_lexer_Converter* a2l_quex_lexer_Converter_ICU_new(const char* FromCodec, 
+                                                                   const char* ToCodec);
+
+
+
+#endif /*  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__ICU__CONVERTER_ICU */

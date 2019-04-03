@@ -1,0 +1,65 @@
+/* -*- C++ -*- vim: set syntax=cpp: 
+ * (C) 2004-2009 Frank-Rene Schaefer                               */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__TOKEN__TOKEN_QUEUE
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__TOKEN__TOKEN_QUEUE
+
+#include "a2l_quex_lexer\lib\definitions"
+#include "a2l_quex_lexer\lib\quex/asserts"
+#include "a2l_quex_lexer\lib\quex/MemoryManager"
+#include "a2l_quex_lexer\a2l_quex_lexer-token"
+/* #include "a2l_quex_lexer\a2l_quex_lexer" */
+
+
+
+typedef struct QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT {
+    a2l_quex_lexer* the_lexer;
+
+    a2l_quex_lexer_Token*   begin;
+    a2l_quex_lexer_Token*   read_iterator;    /* pointer to next token to be read          */
+    a2l_quex_lexer_Token*   write_iterator;   /* pointer to next token to be written       */
+    a2l_quex_lexer_Token*   end;
+
+} a2l_quex_lexer_TokenQueue;
+
+inline void             a2l_quex_lexer_TokenQueue_reset(a2l_quex_lexer_TokenQueue* me);
+inline void             a2l_quex_lexer_TokenQueue_init(a2l_quex_lexer_TokenQueue* me, 
+                                                        a2l_quex_lexer_Token*       Memory, 
+                                                        a2l_quex_lexer_Token*       MemoryEnd); 
+inline bool             a2l_quex_lexer_TokenQueue_construct(a2l_quex_lexer_TokenQueue* me, 
+                                                             a2l_quex_lexer*    lexer,
+                                                             const size_t           N);
+inline a2l_quex_lexer_Token* a2l_quex_lexer_TokenQueue_last_token(a2l_quex_lexer_TokenQueue* me);
+
+inline void             a2l_quex_lexer_TokenQueue_resources_absent_mark(a2l_quex_lexer_TokenQueue* me);
+inline bool             a2l_quex_lexer_TokenQueue_resources_absent(a2l_quex_lexer_TokenQueue* me);
+inline void             a2l_quex_lexer_TokenQueue_destruct(a2l_quex_lexer_TokenQueue* me);
+inline void             a2l_quex_lexer_TokenQueue_remainder_get(a2l_quex_lexer_TokenQueue* me,
+                                                                 a2l_quex_lexer_Token**      begin,
+                                                                 a2l_quex_lexer_Token**      end);
+inline void             a2l_quex_lexer_TokenQueue_memory_get(a2l_quex_lexer_TokenQueue* me,
+                                                              a2l_quex_lexer_Token**      memory,
+                                                              size_t*                n);
+inline bool             a2l_quex_lexer_TokenQueue_is_full(a2l_quex_lexer_TokenQueue* me);
+inline bool             a2l_quex_lexer_TokenQueue_is_empty(a2l_quex_lexer_TokenQueue* me);
+inline void             a2l_quex_lexer_TokenQueue_push(a2l_quex_lexer_TokenQueue* me,
+                                                        a2l_quex_lexer_token_id_t     Id);
+inline bool             a2l_quex_lexer_TokenQueue_push_text(a2l_quex_lexer_TokenQueue* me,
+                                                             a2l_quex_lexer_token_id_t     Id,
+                                                             a2l_quex_lexer_lexatom_t*     BeginP,
+                                                             a2l_quex_lexer_lexatom_t*     EndP);
+inline void             a2l_quex_lexer_TokenQueue_push_repeated(a2l_quex_lexer_TokenQueue* me,
+                                                                 a2l_quex_lexer_token_id_t     Id,
+                                                                 size_t                 RepetitionN);
+inline a2l_quex_lexer_Token* a2l_quex_lexer_TokenQueue_pop(a2l_quex_lexer_TokenQueue* me);
+inline a2l_quex_lexer_Token* a2l_quex_lexer_TokenQueue_begin(a2l_quex_lexer_TokenQueue* me);
+inline a2l_quex_lexer_Token* a2l_quex_lexer_TokenQueue_back(a2l_quex_lexer_TokenQueue* me);
+inline size_t           a2l_quex_lexer_TokenQueue_available_n(a2l_quex_lexer_TokenQueue* me); 
+inline void             a2l_quex_lexer_TokenQueue_set_token_TERMINATION(a2l_quex_lexer_TokenQueue* me);
+
+
+inline bool             a2l_quex_lexer_TokenQueue_assert_before_sending(a2l_quex_lexer_TokenQueue* me);
+inline bool             a2l_quex_lexer_TokenQueue_assert_after_sending(a2l_quex_lexer_TokenQueue* me);
+
+
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer__TOKEN__TOKEN_QUEUE */

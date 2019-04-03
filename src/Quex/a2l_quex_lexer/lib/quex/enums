@@ -1,0 +1,205 @@
+#ifndef QUEX_INCLUDE_GUARD_LIB_QUEX__ENUMS
+#define QUEX_INCLUDE_GUARD_LIB_QUEX__ENUMS
+
+typedef enum {
+    E_LoadResult_DONE,              /* Complete or incomplete, load happened. */
+    E_LoadResult_COMPLETE,          /* Load filled drain completely.          */
+    E_LoadResult_INCOMPLETE,        /* Drain not filled completely.           */
+    E_LoadResult_ENCODING_ERROR,    /* Encoding error in stream.              */
+    E_LoadResult_NO_MORE_DATA,      /* No more data to fill drain.            */
+    E_LoadResult_OVERFLOW,          /* No more data to fill drain.            */
+    E_LoadResult_FAILURE,           /* General low-level load failure.        */ 
+    E_LoadResult_SEEK_FAILURE,      /* General low-level load failure.        */ 
+    E_LoadResult_VOID               /* General low-level load failure.        */ 
+} E_LoadResult;
+
+#define E_LoadResult_NAME(LR) \
+            (  (LR) == E_LoadResult_DONE           ? "DONE"              \
+             : (LR) == E_LoadResult_COMPLETE       ? "COMPLETE"          \
+             : (LR) == E_LoadResult_INCOMPLETE     ? "INCOMPLETE"        \
+             : (LR) == E_LoadResult_ENCODING_ERROR ? "ENCODING_ERROR"    \
+             : (LR) == E_LoadResult_NO_MORE_DATA   ? "NO MORE DATA"      \
+             : (LR) == E_LoadResult_FAILURE        ? "FAILURE"           \
+             : (LR) == E_LoadResult_VOID           ? "VOID"              \
+             :                                       "<error>")
+
+typedef enum {
+    E_Error_File_OpenFailed,
+    E_Error_File_SeekFailed,
+    E_Error_File_ReadInconsistent,
+    /* --------------------------------------------------*/
+    E_Error_Allocation_BufferMemory_Failed,
+    E_Error_Allocation_ByteLoader_Failed,
+    E_Error_Allocation_LexatomLoader_Failed,
+    E_Error_Constructor_Accumulator_Failed,
+    E_Error_Constructor_Counter_Failed,
+    E_Error_Constructor_PostCategorizer_Failed,
+    E_Error_IncludePopOnEmptyStack,
+    E_Error_IncludePush_OnError,
+    E_Error_InputName_Set_Failed,
+    E_Error_EngineNotGeneratedWithFallbackMandatory,
+    /* --------------------------------------------------*/
+    E_Error_Buffer_Feeder_CannotAbsorbMoreContent,
+    E_Error_Buffer_Overflow_LexemeTooLong,
+    /* --------------------------------------------------*/
+    E_Error_DFA_DropIntoOtherState,
+    E_Error_StateRouter_Empty,
+    E_Error_StateRouter_UnkownStateIndex,
+    /* --------------------------------------------------*/
+    E_Error_Indentation_StackOverflow,
+    E_Error_Indentation_DedentNotOnIndentationBorder,
+    /* --------------------------------------------------*/
+    E_Error_Accumulator_OutOfMemory,
+    /* --------------------------------------------------*/
+    E_Error_NoHandler_OnBadLexatom,
+    E_Error_NoHandler_OnEndOfStream,
+    E_Error_NoHandler_OnFailure,
+    E_Error_NoHandler_OnIndentationBad,
+    E_Error_NoHandler_OnLoadFailure,
+    E_Error_NoHandler_OnOverflow,
+    E_Error_NoHandler_OnSkipRangeOpen,
+    /* Flags to be set even if handlers are implemented. */
+    E_Error_OnBadLexatom,
+    E_Error_OnFailure,
+    E_Error_OnIndentationBad,
+    E_Error_OnLoadFailure,
+    E_Error_OnOverflow,
+    E_Error_OnSkipRangeOpen,
+    /* --------------------------------------------------*/
+    E_Error_None,
+    E_Error_ProvidedExternal_Memory_Corrupt,
+    E_Error_ProvidedExternal_Memory_Intersects,
+    E_Error_Reset_OnError,
+    E_Error_Token_RepetitionNSetButNotSupportedByGeneratedCode,
+    E_Error_Token_QueueOverflow,
+    E_Error_Uninitialized,
+    E_Error_UnitTest_Termination,
+    E_Error_UserConstructor_Failed,
+    E_Error_UserMementoPack_Failed,
+    E_Error_UserReset_Failed,
+    /*---------------------------------------------------*/
+    E_Error_ModeStack_PopOnTopLevel,
+    E_Error_ModeStack_Overflow,
+} E_Error;
+
+#define E_Error_NAME(E) \
+    (  (E) == E_Error_File_OpenFailed                    ? "File_OpenFailed"                 \
+     : (E) == E_Error_File_SeekFailed                    ? "File_SeekFailed"                    \
+     : (E) == E_Error_File_ReadInconsistent                    ? "File_ReadInconsistent"                    \
+     : (E) == E_Error_Allocation_BufferMemory_Failed     ? "Allocation_BufferMemory_Failed"     \
+     : (E) == E_Error_Allocation_ByteLoader_Failed       ? "Allocation_ByteLoader_Failed"       \
+     : (E) == E_Error_Allocation_LexatomLoader_Failed    ? "Allocation_LexatomLoader_Failed"    \
+     : (E) == E_Error_EngineNotGeneratedWithFallbackMandatory ? "Engine_Not_Generated_with_Fallback_Mandatory" \
+     : (E) == E_Error_Buffer_Feeder_CannotAbsorbMoreContent   ? "Buffer_Feeder_CannotAbsorbMoreContent"    \
+     : (E) == E_Error_Buffer_Overflow_LexemeTooLong      ? "Buffer_Overflow_LexemeTooLong"      \
+     : (E) == E_Error_Constructor_Accumulator_Failed     ? "Constructor_Accumulator_Failed"     \
+     : (E) == E_Error_Constructor_Counter_Failed         ? "Constructor_Counter_Failed"         \
+     : (E) == E_Error_Constructor_PostCategorizer_Failed ? "Constructor_PostCategorizer_Failed" \
+     : (E) == E_Error_DFA_DropIntoOtherState             ? "DFA_DropIntoOtherState"             \
+     : (E) == E_Error_IncludePopOnEmptyStack             ? "IncludePopOnEmptyStack"             \
+     : (E) == E_Error_IncludePush_OnError                ? "IncludePush_OnError"                \
+     : (E) == E_Error_StateRouter_Empty                  ? "StateRouter_Empty"                  \
+     : (E) == E_Error_StateRouter_UnkownStateIndex       ? "StateRouter_UnkownStateIndex"       \
+     : (E) == E_Error_Indentation_StackOverflow          ? "Indentation_StackOverflow"                       \
+     : (E) == E_Error_Indentation_DedentNotOnIndentationBorder ? "Indentation_DedentNotOnIndentationBorder"  \
+     : (E) == E_Error_InputName_Set_Failed               ? "InputName_Set_Failed"               \
+     : (E) == E_Error_Accumulator_OutOfMemory            ? "Accumulator_OutOfMemory"            \
+     : (E) == E_Error_OnBadLexatom                       ? "OnBadLexatom"                       \
+     : (E) == E_Error_OnFailure                          ? "OnFailure"                          \
+     : (E) == E_Error_OnIndentationBad                   ? "OnIndentationBad"                   \
+     : (E) == E_Error_OnLoadFailure                      ? "OnLoadFailure"                      \
+     : (E) == E_Error_OnOverflow                         ? "OnOverflow"                         \
+     : (E) == E_Error_OnSkipRangeOpen                    ? "OnSkipRangeOpen"                    \
+     : (E) == E_Error_NoHandler_OnBadLexatom             ? "NoHandler_OnBadLexatom"             \
+     : (E) == E_Error_NoHandler_OnEndOfStream            ? "NoHandler_OnEndOfStream"            \
+     : (E) == E_Error_NoHandler_OnFailure                ? "NoHandler_OnFailure"                \
+     : (E) == E_Error_NoHandler_OnIndentationBad         ? "NoHandler_OnIndentationBad"         \
+     : (E) == E_Error_NoHandler_OnLoadFailure            ? "NoHandler_OnLoadFailure"            \
+     : (E) == E_Error_NoHandler_OnOverflow               ? "NoHandler_OnOverflow"               \
+     : (E) == E_Error_NoHandler_OnSkipRangeOpen          ? "NoHandler_OnSkipRangeOpen"          \
+     : (E) == E_Error_None                               ? "None"                               \
+     : (E) == E_Error_ProvidedExternal_Memory_Corrupt    ? "ProvidedExternal_Memory_Corrupt"    \
+     : (E) == E_Error_ProvidedExternal_Memory_Intersects ? "ProvidedExternal_Memory_Intersects" \
+     : (E) == E_Error_Reset_OnError                      ? "Reset_OnError"                      \
+     : (E) == E_Error_Token_RepetitionNSetButNotSupportedByGeneratedCode ? "Token_RepetitionNSetButNotSupportedByGeneratedCode" \
+     : (E) == E_Error_Token_QueueOverflow                ? "Token_QueueOverflow"    \
+     : (E) == E_Error_Uninitialized                      ? "Uninitialized"                      \
+     : (E) == E_Error_UnitTest_Termination               ? "UnitTest_Termination"               \
+     : (E) == E_Error_UserConstructor_Failed             ? "UserConstructor_Failed"             \
+     : (E) == E_Error_UserMementoPack_Failed             ? "UserMementoPack_Failed"             \
+     : (E) == E_Error_UserReset_Failed                   ? "UserReset_Failed"                   \
+     : (E) == E_Error_ModeStack_PopOnTopLevel            ? "ModeStack_PopOnTopLevel"            \
+     : (E) == E_Error_ModeStack_Overflow                 ? "ModeStack_Overflow"                 \
+     :                                                     "<Error Void>")
+
+#define E_Error_MISSING_HANDLER_NAME(E) \
+     (  (E) == E_Error_NoHandler_OnBadLexatom     ? "on_bad_lexatom"     \
+      : (E) == E_Error_NoHandler_OnFailure        ? "on_failure"         \
+      : (E) == E_Error_NoHandler_OnIndentationBad ? "on_indentation_bad" \
+      : (E) == E_Error_NoHandler_OnLoadFailure    ? "on_load_failure"    \
+      : (E) == E_Error_NoHandler_OnOverflow       ? "on_buffer_overflow"        \
+      : (E) == E_Error_NoHandler_OnSkipRangeOpen  ? "on_skip_range_open" \
+      :                                             (const char*)0)
+
+#define E_Boolean_NAME(B) ((B == 0) ? "false" : "true")
+
+typedef enum {
+    E_MemoryObjectType_BUFFER,
+    E_MemoryObjectType_BUFFER_MEMORY,
+    E_MemoryObjectType_BYTE_LOADER,
+    E_MemoryObjectType_BUFFER_FILLER,
+    E_MemoryObjectType_BUFFER_RAW,
+    E_MemoryObjectType_CONVERTER,
+    E_MemoryObjectType_INPUT_NAME,
+    E_MemoryObjectType_MEMENTO,
+    E_MemoryObjectType_POST_CATEGORIZER_NODE,
+    E_MemoryObjectType_TEXT,
+    E_MemoryObjectType_TOKEN_ARRAY,
+    E_MemoryObjectType_MODE_STACK
+} E_MemoryObjectType;
+ 
+typedef enum {
+    E_Ownership_LEXICAL_ANALYZER, 
+    E_Ownership_INCLUDING_BUFFER,
+    E_Ownership_EXTERNAL
+} E_Ownership;
+
+#define E_Ownership_NAME(OS) \
+    (  (OS) == E_Ownership_LEXICAL_ANALYZER ? "LEXICAL_ANALYZER" \
+     : (OS) == E_Ownership_INCLUDING_BUFFER ? "INCLUDING_BUFFER" \
+     : (OS) == E_Ownership_EXTERNAL         ? "EXTERNAL"         \
+     :                                        "<Ownership Void>")
+
+#define E_Ownership_is_valid(OS) \
+    (   (OS) == E_Ownership_LEXICAL_ANALYZER \
+     || (OS) == E_Ownership_INCLUDING_BUFFER \
+     || (OS) == E_Ownership_EXTERNAL         )
+
+typedef enum {
+    QUEX_BOM_NONE            = 0x200,  /* D9 --> NONE/NOT SURE */
+    QUEX_BOM_UTF_8           = 0x001,  /* D0 --> UTF 8         */
+    QUEX_BOM_UTF_1           = 0x002,  /* D1 --> UTF 1         */
+    QUEX_BOM_UTF_EBCDIC      = 0x004,  /* D2 --> UTF EBCDIC    */
+    QUEX_BOM_BOCU_1          = 0x008,  /* D3 --> BOCU 1        */
+    QUEX_BOM_GB_18030        = 0x010,  /* D4 --> GB_18030      */
+    QUEX_BOM_UTF_7           = 0x220,  /* D5 --> UTF 7;        
+                                        * D9 --> May be not.   */
+    QUEX_BOM_UTF_16          = 0x040,  /* D6 --> UTF 16        */         
+    QUEX_BOM_UTF_16_LE       = 0x041,                          
+    QUEX_BOM_UTF_16_BE       = 0x042,                          
+    QUEX_BOM_UTF_32          = 0x080,  /* D7 --> UTF 32        */
+    QUEX_BOM_UTF_32_LE       = 0x081,                          
+    QUEX_BOM_UTF_32_BE       = 0x082,                          
+    QUEX_BOM_SCSU            = 0x100,  /* D8 --> SCSU          */
+    QUEX_BOM_SCSU_TO_UCS     = 0x101,  
+    QUEX_BOM_SCSU_W0_TO_FE80 = 0x102, 
+    QUEX_BOM_SCSU_W1_TO_FE80 = 0x103, 
+    QUEX_BOM_SCSU_W2_TO_FE80 = 0x104, 
+    QUEX_BOM_SCSU_W3_TO_FE80 = 0x105, 
+    QUEX_BOM_SCSU_W4_TO_FE80 = 0x106, 
+    QUEX_BOM_SCSU_W5_TO_FE80 = 0x107, 
+    QUEX_BOM_SCSU_W6_TO_FE80 = 0x108, 
+    QUEX_BOM_SCSU_W7_TO_FE80 = 0x109 
+} E_ByteOrderMark;
+
+#endif /* QUEX_INCLUDE_GUARD_LIB_QUEX__ENUMS */

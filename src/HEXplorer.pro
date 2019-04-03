@@ -32,7 +32,7 @@ equals( QMAKE_CXX, cl) {
 
     CONFIG += embed_manifest_exe c++11
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT3D_DLL QWT_DLL CL_COMPILER
-    INCLUDEPATH += . "C:\quex_0.65.10\quex-0.65.10" \
+    INCLUDEPATH += . "C:\Program Files (x86)\quex\quex-0.69.3" \
      ./ASAP2 \
      ./sqlite \
      ./DataContainers \
@@ -94,7 +94,7 @@ equals( QMAKE_CXX, cl) {
 
     DEFINES +=  _CRT_SECURE_NO_WARNINGS QSCINTILLA_DLL QT_DLL QWT_DLL
 
-    INCLUDEPATH += . "C:\Users\lmbhoc2\programs\quex-0.68.2" \
+    INCLUDEPATH += . "C:\Program Files (x86)\quex\quex-0.69.3" \
     ./ASAP2 \
     ./sqlite  \
     ./Quex \
@@ -464,7 +464,6 @@ SOURCES += a2l.cpp \
     ASAP2/Items/unit_conversion.cpp \
     ASAP2/Nodes/compu_vtab_range.cpp \
     ASAP2/Nodes/compu_tab.cpp \
-    Quex/a2l_quex_lexer.cpp \
     ASAP2/Items/default_value_numeric.cpp \
     sqlite/sqlite3.c \
     connectionwidget.cpp \
@@ -479,7 +478,8 @@ SOURCES += a2l.cpp \
     labelproperties.cpp \
     surfacegraph.cpp \
     FandRmodel.cpp \
-    formscript.cpp
+    formscript.cpp \
+    Quex/a2l_quex_lexer/a2l_quex_lexer.cpp
 
 OTHER_FILES += \
     update.xml

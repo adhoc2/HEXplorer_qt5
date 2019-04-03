@@ -1,0 +1,65 @@
+/* -*- C++ -*-   vim:set syntax=cpp:
+ * QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__POST_CATEGORIZER may be undefined in case
+ *    that multiple lexical analyzers are used.                                       */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__EXTRA__POST_CATEGORIZER__POST_CATEGORIZER
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__EXTRA__POST_CATEGORIZER__POST_CATEGORIZER
+
+
+
+/*________________________________________________________________________________
+ * Post Categorization of Lexemes:
+ *
+ * The implementation of the categorization tree is a little more efficient
+ * than the STL map, since we do not iterator over the content.
+ *________________________________________________________________________________*/
+typedef struct QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT a2l_quex_lexer_DictionaryNode_tag {
+    /* Store the first character separately from the remainder. This might
+     * help to avoid loading 'remotely allocated' strings into the cache if
+     * they do not fit anyway (because of their first character).                 */ 
+    a2l_quex_lexer_lexatom_t          name_first_character;
+    const a2l_quex_lexer_lexatom_t*   name_remainder;
+
+    a2l_quex_lexer_token_id_t           token_id;
+
+    struct a2l_quex_lexer_DictionaryNode_tag*   lesser;
+    struct a2l_quex_lexer_DictionaryNode_tag*   greater;
+
+} a2l_quex_lexer_DictionaryNode;
+
+
+
+    class a2l_quex_lexer_Dictionary {
+    public:
+        a2l_quex_lexer_Dictionary();
+        ~a2l_quex_lexer_Dictionary();
+
+        a2l_quex_lexer_DictionaryNode*  root;
+
+        void                enter(const a2l_quex_lexer_lexatom_t* Lexeme, 
+                                  const a2l_quex_lexer_token_id_t TokenID);
+        void                remove(const a2l_quex_lexer_lexatom_t* Lexeme);
+        a2l_quex_lexer_token_id_t  get_token_id(const a2l_quex_lexer_lexatom_t* Lexeme) const;
+        void                clear();
+        void                print_this();
+        void                (*destruct_self)(a2l_quex_lexer_Dictionary* me);
+    };
+
+
+inline bool
+a2l_quex_lexer_PostCategorizer_construct(a2l_quex_lexer_Dictionary* me);
+
+inline void
+a2l_quex_lexer_PostCategorizer_destruct(a2l_quex_lexer_Dictionary* me);
+
+inline void
+a2l_quex_lexer_PostCategorizer_resources_absent_mark(a2l_quex_lexer_Dictionary* me);
+
+inline bool
+a2l_quex_lexer_PostCategorizer_resources_absent(a2l_quex_lexer_Dictionary* me);
+
+inline void          
+a2l_quex_lexer_PostCategorizer_print_this(a2l_quex_lexer_Dictionary* me);
+                          
+
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer__EXTRA__POST_CATEGORIZER__POSTCATEGORIZER */

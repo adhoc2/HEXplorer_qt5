@@ -1,0 +1,45 @@
+/* -*- C++ -*-   vim: set syntax=cpp:
+ * (C) Frank-Rene Schaefer                               */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__COUNTER
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__COUNTER
+
+ #include <cstddef>
+
+
+#include "a2l_quex_lexer\lib\definitions"
+
+
+
+
+
+typedef struct QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT {
+    
+    size_t  _line_number_at_begin;    /* line where current pattern starts   */
+    size_t  _line_number_at_end;      /* line after current pattern          */
+    
+    
+    size_t  _column_number_at_begin;  /* column where current pattern starts */
+    size_t  _column_number_at_end;    /* column after current pattern        */
+    
+    
+} a2l_quex_lexer_Counter;
+
+
+inline bool  a2l_quex_lexer_Counter_construct(a2l_quex_lexer_Counter*  me); 
+inline void  a2l_quex_lexer_Counter_copy_construct(a2l_quex_lexer_Counter*      me, 
+                                                    const a2l_quex_lexer_Counter* That);
+inline void  a2l_quex_lexer_Counter_resources_absent_mark(a2l_quex_lexer_Counter* me);
+inline bool  a2l_quex_lexer_Counter_resources_absent(a2l_quex_lexer_Counter* me);
+
+inline void  a2l_quex_lexer_Counter_print_this(a2l_quex_lexer_Counter* me);
+
+#if ! defined(QUEX_OPTION_ASSERTS)
+#   define        a2l_quex_lexer_Counter_assert_consistency(ME) /* empty */
+#else
+inline void  a2l_quex_lexer_Counter_assert_consistency(a2l_quex_lexer_Counter* counter);
+#endif
+
+
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__COUNTER */
+

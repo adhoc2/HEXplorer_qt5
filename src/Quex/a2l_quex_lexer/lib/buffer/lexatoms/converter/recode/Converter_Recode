@@ -1,0 +1,35 @@
+/* -*- C++ -*- vim: set syntax=cpp: 
+ * (C) 2009 Frank-Rene Schaefer
+ * NO WARRANTY */
+#ifndef  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__RECODE__CONVERTER_RECODE
+#define  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__RECODE__CONVERTER_RECODE
+
+#include "a2l_quex_lexer\lib\buffer/converter/Converter"
+
+#include "a2l_quex_lexer\lib\quex/compatibility/stdbool-pseudo.h"
+ 
+
+extern "C" {
+#   include <stdio.h>
+#   include <assert.h>
+#   include <string.h>
+#   include <recode.h>   /* Pinard's recode.h */
+}
+
+
+
+
+
+
+    typedef struct QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT {
+        QuexConverter  base;
+
+        RECODE_OUTER   outer;
+
+    } QuexConverter_Recode;
+
+    inline QuexConverter* QuexConverter_Recode_new();
+
+
+
+#endif /*  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__LEXATOMS__CONVERTER__RECODE__CONVERTER_RECODE */

@@ -1,0 +1,16 @@
+#ifndef QUEX_INCLUDE_GUARD_LIB_QUEX__OPERATIONS
+#define QUEX_INCLUDE_GUARD_LIB_QUEX__OPERATIONS
+
+
+#define QUEX_MIN(X, Y)  ((X) < (Y) ? (X) : (Y))
+#define QUEX_MAX(X, Y)  ((X) > (Y) ? (X) : (Y))
+
+/* Hash Function:
+ *
+ * Using Dan Bernstein's 'dbj2' (published in comp.lang.c) which is extremely
+ * fast but still behaves well. See Linear Congruential Generators for further
+ * reading.                                                                  */
+#define QUEX_HASH_INIT_VALUE  5381
+#define QUEX_HASH_NEXT(H, C)  ((((H) << 5) + (H)) + (C))
+
+#endif /* QUEX_INCLUDE_GUARD_LIB_QUEX__OPERATIONS */

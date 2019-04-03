@@ -764,7 +764,7 @@ A2lQuexLexer::A2lQuexLexer(a2l_quex_lexer_ByteLoader *byteLoader, QObject *paren
     previousLine = 0;
 
     //std::istringstream* in = new std::istringstream(strr);
-    qlex = new quex::a2l_quex_lexer(byteLoader);
+    qlex = new a2l_quex_lexer(byteLoader);
     token_p = qlex->token_p();
 }
 
@@ -904,11 +904,11 @@ void A2lQuexLexer::backward(int i)
     qlex->seek_backward(i);
 }
 
-TokenTyp A2lQuexLexer::myToken(quex::Token *token_p)
+TokenTyp A2lQuexLexer::myToken(a2l_quex_lexer_Token *token_p)
 {
     TokenTyp token = myUnknown;
 
-    switch (token_p->type_id())
+    switch (token_p->id)
     {
     case  QUEX_TKN_UNKNOWN :
         return myUnknown;

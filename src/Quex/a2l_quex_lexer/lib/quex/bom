@@ -1,0 +1,75 @@
+/* -*- C++ -*- vim:set syntax=cpp: 
+ *
+ * Byte Order Mark (BOM) Handling.
+ *
+ * The byte order mark (BOM) is a Unicode character used to signal 
+ * the endianness (byte order) of a text file or stream. Its code 
+ * point is U+FEFF. 
+ * [Source: <http://en.wikipedia.org/wiki/Byte_order_mark>]
+ *
+ * This file implements a function to cut the BOM and tell about 
+ * the encoding of the data stream.
+ *
+ * (C) 2010 Frank-Rene Schaefer    
+
+ * ABSOLUTELY NO WARRANTY                                                      */
+#ifndef QUEX_INCLUDE_GUARD_LIB_QUEX__BOM
+#define QUEX_INCLUDE_GUARD_LIB_QUEX__BOM
+
+#include "a2l_quex_lexer\lib\quex/enums"
+#include "a2l_quex_lexer\lib\quex/standard_functions"
+#include "a2l_quex_lexer\lib\quex/compatibility/stdint.h"
+
+namespace quex {
+
+/* Table of (known) BOMs _____________________________________________________
+ *
+ *         BOM_UTF_8        { 0xEF, 0xBB, 0xBF }
+ *         UTF_16_BE        { 0xFE, 0xFF }
+ *         UTF_16_LE        { 0xFF, 0xFE }
+ *         UTF_32_BE        { 0x00, 0x00, 0xFE, 0xFF }
+ *         UTF_32_LE        { 0xFF, 0xFE, 0x00, 0x00 }
+ *         UTF_7_38         { 0x2B, 0x2F, 0x76, 0x38 }
+ *         UTF_7_39         { 0x2B, 0x2F, 0x76, 0x39 }
+ *         UTF_7_2B         { 0x2B, 0x2F, 0x76, 0x2B }
+ *         UTF_7_2F         { 0x2B, 0x2F, 0x76, 0x2F }
+ *         UTF_1            { 0xF7, 0x64, 0x4C }
+ *         UTF_EBCDIC       { 0xDD, 0x73, 0x66, 0x73 }
+ *         SCSU             { 0x0E, 0xFE, 0xFF }
+ *         SCSU_TO_UCS      { 0x0F, 0xFE, 0xFF }
+ *         SCSU_W0_TO_FE80  { 0x18, 0xA5, 0xFF }
+ *         SCSU_W1_TO_FE80  { 0x19, 0xA5, 0xFF }
+ *         SCSU_W2_TO_FE80  { 0x1A, 0xA5, 0xFF }
+ *         SCSU_W3_TO_FE80  { 0x1B, 0xA5, 0xFF }
+ *         SCSU_W4_TO_FE80  { 0x1C, 0xA5, 0xFF }
+ *         SCSU_W5_TO_FE80  { 0x1D, 0xA5, 0xFF }
+ *         SCSU_W6_TO_FE80  { 0x1E, 0xA5, 0xFF }
+ *         SCSU_W7_TO_FE80  { 0x1F, 0xA5, 0xFF }
+ *         BOCU_1_x         { 0xFB, 0xEE, 0x28, 0xFF }
+ *         BOCU_1           { 0xFB, 0xEE, 0x28, }
+ *         GB_18030         { 0x84, 0x31, 0x95, 0x33 }                         
+ *_____________________________________________________________________________*/
+
+extern E_ByteOrderMark
+bom_snap(__QUEX_STD_FILE* InputHandle);
+
+
+#if defined(__cplusplus) 
+template <class InputStream> inline E_ByteOrderMark
+bom_snap(InputStream* p_input_stream);
+#endif
+
+
+extern E_ByteOrderMark
+__bom_snap_core(uint8_t buffer[4], size_t read_n, size_t* byte_n);
+
+extern E_ByteOrderMark
+bom_identify(const uint8_t* const Buffer, size_t* n);
+
+extern const char*
+bom_name(E_ByteOrderMark BOM);
+
+} /* close quex */
+
+#endif /* QUEX_INCLUDE_GUARD_LIB_QUEX__BOM */
+

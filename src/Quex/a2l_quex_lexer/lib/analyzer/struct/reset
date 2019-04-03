@@ -1,0 +1,52 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ *
+ * Important:
+ *                  RESET != DESTRUCTOR + CONSTRUCTOR
+ *
+ * because DESTRUCTOR and CONSTRUCTOR may involve resource de-allocation and
+ * resource re-allocation. Reset, instead may work on existing resources.
+ *
+ * (C) 2005-2017 Frank-Rene Schaefer
+ *
+ * ABSOLUTELY NO WARRANTY                                                    */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__RESET
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__RESET
+
+#include "a2l_quex_lexer\lib\definitions"
+
+ 
+
+/* The constructor 'core' function is implemented per analyzer.
+ * It's implementation happens inside the generated source file.             */
+
+/* Level (0) __________________________________________________________________
+ *                                                                           */
+inline bool a2l_quex_lexer_MF_reset(a2l_quex_lexer* me);
+
+/* Level (1) __________________________________________________________________
+ *                                                                           */
+inline bool a2l_quex_lexer_MF_reset_file_name(a2l_quex_lexer*   me,
+                                               const char*           Filename, 
+                                               a2l_quex_lexer_Converter* converter);
+
+/* Level (3) __________________________________________________________________
+ *                                                                           */
+inline bool a2l_quex_lexer_MF_reset_ByteLoader(a2l_quex_lexer*    me,
+                                                a2l_quex_lexer_ByteLoader* byte_loader,
+                                                a2l_quex_lexer_Converter*  converter);
+
+/* Level (5) __________________________________________________________________
+ *                                                                           */
+inline bool a2l_quex_lexer_MF_reset_memory(a2l_quex_lexer* me,
+                                            a2l_quex_lexer_lexatom_t*  BufferMemoryBegin, 
+                                            size_t              BufferMemorySize,
+                                            a2l_quex_lexer_lexatom_t*  BufferEndOfFileP); 
+
+/* Basic constructions ________________________________________________________
+ *                                                                           */
+inline bool a2l_quex_lexer_MF_reset_all_but_buffer(a2l_quex_lexer* me);
+extern      bool a2l_quex_lexer_user_reset(a2l_quex_lexer* me);
+
+
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__RESET */

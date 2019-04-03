@@ -1,0 +1,29 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY              */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__TOKEN__RECEIVING
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__TOKEN__RECEIVING
+
+#include "a2l_quex_lexer\lib\definitions"
+
+
+
+inline bool
+a2l_quex_lexer_MF_run(a2l_quex_lexer* me, 
+                  bool                (*callback_on_token)(a2l_quex_lexer_Token*),
+                  bool                ErrorPrintF);
+
+inline  void
+a2l_quex_lexer_MF_receive(a2l_quex_lexer* me, 
+                      a2l_quex_lexer_Token**   token_pp);
+
+inline a2l_quex_lexer_Token*
+a2l_quex_lexer_receive_from_chunk(a2l_quex_lexer*  me, 
+                              bool                 EndOfChunkF,
+                              a2l_quex_lexer_token_id_t   StreamTerminatingTokenId);
+
+
+
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer__TOKEN__RECEIVING */
+

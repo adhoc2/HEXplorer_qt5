@@ -1,0 +1,28 @@
+/* vim: ft=c: 
+ * (C) Frank-Rene Schaefer */
+#ifndef  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_FILE
+#define  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_FILE
+
+#include "a2l_quex_lexer\lib\buffer/bytes/ByteLoader"
+
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <stdio.h>
+#ifdef __cplusplus
+}
+#endif
+
+typedef struct QUEX_a2l_quex_lexer_SETTING_USER_CLASS_DECLARATION_EPILOG_EXT { 
+    a2l_quex_lexer_ByteLoader  base;
+    FILE*                  input_handle;
+} a2l_quex_lexer_ByteLoader_FILE;
+
+inline a2l_quex_lexer_ByteLoader*    a2l_quex_lexer_ByteLoader_FILE_new(FILE* fh, bool BinaryModeF);
+inline a2l_quex_lexer_ByteLoader*    a2l_quex_lexer_ByteLoader_FILE_new_from_file_name(const char*);
+
+
+
+#endif /*  QUEX_INCLUDE_GUARD_a2l_quex_lexer__BUFFER__BYTES__BYTE_LOADER_FILE */

@@ -1,0 +1,16 @@
+/* -*- C++ -*- vim: set syntax=cpp: */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ASSERTS
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__ASSERTS
+
+#include "a2l_quex_lexer\lib\buffer/Buffer"
+
+
+
+inline a2l_quex_lexer_lexatom_t*  a2l_quex_lexer_access_Lexeme(const char* FileName, size_t LineN, a2l_quex_lexer_Buffer*);
+inline size_t              a2l_quex_lexer_access_LexemeL(const char* FileName, size_t LineN, a2l_quex_lexer_Buffer*);
+inline a2l_quex_lexer_lexatom_t*  a2l_quex_lexer_access_LexemeEnd(const char* FileName, size_t LineN, a2l_quex_lexer_Buffer*);
+
+
+
+#endif /* __INCLUDE_GUARD__QUEX_LEXER_CLASS_COUNT_LINE_COLUMN_COMMON */
+

@@ -1,0 +1,56 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY              */
+#ifndef QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__INCLUDE_STACK
+#define QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__INCLUDE_STACK
+
+#include "a2l_quex_lexer\lib\definitions"
+
+ 
+
+/* The constructor 'core' function is implemented per analyzer.
+ * It's implementation happens inside the generated source file.             */
+
+/* Level (1) __________________________________________________________________
+ *                                                                           */
+inline bool a2l_quex_lexer_MF_include_push_file_name(a2l_quex_lexer*   me,
+                                                   const char*           Filename, 
+                                                   a2l_quex_lexer_Converter* converter);
+
+/* Level (3) __________________________________________________________________
+ *                                                                           */
+inline bool a2l_quex_lexer_MF_include_push_ByteLoader(
+                           a2l_quex_lexer*    me,
+                           const char*            InputName,
+                           a2l_quex_lexer_ByteLoader* byte_loader,
+                           a2l_quex_lexer_Converter*  converter);
+
+/* Level (5) __________________________________________________________________
+ *                                                                           */
+inline bool a2l_quex_lexer_MF_include_push_memory(
+                           a2l_quex_lexer*  me,
+                           const char*          InputName,
+                           a2l_quex_lexer_lexatom_t*   BufferMemoryBegin, 
+                           size_t               BufferMemorySize,
+                           a2l_quex_lexer_lexatom_t*   BufferEndOfFileP); 
+
+/* Basic constructions ________________________________________________________
+ *                                                                           */
+inline bool   a2l_quex_lexer_MF_include_push_core(a2l_quex_lexer*       me,
+                                                const char*               InputNameP,
+                                                a2l_quex_lexer_Buffer*        new_buffer,
+                                                a2l_quex_lexer_LexatomLoader* new_filler);
+inline bool   a2l_quex_lexer_MF_include_pop(a2l_quex_lexer* me);
+inline void   a2l_quex_lexer_MF_include_stack_delete(a2l_quex_lexer* me);
+inline bool   a2l_quex_lexer_MF_include_detect_recursion(a2l_quex_lexer* me,
+                                                       const char*         InputName);
+
+extern bool        a2l_quex_lexer_user_memento_pack(a2l_quex_lexer* me, 
+                                                const char*         InputName,
+                                                a2l_quex_lexer_Memento* memento);
+extern void        a2l_quex_lexer_user_memento_unpack(a2l_quex_lexer* me, 
+                                                  a2l_quex_lexer_Memento* memento);
+
+
+
+#endif /* QUEX_INCLUDE_GUARD_a2l_quex_lexer__ANALYZER__STRUCT__INCLUDE_STACK */
