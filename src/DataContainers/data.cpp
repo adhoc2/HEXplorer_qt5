@@ -90,6 +90,7 @@ Data::Data(Node *node) : Node(node->name), QObject()
 Data::Data(CHARACTERISTIC *node, PROJECT *pro, HexFile *hexFile, bool modif) : Node(node->name), QObject()
 {
     //initialize settings
+    isComplete = true; //created to check if the creation of the data has been completed or aborted due to missing information
     xOrgSize = 0;
     yOrgSize = 0;
     isAxisXComparable = true;
@@ -788,6 +789,7 @@ Data::Data(QSqlRecord record, QSqlDatabase database,  HexFile *hexFile, bool mod
     this->name = (char*)record.value(1).toString().toLocal8Bit().data();
 
     //initialize settings
+    isComplete = true; //created to check if the creation of the data has been completed or aborted due to missing information
     xOrgSize = 0;
     yOrgSize = 0;
     isAxisXComparable = true;
@@ -838,6 +840,7 @@ Data::Data(QSqlRecord record, QSqlDatabase database,  HexFile *hexFile, bool mod
 Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) : Node(node->name), QObject()
 {
     //initialize settings
+    isComplete = true; //created to check if the creation of the data has been completed or aborted due to missing information
     xOrgSize = 0;
     yOrgSize = 0;
     isAxisXComparable = true;
@@ -846,24 +849,24 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
     modifiable = modif;
     label = node;
     project = pro;
-    hexParent = NULL;
+    hexParent = nullptr;
     srecParent = srecFile;
-    csvParent = NULL;
-    cdfxParent = NULL;
-    dcmParent = NULL;
+    csvParent = nullptr;
+    cdfxParent = nullptr;
+    dcmParent = nullptr;
     if (srecParent)
     {
         moduleName = srecParent->getModuleName();
     }
-    axisDescrX = NULL;
-    axisDescrY = NULL;
-    compuVTabAxisX = NULL;
-    compuVTabAxisY = NULL;
-    compuVTabAxisZ = NULL;
-    compuTabAxisX = NULL;
-    compuTabAxisY = NULL;
-    compuTabAxisZ = NULL;
-    compu_methodZ = NULL;
+    axisDescrX = nullptr;
+    axisDescrY = nullptr;
+    compuVTabAxisX = nullptr;
+    compuVTabAxisY = nullptr;
+    compuVTabAxisZ = nullptr;
+    compuTabAxisX = nullptr;
+    compuTabAxisY = nullptr;
+    compuTabAxisZ = nullptr;
+    compu_methodZ = nullptr;
     byteOrderX = "";
     byteOrderY = "";
     byteOrderZ = "";
@@ -994,6 +997,11 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
             AXIS_PTS_REF *axisPtsRef = (AXIS_PTS_REF*)axisDescrX->getItem("AXIS_PTS_REF");
             QString nameAxisX = axisPtsRef->getPar("AxisPoints");
             AXIS_PTS *axisPtsX = (AXIS_PTS*)project->getNode("MODULE/" + moduleName + "/AXIS_PTS/" + nameAxisX);
+            if (axisPtsX == nullptr)
+            {
+                isComplete = false;
+                return;
+            }
 
             //number of points X Maximum
             QString maxAxisPts = axisDescrX->getPar("MaxAxisPoints");
@@ -1472,10 +1480,13 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, SrecFile *srecFile, bool modif) :
 
     //define number of rows of data to display
     size += nPtsAxisY;
+
+    isComplete = true;
 }
 
 Data::Data(CHARACTERISTIC *node, PROJECT *pro, Csv *csv, bool modif) : Node(node->name), QObject()
 {
+    isComplete = true; //created to check if the creation of the data has been completed or aborted due to missing information
     isAxisXComparable = false;
     isAxisYComparable = false;
     sizeChanged = false;
@@ -1720,6 +1731,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, Csv *csv, bool modif) : Node(node
 
 Data::Data(CHARACTERISTIC *node, PROJECT *pro, CdfxFile *cdfx, bool modif) : Node(node->name), QObject()
 {
+    isComplete = true; //created to check if the creation of the data has been completed or aborted due to missing information
     isAxisXComparable = true;
     isAxisYComparable = true;
     sizeChanged = false;
@@ -1963,6 +1975,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, CdfxFile *cdfx, bool modif) : Nod
 
 Data::Data(CHARACTERISTIC *node, PROJECT *pro, Dcm *dcm, bool modif) : Node(node->name), QObject()
 {
+    isComplete = true; //created to check if the creation of the data has been completed or aborted due to missing information
     isAxisXComparable = false;
     isAxisYComparable = false;
     sizeChanged = false;
@@ -2205,6 +2218,7 @@ Data::Data(CHARACTERISTIC *node, PROJECT *pro, Dcm *dcm, bool modif) : Node(node
 
 Data::Data(AXIS_PTS *node, PROJECT *pro, HexFile *hexFile, bool modif) : Node(node->name), QObject()
 {
+    isComplete = true; //created to check if the creation of the data has been completed or aborted due to missing information
     isAxisXComparable = false;
     isAxisYComparable = false;
     sizeChanged = false;
@@ -2344,6 +2358,7 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, HexFile *hexFile, bool modif) : Node(no
 
 Data::Data(AXIS_PTS *node, PROJECT *pro, SrecFile *srecFile, bool modif) : Node(node->name), QObject()
 {
+    isComplete = true; //created to check if the creation of the data has been completed or aborted due to missing information
     isAxisXComparable = false;
     isAxisYComparable = false;
     sizeChanged = false;
@@ -2473,6 +2488,7 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, SrecFile *srecFile, bool modif) : Node(
 
 Data::Data(AXIS_PTS *node, PROJECT *pro, Csv *csv, bool modif) : Node(node->name), QObject()
 {
+    isComplete = true; //created to check if the creation of the data has been completed or aborted due to missing information
     isAxisXComparable = false;
     isAxisYComparable = false;
     sizeChanged = false;
@@ -2542,6 +2558,7 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, Csv *csv, bool modif) : Node(node->name
 
 Data::Data(AXIS_PTS *node, PROJECT *pro, CdfxFile *cdfx, bool modif) : Node(node->name) , QObject()
 {
+    isComplete = true; //created to check if the creation of the data has been completed or aborted due to missing information
     isAxisXComparable = false;
     isAxisYComparable = false;
     sizeChanged = false;
@@ -2610,6 +2627,7 @@ Data::Data(AXIS_PTS *node, PROJECT *pro, CdfxFile *cdfx, bool modif) : Node(node
 
 Data::Data(AXIS_PTS *node, PROJECT *pro, Dcm *dcm, bool modif) : Node(node->name), QObject()
 {
+    isComplete = true; //created to check if the creation of the data has been completed or aborted due to missing information
     isAxisXComparable = false;
     isAxisYComparable = false;
     sizeChanged = false;

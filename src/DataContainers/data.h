@@ -94,6 +94,7 @@ class Data : public QObject, public Node
 
         // axisX
         bool isAxisXComparable;
+        bool isComplete;
         int xOrgSize;
         QString getByteOrderX();
         QString getOrgX(int i);

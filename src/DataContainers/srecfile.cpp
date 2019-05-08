@@ -612,6 +612,17 @@ void SrecFile:: readAllData()
         //fill-in listData
         listData = futureWatcher.future().results();
 
+        //remove uncompleted Data (in case of missing information into reduced a2l as example)
+        foreach(Data* data, this->listData)
+        {
+            if (!data->isComplete)
+            {
+                qDebug() << data->getName();
+                listData.removeOne(data);
+                module->listChar.removeOne(data->getName());
+                delete data;
+            }
+        }
     }
 
     qDebug() << "3- readAllData " << timer.elapsed();
@@ -639,12 +650,13 @@ void SrecFile::runCreateData(QStringList list, QList<Data*> *listData, Node *nod
                 if(1)
                 {
                     //rwLock.lockForRead();
+
                     Data *data = new Data(charac, a2lProject, this);
+                    if (data->isComplete)
+                    {
+                        listData->append(data);
+                    }
                     //rwLock.unlock();
-                    listData->append(data);
-                }
-                else
-                {
 
                 }
             }
@@ -755,7 +767,7 @@ Data* SrecFile::runCreateDataMapped(const QString &str)
     // display not found
     if (!found)
     {
-        return 0;
+        return nullptr;
     }
 
 }

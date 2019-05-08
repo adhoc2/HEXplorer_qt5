@@ -267,7 +267,7 @@ Item *Node::getItem(QString str)
             return item;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 std::string Node::fixPar(QString str)
