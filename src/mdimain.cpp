@@ -67,6 +67,7 @@
 #include "measmodel.h"
 #include "charmodel.h"
 #include "FandRmodel.h"
+#include "obdMergeModel.h"
 #include <Qsci/qscilexerjavascript.h>
 #include "formscript.h"
 #include "cdfxfile.h"
@@ -313,6 +314,11 @@ void MDImain::createActions()
     editFnR->setIcon(QIcon(":/icones/milky_outils.png"));
     connect(editFnR, SIGNAL(triggered()), this, SLOT(editFandR()));
     editFnR->setDisabled(true);
+
+    editObdMerge = new QAction(tr("Edit OBD merge"), this);
+    editObdMerge->setIcon(QIcon(":/icones/milky_outils.png"));
+    connect(editObdMerge, SIGNAL(triggered()), this, SLOT(editObd_Merge()));
+    editObdMerge->setDisabled(true);
 
     spaceRecover = new QAction(tr("space Recovery"), this);
     spaceRecover->setIcon(QIcon(":/icones/milky_outils.png"));
@@ -1121,6 +1127,7 @@ void MDImain::showContextMenu(QPoint)
                 menu.addAction(sortBySubset);
                 menu.addMenu(toolsMenu);
                 menu.addAction(editFnR);
+                menu.addAction(editObdMerge);
                 menu.addAction(spaceRecover);
                 menu.addSeparator();
                 menu.addAction(copyDataset);
@@ -1140,6 +1147,7 @@ void MDImain::showContextMenu(QPoint)
                 if (srec->isRead())
                 {
                     editFnR->setDisabled(false);
+                    editObdMerge->setDisabled(false);
                     spaceRecover->setDisabled(false);
                     if (srec->getModifiedData().isEmpty())
                     {
@@ -4052,6 +4060,66 @@ void MDImain::editFandR()
 
             //write output
             writeOutput("failure and reaction edited.");
+
+        }
+    }
+
+}
+
+void MDImain::editObd_Merge()
+{
+    // check if a file is selected in treeWidget
+    QModelIndex index  = ui->treeView->selectionModel()->currentIndex();
+
+    if (index.isValid())
+    {
+        //get a pointer on the selected item
+        Node *node =  model->getNode(index);
+        QString name = typeid(*node).name();
+
+        if (!name.endsWith("SrecFile"))
+        {
+            QMessageBox::warning(this, "HEXplorer::edit measuring channels", "Please select first a dataset.",
+                                             QMessageBox::Ok);
+            return;
+        }
+
+        int row = index.row();
+        if ( row < 0)
+        {
+            QMessageBox::information(this,"HEXplorer","please first select a file to be edited");
+            writeOutput("action edit  file cancelled: no project first selected");
+            return;
+        }
+        else
+        {
+            //get the Wp
+            SrecFile *srec = (SrecFile*)node;
+
+            //display the characterisitc channels in view
+            ObdMergeModel *obdModel = new ObdMergeModel(srec);
+
+            //create a new spreadSheet
+            SpreadsheetView *view = new SpreadsheetView();
+            view->setModel(obdModel);
+            srec->attach(view);
+
+            view->setAlternatingRowColors(true);
+
+            //sorting functions
+            view->setSortingEnabled(true);
+            view->sortByColumn(0, Qt::AscendingOrder);
+
+            //add a new tab with the spreadsheet
+            QIcon icon;
+            icon.addFile(":/icones/milky_outils.png");
+            ui->tabWidget->addTab(view, icon, srec->name);
+
+            //set new FormCompare as activated
+            ui->tabWidget->setCurrentWidget(view);
+
+            //write output
+            writeOutput("OBD merge edited.");
 
         }
     }

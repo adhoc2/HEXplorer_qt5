@@ -133,6 +133,7 @@ equals( QMAKE_CXX, cl) {
 #-------------  INPUT files --------------#
 #-----------------------------------------#
 HEADERS += a2l.h \
+    DataContainers/errorcode.h \
     formeditor.h \
     mdimain.h \
     chtextedit.h \
@@ -317,6 +318,7 @@ FORMS += formeditor.ui \
     deletefiledialog.ui \
     labelproperties.ui
 SOURCES += a2l.cpp \
+    DataContainers/errorcode.cpp \
     formeditor.cpp \
     main.cpp \
     mdimain.cpp \

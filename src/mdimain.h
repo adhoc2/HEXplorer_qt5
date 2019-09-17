@@ -111,6 +111,7 @@ private:
     QAction *editMeasChannels;
     QAction *editCharacteristics;
     QAction *editFnR;
+    QAction *editObdMerge;
     QAction *spaceRecover;
     QAction *addCsvFile;
     QAction *addDcmFile;
@@ -177,6 +178,7 @@ private slots:
      void editMeasuringChannels();
      void editChar();
      void editFandR();
+     void editObd_Merge();
      void spaceRecovery();
      void on_actionSettings_triggered();
      void on_actionCheck_for_updates_triggered();
