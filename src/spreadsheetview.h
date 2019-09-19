@@ -53,6 +53,7 @@ class SpreadsheetView : public QTableView
         QAction *editBit;
         QAction *editHex;
         QAction *editProperties;
+        QAction *findObdView;
         void createActions();
         QString getExcelCell(int row, int col);
 
@@ -81,6 +82,7 @@ class SpreadsheetView : public QTableView
         void copy();
         void paste();
         void plot();
+        void findInObdView();
         void contextMenuEvent( QPoint p );
         void updateActions(QModelIndex);
 

@@ -142,14 +142,15 @@ private:
     QAction *editLabelCompare;
     QAction *exportListData;
     QAction *saveA2lDB;
-    QAction *duplicateDatacontainer;
+    QAction *duplicateDatacontainer;    
     QMenu *toolsMenu;
     QMenu *recentProMenu;
     QWidget *myWidget;
     QModelIndex indexClipBoard;
     Node* nodeClipBoard;
     QString pathClipBoard;
-
+    QString default_style_sheet;
+    void setStyle(QString style);
     void initToolBars();
     void createActions();
     void openProject(QString &fileName);
@@ -255,6 +256,10 @@ private slots:
      void onPasteDataset();
      void completerSelected();
      void onCreateDirectory();
+
+     void on_actionback_to_the_white_side_of_the_moon_triggered();
+
+     void on_actiondark_theme_triggered();
 
 public slots:
     void resetAllTableView();

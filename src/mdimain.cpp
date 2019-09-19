@@ -188,6 +188,8 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
         settings.setValue("openMP", 1);
     if (!settings.contains("lexer"))
         settings.setValue("lexer", "Quex");
+    if (!settings.contains("theme"))
+        settings.setValue("theme", "dark");
 
     // initialize working directory
     int autoWD = settings.value("autoWD").toInt();
@@ -212,6 +214,16 @@ MDImain::MDImain(QWidget *parent) : QMainWindow(parent), ui(new Ui::MDImain)
         settings.setValue("currentWDPath", workingDirectory);
     }
 
+    //default stylesheet
+    this->default_style_sheet = qApp->styleSheet();
+
+    //set theme
+    if (settings.value("theme") == "dark")
+    {
+        this->setStyle("dark");
+    }
+    else
+        this->setStyle("white");
 }
 
 MDImain::~MDImain()
@@ -219,6 +231,30 @@ MDImain::~MDImain()
     delete ui;
     delete projectList;
     delete tabList;
+}
+
+// ----------------- Style ----------------------//
+void MDImain::setStyle(QString style)
+{
+    QSettings settings(qApp->organizationName(), qApp->applicationName());
+    if (style == "dark")
+    {
+
+        QFile file(":/files/darkstyle.qss");
+        file.open(QIODevice::ReadOnly);
+        QString s;
+        QTextStream in(&file);
+        s.append(in.readAll());
+        file.close();
+
+        qApp->setStyleSheet(s);
+         settings.setValue("theme", "dark");
+    }
+    else if (style == "white")
+    {
+        qApp->setStyleSheet(this->default_style_sheet);
+        settings.setValue("theme", "white");
+    }
 }
 
 // ----------------- Menu -----------------------//
@@ -4108,7 +4144,12 @@ void MDImain::editObd_Merge()
 
             //sorting functions
             view->setSortingEnabled(true);
-            view->sortByColumn(0, Qt::AscendingOrder);
+            view->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+            view->setColumnWidth(1,350);
+            view->setColumnWidth(2, 50);
+            view->setColumnWidth(3, 50);
+            view->setColumnWidth(4, 50);
+            view->setColumnWidth(5, 50);
 
             //add a new tab with the spreadsheet
             QIcon icon;
@@ -4117,6 +4158,10 @@ void MDImain::editObd_Merge()
 
             //set new FormCompare as activated
             ui->tabWidget->setCurrentWidget(view);
+
+            //context menu for the view
+            //view->setContextMenuPolicy(Qt::CustomContextMenu);
+            //connect(view, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu_ObdView(QPoint)));
 
             //write output
             writeOutput("OBD merge edited.");
@@ -8167,3 +8212,13 @@ void MDImain::createDbTableAxisDescr(Node *dim)
     }
 }
 
+
+void MDImain::on_actionback_to_the_white_side_of_the_moon_triggered()
+{
+    this->setStyle("white");
+}
+
+void MDImain::on_actiondark_theme_triggered()
+{
+    this->setStyle("dark");
+}

@@ -369,10 +369,11 @@ QVariant SpTableModel::data(const QModelIndex &index, int role) const
         }
         break;
 
-    case Qt::ForegroundRole: // the foreground brush (text color, typically) used for items rendered with the default delegate.
+    case Qt::ForegroundRole:
         {
             QColor color1 = Qt::red;
             QColor color2 = Qt::blue;
+            QColor black = Qt::black;
 
             if (row - sum == 0 && column == 0)
                 return color2;
@@ -394,11 +395,13 @@ QVariant SpTableModel::data(const QModelIndex &index, int role) const
                             return color1;
                         else if (val1 < val2)
                             return color2;
+                        else return black;
                     }
                     else
                     {
                         if (listDataModel->at(ind)->getZ(0) != listDataModel->at(ind)->getOrgZ(0))
                             return color1;
+                        else return black;
                     }
                 }
             }
@@ -417,11 +420,13 @@ QVariant SpTableModel::data(const QModelIndex &index, int role) const
                             return color1;
                         else if (val1 < val2)
                             return color2;
+                        else return black;
                     }
                     else
                     {
                         if (listDataModel->at(ind)->getX(column - 1) != listDataModel->at(ind)->getOrgX(column - 1))
                             return color1;
+                        else return black;
                     }
                 }
                 else if (row - sum == 3 && column >= 1 &&  column <= listDataModel->at(ind)->zCount())
@@ -438,11 +443,13 @@ QVariant SpTableModel::data(const QModelIndex &index, int role) const
                             return color1;
                         else if (val1 < val2)
                             return color2;
+                        else return black;
                     }
                     else
                     {
                         if (listDataModel->at(ind)->getZ(column - 1) != listDataModel->at(ind)->getOrgZ(column - 1))
                             return color1;
+                        else return black;
                     }
                 }
             }
@@ -460,11 +467,13 @@ QVariant SpTableModel::data(const QModelIndex &index, int role) const
                             return color1;
                         else if (val1 < val2)
                             return color2;
+                        else return black;
                     }
                     else
                     {
                         if (listDataModel->at(ind)->getX(column - 2) != listDataModel->at(ind)->getOrgX(column - 2))
                             return color1;
+                        else return black;
                     }
                 }
                 if (row - sum >= 3 && row - sum < listDataModel->at(ind)->size - 1)
@@ -481,11 +490,13 @@ QVariant SpTableModel::data(const QModelIndex &index, int role) const
                                 return color1;
                             else if (val1 < val2)
                                 return color2;
+                            else return black;
                         }
                         else
                         {
                             if (listDataModel->at(ind)->getY(row - sum - 3) != listDataModel->at(ind)->getOrgY(row - sum - 3))
                                 return color1;
+                            else return black;
                         }
                     }
                     else if (column >= 2 && column <= listDataModel->at(ind)->xCount() + 1)
@@ -503,11 +514,13 @@ QVariant SpTableModel::data(const QModelIndex &index, int role) const
                                 return color1;
                             else if (val1 < val2)
                                 return color2;
+                            else return black;
                         }
                         else
                         {
                             if (listDataModel->at(ind)->getZ(dataRow, dataCol)!= listDataModel->at(ind)->getOrgZ(dataRow, dataCol))
                                 return color1;
+                            else return black;
                         }
                     }
                 }

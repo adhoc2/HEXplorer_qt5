@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
     app.setApplicationName("HEXplorer");
     app.setApplicationVersion("0.7.15");
 
+    app.setStyle("Fusion");
 
     MDImain w;
     w.show();

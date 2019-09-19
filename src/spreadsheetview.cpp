@@ -30,6 +30,7 @@
 #include "sptablemodelHex.h"
 #include "comparemodel.h"
 #include "graphmodel.h"
+#include "obdMergeModel.h"
 #include "comboboxdelegate.h"
 #include "dialogeditastext.h"
 #include "dialogbitdisplay.h"
@@ -40,6 +41,7 @@
 #include "charmodel.h"
 #include "dialogdatadimension.h"
 #include "labelproperties.h"
+#include "obdMergeModel.h"
 //#include "excel.h"
 
 
@@ -202,6 +204,12 @@ void SpreadsheetView::createActions()
     connect(editProperties, SIGNAL(triggered()), this, SLOT(editProp()));
     this->addAction(editProperties);
 
+    findObdView = new QAction(tr("Find"), this);
+    findObdView->setIcon(QIcon(":/icones/milky_find.png"));
+    findObdView->setShortcut(Qt::CTRL + Qt::Key_F);
+    connect(findObdView, SIGNAL(triggered()), this, SLOT(findInObdView()));
+    findObdView->setDisabled(false);
+
 }
 
 void SpreadsheetView::contextMenuEvent ( QPoint p )
@@ -227,14 +235,8 @@ void SpreadsheetView::contextMenuEvent ( QPoint p )
         {
             CompareModel *spModel = (CompareModel*)model();
             data = spModel->getLabel(index, Qt::EditRole);
-        }
-        else if (name.toLower().endsWith("measmodel") || name.toLower().endsWith("charmodel")
-                 || name.toLower().endsWith("fandrmodel"))
-        {
-            menu->addAction(copyAction);
-        }
-        else
-            return;
+        }             
+            //return;
 
         // create the menus
         if (name.toLower().endsWith("comparemodel") ||
@@ -312,12 +314,57 @@ void SpreadsheetView::contextMenuEvent ( QPoint p )
             menu->addSeparator();
             menu->addAction(changeSize);
         }
-
+        else if (name.toLower().endsWith("measmodel") || name.toLower().endsWith("charmodel")
+                 || name.toLower().endsWith("fandrmodel"))
+        {
+            menu->addAction(copyAction);
+        }
+        else if (name.toLower().endsWith("obdmergemodel"))
+        {
+            menu->addAction(copyAction);
+            menu->addAction(pasteAction);
+            menu->addAction(undoModif);
+            menu->addAction(resetModif);
+            menu->addSeparator();
+            menu->addAction(findObdView);
+        }
+        else
+            return;
     }
     else
       menu->addAction("No item selected");
 
     menu->exec(QCursor::pos());
+}
+
+void SpreadsheetView::findInObdView()
+{
+    bool ok;
+    QString searchText = QInputDialog::getText(this, tr("find in OBD view"),
+                                         tr(""), QLineEdit::Normal,
+                                         "your text", &ok);
+    if (ok && !searchText.isEmpty())
+    {
+        // get the selected items
+        QItemSelection select = selectionModel()->selection();
+        if (select.isEmpty())
+        {
+            return;
+        }
+        QItemSelectionRange range = select.at(0);
+        if (range.isEmpty())
+        {
+            return;
+        }
+        else
+        {
+            int col = range.topLeft().column();
+            ObdMergeModel *obdMergeModel = (ObdMergeModel*)this->model();
+            int row = obdMergeModel->getRow(col, searchText);
+
+        }
+
+    }
 }
 
 void SpreadsheetView::copy()
@@ -471,6 +518,12 @@ void SpreadsheetView::factorM()
     if (indexList.isEmpty())
         return;
 
+    QString name = typeid(*model()).name();
+    if (name.toLower().endsWith("obdmergemodel"))
+    {
+        return;
+    }
+
     bool ok;
     QString valueStr  = QInputDialog::getText(this, tr("HEXplorer::multiply"),
                                          tr("enter your factor:"), QLineEdit::Normal,
@@ -516,6 +569,11 @@ void SpreadsheetView::factorD()
     if (indexList.isEmpty())
         return;
 
+    QString name = typeid(*model()).name();
+    if (name.toLower().endsWith("obdmergemodel"))
+    {
+        return;
+    }
 
     bool ok;
     QString valueStr  = QInputDialog::getText(this, tr("HEXplorer::divide"),
@@ -563,6 +621,12 @@ void SpreadsheetView::offsetP()
     if (indexList.isEmpty())
         return;
 
+    QString name = typeid(*model()).name();
+    if (name.toLower().endsWith("obdmergemodel"))
+    {
+        return;
+    }
+
     bool ok;
     QString valueStr  = QInputDialog::getText(this, tr("HEXplorer::offset(+)"),
                                          tr("enter your offset:"), QLineEdit::Normal,
@@ -607,6 +671,12 @@ void SpreadsheetView::offsetM()
     QModelIndexList indexList = this->selectedIndexes();
     if (indexList.isEmpty())
         return;
+
+    QString name = typeid(*model()).name();
+    if (name.toLower().endsWith("obdmergemodel"))
+    {
+        return;
+    }
 
     bool ok;
     QString valueStr  = QInputDialog::getText(this, tr("HEXplorer::offset(-)"),
@@ -653,6 +723,12 @@ void SpreadsheetView::fillAll()
     if (indexList.isEmpty())
         return;
 
+    QString name = typeid(*model()).name();
+    if (name.toLower().endsWith("obdmergemodel"))
+    {
+        return;
+    }
+
     bool ok;
     QString valueStr  = QInputDialog::getText(this, tr("HEXplorer::setValue"),
                                          tr("enter your value:"), QLineEdit::Normal,
@@ -687,6 +763,11 @@ void SpreadsheetView::resetM()
         GraphModel *spModel = (GraphModel*)model();
         spModel->resetData(indexList, Qt::EditRole);
     }
+    else if (name.toLower().endsWith("obdmergemodel"))
+    {
+        ObdMergeModel *obdModel = (ObdMergeModel*)model();
+        obdModel->resetData(indexList, Qt::EditRole);
+    }
 }
 
 void SpreadsheetView::undoM()
@@ -710,6 +791,11 @@ void SpreadsheetView::undoM()
     {
         GraphModel *grModel = (GraphModel*)model();
         grModel->undoData(indexList, Qt::EditRole);
+    }
+    else if (name.toLower().endsWith("obdmergemodel"))
+    {
+        ObdMergeModel *obdModel = (ObdMergeModel*)model();
+        obdModel->undoData(indexList, Qt::EditRole);
     }
 
     //reselect the indexes in view
