@@ -3,21 +3,30 @@
 ErrorCode::ErrorCode(QString name)
 {
     //initialsize the properties
-    this->dec = "empty";
-    this->dtc = "empty";
-    this->inc = "empty";
+    this->dec = nullptr;
+    this->dtc = "";
+    this->inc = nullptr;
     this->name = name;
-    this->prethd = "empty";
-    this->agicycidn = "empty";
-    this->agicycthd = "empty";
-    this->exclsncdn = "empty";
-    this->opercycidn = "empty";
-    this->opercycthd = "empty";
-    this->prio = "empty";
-    this->fltreactnid_0 = "empty";
-    this->fltreactnid_1 = "empty";
-    this->fltreactnid_2 = "empty";
-    this->fltreactnid_3 = "empty";
-    this->fltreactnid_4 = "empty";
+    this->prethd = nullptr;
+    this->agicycidn = nullptr;
+    this->agicycthd = nullptr;
+    this->exclsncdn = nullptr;
+    this->opercycidn = nullptr;
+    this->opercycthd = nullptr;
+    this->prio = nullptr;
+    this->fltreactnid_0 = nullptr;
+    this->fltreactnid_1 = nullptr;
+    this->fltreactnid_2 = nullptr;
+    this->fltreactnid_3 = nullptr;
+    this->fltreactnid_4 = nullptr;
+    this->fltreactnid_5 = nullptr;
+    this->fltreactnid_6 = nullptr;
+    this->delayid_0 = nullptr;
+    this->delayid_1 = nullptr;
+    this->delayid_2 = nullptr;
+    this->delayid_3 = nullptr;
+    this->delayid_4 = nullptr;
+    this->delayid_5 = nullptr;
+    this->delayid_6 = nullptr;
 
 }

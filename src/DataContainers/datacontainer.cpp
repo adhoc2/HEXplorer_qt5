@@ -95,14 +95,14 @@ Data *DataContainer::getData(QString str)
     if (i == listData.end())
     {
         delete[] node.name;
-        return NULL;
+        return nullptr;
     }
     else
     {
         if (strcmp(((Data*)*i)->name, node.name) != 0)
         {
             delete[] node.name;
-            return NULL;
+            return nullptr;
         }
         else
         {
