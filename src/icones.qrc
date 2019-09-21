@@ -191,6 +191,6 @@
         <file>icones/stylesheet-branch-more.png</file>
         <file>icones/stylesheet-branch-open.png</file>
         <file>icones/stylesheet-vline.png</file>
-        <file>files/darkstyle _org.qss</file>
+        <file>files/darkstyle_org.qss</file>
     </qresource>
 </RCC>

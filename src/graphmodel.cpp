@@ -236,6 +236,7 @@ QVariant GraphModel::data(const QModelIndex &index, int role) const
             {
                 QColor color1 = Qt::red;
                 QColor color2 = Qt::blue;
+                QColor black = Qt::black;
 
                 if (dat->xCount() == 0) //Value
                 {
@@ -249,6 +250,7 @@ QVariant GraphModel::data(const QModelIndex &index, int role) const
                             return color1;
                         else if (val1 < val2)
                             return color2;
+                        else return black;
                     }
                 }
                 else if (dat->xCount() > 0 && dat->yCount() == 0) //Curve
@@ -275,6 +277,7 @@ QVariant GraphModel::data(const QModelIndex &index, int role) const
                             return color1;
                         else if (val1 < val2)
                             return color2;
+                        else return black;
                     }
                 }
                 else if (dat->xCount() > 0 && dat->yCount() > 0) //Map
@@ -289,6 +292,7 @@ QVariant GraphModel::data(const QModelIndex &index, int role) const
                             return color1;
                         else if (val1 < val2)
                             return color2;
+                        else return black;
                     }
                     if (row - sum >= 3 && row - sum < dat->size - 1)
                     {
@@ -302,6 +306,7 @@ QVariant GraphModel::data(const QModelIndex &index, int role) const
                                 return color1;
                             else if (val1 < val2)
                                 return color2;
+                            else return black;
                         }
                         else if (column >= 1 && column <= dat->xCount())
                         {                           
@@ -318,11 +323,13 @@ QVariant GraphModel::data(const QModelIndex &index, int role) const
                                     return color1;
                                 else if (val1 < val2)
                                     return color2;
+                                else return black;
                             }
                             else
                             {
                                 if (dat->getZ(dataRow, dataCol)!= dat->getOrgZ(dataRow, dataCol))
                                     return color1;
+                                else return black;
                             }
                         }
                     }
