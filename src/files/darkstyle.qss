@@ -601,13 +601,17 @@ QComboBox::drop-down {
 }
 
 QComboBox::down-arrow {
-    /*image: url(:/qss_icons/rc/down_arrow_disabled.png);*/
+    image: url(:/icones/arrow-down-icon-png-6703.png);
+    width: 20px;
+    height: 20px;
 }
 
 QComboBox::down-arrow:on,
 QComboBox::down-arrow:hover,
 QComboBox::down-arrow:focus {
-    /*image: url(:/qss_icons/rc/down_arrow.png);*/
+    image: url(:/icones/arrow-down-icon-png-6703.png);
+    width: 20px;
+    height: 20px;
 }
 
 QAbstractSpinBox {

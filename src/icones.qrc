@@ -192,5 +192,6 @@
         <file>icones/stylesheet-branch-open.png</file>
         <file>icones/stylesheet-vline.png</file>
         <file>files/darkstyle_org.qss</file>
+        <file>icones/arrow-down-icon-png-6703.png</file>
     </qresource>
 </RCC>
