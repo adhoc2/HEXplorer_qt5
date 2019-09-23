@@ -24,3 +24,19 @@ Data* obdSortFilterProxyModel::getData(QModelIndex indexProxy)
     return data;
 }
 
+QStringList obdSortFilterProxyModel::getUniqueValues(int column)
+{
+    QStringList list;
+    int nrow = sourceModel()->rowCount();
+    for (int i=0; i < nrow; i++)
+    {
+        QModelIndex index1 = sourceModel()->index(i, column, QModelIndex());
+        QString value = sourceModel()->data(index1).toString();
+        if (!list.contains(value))
+        {
+            list.append(value);
+        }
+    }
+    return list;
+}
+
