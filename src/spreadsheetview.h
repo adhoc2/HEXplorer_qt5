@@ -54,6 +54,8 @@ class SpreadsheetView : public QTableView
         QAction *editHex;
         QAction *editProperties;
         QAction *findObdView;
+        QAction *filterColumns;
+        QAction *resetAllFilters;
         void createActions();
         QString getExcelCell(int row, int col);
 
@@ -83,6 +85,8 @@ class SpreadsheetView : public QTableView
         void paste();
         void plot();
         void findInObdView();
+        void filterColumn();
+        void resetAll_Filters();
         void contextMenuEvent( QPoint p );
         void updateActions(QModelIndex);
 

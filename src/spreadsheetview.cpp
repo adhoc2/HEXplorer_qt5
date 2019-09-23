@@ -42,6 +42,7 @@
 #include "dialogdatadimension.h"
 #include "labelproperties.h"
 #include "obdMergeModel.h"
+#include "obdsortfilterproxymodel.h"
 //#include "excel.h"
 
 
@@ -210,6 +211,19 @@ void SpreadsheetView::createActions()
     connect(findObdView, SIGNAL(triggered()), this, SLOT(findInObdView()));
     findObdView->setDisabled(false);
 
+    filterColumns = new QAction(tr("Filter column"), this);
+    filterColumns->setIcon(QIcon(":/icones/milky_loopPlus.png"));
+    //filterColumns->setShortcut(Qt::CTRL + Qt::Key_F);
+    connect(filterColumns, SIGNAL(triggered()), this, SLOT(filterColumn()));
+    filterColumns->setDisabled(false);
+
+    resetAllFilters = new QAction(tr("reset all filters"), this);
+    resetAllFilters->setIcon(QIcon(":/icones/milky_pinceau.png"));
+    //resetAllFilters->setShortcut(Qt::CTRL + Qt::Key_F);
+    connect(resetAllFilters, SIGNAL(triggered()), this, SLOT(resetAll_Filters()));
+    resetAllFilters->setDisabled(false);
+
+
 }
 
 void SpreadsheetView::contextMenuEvent ( QPoint p )
@@ -319,14 +333,19 @@ void SpreadsheetView::contextMenuEvent ( QPoint p )
         {
             menu->addAction(copyAction);
         }
-        else if (name.toLower().endsWith("obdmergemodel"))
+        else if (name.toLower().endsWith("obdmergemodel")  || name.toLower().endsWith("obdsortfilterproxymodel") )
         {
-            menu->addAction(copyAction);
-            menu->addAction(pasteAction);
+            menu->addAction(fillAllWith);
+            menu->addSeparator();
             menu->addAction(undoModif);
             menu->addAction(resetModif);
             menu->addSeparator();
             menu->addAction(findObdView);
+            menu->addAction(copyAction);
+            menu->addAction(pasteAction);
+            menu->addSeparator();
+            menu->addAction(filterColumns);
+            menu->addAction(resetAllFilters);            
         }
         else
             return;
@@ -365,6 +384,33 @@ void SpreadsheetView::findInObdView()
         }
 
     }
+}
+
+void SpreadsheetView::resetAll_Filters()
+{
+    QString name = typeid(*model()).name();
+    if (name.toLower().endsWith("obdsortfilterproxymodel"))
+    {
+        obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
+        proxyModel->setFilterRegExp("");
+    }
+}
+
+void SpreadsheetView::filterColumn()
+{
+
+
+    QString name = typeid(*model()).name();
+    if (name.toLower().endsWith("obdsortfilterproxymodel"))
+    {
+        obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
+
+        QRegExp regExp;
+        regExp.exactMatch("5");
+        proxyModel->setFilterRegExp(regExp);
+        proxyModel->setFilterKeyColumn(2);
+    }
+
 }
 
 void SpreadsheetView::copy()
@@ -519,10 +565,6 @@ void SpreadsheetView::factorM()
         return;
 
     QString name = typeid(*model()).name();
-    if (name.toLower().endsWith("obdmergemodel"))
-    {
-        return;
-    }
 
     bool ok;
     QString valueStr  = QInputDialog::getText(this, tr("HEXplorer::multiply"),
@@ -551,6 +593,13 @@ void SpreadsheetView::factorM()
                 else if (name.toLower().endsWith("graphmodel"))
                 {
                     ((GraphModel*)model())->setData(index, indexList,QString::number(val * fac,'f'), Qt::EditRole);
+                }
+                else if (name.toLower().endsWith("obdsortfilterproxymodel"))
+                {
+                    obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
+                    ObdMergeModel *obdModel = (ObdMergeModel*)proxyModel->sourceModel();
+                    QModelIndex indexSource = proxyModel->mapToSource(index);
+                    obdModel->setData(indexSource,QString::number(val * fac,'f'), Qt::EditRole);
                 }
             }
         }
@@ -602,6 +651,13 @@ void SpreadsheetView::factorD()
                 else if (name.toLower().endsWith("graphmodel"))
                 {
                     ((GraphModel*)model())->setData(index, indexList,QString::number(val / fac,'f'), Qt::EditRole);
+                }
+                else if (name.toLower().endsWith("obdsortfilterproxymodel"))
+                {
+                    obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
+                    ObdMergeModel *obdModel = (ObdMergeModel*)proxyModel->sourceModel();
+                    QModelIndex indexSource = proxyModel->mapToSource(index);
+                    obdModel->setData(indexSource,QString::number(val / fac,'f'), Qt::EditRole);
                 }
             }
         }
@@ -655,6 +711,13 @@ void SpreadsheetView::offsetP()
                 {
                     ((GraphModel*)model())->setData(index, indexList,QString::number(val + offset,'f'), Qt::EditRole);
                 }
+                else if (name.toLower().endsWith("obdsortfilterproxymodel"))
+                {
+                    obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
+                    ObdMergeModel *obdModel = (ObdMergeModel*)proxyModel->sourceModel();
+                    QModelIndex indexSource = proxyModel->mapToSource(index);
+                    obdModel->setData(indexSource,QString::number(val + offset,'f'), Qt::EditRole);
+                }
             }
         }
     }
@@ -705,6 +768,13 @@ void SpreadsheetView::offsetM()
                 else if (name.toLower().endsWith("graphmodel"))
                 {
                     ((GraphModel*)model())->setData(index, indexList,QString::number(val - offset,'f'), Qt::EditRole);
+                }
+                else if (name.toLower().endsWith("obdsortfilterproxymodel"))
+                {
+                    obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
+                    ObdMergeModel *obdModel = (ObdMergeModel*)proxyModel->sourceModel();
+                    QModelIndex indexSource = proxyModel->mapToSource(index);
+                    obdModel->setData(indexSource,QString::number(val - offset,'f'), Qt::EditRole);
                 }
             }
         }
@@ -768,6 +838,20 @@ void SpreadsheetView::resetM()
         ObdMergeModel *obdModel = (ObdMergeModel*)model();
         obdModel->resetData(indexList, Qt::EditRole);
     }
+    else if (name.toLower().endsWith("obdsortfilterproxymodel"))
+    {
+        QModelIndexList indexListSource;
+        obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
+        foreach (QModelIndex index, indexList)
+        {
+            QModelIndex indexSource = proxyModel->mapToSource(index);
+            indexListSource.append(indexSource);
+
+        }
+        ObdMergeModel *obdModel = (ObdMergeModel*)proxyModel->sourceModel();
+        obdModel->resetData(indexListSource,  Qt::EditRole);
+
+    }
 }
 
 void SpreadsheetView::undoM()
@@ -796,6 +880,20 @@ void SpreadsheetView::undoM()
     {
         ObdMergeModel *obdModel = (ObdMergeModel*)model();
         obdModel->undoData(indexList, Qt::EditRole);
+    }
+    else if (name.toLower().endsWith("obdsortfilterproxymodel"))
+    {
+        QModelIndexList indexListSource;
+        obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
+        foreach (QModelIndex index, indexList)
+        {
+            QModelIndex indexSource = proxyModel->mapToSource(index);
+            indexListSource.append(indexSource);
+
+        }
+        ObdMergeModel *obdModel = (ObdMergeModel*)proxyModel->sourceModel();
+        obdModel->undoData(indexListSource,  Qt::EditRole);
+
     }
 
     //reselect the indexes in view

@@ -25,6 +25,7 @@
 #include "obdMergeModel.h"
 #include "Nodes/compu_vtab.h"
 #include "spreadsheetview.h"
+#include "obdsortfilterproxymodel.h"
 #include <typeinfo>
 #include <QtWidgets>
 
@@ -283,7 +284,7 @@
      {
          return QItemDelegate::createEditor(parent, option, index);
      }
-     else if (name.toLower().endsWith(("obdmergemodel")))
+     else if (name.toLower().endsWith("obdmergemodel"))
      {
          QList<Data*> *dat = ((SpTableModel*)index.model())->getList();
 
@@ -291,6 +292,7 @@
          int row = index.row();
          int column = index.column();
          Data *data = ((ObdMergeModel*)index.model())->getData(row, column);
+         if (!data) return QItemDelegate::createEditor(parent, option, index);
 
          // define Editor
          if (data->xCount() == 0) //Value
@@ -304,6 +306,26 @@
              else
                  return QItemDelegate::createEditor(parent, option, index);
 
+         }
+     }
+     else if (name.toLower().endsWith("obdsortfilterproxymodel"))
+     {
+         Data *data = ((obdSortFilterProxyModel*)index.model())->getData(index);
+         if (!data) return QItemDelegate::createEditor(parent, option, index);
+
+
+
+         // define Editor
+         if (data->xCount() == 0) //Value
+         {
+             if (data->getCompuTabAxisZ() != NULL)
+             {
+                 QComboBox *editor = new QComboBox(parent);
+                 editor->addItems(data->getCompuTabAxisZ()->getValueList());
+                 return editor;
+             }
+             else
+                 return QItemDelegate::createEditor(parent, option, index);
          }
      }
      else
