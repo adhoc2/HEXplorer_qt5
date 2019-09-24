@@ -211,12 +211,6 @@ void SpreadsheetView::createActions()
     connect(findObdView, SIGNAL(triggered()), this, SLOT(findInObdView()));
     findObdView->setDisabled(false);
 
-    filterColumns = new QAction(tr("Filter column"), this);
-    filterColumns->setIcon(QIcon(":/icones/milky_loopPlus.png"));
-    //filterColumns->setShortcut(Qt::CTRL + Qt::Key_F);
-    connect(filterColumns, SIGNAL(triggered()), this, SLOT(filterColumn()));
-    filterColumns->setDisabled(false);
-
     resetAllFilters = new QAction(tr("reset all filters"), this);
     resetAllFilters->setIcon(QIcon(":/icones/milky_pinceau.png"));
     //resetAllFilters->setShortcut(Qt::CTRL + Qt::Key_F);
@@ -249,7 +243,7 @@ void SpreadsheetView::contextMenuEvent ( QPoint p )
         {
             CompareModel *spModel = (CompareModel*)model();
             data = spModel->getLabel(index, Qt::EditRole);
-        }             
+        }
             //return;
 
         // create the menus
@@ -345,24 +339,41 @@ void SpreadsheetView::contextMenuEvent ( QPoint p )
             menu->addAction(pasteAction);
             menu->addSeparator();
 
-            QMenu *menuFilter = new QMenu("Filter");
-            menu->addMenu(menuFilter);
-            obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
-            QStringList uniqueList = proxyModel->getUniqueValues(index.column());
-            foreach (QString value, uniqueList)
+            if (index.column() > 1)
             {
-                QAction *action = new QAction(value);
-                menuFilter->addAction(action);
-                connect(action, &QAction::triggered, this, [=]() { this->filterColumn(action->text()); });
-            }
+                QMenu *menuFilter = new QMenu("Filter");
+                menu->addMenu(menuFilter);
+                obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
+                QStringList uniqueList = proxyModel->getUniqueValues(index.column());
+                QMultiMap<int, QString> filtersMap = proxyModel->getfiltersMap();
+                QList<QString> values = filtersMap.values(index.column());
+                foreach (QString value, uniqueList)
+                {
+                    QAction *action = new QAction(value);
+                    menuFilter->addAction(action);
+                    action->setCheckable(true);
+                    if (values.contains(value))
+                        action->setChecked(true);
+                    if (action->isChecked())
+                        connect(action, &QAction::triggered, this, [=]() { this->filterColumn(action->text(), false); });
+                    else
+                        connect(action, &QAction::triggered, this, [=]() { this->filterColumn(action->text(), true); });
+                }
 
-            menu->addAction(resetAllFilters);            
+                menu->addAction(resetAllFilters);
+            }
         }
         else
             return;
     }
     else
-      menu->addAction("No item selected");
+    {
+        QString name = typeid(*model()).name();
+        if (name.toLower().endsWith("obdsortfilterproxymodel"))
+             menu->addAction(resetAllFilters);
+        else
+            menu->addAction("No item selected");
+    }
 
     menu->exec(QCursor::pos());
 }
@@ -403,11 +414,11 @@ void SpreadsheetView::resetAll_Filters()
     if (name.toLower().endsWith("obdsortfilterproxymodel"))
     {
         obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
-        proxyModel->setFilterRegExp("");
+        proxyModel->resetAllFilters();
     }
 }
 
-void SpreadsheetView::filterColumn(QString value)
+void SpreadsheetView::filterColumn(QString value, bool activate)
 {
     QModelIndexList indexList = this->selectedIndexes();
     QModelIndex index = indexList.at(0);
@@ -417,9 +428,21 @@ void SpreadsheetView::filterColumn(QString value)
         if (name.toLower().endsWith("obdsortfilterproxymodel"))
         {
             obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
-            QRegExp regExp("^" + value + "$");
-            proxyModel->setFilterRegExp(regExp);
-            proxyModel->setFilterKeyColumn(index.column());
+            QList<int> listCol({11, 13, 15, 17, 19, 21, 23});
+            if (activate)
+            {
+                if (listCol.contains(index.column()))
+                    proxyModel->addFilters(listCol, value);
+                else
+                    proxyModel->addFilter(index.column(), value);
+            }
+            else
+            {
+                if (listCol.contains(index.column()))
+                    proxyModel->removeFilters(listCol, value);
+                else
+                proxyModel->removeFilter(index.column(), value);
+            }
         }
     }
 
@@ -703,42 +726,70 @@ void SpreadsheetView::offsetP()
     if (ok && !valueStr.isEmpty())
     {
         QString name = typeid(*model()).name();
-        foreach (QModelIndex index, indexList)
+        if (name.toLower().endsWith("obdsortfilterproxymodel"))
         {
-            double val = this->model()->data(index, Qt::DisplayRole).toDouble();
-            bool b;
-            double offset = valueStr.toDouble(&b);
-
-            if (b)
+            //identify source Index
+            obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
+            QModelIndexList indexListSource;
+            foreach (QModelIndex index, indexList)
             {
-                if (name.toLower().endsWith("sptablemodel"))
+                indexListSource.append(proxyModel->mapToSource(index));
+            }
+
+
+            //apply the modification
+            ObdMergeModel *obdModel = (ObdMergeModel*)proxyModel->sourceModel();
+            foreach (QModelIndex indexSource, indexListSource)
+            {
+                //calculate the new value to be set
+                double val = obdModel->data(indexSource, Qt::DisplayRole).toDouble();
+                bool b;
+                double offset = valueStr.toDouble(&b);
+
+                obdModel->setData(indexSource,QString::number(val + offset,'f'), Qt::EditRole);
+            }
+        }
+        else
+        {
+            foreach (QModelIndex index, indexList)
+            {
+                double val = this->model()->data(index, Qt::DisplayRole).toDouble();
+                bool b;
+                double offset = valueStr.toDouble(&b);
+
+                if (b)
                 {
-                    ((SpTableModel*)model())->setData(index, indexList,QString::number(val + offset,'f'), Qt::EditRole);
+                    if (name.toLower().endsWith("sptablemodel"))
+                    {
+                        ((SpTableModel*)model())->setData(index, indexList,QString::number(val + offset,'f'), Qt::EditRole);
+                    }
+                    else if (name.toLower().endsWith("comparemodel"))
+                    {
+                        ((CompareModel*)model())->setData(index, indexList,QString::number(val + offset,'f'), Qt::EditRole);
+                    }
+                    else if (name.toLower().endsWith("graphmodel"))
+                    {
+                        ((GraphModel*)model())->setData(index, indexList,QString::number(val + offset,'f'), Qt::EditRole);
+                    }
+                    else if (name.toLower().endsWith("obdsortfilterproxymodel"))
+                    {
+                        obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
+                        ObdMergeModel *obdModel = (ObdMergeModel*)proxyModel->sourceModel();
+                        QModelIndex indexSource = proxyModel->mapToSource(index);
+                        obdModel->setData(indexSource,QString::number(val + offset,'f'), Qt::EditRole);
+                    }
                 }
-                else if (name.toLower().endsWith("comparemodel"))
-                {
-                    ((CompareModel*)model())->setData(index, indexList,QString::number(val + offset,'f'), Qt::EditRole);
-                }
-                else if (name.toLower().endsWith("graphmodel"))
-                {
-                    ((GraphModel*)model())->setData(index, indexList,QString::number(val + offset,'f'), Qt::EditRole);
-                }
-                else if (name.toLower().endsWith("obdsortfilterproxymodel"))
-                {
-                    obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
-                    ObdMergeModel *obdModel = (ObdMergeModel*)proxyModel->sourceModel();
-                    QModelIndex indexSource = proxyModel->mapToSource(index);
-                    obdModel->setData(indexSource,QString::number(val + offset,'f'), Qt::EditRole);
-                }
+            }
+
+            //reselect the indexes in view
+            foreach(QModelIndex index, indexList)
+            {
+                selectionModel()->select(index, QItemSelectionModel::Select);
             }
         }
     }
 
-    //reselect the indexes in view
-    foreach(QModelIndex index, indexList)
-    {
-        selectionModel()->select(index, QItemSelectionModel::Select);
-    }
+
 }
 
 void SpreadsheetView::offsetM()
@@ -748,10 +799,6 @@ void SpreadsheetView::offsetM()
         return;
 
     QString name = typeid(*model()).name();
-    if (name.toLower().endsWith("obdmergemodel"))
-    {
-        return;
-    }
 
     bool ok;
     QString valueStr  = QInputDialog::getText(this, tr("HEXplorer::offset(-)"),
@@ -760,42 +807,60 @@ void SpreadsheetView::offsetM()
 
     if (ok && !valueStr.isEmpty())
     {
-        QString name = typeid(*model()).name();
-        foreach (QModelIndex index, indexList)
+        if (name.toLower().endsWith("obdsortfilterproxymodel"))
         {
-            double val = this->model()->data(index, Qt::DisplayRole).toDouble();
-            bool b;
-            double offset = valueStr.toDouble(&b);
-
-            if (b)
+            //identify source Index
+            obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
+            QModelIndexList indexListSource;
+            foreach (QModelIndex index, indexList)
             {
-                if (name.toLower().endsWith("sptablemodel"))
-                {
-                    ((SpTableModel*)model())->setData(index, indexList,QString::number(val - offset,'f'), Qt::EditRole);
-                }
-                else if (name.toLower().endsWith("comparemodel"))
-                {
-                    ((CompareModel*)model())->setData(index, indexList,QString::number(val - offset,'f'), Qt::EditRole);
-                }
-                else if (name.toLower().endsWith("graphmodel"))
-                {
-                    ((GraphModel*)model())->setData(index, indexList,QString::number(val - offset,'f'), Qt::EditRole);
-                }
-                else if (name.toLower().endsWith("obdsortfilterproxymodel"))
-                {
-                    obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
-                    ObdMergeModel *obdModel = (ObdMergeModel*)proxyModel->sourceModel();
-                    QModelIndex indexSource = proxyModel->mapToSource(index);
-                    obdModel->setData(indexSource,QString::number(val - offset,'f'), Qt::EditRole);
-                }
+                indexListSource.append(proxyModel->mapToSource(index));
+            }
+
+
+            //apply the modification
+            ObdMergeModel *obdModel = (ObdMergeModel*)proxyModel->sourceModel();
+            foreach (QModelIndex indexSource, indexListSource)
+            {
+                //calculate the new value to be set
+                double val = obdModel->data(indexSource, Qt::DisplayRole).toDouble();
+                bool b;
+                double offset = valueStr.toDouble(&b);
+
+                obdModel->setData(indexSource,QString::number(val - offset,'f'), Qt::EditRole);
             }
         }
-    }
+        else // other initial models (not linked to OBD view)
+        {
+            foreach (QModelIndex index, indexList)
+            {
+                double val = this->model()->data(index, Qt::DisplayRole).toDouble();
+                bool b;
+                double offset = valueStr.toDouble(&b);
 
-    //reselect the indexes in view
-    foreach(QModelIndex index, indexList)
-    {
-        selectionModel()->select(index, QItemSelectionModel::Select);
+                if (b)
+                {
+                    if (name.toLower().endsWith("sptablemodel"))
+                    {
+                        ((SpTableModel*)model())->setData(index, indexList,QString::number(val - offset,'f'), Qt::EditRole);
+                    }
+                    else if (name.toLower().endsWith("comparemodel"))
+                    {
+                        ((CompareModel*)model())->setData(index, indexList,QString::number(val - offset,'f'), Qt::EditRole);
+                    }
+                    else if (name.toLower().endsWith("graphmodel"))
+                    {
+                        ((GraphModel*)model())->setData(index, indexList,QString::number(val - offset,'f'), Qt::EditRole);
+                    }
+                }
+            }
+
+            //reselect the indexes in view
+            foreach(QModelIndex index, indexList)
+            {
+                selectionModel()->select(index, QItemSelectionModel::Select);
+            }
+        }
     }
 }
 
@@ -806,10 +871,6 @@ void SpreadsheetView::fillAll()
         return;
 
     QString name = typeid(*model()).name();
-    if (name.toLower().endsWith("obdmergemodel"))
-    {
-        return;
-    }
 
     bool ok;
     QString valueStr  = QInputDialog::getText(this, tr("HEXplorer::setValue"),
@@ -817,9 +878,28 @@ void SpreadsheetView::fillAll()
                                          "", &ok);
     if (ok && !valueStr.isEmpty())
     {
-        foreach (QModelIndex index, indexList)
+        if (name.toLower().endsWith("obdsortfilterproxymodel"))
         {
-            model()->setData(index, valueStr, Qt::EditRole);
+
+            obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
+            QModelIndexList indexListSource;
+            foreach (QModelIndex index, indexList)
+            {
+                indexListSource.append(proxyModel->mapToSource(index));
+            }
+
+            ObdMergeModel *obdModel = (ObdMergeModel*)proxyModel->sourceModel();
+            foreach (QModelIndex index, indexListSource)
+            {
+                obdModel->setData(index, valueStr,  Qt::EditRole);
+            }
+        }
+        else
+        {
+            foreach (QModelIndex index, indexList)
+            {
+                model()->setData(index, valueStr, Qt::EditRole);
+            }
         }
     }
 }

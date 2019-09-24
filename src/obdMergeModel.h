@@ -25,6 +25,7 @@
 #include "srecfile.h"
 #include "errorcode.h"
 
+
 class ObdMergeModel : public QAbstractTableModel
 {
     public:
@@ -48,6 +49,9 @@ class ObdMergeModel : public QAbstractTableModel
         SrecFile *srec;
         int nColumn;
         int nRow;
+
+    signals:
+        void obdDataChanged() {return;}
 
 
 };
