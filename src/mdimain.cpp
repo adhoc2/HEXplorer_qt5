@@ -1344,6 +1344,8 @@ void MDImain::showContextMenu(QPoint)
                 menu.addAction(saveFile);
                 menu.addAction(saveAsFile);
                 menu.addSeparator();
+                menu.addAction(editObdMerge);
+                menu.addSeparator();
                 menu.addAction(quicklook);
                 menu.addAction(editChanged);
                 menu.addAction(resetAllChangedData);
@@ -1352,6 +1354,8 @@ void MDImain::showContextMenu(QPoint)
                 //menu editModified
                 Node *node =  model->getNode(index);
                 Csv *csv = dynamic_cast<Csv *> (node);
+
+                editObdMerge->setDisabled(false);
 
                 if (csv->getModifiedData().isEmpty())
                     editChanged->setDisabled(true);
@@ -1377,6 +1381,8 @@ void MDImain::showContextMenu(QPoint)
                 //menu editModified
                 Node *node =  model->getNode(index);
                 Dcm *dcm = dynamic_cast<Dcm *> (node);
+
+                editObdMerge->setDisabled(false);
 
                 if (dcm->getModifiedData().isEmpty())
                     editChanged->setDisabled(true);
@@ -1552,7 +1558,7 @@ void MDImain::on_actionAbout_triggered()
                    "special thanks to :\n"
                    "Oscar, Niklaus, Jimi, Zack, Eric, Oneyed Jack, lofofora\n"
                    "M, Radio Tarifa, Al, John, Paco, Noir dez, et tous les autres...pour le bon son.\n\n"
-                   "build " + qApp->applicationVersion().toLocal8Bit() + " compiled with " + compiler + "\n\n"
+                   "build " + qApp->applicationVersion().toLocal8Bit() + " BETA compiled with " + compiler + "\n\n"
                    "This software uses external libraries :\n"
                    "   - Qt framework " + QT_VERSION_STR + "\n"
                    "   - Quex 0.69.3 (as efficient lexical analyser generator)\n"
@@ -4123,7 +4129,8 @@ void MDImain::editObd_Merge()
         Node *node =  model->getNode(index);
         QString name = typeid(*node).name();
 
-        if (!name.endsWith("SrecFile") && !name.endsWith("CdfxFile") && !name.endsWith("Dcm"))
+        if (!name.endsWith("SrecFile") && !name.endsWith("CdfxFile") && !name.endsWith("Dcm")
+                && !name.endsWith("Csv"))
         {
             QMessageBox::warning(this, "HEXplorer::edit measuring channels", "Please select first a dataset.",
                                              QMessageBox::Ok);
@@ -4145,7 +4152,7 @@ void MDImain::editObd_Merge()
                 SrecFile *srec = (SrecFile*)node;
 
                 //create a new spreadSheet and attach the model
-                SpreadsheetView *view = new SpreadsheetView();
+                SpreadsheetView *view = new SpreadsheetView(this);
                 //view->setModel(obdModel);
                 srec->attach(view);
 
@@ -4187,7 +4194,7 @@ void MDImain::editObd_Merge()
                 CdfxFile *cdfx = (CdfxFile*)node;
 
                 //create a new spreadSheet and attach the model
-                SpreadsheetView *view = new SpreadsheetView();
+                SpreadsheetView *view = new SpreadsheetView(this);
                 //view->setModel(obdModel);
                 cdfx->attach(view);
 
@@ -4230,7 +4237,7 @@ void MDImain::editObd_Merge()
                 Dcm *dcm = (Dcm*)node;
 
                 //create a new spreadSheet and attach the model
-                SpreadsheetView *view = new SpreadsheetView();
+                SpreadsheetView *view = new SpreadsheetView(this);
                 //view->setModel(obdModel);
                 dcm->attach(view);
 
@@ -4257,6 +4264,49 @@ void MDImain::editObd_Merge()
                 QIcon icon;
                 icon.addFile(":/icones/milky_outils.png");
                 ui->tabWidget->addTab(view, icon, dcm->name);
+
+                //set new view as activated
+                ui->tabWidget->setCurrentWidget(view);
+
+                view->setAlternatingRowColors(true);
+
+                //write output
+                writeOutput("OBD merge edited.");
+
+            }
+            else if (name.toLower().endsWith("csv"))
+            {
+                //get the Wp
+                Csv *csv = (Csv*)node;
+
+                //create a new spreadSheet and attach the model
+                SpreadsheetView *view = new SpreadsheetView(this);
+                //view->setModel(obdModel);
+                csv->attach(view);
+
+                //create a new model for obdMerge function
+                ObdMergeModel *obdModel = new ObdMergeModel(csv);
+
+                //sort and filter model
+                obdSortFilterProxyModel *proxyModel = new obdSortFilterProxyModel(this, obdModel);
+
+                view->setModel(proxyModel);
+                view->setSortingEnabled(true);
+                proxyModel->sort(1, Qt::AscendingOrder);
+
+                //sorting functions
+                //view->setSortingEnabled(true);
+                view->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+                view->setColumnWidth(1,350);
+                view->setColumnWidth(2, 50);
+                view->setColumnWidth(3, 50);
+                view->setColumnWidth(4, 50);
+                view->setColumnWidth(5, 50);
+
+                //add a new tab with the spreadsheet
+                QIcon icon;
+                icon.addFile(":/icones/milky_outils.png");
+                ui->tabWidget->addTab(view, icon, csv->name);
 
                 //set new view as activated
                 ui->tabWidget->setCurrentWidget(view);
