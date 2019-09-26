@@ -301,157 +301,8 @@ ObdMergeModel::ObdMergeModel(SrecFile *srecFile, QObject *parent)
     nRow = 0;
     nColumn = 0;
     dataContainer = srecFile;
+    listErrorCodes();
 
-    foreach (Data *data, dataContainer->listData) {
-        QString nameStr(data->name);
-        if (nameStr.toLower().endsWith("_c.prio"))
-        {
-           ErrorCode *error = new ErrorCode(nameStr.remove("_C.Prio"));
-           listDataNameInView.append(data->getName());
-           error->dtc = data->getComment().remove("DTC-ID: ");
-           error->dtc.remove("\"");
-           error->dtc.remove("\"");
-           error->prio = data;
-
-           //find the rest  of error properties
-           Data* _data = dataContainer->getData(nameStr + "_C.Inc");
-           if (_data) {
-               error->inc = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.Dec");
-           if (_data) {
-               error->dec = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.PreThd");
-           if (_data) {
-               error->prethd = _data;
-               listDataNameInView.append(_data->getName());
-           }          
-           _data = dataContainer->getData(nameStr + "_C.DebounceBehavior");
-           if (_data) {
-               error->debounce = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.SetTimeMsOrNbOcc");
-           if (_data) {
-               error->setTime = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.ResetTimeMsOrNbOcc");
-           if (_data) {
-               error->resetTime = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.EventType");
-           if (_data) {
-               error->eventType = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.AgiCycIdn");
-           if (_data) {
-               error->agicycidn = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.AgiCycThd");
-           if (_data) {
-               error->agicycthd = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.OperCycIdn");
-           if (_data) {
-               error->opercycidn = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.OperCycThd");
-           if (_data) {
-               error->opercycthd = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.ExclsnCdn");
-           if (_data) {
-               error->exclsncdn = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[0].FltReactnId");
-           if (_data) {
-               error->fltreactnid_0 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[1].FltReactnId");
-           if (_data) {
-               error->fltreactnid_1 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[2].FltReactnId");
-           if (_data) {
-               error->fltreactnid_2 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[3].FltReactnId");
-           if (_data) {
-               error->fltreactnid_3 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[4].FltReactnId");
-           if (_data) {
-               error->fltreactnid_4 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[5].FltReactnId");
-           if (_data) {
-               error->fltreactnid_5 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[6].FltReactnId");
-           if (_data) {
-               error->fltreactnid_6 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[0].DelayId");
-           if (_data) {
-               error->delayid_0 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[1].DelayId");
-           if (_data) {
-               error->delayid_1 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[2].DelayId");
-           if (_data) {
-               error->delayid_2 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[3].DelayId");
-           if (_data) {
-               error->delayid_3 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[4].DelayId");
-           if (_data) {
-               error->delayid_4 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[5].DelayId");
-           if (_data) {
-               error->delayid_5 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[6].DelayId");
-           if (_data) {
-               error->delayid_6 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-
-
-           this->listErrorCode.append(error);
-        }
-    }
-
-    nRow = this->listErrorCode.count();
-    nColumn = 29;
 }
 
 ObdMergeModel::ObdMergeModel(CdfxFile *cdfx, QObject *parent)
@@ -460,158 +311,7 @@ ObdMergeModel::ObdMergeModel(CdfxFile *cdfx, QObject *parent)
     nRow = 0;
     nColumn = 0;
     dataContainer = cdfx;
-
-
-    foreach (Data *data, dataContainer->listData) {
-        QString nameStr(data->name);
-        if (nameStr.toLower().endsWith("_c.prio"))
-        {
-           ErrorCode *error = new ErrorCode(nameStr.remove("_C.Prio"));
-           listDataNameInView.append(data->getName());
-           error->dtc = data->getComment().remove("DTC-ID: ");
-           error->dtc.remove("\"");
-           error->dtc.remove("\"");
-           error->prio = data;
-
-           //find the rest  of error properties
-           Data* _data = dataContainer->getData(nameStr + "_C.Inc");
-           if (_data) {
-               error->inc = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.Dec");
-           if (_data) {
-               error->dec = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.PreThd");
-           if (_data) {
-               error->prethd = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.DebounceBehavior");
-           if (_data) {
-               error->debounce = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.SetTimeMsOrNbOcc");
-           if (_data) {
-               error->setTime = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.ResetTimeMsOrNbOcc");
-           if (_data) {
-               error->resetTime = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.EventType");
-           if (_data) {
-               error->eventType = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.AgiCycIdn");
-           if (_data) {
-               error->agicycidn = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.AgiCycThd");
-           if (_data) {
-               error->agicycthd = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.OperCycIdn");
-           if (_data) {
-               error->opercycidn = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.OperCycThd");
-           if (_data) {
-               error->opercycthd = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.ExclsnCdn");
-           if (_data) {
-               error->exclsncdn = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[0].FltReactnId");
-           if (_data) {
-               error->fltreactnid_0 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[1].FltReactnId");
-           if (_data) {
-               error->fltreactnid_1 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[2].FltReactnId");
-           if (_data) {
-               error->fltreactnid_2 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[3].FltReactnId");
-           if (_data) {
-               error->fltreactnid_3 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[4].FltReactnId");
-           if (_data) {
-               error->fltreactnid_4 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[5].FltReactnId");
-           if (_data) {
-               error->fltreactnid_5 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[6].FltReactnId");
-           if (_data) {
-               error->fltreactnid_6 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[0].DelayId");
-           if (_data) {
-               error->delayid_0 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[1].DelayId");
-           if (_data) {
-               error->delayid_1 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[2].DelayId");
-           if (_data) {
-               error->delayid_2 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[3].DelayId");
-           if (_data) {
-               error->delayid_3 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[4].DelayId");
-           if (_data) {
-               error->delayid_4 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[5].DelayId");
-           if (_data) {
-               error->delayid_5 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[6].DelayId");
-           if (_data) {
-               error->delayid_6 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-
-
-           this->listErrorCode.append(error);
-        }
-    }
-
-    nRow = this->listErrorCode.count();
-    nColumn = 29;
+    listErrorCodes();
 }
 
 ObdMergeModel::ObdMergeModel(Dcm *dcm, QObject *parent)
@@ -620,158 +320,7 @@ ObdMergeModel::ObdMergeModel(Dcm *dcm, QObject *parent)
     nRow = 0;
     nColumn = 0;
     dataContainer = dcm;
-
-
-    foreach (Data *data, dataContainer->listData) {
-        QString nameStr(data->name);
-        if (nameStr.toLower().endsWith("_c.prio"))
-        {
-           ErrorCode *error = new ErrorCode(nameStr.remove("_C.Prio"));
-           listDataNameInView.append(data->getName());
-           error->dtc = data->getComment().remove("DTC-ID: ");
-           error->dtc.remove("\"");
-           error->dtc.remove("\"");
-           error->prio = data;
-
-           //find the rest  of error properties
-           Data* _data = dataContainer->getData(nameStr + "_C.Inc");
-           if (_data) {
-               error->inc = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.Dec");
-           if (_data) {
-               error->dec = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.PreThd");
-           if (_data) {
-               error->prethd = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.DebounceBehavior");
-           if (_data) {
-               error->debounce = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.SetTimeMsOrNbOcc");
-           if (_data) {
-               error->setTime = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.ResetTimeMsOrNbOcc");
-           if (_data) {
-               error->resetTime = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.EventType");
-           if (_data) {
-               error->eventType = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.AgiCycIdn");
-           if (_data) {
-               error->agicycidn = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.AgiCycThd");
-           if (_data) {
-               error->agicycthd = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.OperCycIdn");
-           if (_data) {
-               error->opercycidn = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.OperCycThd");
-           if (_data) {
-               error->opercycthd = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.ExclsnCdn");
-           if (_data) {
-               error->exclsncdn = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[0].FltReactnId");
-           if (_data) {
-               error->fltreactnid_0 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[1].FltReactnId");
-           if (_data) {
-               error->fltreactnid_1 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[2].FltReactnId");
-           if (_data) {
-               error->fltreactnid_2 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[3].FltReactnId");
-           if (_data) {
-               error->fltreactnid_3 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[4].FltReactnId");
-           if (_data) {
-               error->fltreactnid_4 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[5].FltReactnId");
-           if (_data) {
-               error->fltreactnid_5 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[6].FltReactnId");
-           if (_data) {
-               error->fltreactnid_6 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[0].DelayId");
-           if (_data) {
-               error->delayid_0 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[1].DelayId");
-           if (_data) {
-               error->delayid_1 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[2].DelayId");
-           if (_data) {
-               error->delayid_2 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[3].DelayId");
-           if (_data) {
-               error->delayid_3 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[4].DelayId");
-           if (_data) {
-               error->delayid_4 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[5].DelayId");
-           if (_data) {
-               error->delayid_5 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[6].DelayId");
-           if (_data) {
-               error->delayid_6 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-
-
-           this->listErrorCode.append(error);
-        }
-    }
-
-    nRow = this->listErrorCode.count();
-    nColumn = 29;
+    listErrorCodes();
 }
 
 ObdMergeModel::ObdMergeModel(Csv *csv, QObject *parent)
@@ -780,163 +329,190 @@ ObdMergeModel::ObdMergeModel(Csv *csv, QObject *parent)
     nRow = 0;
     nColumn = 0;
     dataContainer = csv;
-
-
-    foreach (Data *data, dataContainer->listData) {
-        QString nameStr(data->name);
-        if (nameStr.toLower().endsWith("_c.prio"))
-        {
-           ErrorCode *error = new ErrorCode(nameStr.remove("_C.Prio"));
-           listDataNameInView.append(data->getName());
-           error->dtc = data->getComment().remove("DTC-ID: ");
-           error->dtc.remove("\"");
-           error->dtc.remove("\"");
-           error->prio = data;
-
-           //find the rest  of error properties
-           Data* _data = dataContainer->getData(nameStr + "_C.Inc");
-           if (_data) {
-               error->inc = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.Dec");
-           if (_data) {
-               error->dec = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.PreThd");
-           if (_data) {
-               error->prethd = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.DebounceBehavior");
-           if (_data) {
-               error->debounce = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.SetTimeMsOrNbOcc");
-           if (_data) {
-               error->setTime = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.ResetTimeMsOrNbOcc");
-           if (_data) {
-               error->resetTime = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.EventType");
-           if (_data) {
-               error->eventType = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.AgiCycIdn");
-           if (_data) {
-               error->agicycidn = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.AgiCycThd");
-           if (_data) {
-               error->agicycthd = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.OperCycIdn");
-           if (_data) {
-               error->opercycidn = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.OperCycThd");
-           if (_data) {
-               error->opercycthd = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "_C.ExclsnCdn");
-           if (_data) {
-               error->exclsncdn = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[0].FltReactnId");
-           if (_data) {
-               error->fltreactnid_0 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[1].FltReactnId");
-           if (_data) {
-               error->fltreactnid_1 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[2].FltReactnId");
-           if (_data) {
-               error->fltreactnid_2 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[3].FltReactnId");
-           if (_data) {
-               error->fltreactnid_3 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[4].FltReactnId");
-           if (_data) {
-               error->fltreactnid_4 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[5].FltReactnId");
-           if (_data) {
-               error->fltreactnid_5 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[6].FltReactnId");
-           if (_data) {
-               error->fltreactnid_6 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[0].DelayId");
-           if (_data) {
-               error->delayid_0 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[1].DelayId");
-           if (_data) {
-               error->delayid_1 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[2].DelayId");
-           if (_data) {
-               error->delayid_2 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[3].DelayId");
-           if (_data) {
-               error->delayid_3 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[4].DelayId");
-           if (_data) {
-               error->delayid_4 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[5].DelayId");
-           if (_data) {
-               error->delayid_5 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-           _data = dataContainer->getData(nameStr + "Frm_A[6].DelayId");
-           if (_data) {
-               error->delayid_6 = _data;
-               listDataNameInView.append(_data->getName());
-           }
-
-
-           this->listErrorCode.append(error);
-        }
-    }
-
-    nRow = this->listErrorCode.count();
-    nColumn = 29;
+    listErrorCodes();
 }
 
 
 ObdMergeModel::~ObdMergeModel()
 {
+
+}
+
+void ObdMergeModel::listErrorCodes()
+{
+    QStringList listErrorEndings({"Prio", "Inc", "Dec", "PreThd", "DebounceBehavior", "SetTimeMsOrNbOcc",
+                                 "ResetTimeMsOrNbOcc", "EventType", "AgiCycIdn", "AgiCycThd", "OperCycIdn",
+                                 "OperCycThd", "ExclsnCdn", "FltReactnId", "DelayId"});
+
+    foreach (Data *data, dataContainer->listData)
+    {
+        QString nameStr(data->getName());
+        if (!listDataNameInView.contains(nameStr))
+        {
+            QString nameEnd = nameStr.split(".").last();
+            //qDebug() << nameEnd;
+            if (listErrorEndings.contains(nameEnd))
+            {
+                QString nameBegin = "";
+                if (nameEnd == "FltReactnId" || nameEnd == "DelayId")
+                {
+                    nameBegin = nameStr.split("Frm_A[").first();
+                }
+                else
+                {
+                    nameBegin = nameStr.split("_C.").first();
+                }
+
+                ErrorCode* error = new ErrorCode(nameBegin);
+
+                listDataNameInView.append(nameStr);
+                error->dtc = data->getComment().remove("DTC-ID: ");
+                error->dtc.remove("\"");
+                error->dtc.remove("\"");
+
+                Data* _data = dataContainer->getData(nameBegin + "_C.Prio");
+                if (_data) {
+                    error->prio = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "_C.Inc");
+                if (_data) {
+                    error->inc = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "_C.Dec");
+                if (_data) {
+                    error->dec = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "_C.PreThd");
+                if (_data) {
+                    error->prethd = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "_C.DebounceBehavior");
+                if (_data) {
+                    error->debounce = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "_C.SetTimeMsOrNbOcc");
+                if (_data) {
+                    error->setTime = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "_C.ResetTimeMsOrNbOcc");
+                if (_data) {
+                    error->resetTime = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "_C.EventType");
+                if (_data) {
+                    error->eventType = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "_C.AgiCycIdn");
+                if (_data) {
+                    error->agicycidn = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "_C.AgiCycThd");
+                if (_data) {
+                    error->agicycthd = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "_C.OperCycIdn");
+                if (_data) {
+                    error->opercycidn = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "_C.OperCycThd");
+                if (_data) {
+                    error->opercycthd = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "_C.ExclsnCdn");
+                if (_data) {
+                    error->exclsncdn = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "Frm_A[0].FltReactnId");
+                if (_data) {
+                    error->fltreactnid_0 = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "Frm_A[1].FltReactnId");
+                if (_data) {
+                    error->fltreactnid_1 = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "Frm_A[2].FltReactnId");
+                if (_data) {
+                    error->fltreactnid_2 = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "Frm_A[3].FltReactnId");
+                if (_data) {
+                    error->fltreactnid_3 = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "Frm_A[4].FltReactnId");
+                if (_data) {
+                    error->fltreactnid_4 = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "Frm_A[5].FltReactnId");
+                if (_data) {
+                    error->fltreactnid_5 = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "Frm_A[6].FltReactnId");
+                if (_data) {
+                    error->fltreactnid_6 = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "Frm_A[0].DelayId");
+                if (_data) {
+                    error->delayid_0 = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "Frm_A[1].DelayId");
+                if (_data) {
+                    error->delayid_1 = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "Frm_A[2].DelayId");
+                if (_data) {
+                    error->delayid_2 = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "Frm_A[3].DelayId");
+                if (_data) {
+                    error->delayid_3 = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "Frm_A[4].DelayId");
+                if (_data) {
+                    error->delayid_4 = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "Frm_A[5].DelayId");
+                if (_data) {
+                    error->delayid_5 = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+                _data = dataContainer->getData(nameBegin + "Frm_A[6].DelayId");
+                if (_data) {
+                    error->delayid_6 = _data;
+                    listDataNameInView.append(_data->getName());
+                }
+
+                this->listErrorCode.append(error);
+            }
+        }
+    }
+
+    nRow = this->listErrorCode.count();
+    nColumn = 29;
 
 }
 

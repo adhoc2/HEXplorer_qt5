@@ -59,6 +59,8 @@ class ObdMergeModel : public QAbstractTableModel
         int nColumn;
         int nRow;
 
+        void listErrorCodes();
+
     signals:
         void obdDataChanged() {return;}
 
