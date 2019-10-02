@@ -342,7 +342,7 @@ void ObdMergeModel::listErrorCodes()
 {
     QStringList listErrorEndings({"Prio", "Inc", "Dec", "PreThd", "DebounceBehavior", "SetTimeMsOrNbOcc",
                                  "ResetTimeMsOrNbOcc", "EventType", "AgiCycIdn", "AgiCycThd", "OperCycIdn",
-                                 "OperCycThd", "ExclsnCdn", "FltReactnId", "DelayId"});
+                                 "OperCycThd", "ExclsnCdn", "FltReactnId", "DelayId","InhbnMask"});
 
     foreach (Data *data, dataContainer->listData)
     {
@@ -363,7 +363,13 @@ void ObdMergeModel::listErrorCodes()
                     nameBegin = nameStr.split("_C.").first();
                 }
 
-                ErrorCode* error = new ErrorCode(nameBegin);
+                //check if errorCode has been previously created
+                //if not create a new one
+                ErrorCode* error = getErrorCode(nameBegin);
+                if (!error)
+                {
+                    error = new ErrorCode(nameBegin);
+                }
 
                 listDataNameInView.append(nameStr);
                 error->dtc = data->getComment().remove("DTC-ID: ");
@@ -435,6 +441,11 @@ void ObdMergeModel::listErrorCodes()
                     error->exclsncdn = _data;
                     listDataNameInView.append(_data->getName());
                 }
+                _data = dataContainer->getData(nameBegin + "_C.InhbnMask");
+                if (_data) {
+                    error->inhbnMask = _data;
+                    listDataNameInView.append(_data->getName());
+                }
                 _data = dataContainer->getData(nameBegin + "Frm_A[0].FltReactnId");
                 if (_data) {
                     error->fltreactnid_0 = _data;
@@ -504,15 +515,33 @@ void ObdMergeModel::listErrorCodes()
                 if (_data) {
                     error->delayid_6 = _data;
                     listDataNameInView.append(_data->getName());
-                }
+                }               
 
                 this->listErrorCode.append(error);
+            }            
+            else if (nameStr.contains("Inhbn_A["))
+            {
+                QString nameBegin = nameStr.split("Inhbn_A[").first();
+                QString nameEnd = nameStr.split("Inhbn_A[").last().remove("]");
+                //qDebug() << nameBegin << " : " << nameEnd;
+
+                // get the errorCode with nameBegin
+                // if exist add the list off inhibitions otherwise create it
+                ErrorCode* error = getErrorCode(nameBegin);
+                if (!error)
+                {
+                    error = new ErrorCode(nameBegin);
+                }
+
+               error->listInh.insert(nameEnd, data);
+
+
             }
         }
     }
 
     nRow = this->listErrorCode.count();
-    nColumn = 29;
+    nColumn = 53;
 
 }
 
@@ -907,6 +936,14 @@ QVariant ObdMergeModel::headerData(int section, Qt::Orientation orientation, int
                 else if (section == 28)
                 {
                     return "delay_6";
+                }
+                else if (section == 29)
+                {
+                    return "InhbnMask";
+                }
+                else if (section >= 30)
+                {
+                    return "Inhbn_A[" + QString::number(section - 30) + "]";
                 }
             }
                 else
@@ -1375,10 +1412,14 @@ Data* ObdMergeModel::getData(const int row, const int col) const
     else if (col == 26)  {  dataName += "Frm_A[5].DelayId"; }
     else if (col == 27)  {  dataName += "Frm_A[6].FltReactnId"; }
     else if (col == 28)  {  dataName += "Frm_A[6].DelayId"; }
+    else if (col == 29)  {  dataName += "_C.InhbnMask"; }
+    else if (col >= 30)
+    {
+        dataName += "Inhbn_A[" + QString::number(col - 30) + "]";
+    }
 
     Data *data = dataContainer->getData(dataName);
     return data;
-
 }
 
 bool ObdMergeModel::exportAs(QString format, QString filename)
@@ -1391,4 +1432,15 @@ bool ObdMergeModel::exportAs(QString format, QString filename)
     {
         return dataContainer->exportDataList2Csv(listDataNameInView);
     }
+}
+
+ErrorCode* ObdMergeModel::getErrorCode(QString errorName)
+{
+    foreach (ErrorCode* errorCode, listErrorCode)
+    {
+        if (errorCode->name == errorName)
+            return errorCode;
+    }
+
+    return nullptr;
 }
