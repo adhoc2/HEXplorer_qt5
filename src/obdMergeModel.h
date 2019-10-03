@@ -48,7 +48,6 @@ class ObdMergeModel : public QAbstractTableModel
         bool undoData(const QModelIndexList &indexList, int role);
         QVariant headerData(int section, Qt::Orientation orientation, int role) const;
         Qt::ItemFlags flags(const QModelIndex &index) const;
-        void sort(int column, Qt::SortOrder order=Qt::AscendingOrder);
         bool exportAs(QString format, QString filename);
         DataContainer* getDataContainer() {return dataContainer;}
 

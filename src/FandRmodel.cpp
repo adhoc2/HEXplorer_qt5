@@ -206,8 +206,8 @@ QVariant FandRModel::data(const QModelIndex &index, int role) const
             {
                 if (column == 0)
                 {
-                    QColor color = Qt::blue;
-                    return color;
+                    //QColor color = Qt::blue;
+                    //return color;
                 }
             }
             break;
