@@ -17,37 +17,27 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#ifndef OBDMERGEMODEL_H
-#define OBDMERGEMODEL_H
+#ifndef FANDRMODEL_H
+#define FANDRMODEL_H
 
 #include <QAbstractTableModel>
 #include <Nodes/characteristic.h>
 #include "srecfile.h"
 
-class ObdMergeModel : public QAbstractTableModel
+class FandRModel : public QAbstractTableModel
 {
     public:
-        ObdMergeModel(SrecFile *srec, QObject *parent = 0);
-        ~ObdMergeModel();
+        FandRModel(SrecFile *srec, QObject *parent = 0);
+        ~FandRModel();
 
         int rowCount(const QModelIndex &parent) const;
         int columnCount(const QModelIndex &parent) const;
         QVariant data(const QModelIndex &index, int role) const;
         QVariant headerData(int section, Qt::Orientation orientation, int role) const;
         Qt::ItemFlags flags(const QModelIndex &index) const;
-        void sort(int column, Qt::SortOrder order=Qt::AscendingOrder);
 
     private:
-        QMap<QString, Data*> listDataInc;
-        QMap<QString, Data*> listDataDec;
-        QMap<QString, Data*> listDataPreThd;
         QMap<QString, Data*> listDataPrio;
-        QMap<QString, Data*> listDataAgiCycIdn;
-        QMap<QString, Data*> listDataAgiCycThd;
-        QMap<QString, Data*> listDataOperCycIdn;
-        QMap<QString, Data*> listDataOperCycThd;
-        QMap<QString, Data*> listDataExclsnCdn;
-
         QMap<QString, Data*> listDataFnR0;
         QMap<QString, Data*> listDataFnR1;
         QMap<QString, Data*> listDataFnR2;
@@ -59,4 +49,4 @@ class ObdMergeModel : public QAbstractTableModel
 
 };
 
-#endif // OBDMERGEMODEL_H
+#endif // FANDRMODEL_H

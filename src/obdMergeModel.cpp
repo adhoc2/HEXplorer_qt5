@@ -17,12 +17,12 @@
 //
 // please contact the author at : christophe.hoel@gmail.com
 
-#include "ObdMergeModel.h"
+#include "FandRModel.h"
 #include "Nodes/compu_method.h"
 #include <QFont>
 #include "qdebug"
 
-ObdMergeModel::ObdMergeModel(SrecFile *srecFile, QObject *parent)
+FandRModel::FandRModel(SrecFile *srecFile, QObject *parent)
 {
     nRow = 0;
     nColumn = 0;
@@ -35,38 +35,6 @@ ObdMergeModel::ObdMergeModel(SrecFile *srecFile, QObject *parent)
         if (nameStr.toLower().endsWith(".prio"))
         {
             listDataPrio.insert(data->getComment(), data);
-        }
-        else if (nameStr.toLower().endsWith(".inc"))
-        {
-            listDataInc.insert(data->getComment(), data);
-        }
-        else if (nameStr.toLower().endsWith(".dec"))
-        {
-            listDataDec.insert(data->getComment(), data);
-        }
-        else if (nameStr.toLower().endsWith(".prethd"))
-        {
-            listDataPreThd.insert(data->getComment(), data);
-        }
-        else if (nameStr.toLower().endsWith(".agicycidn"))
-        {
-            listDataAgiCycIdn.insert(data->getComment(), data);
-        }
-        else if (nameStr.toLower().endsWith(".agicycthd"))
-        {
-            listDataAgiCycThd.insert(data->getComment(), data);
-        }
-        else if (nameStr.toLower().endsWith(".opercycidn"))
-        {
-            listDataOperCycIdn.insert(data->getComment(), data);
-        }
-        else if (nameStr.toLower().endsWith(".opercycthd"))
-        {
-            listDataOperCycThd.insert(data->getComment(), data);
-        }
-        else if (nameStr.toLower().endsWith(".exclsncdn"))
-        {
-            listDataExclsnCdn.insert(data->getComment(), data);
         }
         else if (nameStr.toLower().endsWith("a[0].fltreactnid"))
         {
@@ -91,26 +59,26 @@ ObdMergeModel::ObdMergeModel(SrecFile *srecFile, QObject *parent)
     }
 
     nRow = listDataFnR0.count();
-    nColumn = 20;
+    nColumn = 8;
 
 }
 
-ObdMergeModel::~ObdMergeModel()
+FandRModel::~FandRModel()
 {
 
 }
 
-int ObdMergeModel::rowCount(const QModelIndex &parent) const
+int FandRModel::rowCount(const QModelIndex &parent) const
 {
     return nRow;
 }
 
-int ObdMergeModel::columnCount(const QModelIndex &parent) const
+int FandRModel::columnCount(const QModelIndex &parent) const
 {
     return nColumn;
 }
 
-QVariant ObdMergeModel::data(const QModelIndex &index, int role) const
+QVariant FandRModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
         return QVariant();
@@ -128,47 +96,24 @@ QVariant ObdMergeModel::data(const QModelIndex &index, int role) const
         {
         case Qt::DisplayRole :
             {
-                if (column == 0) //DTC
+                if (column == 0)
                 {
                     return key.remove("DTC-ID: ");
                 }
-                else if (column == 1) //Error Name
+                else if (column == 1)
                 {
-                    Data *label = listDataPrio.value(key, nullptr);
-                    if (label)
-                    {
-                        QString str = label->getName();
-                        return str.remove("_C.Prio");
-                    }
+                    if (label0)
+                        return label0->name;
                 }
-                else if (column == 2) //Inc
+                else if (column == 3)
                 {
-                    Data *labelInc = listDataInc.value(key, nullptr);
-                    if (labelInc)
+                    if (label0)
                     {
-                        QString str = labelInc->getZ(0);
+                        QString str = label0->getZ(0);
                         return str;
                     }
                 }
-                else if (column == 3) //Dec
-                {
-                    Data *labelDec = listDataDec.value(key, nullptr);
-                    if (labelDec)
-                    {
-                        QString str = labelDec->getZ(0);
-                        return str;
-                    }
-                }
-                else if (column == 4) //PreThd
-                {
-                    Data *label = listDataPreThd.value(key, nullptr);
-                    if (label)
-                    {
-                        QString str = label->getZ(0);
-                        return str;
-                    }
-                }
-                else if (column == 5) //Prio
+                else if (column == 2)
                 {
                     Data *labelPrio = listDataPrio.value(key, nullptr);
                     if (labelPrio)
@@ -177,60 +122,7 @@ QVariant ObdMergeModel::data(const QModelIndex &index, int role) const
                         return str;
                     }
                 }
-                else if (column == 6) //AgiCycIdn
-                {
-                    Data *label = listDataAgiCycIdn.value(key, nullptr);
-                    if (label)
-                    {
-                        QString str = label->getZ(0);
-                        return str;
-                    }
-                }
-                else if (column == 7) //AgiCycThd
-                {
-                    Data *label = listDataAgiCycThd.value(key, nullptr);
-                    if (label)
-                    {
-                        QString str = label->getZ(0);
-                        return str;
-                    }
-                }
-                else if (column == 8) //OperCycIdn
-                {
-                    Data *label = listDataOperCycIdn.value(key, nullptr);
-                    if (label)
-                    {
-                        QString str = label->getZ(0);
-                        return str;
-                    }
-                }
-                else if (column == 9) //OperCycThd
-                {
-                    Data *label = listDataOperCycThd.value(key, nullptr);
-                    if (label)
-                    {
-                        QString str = label->getZ(0);
-                        return str;
-                    }
-                }
-                else if (column == 10) //ExclsnCdn
-                {
-                    Data *label = listDataExclsnCdn.value(key, nullptr);
-                    if (label)
-                    {
-                        QString str = label->getZ(0);
-                        return str;
-                    }
-                }
-                else if (column == 11) //Reaction1
-                {
-                    if (label0)
-                    {
-                        QString str = label0->getZ(0);
-                        return str;
-                    }
-                }                
-                else if (column == 12)//Reaction2
+                else if (column == 4)
                 {
                     Data *label1 = listDataFnR1.value(key, nullptr);
                     if (label1)
@@ -239,7 +131,7 @@ QVariant ObdMergeModel::data(const QModelIndex &index, int role) const
                         return str;
                     }
                 }
-                else if (column == 13)//Reaction3
+                else if (column == 5)
                 {
 
                     Data *label2 = listDataFnR2.value(key, nullptr);
@@ -249,7 +141,7 @@ QVariant ObdMergeModel::data(const QModelIndex &index, int role) const
                         return str;
                     }
                 }
-                else if (column == 14)//Reaction4
+                else if (column == 6)
                 {
 
                     Data *label3 = listDataFnR3.value(key, nullptr);
@@ -259,7 +151,7 @@ QVariant ObdMergeModel::data(const QModelIndex &index, int role) const
                         return str;
                     }
                 }
-                else if (column == 15)//Reaction5
+                else if (column == 7)
                 {
 
                     Data *label4 = listDataFnR4.value(key, nullptr);
@@ -325,14 +217,14 @@ QVariant ObdMergeModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-Qt::ItemFlags ObdMergeModel::flags(const QModelIndex &index) const
+Qt::ItemFlags FandRModel::flags(const QModelIndex &index) const
  {
      Qt::ItemFlags flags = QAbstractItemModel::flags(index);
      flags |= Qt::ItemIsEditable;
      return flags;
  }
 
-QVariant ObdMergeModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant FandRModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     switch (role)
     {
@@ -350,57 +242,25 @@ QVariant ObdMergeModel::headerData(int section, Qt::Orientation orientation, int
                 }
                 else if (section == 2)
                 {
-                    return "Inc";
+                    return "Prio";
                 }
                 else if (section == 3)
                 {
-                    return "Dec";
+                    return "reaction #1";
                 }
                 else if (section == 4)
                 {
-                    return "PreThd";
+                    return "reaction #2";
                 }
                 else if (section == 5)
                 {
-                    return "Prio";
+                    return "reaction #3";
                 }
                 else if (section == 6)
                 {
-                    return "AgiCycIdn";
-                }
-                else if (section == 7)
-                {
-                    return "AgiCycThd";
-                }
-                else if (section == 8)
-                {
-                    return "OperCycIdn";
-                }
-                else if (section == 9)
-                {
-                    return "OperCycThd";
-                }
-                else if (section == 10)
-                {
-                    return "ExclsnCdn";
-                }
-                else if (section == 11)
-                {
-                    return "reaction #1";
-                }
-                else if (section == 12)
-                {
-                    return "reaction #2";
-                }
-                else if (section ==13)
-                {
-                    return "reaction #3";
-                }
-                else if (section == 14)
-                {
                     return "reaction #4";
                 }
-                else if (section == 15)
+                else if (section == 7)
                 {
                     return "reaction #5";
                 }
@@ -452,10 +312,4 @@ QVariant ObdMergeModel::headerData(int section, Qt::Orientation orientation, int
     }
 
     return QVariant();
-}
-
-void ObdMergeModel::sort(int column, Qt::SortOrder order)
-{
-
-    return;
 }
