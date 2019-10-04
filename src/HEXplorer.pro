@@ -139,7 +139,6 @@ HEADERS += a2l.h \
     node.h \
     item.h \
     a2ltreemodel.h \
-    obdMergeModel.h \
     treemodelcompleter.h \
     dialog.h \
     chooselabel.h \
@@ -324,7 +323,6 @@ SOURCES += a2l.cpp \
     node.cpp \
     item.cpp \
     a2ltreemodel.cpp \
-    obdMergeModel.cpp \
     treemodelcompleter.cpp \
     dialog.cpp \
     chooselabel.cpp \
