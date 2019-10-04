@@ -92,8 +92,8 @@ class SpreadsheetView : public QTableView
         void filterColumn(QString value, bool activate);
         void resetAll_Filters();
         void saveObdViewAs();
-        void hide_Columns(int i, QString str);
-        void show_Columns(int i, QString str);
+        void selectColumns2Hide(int i, QString str);
+        void funHideColumns();
         void contextMenuEvent( QPoint p );
         void updateActions(QModelIndex);
 

@@ -229,7 +229,7 @@ void SpreadsheetView::createActions()
 
     hideColumns = new QAction(tr("hide columns"), this);
     hideColumns->setIcon(QIcon(":/icones/milky_find.png"));
-    connect(hideColumns, SIGNAL(triggered()), this, SLOT(hide_Columns()));
+    connect(hideColumns, SIGNAL(triggered()), this, SLOT(selectColumns2Hide()));
     hideColumns->setDisabled(false);
 
 
@@ -346,7 +346,7 @@ void SpreadsheetView::contextMenuEvent ( QPoint p )
         else if (name.toLower().endsWith("obdmergemodel")  || name.toLower().endsWith("obdsortfilterproxymodel") )
         {
             //menu->addAction(hideColumns);
-            QMenu *menuHideCol = new QMenu("Hide Columns");
+            QMenu *menuHideCol = new QMenu("select columns to show");
             menu->addMenu(menuHideCol);
 
             //get all column headers
@@ -363,19 +363,36 @@ void SpreadsheetView::contextMenuEvent ( QPoint p )
 
             foreach (QString value, headerMap.values())
             {
-                QAction *action = new QAction(value);
-                menuHideCol->addAction(action);
-                action->setCheckable(true);
+                QCheckBox *chkBox = new QCheckBox(menuHideCol);
+                chkBox ->setText(value);
+                QWidgetAction *chkBoxAction= new QWidgetAction(menuHideCol);
+                chkBoxAction->setDefaultWidget(chkBox);
+                menuHideCol->addAction(chkBoxAction);
+
                 if (hiddenValues.contains(value))
-                    action->setChecked(false);
+                    chkBox->setChecked(false);
                 else
-                    action->setChecked(true);
-                if (action->isChecked())
-                    connect(action, &QAction::triggered, this, [=]() { this->hide_Columns(headerMap.key(value), value); });
-                else
-                    connect(action, &QAction::triggered, this, [=]() { this->show_Columns(headerMap.key(value), value); });
+                    chkBox->setChecked(true);
+
+                connect(chkBox, &QCheckBox::stateChanged, this, [=]() { this->selectColumns2Hide(headerMap.key(value), value); });
+
+
+//                QAction *action = new QAction(value);
+//                menuHideCol->addAction(action);
+//                action->setCheckable(true);
+//                if (hiddenValues.contains(value))
+//                    action->setChecked(false);
+//                else
+//                    action->setChecked(true);
+//                if (action->isChecked())
+//                    connect(action, &QAction::toggled, this, [=]() { this->hide_Columns(headerMap.key(value), value); });
+//                else
+//                    connect(action, &QAction::toggled, this, [=]() { this->show_Columns(headerMap.key(value), value); });
             }
 
+            QAction *action = new QAction("show/hide columns");
+            connect(action, &QAction::triggered, this, [=]() { this->funHideColumns(); });
+            menu->addAction(action);
 
             menu->addSeparator();
             menu->addAction(fillAllWith);
@@ -506,17 +523,39 @@ void SpreadsheetView::saveObdViewAs()
     }
 }
 
-void SpreadsheetView::hide_Columns(int i, QString str)
+void SpreadsheetView::selectColumns2Hide(int i, QString str)
 {
-    hiddenHeaders.insert(i, str);
-    horizontalHeader()->hideSection(i);
+    if (!hiddenHeaders.contains(i))
+    {
+        hiddenHeaders.insert(i, str);
+        qDebug() << "hide : " + QString::number(i) + " : " + str;
+    }
+    else
+    {
+        hiddenHeaders.remove(i);
+        qDebug() << "show : " + QString::number(i) + " : " + str;
+    }
+
 
 }
 
-void SpreadsheetView::show_Columns(int i, QString str)
+void SpreadsheetView::funHideColumns()
 {
-    hiddenHeaders.remove(i);
-    horizontalHeader()->showSection(i);
+    //get all column headers
+    obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)this->model();
+    ObdMergeModel *obdMergeModel = (ObdMergeModel*)proxyModel->sourceModel();
+
+    for (int i=0; i < obdMergeModel->columnCount(QModelIndex()); i++)
+    {
+        if (hiddenHeaders.contains(i))
+        {
+            horizontalHeader()->hideSection(i);
+        }
+        else
+            horizontalHeader()->showSection(i);
+
+    }
+
 }
 
 void SpreadsheetView::filterColumn(QString value, bool activate)
