@@ -20,8 +20,6 @@
 #include "sptablemodel.h"
 
 #include <QFont>
-#include <QSettings>
-#include <qapplication.h>
 #include "qdebug.h"
 
 SpTableModel::SpTableModel(QObject *parent) : QAbstractTableModel(parent)
@@ -375,19 +373,10 @@ QVariant SpTableModel::data(const QModelIndex &index, int role) const
         {
             QColor color1 = Qt::red;
             QColor color2 = Qt::blue;
-            QColor color3 = Qt::darkGreen;
             QColor black = Qt::black;
 
             if (row - sum == 0 && column == 0)
-            {
-                QSettings settings(qApp->organizationName(), qApp->applicationName());
-                if (settings.value("theme") != "dark")
-                {
-                    return color2;
-                }
-                else
-                    return color3;
-            }
+                return color2;
             else if (row - sum  == 0 && column == 1)
                 return color1;
 

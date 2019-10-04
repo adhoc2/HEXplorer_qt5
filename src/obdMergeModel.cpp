@@ -23,6 +23,277 @@
 #include <QList>
 #include "qdebug"
 
+bool errorLess_name_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   return (b->name.toLatin1() > a->name.toLatin1());
+}
+bool errorLess_name_desc(const ErrorCode *a, const ErrorCode *b)
+{
+   return (b->name.toLatin1() < a->name.toLatin1());
+}
+
+bool errorLess_dtc_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   return (b->dtc.toLatin1() > a->dtc.toLatin1());
+}
+bool errorLess_dtc_desc(const ErrorCode *a, const ErrorCode *b)
+{
+   return (b->dtc.toLatin1() < a->dtc.toLatin1());
+}
+
+bool errorLess_agicycidn_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->agicycidn && b->agicycidn) return (b->agicycidn->getZ(0).toLatin1() > a->agicycidn->getZ(0).toLatin1());
+   else return false;
+}
+bool errorLess_agicycidn_desc(const ErrorCode *a, const ErrorCode *b)
+{
+    if (a->agicycidn && b->agicycidn)  return (b->agicycidn->getZ(0).toLatin1() < a->agicycidn->getZ(0).toLatin1());
+    else return false;
+}
+
+bool errorLess_opercycidn_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->opercycidn && b->opercycidn)  return (b->opercycidn->getZ(0).toLatin1() > a->opercycidn->getZ(0).toLatin1());
+   else return false;
+}
+bool errorLess_opercycidn_desc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->opercycidn && b->opercycidn)  return (b->opercycidn->getZ(0).toLatin1() < a->opercycidn->getZ(0).toLatin1());
+   else return false;
+}
+
+bool errorLess_inc_asc(const ErrorCode *a, const ErrorCode *b)
+{
+    if (a->inc && b->inc) return b->inc->getZ(0).toInt() > a->inc->getZ(0).toInt();
+    else return false;
+}
+bool errorLess_inc_desc(const ErrorCode *a, const ErrorCode *b)
+{
+     if (a->inc && b->inc) return b->inc->getZ(0).toInt() < a->inc->getZ(0).toInt();
+     else return false;
+}
+
+bool errorLess_dec_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->dec && b->dec) return b->dec->getZ(0).toInt() > a->dec->getZ(0).toInt();
+   else return false;
+
+}
+bool errorLess_dec_desc(const ErrorCode *a, const ErrorCode *b)
+{
+       if (a->dec && b->dec) return b->dec->getZ(0).toInt() < a->dec->getZ(0).toInt();
+       else return false;
+}
+
+bool errorLess_prethd_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->prethd && b->prethd) return b->prethd->getZ(0).toInt() > a->prethd->getZ(0).toInt();
+   else return false;
+}
+bool errorLess_prethd_desc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->prethd && b->prethd) return b->prethd->getZ(0).toInt() < a->prethd->getZ(0).toInt();
+   else return false;
+}
+
+bool errorLess_prio_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->prio && b->prio) return b->prio->getZ(0).toInt() > a->prio->getZ(0).toInt();
+   else return false;
+}
+bool errorLess_prio_desc(const ErrorCode *a, const ErrorCode *b)
+{
+       if (a->prio && b->prio) return b->prio->getZ(0).toInt() < a->prio->getZ(0).toInt();
+       else return false;
+}
+
+bool errorLess_agicycthd_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->agicycthd && b->agicycthd) return b->agicycthd->getZ(0).toInt() > a->agicycthd->getZ(0).toInt();
+   else return false;
+}
+bool errorLess_agicycthd_desc(const ErrorCode *a, const ErrorCode *b)
+{
+    if (a->agicycthd && b->agicycthd)  return b->agicycthd->getZ(0).toInt() < a->agicycthd->getZ(0).toInt();
+    else return false;
+}
+
+bool errorLess_opercycthd_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->opercycthd && b->opercycthd) return b->opercycthd->getZ(0).toInt() > a->opercycthd->getZ(0).toInt();
+   else return false;
+}
+bool errorLess_opercycthd_desc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->opercycthd && b->opercycthd)  return b->opercycthd->getZ(0).toInt() < a->opercycthd->getZ(0).toInt();
+   else return false;
+}
+
+bool errorLess_exclsncdn_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->exclsncdn && b->exclsncdn) return b->exclsncdn->getZ(0).toInt() > a->exclsncdn->getZ(0).toInt();
+   else return false;
+}
+bool errorLess_exclsncdn_desc(const ErrorCode *a, const ErrorCode *b)
+{
+    if (a->exclsncdn && b->exclsncdn) return b->exclsncdn->getZ(0).toInt() < a->exclsncdn->getZ(0).toInt();
+    else return false;
+}
+
+bool errorLess_frmreact0_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->fltreactnid_0 && b->fltreactnid_0) return (b->fltreactnid_0->getZ(0).toLatin1() > a->fltreactnid_0->getZ(0).toLatin1());
+   else return false;
+}
+bool errorLess_frmreact0_desc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->fltreactnid_0 && b->fltreactnid_0) return (b->fltreactnid_0->getZ(0).toLatin1() < a->fltreactnid_0->getZ(0).toLatin1());
+   else return false;
+}
+
+bool errorLess_frmreact1_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->fltreactnid_1 && b->fltreactnid_1) return (b->fltreactnid_1->getZ(0).toLatin1() > a->fltreactnid_1->getZ(0).toLatin1());
+   else return false;
+}
+bool errorLess_frmreact1_desc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->fltreactnid_1 && b->fltreactnid_1) return (b->fltreactnid_1->getZ(0).toLatin1() < a->fltreactnid_1->getZ(0).toLatin1());
+   else return false;
+}
+
+bool errorLess_frmreact2_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->fltreactnid_2 && b->fltreactnid_2) return (b->fltreactnid_2->getZ(0).toLatin1() > a->fltreactnid_2->getZ(0).toLatin1());
+   else return false;
+}
+bool errorLess_frmreact2_desc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->fltreactnid_2 && b->fltreactnid_2) return (b->fltreactnid_2->getZ(0).toLatin1() < a->fltreactnid_2->getZ(0).toLatin1());
+   else return false;
+}
+
+bool errorLess_frmreact3_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->fltreactnid_3 && b->fltreactnid_3) return (b->fltreactnid_3->getZ(0).toLatin1() > a->fltreactnid_3->getZ(0).toLatin1());
+   else return false;
+}
+bool errorLess_frmreact3_desc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->fltreactnid_3 && b->fltreactnid_3) return (b->fltreactnid_3->getZ(0).toLatin1() < a->fltreactnid_3->getZ(0).toLatin1());
+   else return false;
+}
+
+bool errorLess_frmreact4_asc(const ErrorCode *a, const ErrorCode *b)
+{
+    if (a->fltreactnid_4 && b->fltreactnid_4)  return (b->fltreactnid_4->getZ(0).toLatin1() > a->fltreactnid_4->getZ(0).toLatin1());
+    else return false;
+}
+bool errorLess_frmreact4_desc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->fltreactnid_4 && b->fltreactnid_4)  return (b->fltreactnid_4->getZ(0).toLatin1() < a->fltreactnid_4->getZ(0).toLatin1());
+   else return false;
+}
+
+bool errorLess_frmreact5_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->fltreactnid_5 && b->fltreactnid_5)  return (b->fltreactnid_5->getZ(0).toLatin1() > a->fltreactnid_5->getZ(0).toLatin1());
+   else return false;
+}
+bool errorLess_frmreact5_desc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->fltreactnid_5 && b->fltreactnid_5) return (b->fltreactnid_5->getZ(0).toLatin1() < a->fltreactnid_5->getZ(0).toLatin1());
+   else return false;
+}
+
+bool errorLess_frmreact6_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->fltreactnid_6 && b->fltreactnid_6) return (b->fltreactnid_6->getZ(0).toLatin1() > a->fltreactnid_6->getZ(0).toLatin1());
+   else return false;
+}
+bool errorLess_frmreact6_desc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->fltreactnid_6 && b->fltreactnid_6) return (b->fltreactnid_6->getZ(0).toLatin1() < a->fltreactnid_6->getZ(0).toLatin1());
+   else return false;
+}
+
+bool errorLess_frmdelay0_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->delayid_0 && b->delayid_0) return (b->delayid_0->getZ(0).toLatin1() > a->delayid_0->getZ(0).toLatin1());
+   else return false;
+}
+bool errorLess_frmdelay0_desc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->delayid_0 && b->delayid_0) return (b->delayid_0->getZ(0).toLatin1() < a->delayid_0->getZ(0).toLatin1());
+   else return false;
+}
+
+bool errorLess_frmdelay1_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->delayid_1 && b->delayid_1) return (b->delayid_1->getZ(0).toLatin1() > a->delayid_1->getZ(0).toLatin1());
+   else return false;
+}
+bool errorLess_frmdelay1_desc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->delayid_1 && b->delayid_1) return (b->delayid_1->getZ(0).toLatin1() < a->delayid_1->getZ(0).toLatin1());
+   else return false;
+}
+
+bool errorLess_frmdelay2_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->delayid_2 && b->delayid_2) return (b->delayid_2->getZ(0).toLatin1() > a->delayid_2->getZ(0).toLatin1());
+   else return false;
+}
+bool errorLess_frmdelay2_desc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->delayid_2 && b->delayid_2) return (b->delayid_2->getZ(0).toLatin1() < a->delayid_2->getZ(0).toLatin1());
+   else return false;
+}
+
+bool errorLess_frmdelay3_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->delayid_3 && b->delayid_3) return (b->delayid_3->getZ(0).toLatin1() > a->delayid_3->getZ(0).toLatin1());
+   else return false;
+}
+bool errorLess_frmdelay3_desc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->delayid_3 && b->delayid_3) return (b->delayid_3->getZ(0).toLatin1() < a->delayid_3->getZ(0).toLatin1());
+   else return false;
+}
+
+bool errorLess_frmdelay4_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->delayid_4 && b->delayid_4) return (b->delayid_4->getZ(0).toLatin1() > a->delayid_4->getZ(0).toLatin1());
+   return false;
+}
+bool errorLess_frmdelay4_desc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->delayid_4 && b->delayid_4) return (b->delayid_4->getZ(0).toLatin1() < a->delayid_4->getZ(0).toLatin1());
+   else return false;
+}
+
+bool errorLess_frmdelay5_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->delayid_5 && b->delayid_5) return (b->delayid_5->getZ(0).toLatin1() > a->delayid_5->getZ(0).toLatin1());
+   else return false;
+}
+bool errorLess_frmdelay5_desc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->delayid_5 && b->delayid_5) return (b->delayid_5->getZ(0).toLatin1() < a->delayid_5->getZ(0).toLatin1());
+   else return false;
+}
+
+bool errorLess_frmdelay6_asc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->delayid_6 && b->delayid_6) return (b->delayid_6->getZ(0).toLatin1() > a->delayid_6->getZ(0).toLatin1());
+   else return false;
+}
+bool errorLess_frmdelay6_desc(const ErrorCode *a, const ErrorCode *b)
+{
+   if (a->delayid_6 && b->delayid_6) return (b->delayid_6->getZ(0).toLatin1() < a->delayid_6->getZ(0).toLatin1());
+   else return false;
+}
 
 ObdMergeModel::ObdMergeModel(SrecFile *srecFile, QObject *parent)
     :QAbstractTableModel(parent)
@@ -107,114 +378,142 @@ void ObdMergeModel::listErrorCodes()
 
                 Data* _data = dataContainer->getData(nameBegin + "_C.Prio");
                 if (_data) {
+                    error->prio = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "_C.Inc");
                 if (_data) {
+                    error->inc = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "_C.Dec");
                 if (_data) {
+                    error->dec = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "_C.PreThd");
                 if (_data) {
+                    error->prethd = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "_C.DebounceBehavior");
                 if (_data) {
+                    error->debounce = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "_C.SetTimeMsOrNbOcc");
                 if (_data) {
+                    error->setTime = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "_C.ResetTimeMsOrNbOcc");
                 if (_data) {
+                    error->resetTime = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "_C.EventType");
                 if (_data) {
+                    error->eventType = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "_C.AgiCycIdn");
                 if (_data) {
+                    error->agicycidn = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "_C.AgiCycThd");
                 if (_data) {
+                    error->agicycthd = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "_C.OperCycIdn");
                 if (_data) {
+                    error->opercycidn = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "_C.OperCycThd");
                 if (_data) {
+                    error->opercycthd = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "_C.ExclsnCdn");
                 if (_data) {
+                    error->exclsncdn = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "_C.InhbnMask");
                 if (_data) {
+                    error->inhbnMask = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "Frm_A[0].FltReactnId");
                 if (_data) {
+                    error->fltreactnid_0 = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "Frm_A[1].FltReactnId");
                 if (_data) {
+                    error->fltreactnid_1 = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "Frm_A[2].FltReactnId");
                 if (_data) {
+                    error->fltreactnid_2 = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "Frm_A[3].FltReactnId");
                 if (_data) {
+                    error->fltreactnid_3 = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "Frm_A[4].FltReactnId");
                 if (_data) {
+                    error->fltreactnid_4 = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "Frm_A[5].FltReactnId");
                 if (_data) {
+                    error->fltreactnid_5 = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "Frm_A[6].FltReactnId");
                 if (_data) {
+                    error->fltreactnid_6 = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "Frm_A[0].DelayId");
                 if (_data) {
+                    error->delayid_0 = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "Frm_A[1].DelayId");
                 if (_data) {
+                    error->delayid_1 = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "Frm_A[2].DelayId");
                 if (_data) {
+                    error->delayid_2 = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "Frm_A[3].DelayId");
                 if (_data) {
+                    error->delayid_3 = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "Frm_A[4].DelayId");
                 if (_data) {
+                    error->delayid_4 = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "Frm_A[5].DelayId");
                 if (_data) {
+                    error->delayid_5 = _data;
                     listDataNameInView.append(_data->getName());
                 }
                 _data = dataContainer->getData(nameBegin + "Frm_A[6].DelayId");
                 if (_data) {
+                    error->delayid_6 = _data;
                     listDataNameInView.append(_data->getName());
                 }               
 
@@ -224,12 +523,19 @@ void ObdMergeModel::listErrorCodes()
             {
                 QString nameBegin = nameStr.split("Inhbn_A[").first();
                 QString nameEnd = nameStr.split("Inhbn_A[").last().remove("]");
+                //qDebug() << nameBegin << " : " << nameEnd;
 
+                // get the errorCode with nameBegin
+                // if exist add the list off inhibitions otherwise create it
                 ErrorCode* error = getErrorCode(nameBegin);
                 if (!error)
                 {
                     error = new ErrorCode(nameBegin);
                 }
+
+               error->listInh.insert(nameEnd, data);
+
+
             }
         }
     }
@@ -357,8 +663,8 @@ QVariant ObdMergeModel::data(const QModelIndex &index, int role) const
             {
                 if (column == 0)
                 {
-                    //QColor color = Qt::blue;
-                    //return color;
+                    QColor color = Qt::blue;
+                    return color;
                 }
                 else
                 {
@@ -687,6 +993,387 @@ QVariant ObdMergeModel::headerData(int section, Qt::Orientation orientation, int
     }
 
     return QVariant();
+}
+
+void ObdMergeModel::sort(int column, Qt::SortOrder order)
+{
+    if (column == 0)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_dtc_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_dtc_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 1)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_name_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_name_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 2)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_inc_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_inc_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 3)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_dec_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_dec_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 4)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_prethd_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_prethd_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 5)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_prio_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_prio_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 6)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_agicycidn_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_agicycidn_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 7)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_agicycthd_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_agicycthd_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 8)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_opercycthd_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_opercycthd_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 9)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_opercycthd_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_opercycthd_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 10)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_exclsncdn_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_exclsncdn_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 11)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmreact0_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmreact0_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 13)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmreact1_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmreact1_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 15)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmreact2_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmreact2_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 17)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmreact3_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmreact3_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 19)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmreact4_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmreact4_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 21)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmreact5_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmreact5_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 23)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmreact6_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmreact6_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 12)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmdelay0_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmdelay0_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 14)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmdelay1_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmdelay1_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 16)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmdelay2_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmdelay2_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 18)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmdelay3_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmdelay3_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 20)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmdelay4_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmdelay4_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 22)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmdelay5_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmdelay5_desc);
+            this->layoutChanged();
+        }
+    }
+    else if (column == 24)
+    {
+        if (order == Qt::AscendingOrder)
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmdelay6_asc);
+            this->layoutChanged();
+        }
+        else
+        {
+            this->layoutAboutToBeChanged();
+            std::sort(listErrorCode.begin(), listErrorCode.end(), errorLess_frmdelay6_desc);
+            this->layoutChanged();
+        }
+    }
+
+    return;
 }
 
 int ObdMergeModel::getRow(const int col, const QString text) const
