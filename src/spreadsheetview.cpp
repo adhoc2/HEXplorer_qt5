@@ -344,18 +344,7 @@ void SpreadsheetView::contextMenuEvent ( QPoint p )
             menu->addAction(copyAction);
             menu->addAction(pasteAction);
             menu->addSeparator();
-
-            QMenu *menuFilter = new QMenu("Filter");
-            menu->addMenu(menuFilter);
-            obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
-            QStringList uniqueList = proxyModel->getUniqueValues(index.column());
-            foreach (QString value, uniqueList)
-            {
-                QAction *action = new QAction(value);
-                menuFilter->addAction(action);
-                connect(action, &QAction::triggered, this, [=]() { this->filterColumn(action->text()); });
-            }
-
+            menu->addAction(filterColumns);
             menu->addAction(resetAllFilters);            
         }
         else
@@ -407,20 +396,19 @@ void SpreadsheetView::resetAll_Filters()
     }
 }
 
-void SpreadsheetView::filterColumn(QString value)
+void SpreadsheetView::filterColumn()
 {
-    QModelIndexList indexList = this->selectedIndexes();
-    QModelIndex index = indexList.at(0);
-    if (index.isValid())
+
+
+    QString name = typeid(*model()).name();
+    if (name.toLower().endsWith("obdsortfilterproxymodel"))
     {
-        QString name = typeid(*model()).name();
-        if (name.toLower().endsWith("obdsortfilterproxymodel"))
-        {
-            obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
-            QRegExp regExp("^" + value + "$");
-            proxyModel->setFilterRegExp(regExp);
-            proxyModel->setFilterKeyColumn(index.column());
-        }
+        obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
+
+        QRegExp regExp;
+        regExp.exactMatch("5");
+        proxyModel->setFilterRegExp(regExp);
+        proxyModel->setFilterKeyColumn(2);
     }
 
 }

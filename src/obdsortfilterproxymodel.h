@@ -16,7 +16,7 @@ public:
     void setFilter(const QString &str);
 
     Data* getData(QModelIndex index);
-    QStringList getUniqueValues(int column);
+    void resetAllFilters();
 
 
 protected:
