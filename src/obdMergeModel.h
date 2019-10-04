@@ -54,6 +54,7 @@ class ObdMergeModel : public QAbstractTableModel
 
     private:
         QList<ErrorCode*> listErrorCode;
+        ErrorCode* getErrorCode(QString name);
         QStringList listDataNameInView;
         DataContainer *dataContainer;
         int nColumn;
