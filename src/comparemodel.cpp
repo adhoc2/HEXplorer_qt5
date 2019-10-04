@@ -760,7 +760,6 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
             {
                 QColor color1 = Qt::red;
                 QColor color2 = Qt::blue;
-                QColor black = Qt::black;
 
                 if (row - sum == 0 && column == 0)
                     return color2;
@@ -784,13 +783,11 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
                                     return color1;
                                 else if (val1 < val2)
                                     return color2;
-                                else return black;
                             }
                             else
                             {
                                 if (listDat1->at(ind)->getZ(0) != listDat1->at(ind)->getOrgZ(0))
                                     return color1;
-                                else return black;
                             }
                         }
                     }
@@ -808,13 +805,11 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
                                     return color1;
                                 else if (val1 < val2)
                                     return color2;
-                                else return black;
                             }
                             else
                             {
                                 if (listDat1->at(ind)->getX(column - 1) != listDat1->at(ind)->getOrgX(column - 1))
                                     return color1;
-                                else return black;
                             }
                         }
                         else if (row - sum == 3 && column >= 1 &&  column <= listDat1->at(ind)->zCount())
@@ -830,13 +825,11 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
                                     return color1;
                                 else if (val1 < val2)
                                     return color2;
-                                else return black;
                             }
                             else
                             {
                                 if (listDat1->at(ind)->getZ(column - 1) != listDat1->at(ind)->getOrgZ(column - 1))
                                     return color1;
-                                else return black;
                             }
                         }
                     }
@@ -855,13 +848,12 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
                                     return color1;
                                 else if (val1 < val2)
                                     return color2;
-                                else return black;
                             }
                             else
                             {
                                 if (listDat1->at(ind)->getX(column - 2) != listDat1->at(ind)->getOrgX(column - 2))
                                     return color1;
-                                else return black;                            }
+                            }
                         }
                         if (row - sum >= 3 && row - sum < listDat1->at(ind)->size - 1)
                         {
@@ -877,13 +869,11 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
                                         return color1;
                                     else if (val1 < val2)
                                         return color2;
-                                    else return black;
                                 }
                                 else
                                 {
                                     if (listDat1->at(ind)->getY(row - sum - 3) != listDat1->at(ind)->getOrgY(row - sum - 3))
                                         return color1;
-                                    else return black;
                                 }
                             }
                             else if (column >= 2 && column <= listDat1->at(ind)->xCount() + 1)
@@ -901,13 +891,11 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
                                         return color1;
                                     else if (val1 < val2)
                                         return color2;
-                                    else return black;
                                 }
                                 else
                                 {
                                     if (listDat1->at(ind)->getZ(dataRow, dataCol)!= listDat1->at(ind)->getOrgZ(dataRow, dataCol))
                                         return color1;
-                                    else return black;
                                 }
                             }
                         }
@@ -929,13 +917,11 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
                                     return color1;
                                 else if (val1 < val2)
                                     return color2;
-                                else return black;
                             }
                             else
                             {
                                 if (listDat2->at(ind)->getZ(0) != listDat2->at(ind)->getOrgZ(0))
                                     return color1;
-                                else return black;
                             }
                         }
                     }
@@ -953,13 +939,11 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
                                     return color1;
                                 else if (val1 < val2)
                                     return color2;
-                                else return black;
                             }
                             else
                             {
                                 if (listDat2->at(ind)->getX(column - 1) != listDat2->at(ind)->getOrgX(column - 1))
                                     return color1;
-                                else return black;
                             }
                         }
                         else if (row - sum == 2 && column >= 1 &&  column <= listDat2->at(ind)->zCount())
@@ -974,13 +958,11 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
                                     return color1;
                                 else if (val1 < val2)
                                     return color2;
-                                else return black;
                             }
                             else
                             {
                                 if (listDat2->at(ind)->getZ(column - 1) != listDat2->at(ind)->getOrgZ(column - 1))
                                     return color1;
-                                else return black;
                             }
                         }
                     }
@@ -998,13 +980,11 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
                                     return color1;
                                 else if (val1 < val2)
                                     return color2;
-                                else return black;
                             }
                             else
                             {
                                 if (listDat2->at(ind)->getX(column - 2) != listDat2->at(ind)->getOrgX(column - 2))
                                     return color1;
-                                else return black;
                             }
                         }
                         if (row - sum >= 2 && row - sum < listDat2->at(ind)->size - 2)
@@ -1021,13 +1001,11 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
                                         return color1;
                                     else if (val1 < val2)
                                         return color2;
-                                    else return black;
                                 }
                                 else
                                 {
                                     if (listDat2->at(ind)->getY(row - sum - 2) != listDat2->at(ind)->getOrgY(row - sum - 2))
                                         return color1;
-                                    else return black;
                                 }
 
                             }
@@ -1046,13 +1024,11 @@ QVariant CompareModel::data(const QModelIndex &index, int role) const
                                         return color1;
                                     else if (val1 < val2)
                                         return color2;
-                                    else return black;
                                 }
                                 else
                                 {
                                     if (listDat2->at(ind)->getZ(dataRow, dataCol)!= listDat2->at(ind)->getOrgZ(dataRow, dataCol))
                                         return color1;
-                                    else return black;
                                 }
 
                             }

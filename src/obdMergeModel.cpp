@@ -43,256 +43,209 @@ bool errorLess_dtc_desc(const ErrorCode *a, const ErrorCode *b)
 
 bool errorLess_agicycidn_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->agicycidn && b->agicycidn) return (b->agicycidn->getZ(0).toLatin1() > a->agicycidn->getZ(0).toLatin1());
-   else return false;
+   return (b->agicycidn->getZ(0).toLatin1() > a->agicycidn->getZ(0).toLatin1());
 }
 bool errorLess_agicycidn_desc(const ErrorCode *a, const ErrorCode *b)
 {
-    if (a->agicycidn && b->agicycidn)  return (b->agicycidn->getZ(0).toLatin1() < a->agicycidn->getZ(0).toLatin1());
-    else return false;
+   return (b->agicycidn->getZ(0).toLatin1() < a->agicycidn->getZ(0).toLatin1());
 }
 
 bool errorLess_opercycidn_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->opercycidn && b->opercycidn)  return (b->opercycidn->getZ(0).toLatin1() > a->opercycidn->getZ(0).toLatin1());
-   else return false;
+   return (b->opercycidn->getZ(0).toLatin1() > a->opercycidn->getZ(0).toLatin1());
 }
 bool errorLess_opercycidn_desc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->opercycidn && b->opercycidn)  return (b->opercycidn->getZ(0).toLatin1() < a->opercycidn->getZ(0).toLatin1());
-   else return false;
+   return (b->opercycidn->getZ(0).toLatin1() < a->opercycidn->getZ(0).toLatin1());
 }
 
 bool errorLess_inc_asc(const ErrorCode *a, const ErrorCode *b)
 {
-    if (a->inc && b->inc) return b->inc->getZ(0).toInt() > a->inc->getZ(0).toInt();
-    else return false;
+   return b->inc->getZ(0).toInt() > a->inc->getZ(0).toInt();
 }
 bool errorLess_inc_desc(const ErrorCode *a, const ErrorCode *b)
 {
-     if (a->inc && b->inc) return b->inc->getZ(0).toInt() < a->inc->getZ(0).toInt();
-     else return false;
+       return b->inc->getZ(0).toInt() < a->inc->getZ(0).toInt();
 }
 
 bool errorLess_dec_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->dec && b->dec) return b->dec->getZ(0).toInt() > a->dec->getZ(0).toInt();
-   else return false;
-
+   return b->dec->getZ(0).toInt() > a->dec->getZ(0).toInt();
 }
 bool errorLess_dec_desc(const ErrorCode *a, const ErrorCode *b)
 {
-       if (a->dec && b->dec) return b->dec->getZ(0).toInt() < a->dec->getZ(0).toInt();
-       else return false;
+       return b->dec->getZ(0).toInt() < a->dec->getZ(0).toInt();
 }
 
 bool errorLess_prethd_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->prethd && b->prethd) return b->prethd->getZ(0).toInt() > a->prethd->getZ(0).toInt();
-   else return false;
+   return b->prethd->getZ(0).toInt() > a->prethd->getZ(0).toInt();
 }
 bool errorLess_prethd_desc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->prethd && b->prethd) return b->prethd->getZ(0).toInt() < a->prethd->getZ(0).toInt();
-   else return false;
+       return b->prethd->getZ(0).toInt() < a->prethd->getZ(0).toInt();
 }
 
 bool errorLess_prio_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->prio && b->prio) return b->prio->getZ(0).toInt() > a->prio->getZ(0).toInt();
-   else return false;
+   return b->prio->getZ(0).toInt() > a->prio->getZ(0).toInt();
 }
 bool errorLess_prio_desc(const ErrorCode *a, const ErrorCode *b)
 {
-       if (a->prio && b->prio) return b->prio->getZ(0).toInt() < a->prio->getZ(0).toInt();
-       else return false;
+       return b->prio->getZ(0).toInt() < a->prio->getZ(0).toInt();
 }
 
 bool errorLess_agicycthd_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->agicycthd && b->agicycthd) return b->agicycthd->getZ(0).toInt() > a->agicycthd->getZ(0).toInt();
-   else return false;
+   return b->agicycthd->getZ(0).toInt() > a->agicycthd->getZ(0).toInt();
 }
 bool errorLess_agicycthd_desc(const ErrorCode *a, const ErrorCode *b)
 {
-    if (a->agicycthd && b->agicycthd)  return b->agicycthd->getZ(0).toInt() < a->agicycthd->getZ(0).toInt();
-    else return false;
+       return b->agicycthd->getZ(0).toInt() < a->agicycthd->getZ(0).toInt();
 }
 
 bool errorLess_opercycthd_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->opercycthd && b->opercycthd) return b->opercycthd->getZ(0).toInt() > a->opercycthd->getZ(0).toInt();
-   else return false;
+   return b->opercycthd->getZ(0).toInt() > a->opercycthd->getZ(0).toInt();
 }
 bool errorLess_opercycthd_desc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->opercycthd && b->opercycthd)  return b->opercycthd->getZ(0).toInt() < a->opercycthd->getZ(0).toInt();
-   else return false;
+       return b->opercycthd->getZ(0).toInt() < a->opercycthd->getZ(0).toInt();
 }
 
 bool errorLess_exclsncdn_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->exclsncdn && b->exclsncdn) return b->exclsncdn->getZ(0).toInt() > a->exclsncdn->getZ(0).toInt();
-   else return false;
+   return b->exclsncdn->getZ(0).toInt() > a->exclsncdn->getZ(0).toInt();
 }
 bool errorLess_exclsncdn_desc(const ErrorCode *a, const ErrorCode *b)
 {
-    if (a->exclsncdn && b->exclsncdn) return b->exclsncdn->getZ(0).toInt() < a->exclsncdn->getZ(0).toInt();
-    else return false;
+       return b->exclsncdn->getZ(0).toInt() < a->exclsncdn->getZ(0).toInt();
 }
 
 bool errorLess_frmreact0_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->fltreactnid_0 && b->fltreactnid_0) return (b->fltreactnid_0->getZ(0).toLatin1() > a->fltreactnid_0->getZ(0).toLatin1());
-   else return false;
+   return (b->fltreactnid_0->getZ(0).toLatin1() > a->fltreactnid_0->getZ(0).toLatin1());
 }
 bool errorLess_frmreact0_desc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->fltreactnid_0 && b->fltreactnid_0) return (b->fltreactnid_0->getZ(0).toLatin1() < a->fltreactnid_0->getZ(0).toLatin1());
-   else return false;
+   return (b->fltreactnid_0->getZ(0).toLatin1() < a->fltreactnid_0->getZ(0).toLatin1());
 }
 
 bool errorLess_frmreact1_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->fltreactnid_1 && b->fltreactnid_1) return (b->fltreactnid_1->getZ(0).toLatin1() > a->fltreactnid_1->getZ(0).toLatin1());
-   else return false;
+   return (b->fltreactnid_1->getZ(0).toLatin1() > a->fltreactnid_1->getZ(0).toLatin1());
 }
 bool errorLess_frmreact1_desc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->fltreactnid_1 && b->fltreactnid_1) return (b->fltreactnid_1->getZ(0).toLatin1() < a->fltreactnid_1->getZ(0).toLatin1());
-   else return false;
+   return (b->fltreactnid_1->getZ(0).toLatin1() < a->fltreactnid_1->getZ(0).toLatin1());
 }
 
 bool errorLess_frmreact2_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->fltreactnid_2 && b->fltreactnid_2) return (b->fltreactnid_2->getZ(0).toLatin1() > a->fltreactnid_2->getZ(0).toLatin1());
-   else return false;
+   return (b->fltreactnid_2->getZ(0).toLatin1() > a->fltreactnid_2->getZ(0).toLatin1());
 }
 bool errorLess_frmreact2_desc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->fltreactnid_2 && b->fltreactnid_2) return (b->fltreactnid_2->getZ(0).toLatin1() < a->fltreactnid_2->getZ(0).toLatin1());
-   else return false;
+   return (b->fltreactnid_2->getZ(0).toLatin1() < a->fltreactnid_2->getZ(0).toLatin1());
 }
 
 bool errorLess_frmreact3_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->fltreactnid_3 && b->fltreactnid_3) return (b->fltreactnid_3->getZ(0).toLatin1() > a->fltreactnid_3->getZ(0).toLatin1());
-   else return false;
+   return (b->fltreactnid_3->getZ(0).toLatin1() > a->fltreactnid_3->getZ(0).toLatin1());
 }
 bool errorLess_frmreact3_desc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->fltreactnid_3 && b->fltreactnid_3) return (b->fltreactnid_3->getZ(0).toLatin1() < a->fltreactnid_3->getZ(0).toLatin1());
-   else return false;
+   return (b->fltreactnid_3->getZ(0).toLatin1() < a->fltreactnid_3->getZ(0).toLatin1());
 }
 
 bool errorLess_frmreact4_asc(const ErrorCode *a, const ErrorCode *b)
 {
-    if (a->fltreactnid_4 && b->fltreactnid_4)  return (b->fltreactnid_4->getZ(0).toLatin1() > a->fltreactnid_4->getZ(0).toLatin1());
-    else return false;
+   return (b->fltreactnid_4->getZ(0).toLatin1() > a->fltreactnid_4->getZ(0).toLatin1());
 }
 bool errorLess_frmreact4_desc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->fltreactnid_4 && b->fltreactnid_4)  return (b->fltreactnid_4->getZ(0).toLatin1() < a->fltreactnid_4->getZ(0).toLatin1());
-   else return false;
+   return (b->fltreactnid_4->getZ(0).toLatin1() < a->fltreactnid_4->getZ(0).toLatin1());
 }
 
 bool errorLess_frmreact5_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->fltreactnid_5 && b->fltreactnid_5)  return (b->fltreactnid_5->getZ(0).toLatin1() > a->fltreactnid_5->getZ(0).toLatin1());
-   else return false;
+   return (b->fltreactnid_5->getZ(0).toLatin1() > a->fltreactnid_5->getZ(0).toLatin1());
 }
 bool errorLess_frmreact5_desc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->fltreactnid_5 && b->fltreactnid_5) return (b->fltreactnid_5->getZ(0).toLatin1() < a->fltreactnid_5->getZ(0).toLatin1());
-   else return false;
+   return (b->fltreactnid_5->getZ(0).toLatin1() < a->fltreactnid_5->getZ(0).toLatin1());
 }
 
 bool errorLess_frmreact6_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->fltreactnid_6 && b->fltreactnid_6) return (b->fltreactnid_6->getZ(0).toLatin1() > a->fltreactnid_6->getZ(0).toLatin1());
-   else return false;
+   return (b->fltreactnid_6->getZ(0).toLatin1() > a->fltreactnid_6->getZ(0).toLatin1());
 }
 bool errorLess_frmreact6_desc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->fltreactnid_6 && b->fltreactnid_6) return (b->fltreactnid_6->getZ(0).toLatin1() < a->fltreactnid_6->getZ(0).toLatin1());
-   else return false;
+   return (b->fltreactnid_6->getZ(0).toLatin1() < a->fltreactnid_6->getZ(0).toLatin1());
 }
 
 bool errorLess_frmdelay0_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->delayid_0 && b->delayid_0) return (b->delayid_0->getZ(0).toLatin1() > a->delayid_0->getZ(0).toLatin1());
-   else return false;
+   return (b->delayid_0->getZ(0).toLatin1() > a->delayid_0->getZ(0).toLatin1());
 }
 bool errorLess_frmdelay0_desc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->delayid_0 && b->delayid_0) return (b->delayid_0->getZ(0).toLatin1() < a->delayid_0->getZ(0).toLatin1());
-   else return false;
+   return (b->delayid_0->getZ(0).toLatin1() < a->delayid_0->getZ(0).toLatin1());
 }
 
 bool errorLess_frmdelay1_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->delayid_1 && b->delayid_1) return (b->delayid_1->getZ(0).toLatin1() > a->delayid_1->getZ(0).toLatin1());
-   else return false;
+   return (b->delayid_1->getZ(0).toLatin1() > a->delayid_1->getZ(0).toLatin1());
 }
 bool errorLess_frmdelay1_desc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->delayid_1 && b->delayid_1) return (b->delayid_1->getZ(0).toLatin1() < a->delayid_1->getZ(0).toLatin1());
-   else return false;
+   return (b->delayid_1->getZ(0).toLatin1() < a->delayid_1->getZ(0).toLatin1());
 }
 
 bool errorLess_frmdelay2_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->delayid_2 && b->delayid_2) return (b->delayid_2->getZ(0).toLatin1() > a->delayid_2->getZ(0).toLatin1());
-   else return false;
+   return (b->delayid_2->getZ(0).toLatin1() > a->delayid_2->getZ(0).toLatin1());
 }
 bool errorLess_frmdelay2_desc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->delayid_2 && b->delayid_2) return (b->delayid_2->getZ(0).toLatin1() < a->delayid_2->getZ(0).toLatin1());
-   else return false;
+   return (b->delayid_2->getZ(0).toLatin1() < a->delayid_2->getZ(0).toLatin1());
 }
 
 bool errorLess_frmdelay3_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->delayid_3 && b->delayid_3) return (b->delayid_3->getZ(0).toLatin1() > a->delayid_3->getZ(0).toLatin1());
-   else return false;
+   return (b->delayid_3->getZ(0).toLatin1() > a->delayid_3->getZ(0).toLatin1());
 }
 bool errorLess_frmdelay3_desc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->delayid_3 && b->delayid_3) return (b->delayid_3->getZ(0).toLatin1() < a->delayid_3->getZ(0).toLatin1());
-   else return false;
+   return (b->delayid_3->getZ(0).toLatin1() < a->delayid_3->getZ(0).toLatin1());
 }
 
 bool errorLess_frmdelay4_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->delayid_4 && b->delayid_4) return (b->delayid_4->getZ(0).toLatin1() > a->delayid_4->getZ(0).toLatin1());
-   return false;
+   return (b->delayid_4->getZ(0).toLatin1() > a->delayid_4->getZ(0).toLatin1());
 }
 bool errorLess_frmdelay4_desc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->delayid_4 && b->delayid_4) return (b->delayid_4->getZ(0).toLatin1() < a->delayid_4->getZ(0).toLatin1());
-   else return false;
+   return (b->delayid_4->getZ(0).toLatin1() < a->delayid_4->getZ(0).toLatin1());
 }
 
 bool errorLess_frmdelay5_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->delayid_5 && b->delayid_5) return (b->delayid_5->getZ(0).toLatin1() > a->delayid_5->getZ(0).toLatin1());
-   else return false;
+   return (b->delayid_5->getZ(0).toLatin1() > a->delayid_5->getZ(0).toLatin1());
 }
 bool errorLess_frmdelay5_desc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->delayid_5 && b->delayid_5) return (b->delayid_5->getZ(0).toLatin1() < a->delayid_5->getZ(0).toLatin1());
-   else return false;
+   return (b->delayid_5->getZ(0).toLatin1() < a->delayid_5->getZ(0).toLatin1());
 }
 
 bool errorLess_frmdelay6_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->delayid_6 && b->delayid_6) return (b->delayid_6->getZ(0).toLatin1() > a->delayid_6->getZ(0).toLatin1());
-   else return false;
+   return (b->delayid_6->getZ(0).toLatin1() > a->delayid_6->getZ(0).toLatin1());
 }
 bool errorLess_frmdelay6_desc(const ErrorCode *a, const ErrorCode *b)
 {
-   if (a->delayid_6 && b->delayid_6) return (b->delayid_6->getZ(0).toLatin1() < a->delayid_6->getZ(0).toLatin1());
-   else return false;
+   return (b->delayid_6->getZ(0).toLatin1() < a->delayid_6->getZ(0).toLatin1());
 }
 
 ObdMergeModel::ObdMergeModel(SrecFile *srecFile, QObject *parent)
