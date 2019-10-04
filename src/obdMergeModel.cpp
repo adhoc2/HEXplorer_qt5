@@ -296,7 +296,6 @@ bool errorLess_frmdelay6_desc(const ErrorCode *a, const ErrorCode *b)
 }
 
 ObdMergeModel::ObdMergeModel(SrecFile *srecFile, QObject *parent)
-    :QAbstractTableModel(parent)
 {
     nRow = 0;
     nColumn = 0;
@@ -550,14 +549,11 @@ bool ObdMergeModel::setData(const QModelIndex &index, const QVariant &value, int
 
            //update the tableView
            emit dataChanged(index, index);
-
            return true;
         }
         else
             return false;
     }
-
-emit obdDataChanged();
 
 }
 

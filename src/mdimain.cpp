@@ -4151,14 +4151,16 @@ void MDImain::editObd_Merge()
             ObdMergeModel *obdModel = new ObdMergeModel(srec);
 
             //sort and filter model
-            obdSortFilterProxyModel *proxyModel = new obdSortFilterProxyModel(this, obdModel);
-
+            obdSortFilterProxyModel *proxyModel = new obdSortFilterProxyModel(this);
+            proxyModel->setSourceModel(obdModel);
+            QRegExp regExp("Inp", Qt::CaseInsensitive, QRegExp::FixedString);
+            proxyModel->setFilterRegExp(regExp);
+            proxyModel->setFilterKeyColumn(1);
             view->setModel(proxyModel);
-            view->setSortingEnabled(true);
-            proxyModel->sort(1, Qt::AscendingOrder);
+
 
             //sorting functions
-            //view->setSortingEnabled(true);
+            view->setSortingEnabled(true);
             view->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
             view->setColumnWidth(1,350);
             view->setColumnWidth(2, 50);
@@ -4174,7 +4176,11 @@ void MDImain::editObd_Merge()
             //set new view as activated
             ui->tabWidget->setCurrentWidget(view);
 
-            view->setAlternatingRowColors(true);
+             view->setAlternatingRowColors(true);
+
+            //context menu for the view
+            //view->setContextMenuPolicy(Qt::CustomContextMenu);
+            //connect(view, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu_ObdView(QPoint)));
 
             //write output
             writeOutput("OBD merge edited.");

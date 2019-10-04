@@ -85,7 +85,7 @@ class SpreadsheetView : public QTableView
         void paste();
         void plot();
         void findInObdView();
-        void filterColumn(QString value, bool activate);
+        void filterColumn(QString value);
         void resetAll_Filters();
         void contextMenuEvent( QPoint p );
         void updateActions(QModelIndex);

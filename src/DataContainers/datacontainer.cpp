@@ -119,9 +119,9 @@ QList<Data*> DataContainer::getModifiedData()
 
 void DataContainer::resetAllModifiedData()
 {
-    foreach(Data* data, modifiedData)
+    foreach(Data* dat, modifiedData)
     {
-        data->resetAll();
+        dat->resetAll();
     }
 }
 
