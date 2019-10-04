@@ -23,7 +23,6 @@ public:
     Data* opercycidn;
     Data* opercycthd;
     Data* exclsncdn;
-    Data* inhbnMask;
     Data* prio;
     Data* fltreactnid_0;
     Data* fltreactnid_1;
@@ -39,7 +38,6 @@ public:
     Data* delayid_4;
     Data* delayid_5;
     Data* delayid_6;
-    QMap<QString, Data*> listInh;
 
 };
 
