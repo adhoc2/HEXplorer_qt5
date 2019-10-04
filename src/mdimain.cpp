@@ -4123,7 +4123,7 @@ void MDImain::editObd_Merge()
         Node *node =  model->getNode(index);
         QString name = typeid(*node).name();
 
-        if (!name.endsWith("SrecFile") && !name.endsWith("CdfxFile") && !name.endsWith("Dcm"))
+        if (!name.endsWith("SrecFile") && !name.endsWith("CdfxFile"))
         {
             QMessageBox::warning(this, "HEXplorer::edit measuring channels", "Please select first a dataset.",
                                              QMessageBox::Ok);
@@ -4139,134 +4139,45 @@ void MDImain::editObd_Merge()
         }
         else
         {
-            if (name.toLower().endsWith("srecfile"))
-            {
-                //get the Wp
-                SrecFile *srec = (SrecFile*)node;
+            //get the Wp
+            SrecFile *srec = (SrecFile*)node;            
 
-                //create a new spreadSheet and attach the model
-                SpreadsheetView *view = new SpreadsheetView();
-                //view->setModel(obdModel);
-                srec->attach(view);
+            //create a new spreadSheet and attach the model
+            SpreadsheetView *view = new SpreadsheetView();
+            //view->setModel(obdModel);
+            srec->attach(view);
 
-                //create a new model for obdMerge function
-                ObdMergeModel *obdModel = new ObdMergeModel(srec);
+            //create a new model for obdMerge function
+            ObdMergeModel *obdModel = new ObdMergeModel(srec);
 
-                //sort and filter model
-                obdSortFilterProxyModel *proxyModel = new obdSortFilterProxyModel(this, obdModel);
+            //sort and filter model
+            obdSortFilterProxyModel *proxyModel = new obdSortFilterProxyModel(this, obdModel);
 
-                view->setModel(proxyModel);
-                view->setSortingEnabled(true);
-                proxyModel->sort(1, Qt::AscendingOrder);
+            view->setModel(proxyModel);
+            view->setSortingEnabled(true);
+            proxyModel->sort(1, Qt::AscendingOrder);
 
-                //sorting functions
-                //view->setSortingEnabled(true);
-                view->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-                view->setColumnWidth(1,350);
-                view->setColumnWidth(2, 50);
-                view->setColumnWidth(3, 50);
-                view->setColumnWidth(4, 50);
-                view->setColumnWidth(5, 50);
+            //sorting functions
+            //view->setSortingEnabled(true);
+            view->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+            view->setColumnWidth(1,350);
+            view->setColumnWidth(2, 50);
+            view->setColumnWidth(3, 50);
+            view->setColumnWidth(4, 50);
+            view->setColumnWidth(5, 50);
 
-                //add a new tab with the spreadsheet
-                QIcon icon;
-                icon.addFile(":/icones/milky_outils.png");
-                ui->tabWidget->addTab(view, icon, srec->name);
+            //add a new tab with the spreadsheet
+            QIcon icon;
+            icon.addFile(":/icones/milky_outils.png");
+            ui->tabWidget->addTab(view, icon, srec->name);
 
-                //set new view as activated
-                ui->tabWidget->setCurrentWidget(view);
+            //set new view as activated
+            ui->tabWidget->setCurrentWidget(view);
 
-                view->setAlternatingRowColors(true);
+            view->setAlternatingRowColors(true);
 
-                //write output
-                writeOutput("OBD merge edited.");
-            }
-            else if (name.toLower().endsWith("cdfxfile"))
-            {
-                //get the Wp
-                CdfxFile *cdfx = (CdfxFile*)node;
-
-                //create a new spreadSheet and attach the model
-                SpreadsheetView *view = new SpreadsheetView();
-                //view->setModel(obdModel);
-                cdfx->attach(view);
-
-                //create a new model for obdMerge function
-                ObdMergeModel *obdModel = new ObdMergeModel(cdfx);
-
-                //sort and filter model
-                obdSortFilterProxyModel *proxyModel = new obdSortFilterProxyModel(this, obdModel);
-
-                view->setModel(proxyModel);
-                view->setSortingEnabled(true);
-                proxyModel->sort(1, Qt::AscendingOrder);
-
-                //sorting functions
-                //view->setSortingEnabled(true);
-                view->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-                view->setColumnWidth(1,350);
-                view->setColumnWidth(2, 50);
-                view->setColumnWidth(3, 50);
-                view->setColumnWidth(4, 50);
-                view->setColumnWidth(5, 50);
-
-                //add a new tab with the spreadsheet
-                QIcon icon;
-                icon.addFile(":/icones/milky_outils.png");
-                ui->tabWidget->addTab(view, icon, cdfx->name);
-
-                //set new view as activated
-                ui->tabWidget->setCurrentWidget(view);
-
-                view->setAlternatingRowColors(true);
-
-                //write output
-                writeOutput("OBD merge edited.");
-
-            }
-            else if (name.toLower().endsWith("dcm"))
-            {
-                //get the Wp
-                Dcm *dcm = (Dcm*)node;
-
-                //create a new spreadSheet and attach the model
-                SpreadsheetView *view = new SpreadsheetView();
-                //view->setModel(obdModel);
-                dcm->attach(view);
-
-                //create a new model for obdMerge function
-                ObdMergeModel *obdModel = new ObdMergeModel(dcm);
-
-                //sort and filter model
-                obdSortFilterProxyModel *proxyModel = new obdSortFilterProxyModel(this, obdModel);
-
-                view->setModel(proxyModel);
-                view->setSortingEnabled(true);
-                proxyModel->sort(1, Qt::AscendingOrder);
-
-                //sorting functions
-                //view->setSortingEnabled(true);
-                view->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-                view->setColumnWidth(1,350);
-                view->setColumnWidth(2, 50);
-                view->setColumnWidth(3, 50);
-                view->setColumnWidth(4, 50);
-                view->setColumnWidth(5, 50);
-
-                //add a new tab with the spreadsheet
-                QIcon icon;
-                icon.addFile(":/icones/milky_outils.png");
-                ui->tabWidget->addTab(view, icon, dcm->name);
-
-                //set new view as activated
-                ui->tabWidget->setCurrentWidget(view);
-
-                view->setAlternatingRowColors(true);
-
-                //write output
-                writeOutput("OBD merge edited.");
-
-            }
+            //write output
+            writeOutput("OBD merge edited.");
 
         }
     }

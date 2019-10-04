@@ -300,10 +300,10 @@ ObdMergeModel::ObdMergeModel(SrecFile *srecFile, QObject *parent)
 {
     nRow = 0;
     nColumn = 0;
-    dataContainer = srecFile;
+    srec = srecFile;
 
 
-    foreach (Data *data, dataContainer->listData) {
+    foreach (Data *data, srec->listData) {
         QString nameStr(data->name);
         if (nameStr.toLower().endsWith("_c.prio"))
         {
@@ -314,195 +314,49 @@ ObdMergeModel::ObdMergeModel(SrecFile *srecFile, QObject *parent)
            error->prio = data;
 
            //find the rest  of error properties
-           Data* _data = dataContainer->getData(nameStr + "_C.Inc");
+           Data* _data = srec->getData(nameStr + "_C.Inc");
            if (_data) {error->inc = _data;}
-           _data = dataContainer->getData(nameStr + "_C.Dec");
+           _data = srec->getData(nameStr + "_C.Dec");
            if (_data) {error->dec = _data;}
-           _data = dataContainer->getData(nameStr + "_C.PreThd");
+           _data = srec->getData(nameStr + "_C.PreThd");
            if (_data) { error->prethd = _data; }
-           _data = dataContainer->getData(nameStr + "_C.AgiCycIdn");
+           _data = srec->getData(nameStr + "_C.AgiCycIdn");
            if (_data) {error->agicycidn = _data;}
-           _data = dataContainer->getData(nameStr + "_C.AgiCycThd");
+           _data = srec->getData(nameStr + "_C.AgiCycThd");
            if (_data) { error->agicycthd = _data; }
-           _data = dataContainer->getData(nameStr + "_C.OperCycIdn");
+           _data = srec->getData(nameStr + "_C.OperCycIdn");
            if (_data) { error->opercycidn = _data;}
-           _data = dataContainer->getData(nameStr + "_C.OperCycThd");
+           _data = srec->getData(nameStr + "_C.OperCycThd");
            if (_data) { error->opercycthd = _data;}
-           _data = dataContainer->getData(nameStr + "_C.ExclsnCdn");
+           _data = srec->getData(nameStr + "_C.ExclsnCdn");
            if (_data) { error->exclsncdn = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[0].FltReactnId");
+           _data = srec->getData(nameStr + "Frm_A[0].FltReactnId");
            if (_data) {error->fltreactnid_0 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[1].FltReactnId");
+           _data = srec->getData(nameStr + "Frm_A[1].FltReactnId");
            if (_data) {error->fltreactnid_1 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[2].FltReactnId");
+           _data = srec->getData(nameStr + "Frm_A[2].FltReactnId");
            if (_data) {error->fltreactnid_2 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[3].FltReactnId");
+           _data = srec->getData(nameStr + "Frm_A[3].FltReactnId");
            if (_data) {error->fltreactnid_3 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[4].FltReactnId");
+           _data = srec->getData(nameStr + "Frm_A[4].FltReactnId");
            if (_data) {error->fltreactnid_4 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[5].FltReactnId");
+           _data = srec->getData(nameStr + "Frm_A[5].FltReactnId");
            if (_data) {error->fltreactnid_5 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[6].FltReactnId");
+           _data = srec->getData(nameStr + "Frm_A[6].FltReactnId");
            if (_data) {error->fltreactnid_6 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[0].DelayId");
+           _data = srec->getData(nameStr + "Frm_A[0].DelayId");
            if (_data) {error->delayid_0 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[1].DelayId");
+           _data = srec->getData(nameStr + "Frm_A[1].DelayId");
            if (_data) {error->delayid_1 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[2].DelayId");
+           _data = srec->getData(nameStr + "Frm_A[2].DelayId");
            if (_data) {error->delayid_2 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[3].DelayId");
+           _data = srec->getData(nameStr + "Frm_A[3].DelayId");
            if (_data) {error->delayid_3 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[4].DelayId");
+           _data = srec->getData(nameStr + "Frm_A[4].DelayId");
            if (_data) {error->delayid_4 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[5].DelayId");
+           _data = srec->getData(nameStr + "Frm_A[5].DelayId");
            if (_data) {error->delayid_5 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[6].DelayId");
-           if (_data) {error->delayid_6 = _data;}
-
-
-           this->listErrorCode.append(error);
-        }
-    }
-
-    nRow = this->listErrorCode.count();
-    nColumn = 25;
-}
-
-ObdMergeModel::ObdMergeModel(CdfxFile *cdfx, QObject *parent)
-    :QAbstractTableModel(parent)
-{
-    nRow = 0;
-    nColumn = 0;
-    dataContainer = cdfx;
-
-
-    foreach (Data *data, dataContainer->listData) {
-        QString nameStr(data->name);
-        if (nameStr.toLower().endsWith("_c.prio"))
-        {
-           ErrorCode *error = new ErrorCode(nameStr.remove("_C.Prio"));
-           error->dtc = data->getComment().remove("DTC-ID: ");
-           error->dtc.remove("\"");
-           error->dtc.remove("\"");
-           error->prio = data;
-
-           //find the rest  of error properties
-           Data* _data = dataContainer->getData(nameStr + "_C.Inc");
-           if (_data) {error->inc = _data;}
-           _data = dataContainer->getData(nameStr + "_C.Dec");
-           if (_data) {error->dec = _data;}
-           _data = dataContainer->getData(nameStr + "_C.PreThd");
-           if (_data) { error->prethd = _data; }
-           _data = dataContainer->getData(nameStr + "_C.AgiCycIdn");
-           if (_data) {error->agicycidn = _data;}
-           _data = dataContainer->getData(nameStr + "_C.AgiCycThd");
-           if (_data) { error->agicycthd = _data; }
-           _data = dataContainer->getData(nameStr + "_C.OperCycIdn");
-           if (_data) { error->opercycidn = _data;}
-           _data = dataContainer->getData(nameStr + "_C.OperCycThd");
-           if (_data) { error->opercycthd = _data;}
-           _data = dataContainer->getData(nameStr + "_C.ExclsnCdn");
-           if (_data) { error->exclsncdn = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[0].FltReactnId");
-           if (_data) {error->fltreactnid_0 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[1].FltReactnId");
-           if (_data) {error->fltreactnid_1 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[2].FltReactnId");
-           if (_data) {error->fltreactnid_2 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[3].FltReactnId");
-           if (_data) {error->fltreactnid_3 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[4].FltReactnId");
-           if (_data) {error->fltreactnid_4 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[5].FltReactnId");
-           if (_data) {error->fltreactnid_5 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[6].FltReactnId");
-           if (_data) {error->fltreactnid_6 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[0].DelayId");
-           if (_data) {error->delayid_0 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[1].DelayId");
-           if (_data) {error->delayid_1 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[2].DelayId");
-           if (_data) {error->delayid_2 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[3].DelayId");
-           if (_data) {error->delayid_3 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[4].DelayId");
-           if (_data) {error->delayid_4 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[5].DelayId");
-           if (_data) {error->delayid_5 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[6].DelayId");
-           if (_data) {error->delayid_6 = _data;}
-
-
-           this->listErrorCode.append(error);
-        }
-    }
-
-    nRow = this->listErrorCode.count();
-    nColumn = 25;
-}
-
-ObdMergeModel::ObdMergeModel(Dcm *dcm, QObject *parent)
-    :QAbstractTableModel(parent)
-{
-    nRow = 0;
-    nColumn = 0;
-    dataContainer = dcm;
-
-
-    foreach (Data *data, dataContainer->listData) {
-        QString nameStr(data->name);
-        if (nameStr.toLower().endsWith("_c.prio"))
-        {
-           ErrorCode *error = new ErrorCode(nameStr.remove("_C.Prio"));
-           error->dtc = data->getComment().remove("DTC-ID: ");
-           error->dtc.remove("\"");
-           error->dtc.remove("\"");
-           error->prio = data;
-
-           //find the rest  of error properties
-           Data* _data = dataContainer->getData(nameStr + "_C.Inc");
-           if (_data) {error->inc = _data;}
-           _data = dataContainer->getData(nameStr + "_C.Dec");
-           if (_data) {error->dec = _data;}
-           _data = dataContainer->getData(nameStr + "_C.PreThd");
-           if (_data) { error->prethd = _data; }
-           _data = dataContainer->getData(nameStr + "_C.AgiCycIdn");
-           if (_data) {error->agicycidn = _data;}
-           _data = dataContainer->getData(nameStr + "_C.AgiCycThd");
-           if (_data) { error->agicycthd = _data; }
-           _data = dataContainer->getData(nameStr + "_C.OperCycIdn");
-           if (_data) { error->opercycidn = _data;}
-           _data = dataContainer->getData(nameStr + "_C.OperCycThd");
-           if (_data) { error->opercycthd = _data;}
-           _data = dataContainer->getData(nameStr + "_C.ExclsnCdn");
-           if (_data) { error->exclsncdn = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[0].FltReactnId");
-           if (_data) {error->fltreactnid_0 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[1].FltReactnId");
-           if (_data) {error->fltreactnid_1 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[2].FltReactnId");
-           if (_data) {error->fltreactnid_2 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[3].FltReactnId");
-           if (_data) {error->fltreactnid_3 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[4].FltReactnId");
-           if (_data) {error->fltreactnid_4 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[5].FltReactnId");
-           if (_data) {error->fltreactnid_5 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[6].FltReactnId");
-           if (_data) {error->fltreactnid_6 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[0].DelayId");
-           if (_data) {error->delayid_0 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[1].DelayId");
-           if (_data) {error->delayid_1 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[2].DelayId");
-           if (_data) {error->delayid_2 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[3].DelayId");
-           if (_data) {error->delayid_3 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[4].DelayId");
-           if (_data) {error->delayid_4 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[5].DelayId");
-           if (_data) {error->delayid_5 = _data;}
-           _data = dataContainer->getData(nameStr + "Frm_A[6].DelayId");
+           _data = srec->getData(nameStr + "Frm_A[6].DelayId");
            if (_data) {error->delayid_6 = _data;}
 
 
@@ -1360,7 +1214,7 @@ Data* ObdMergeModel::getData(const int row, const int col) const
     else if (col == 24)  {  dataName += "Frm_A[6].DelayId"; }
 
 
-    Data *data = dataContainer->getData(dataName);
+    Data *data = srec->getData(dataName);
     return data;
 
 }

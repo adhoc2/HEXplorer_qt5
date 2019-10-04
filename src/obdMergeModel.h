@@ -23,17 +23,13 @@
 #include <QAbstractTableModel>
 #include <Nodes/characteristic.h>
 #include "srecfile.h"
-#include "dcmfile.h"
-#include "cdfxfile.h"
 #include "errorcode.h"
 
 
 class ObdMergeModel : public QAbstractTableModel
 {
     public:
-        ObdMergeModel(SrecFile *dataContainer, QObject *parent = 0);
-        ObdMergeModel(CdfxFile *cdfx, QObject *parent = 0);
-        ObdMergeModel(Dcm *dcn, QObject *parent = 0);
+        ObdMergeModel(SrecFile *srec, QObject *parent = 0);
         ~ObdMergeModel();
 
         int rowCount(const QModelIndex &parent) const;
@@ -50,7 +46,7 @@ class ObdMergeModel : public QAbstractTableModel
 
     private:
         QList<ErrorCode*> listErrorCode;
-        DataContainer *dataContainer;
+        SrecFile *srec;
         int nColumn;
         int nRow;
 
