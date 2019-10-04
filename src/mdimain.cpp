@@ -84,7 +84,6 @@
 #include "deletefiledialog.h"
 #include "treedirectory.h"
 #include "comboboxdelegate.h"
-#include "obdsortfilterproxymodel.h"
 
 #include "qdebug.h"
 
@@ -890,7 +889,7 @@ void MDImain::on_treeView_clicked(QModelIndex index)
         showParam->setEnabled(false);
         resetAllChangedData->setEnabled(true);
         sortBySubset->setEnabled(true);
-        saveFile->setEnabled(false);
+        saveFile->setEnabled(true);
         saveAsFile->setEnabled(true);
         quicklook->setIcon(QIcon(":/icones/milky_loopCsv.png"));
         quicklook->setEnabled(true);
@@ -1367,8 +1366,6 @@ void MDImain::showContextMenu(QPoint)
                 menu.addAction(saveFile);
                 menu.addAction(saveAsFile);
                 menu.addSeparator();
-                menu.addAction(editObdMerge);
-                menu.addSeparator();
                 menu.addAction(quicklook);
                 menu.addAction(editChanged);
                 menu.addAction(resetAllChangedData);
@@ -1392,8 +1389,6 @@ void MDImain::showContextMenu(QPoint)
                 menu.addAction(saveFile);
                 menu.addAction(saveAsFile);
                 menu.addSeparator();
-                menu.addAction(editObdMerge);
-                menu.addSeparator();
                 menu.addAction(quicklook);
                 menu.addAction(editChanged);
                 menu.addAction(resetAllChangedData);
@@ -1402,8 +1397,6 @@ void MDImain::showContextMenu(QPoint)
                 //menu editModified
                 Node *node =  model->getNode(index);
                 CdfxFile *cdfx = dynamic_cast<CdfxFile *> (node);
-
-                editObdMerge->setDisabled(false);
 
                 if (cdfx->getModifiedData().isEmpty())
                     editChanged->setDisabled(true);
@@ -4035,8 +4028,6 @@ void MDImain::editChar()
             //create a new spreadSheet
             SpreadsheetView *view = new SpreadsheetView();
             view->setModel(charModel);
-            //QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel(this);
-
             wp->attach(view);
 
             view->setAlternatingRowColors(true);
@@ -4123,7 +4114,7 @@ void MDImain::editObd_Merge()
         Node *node =  model->getNode(index);
         QString name = typeid(*node).name();
 
-        if (!name.endsWith("SrecFile") && !name.endsWith("CdfxFile"))
+        if (!name.endsWith("SrecFile"))
         {
             QMessageBox::warning(this, "HEXplorer::edit measuring channels", "Please select first a dataset.",
                                              QMessageBox::Ok);
@@ -4140,24 +4131,18 @@ void MDImain::editObd_Merge()
         else
         {
             //get the Wp
-            SrecFile *srec = (SrecFile*)node;            
+            SrecFile *srec = (SrecFile*)node;
 
-            //create a new spreadSheet and attach the model
-            SpreadsheetView *view = new SpreadsheetView();
-            //view->setModel(obdModel);
-            srec->attach(view);
-
-            //create a new model for obdMerge function
+            //display the characterisitc channels in view
             ObdMergeModel *obdModel = new ObdMergeModel(srec);
 
-            //sort and filter model
-            obdSortFilterProxyModel *proxyModel = new obdSortFilterProxyModel(this);
-            proxyModel->setSourceModel(obdModel);
-            QRegExp regExp("Inp", Qt::CaseInsensitive, QRegExp::FixedString);
-            proxyModel->setFilterRegExp(regExp);
-            proxyModel->setFilterKeyColumn(1);
-            view->setModel(proxyModel);
+            //create a new spreadSheet
+            SpreadsheetView *view = new SpreadsheetView();
+            view->setItemDelegate(new ComboBoxDelegate(this));
+            view->setModel(obdModel);
+            srec->attach(view);
 
+            view->setAlternatingRowColors(true);
 
             //sorting functions
             view->setSortingEnabled(true);
@@ -4173,10 +4158,8 @@ void MDImain::editObd_Merge()
             icon.addFile(":/icones/milky_outils.png");
             ui->tabWidget->addTab(view, icon, srec->name);
 
-            //set new view as activated
+            //set new FormCompare as activated
             ui->tabWidget->setCurrentWidget(view);
-
-             view->setAlternatingRowColors(true);
 
             //context menu for the view
             //view->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -5943,7 +5926,7 @@ void MDImain::saveAs_File()
     {
         return saveAs_CsvFile(index);
     }
-    else if (name.endsWith("CdfxFile") || name.endsWith("Dcm") )
+    else if (name.endsWith("CdfxFile"))
     {
         return saveAs_CdfxFile(index);
     }
@@ -6092,66 +6075,57 @@ void MDImain::saveAs_CsvFile(QModelIndex index)
 
 void MDImain::saveAs_CdfxFile(QModelIndex index)
 {
-    QString name = typeid(*model->getNode(index)).name();
-    if (name.toLower().endsWith("cdfxfile"))
+    // get the HexFile Node
+    CdfxFile *cdfx = (CdfxFile*)model->getNode(index);
+
+    // ask for new HexFile name
+    QString fileName = QFileDialog::getSaveFileName(this,
+                                                    QFileInfo(cdfx->fullName()).fileName(),
+                                                    QFileInfo(cdfx->fullName()).absolutePath(),
+                                                    tr("CDFX files (*.cdfx);;all files (*.*)"));
+    if (fileName.isEmpty())
     {
-        // get the HexFile Node
-        CdfxFile *cdfx = (CdfxFile*)model->getNode(index);
-
-        // ask for new HexFile name
-        QString fileName = QFileDialog::getSaveFileName(this,
-                                                        QFileInfo(cdfx->fullName()).fileName(),
-                                                        QFileInfo(cdfx->fullName()).absolutePath(),
-                                                        tr("CDFX files (*.cdfx);;all files (*.*)"));
-        if (fileName.isEmpty())
-        {
-            writeOutput("action save CDFX file : cancelled");
-            return;
-        }
-        if ( QFileInfo(fileName).suffix().toLower() != "cdfx")
-        {
-            fileName.append(".cdfx");
-        }
-
-        //check if the file is already open in HEXplorer
-        if (cdfx->getParentWp()->containsCdfx(fileName))
-        {
-            QMessageBox::warning(this, tr("Application"),
-                                 tr("file %1 is already open.\nFirst close the open version or enter another file name.")
-                                 .arg(fileName));
-            return;
-        }
-
-        // check if the new file can be written
-        QFile file(fileName);
-        if (!file.open(QFile::WriteOnly))
-        {
-            QMessageBox::warning(this, tr("Application"),
-                                 tr("Cannot write file %1:\n%2.")
-                                 .arg(fileName)
-                                 .arg(file.errorString()));
-
-            writeOutput("action save CDFX file : impossible because file not ready for writing");
-            return;
-        }
-
-        // write the file
-        QApplication::setOverrideCursor(Qt::WaitCursor);
-        cdfx->save(fileName);
-        QApplication::restoreOverrideCursor();
-
-        // update Node name with the new file name
-        model->renameNode(index, QFileInfo(fileName).fileName());
-        cdfx->setFullName(fileName);
-
-        // log
-        writeOutput("action save as CDFX : performed with success ");
+        writeOutput("action save CDFX file : cancelled");
+        return;
     }
-    else
+    if ( QFileInfo(fileName).suffix().toLower() != "cdfx")
     {
-        // log
-        writeOutput("action save as CDFX : NOT POSSIBLE for the moment!! ");
+        fileName.append(".cdfx");
     }
+
+    //check if the file is already open in HEXplorer
+    if (cdfx->getParentWp()->containsCdfx(fileName))
+    {
+        QMessageBox::warning(this, tr("Application"),
+                             tr("file %1 is already open.\nFirst close the open version or enter another file name.")
+                             .arg(fileName));
+        return;
+    }
+
+    // check if the new file can be written
+    QFile file(fileName);
+    if (!file.open(QFile::WriteOnly))
+    {
+        QMessageBox::warning(this, tr("Application"),
+                             tr("Cannot write file %1:\n%2.")
+                             .arg(fileName)
+                             .arg(file.errorString()));
+
+        writeOutput("action save CDFX file : impossible because file not ready for writing");
+        return;
+    }
+
+    // write the file
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    cdfx->save(fileName);
+    QApplication::restoreOverrideCursor();
+
+    // update Node name with the new file name
+    model->renameNode(index, QFileInfo(fileName).fileName());
+    cdfx->setFullName(fileName);
+
+    // log
+    writeOutput("action save CDFX : performed with success ");
 }
 
 void MDImain::compare_HexFile()

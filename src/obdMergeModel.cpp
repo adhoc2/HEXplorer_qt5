@@ -301,6 +301,7 @@ ObdMergeModel::ObdMergeModel(SrecFile *srecFile, QObject *parent)
     nColumn = 0;
     srec = srecFile;
 
+    //fill-in listData
 
     foreach (Data *data, srec->listData) {
         QString nameStr(data->name);
@@ -555,6 +556,8 @@ bool ObdMergeModel::setData(const QModelIndex &index, const QVariant &value, int
             return false;
     }
 
+
+
 }
 
 bool ObdMergeModel::resetData(const QModelIndexList &indexList, int role)
@@ -577,7 +580,7 @@ bool ObdMergeModel::resetData(const QModelIndexList &indexList, int role)
 
                    //update the tableView
                    emit dataChanged(index, index);
-                   //return true;
+                   return true;
                 }
                 else
                     return false;
@@ -613,7 +616,7 @@ bool ObdMergeModel::undoData(const QModelIndexList &indexList, int role)
 
                    //update the tableView
                    emit dataChanged(index, index);
-                   //return true;
+                   return true;
                 }
                 else
                     return false;
@@ -1192,7 +1195,7 @@ Data* ObdMergeModel::getData(const int row, const int col) const
     else if (col == 6)   {  dataName += "_C.AgiCycIdn";   }
     else if (col == 7)  {  dataName += "_C.AgiCycThd";   }
     else if (col == 8)  {  dataName += "_C.OperCycIdn"; }
-    else if (col == 9)   {  dataName += "_C.OperCycThd";   }
+    else if (col == 9)   {  dataName += "_C.AgiCycThd";   }
     else if (col == 10)  {  dataName += "_C.ExclsnCdn";   }
     else if (col == 11)  {  dataName += "Frm_A[0].FltReactnId"; }
     else if (col == 12)  {  dataName += "Frm_A[0].DelayId"; }
