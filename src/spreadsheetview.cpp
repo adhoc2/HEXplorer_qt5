@@ -43,13 +43,12 @@
 #include "labelproperties.h"
 #include "obdMergeModel.h"
 #include "obdsortfilterproxymodel.h"
-#include "dialogchooseexportformat.h"
 //#include "excel.h"
 
 
 using namespace std;
 
-SpreadsheetView::SpreadsheetView(QWidget *parent):QTableView(parent)
+SpreadsheetView::SpreadsheetView(QWidget *parent)
 {
     createActions();
     connect(this, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuEvent(QPoint)));
@@ -60,9 +59,6 @@ SpreadsheetView::SpreadsheetView(QWidget *parent):QTableView(parent)
     connect(header, SIGNAL(sectionResized(int,int,int)), this, SLOT(myResize(int,int,int)));
 
     connect(this, SIGNAL(clicked(QModelIndex)), this, SLOT(updateActions(QModelIndex)));
-
-    this->mdimain = parent;
-
 }
 
 SpreadsheetView::~SpreadsheetView()
@@ -216,22 +212,10 @@ void SpreadsheetView::createActions()
     findObdView->setDisabled(false);
 
     resetAllFilters = new QAction(tr("reset all filters"), this);
-    resetAllFilters->setIcon(QIcon(":/icones/milky_resetAll.png"));
+    resetAllFilters->setIcon(QIcon(":/icones/milky_pinceau.png"));
     //resetAllFilters->setShortcut(Qt::CTRL + Qt::Key_F);
     connect(resetAllFilters, SIGNAL(triggered()), this, SLOT(resetAll_Filters()));
     resetAllFilters->setDisabled(false);
-
-    saveAs = new QAction(tr("export as..."), this);
-    saveAs->setIcon(QIcon(":/icones/milky_saveas.png"));
-    //resetAllFilters->setShortcut(Qt::CTRL + Qt::Key_F);
-    connect(saveAs, SIGNAL(triggered()), this, SLOT(saveObdViewAs()));
-    saveAs->setDisabled(false);
-
-    hideColumns = new QAction(tr("hide columns"), this);
-    hideColumns->setIcon(QIcon(":/icones/milky_find.png"));
-    connect(hideColumns, SIGNAL(triggered()), this, SLOT(hide_Columns()));
-    hideColumns->setDisabled(false);
-
 
 
 }
@@ -345,44 +329,7 @@ void SpreadsheetView::contextMenuEvent ( QPoint p )
         }
         else if (name.toLower().endsWith("obdmergemodel")  || name.toLower().endsWith("obdsortfilterproxymodel") )
         {
-            //menu->addAction(hideColumns);
-            QMenu *menuHideCol = new QMenu("Hide Columns");
-            menu->addMenu(menuHideCol);
-
-            //get all column headers
-            obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)this->model();
-            ObdMergeModel *obdMergeModel = (ObdMergeModel*)proxyModel->sourceModel();
-
-            QMap<int,QString> headerMap;
-            for (int i=0; i < obdMergeModel->columnCount(QModelIndex()); i++)
-            {
-                headerMap.insert(i, obdMergeModel->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString());
-            }
-
-            QList<QString> hiddenValues = hiddenHeaders.values();
-
-            foreach (QString value, headerMap.values())
-            {
-                QAction *action = new QAction(value);
-                menuHideCol->addAction(action);
-                action->setCheckable(true);
-                if (hiddenValues.contains(value))
-                    action->setChecked(false);
-                else
-                    action->setChecked(true);
-                if (action->isChecked())
-                    connect(action, &QAction::triggered, this, [=]() { this->hide_Columns(headerMap.key(value), value); });
-                else
-                    connect(action, &QAction::triggered, this, [=]() { this->show_Columns(headerMap.key(value), value); });
-            }
-
-
-            menu->addSeparator();
             menu->addAction(fillAllWith);
-            menu->addAction(offsetPlus);
-            menu->addAction(offsetMinus);
-            menu->addAction(factorMulti);
-            menu->addAction(factorDiv);
             menu->addSeparator();
             menu->addAction(undoModif);
             menu->addAction(resetModif);
@@ -415,9 +362,6 @@ void SpreadsheetView::contextMenuEvent ( QPoint p )
 
                 menu->addAction(resetAllFilters);
             }
-            menu->addSeparator();
-            menu->addAction(saveAs);
-
         }
         else
             return;
@@ -472,51 +416,6 @@ void SpreadsheetView::resetAll_Filters()
         obdSortFilterProxyModel *proxyModel = (obdSortFilterProxyModel*)model();
         proxyModel->resetAllFilters();
     }
-}
-
-void SpreadsheetView::saveObdViewAs()
-{
-    //choose format
-    QString exportFormat = "";
-    DialogChooseExportFormat *chooseFormat = new DialogChooseExportFormat(&exportFormat, this);
-    chooseFormat->exec();
-
-    //get the hex and a2l nodes
-    QString name = typeid(*model()).name();
-    bool exportStatus = false;
-    if (exportFormat == "cdf" && name.toLower().endsWith("obdsortfilterproxymodel"))
-    {
-        obdSortFilterProxyModel *proxyModel = static_cast<obdSortFilterProxyModel*>(model());
-        ObdMergeModel *obdModel = static_cast<ObdMergeModel*>(proxyModel->sourceModel());
-        exportStatus = obdModel->exportAs("cdfx", "");
-
-        // display information
-        MDImain *win = (MDImain*)this->mdimain;
-        win->writeOutput("export OBD view into cdfx file performed with success.");
-    }
-    else if (exportFormat == "csv" && name.toLower().endsWith("obdsortfilterproxymodel"))
-    {
-        obdSortFilterProxyModel *proxyModel = static_cast<obdSortFilterProxyModel*>(model());
-        ObdMergeModel *obdModel = static_cast<ObdMergeModel*>(proxyModel->sourceModel());
-        exportStatus = obdModel->exportAs("csv", "");
-
-        // display information
-        MDImain *win = (MDImain*)this->mdimain;
-        win->writeOutput("export OBD view into csv file performed with success.");
-    }
-}
-
-void SpreadsheetView::hide_Columns(int i, QString str)
-{
-    hiddenHeaders.insert(i, str);
-    horizontalHeader()->hideSection(i);
-
-}
-
-void SpreadsheetView::show_Columns(int i, QString str)
-{
-    hiddenHeaders.remove(i);
-    horizontalHeader()->showSection(i);
 }
 
 void SpreadsheetView::filterColumn(QString value, bool activate)
@@ -709,6 +608,7 @@ void SpreadsheetView::factorM()
 
     if (ok && !valueStr.isEmpty())
     {
+        QString name = typeid(*model()).name();
         foreach (QModelIndex index, indexList)
         {
             double val = this->model()->data(index, Qt::DisplayRole).toDouble();

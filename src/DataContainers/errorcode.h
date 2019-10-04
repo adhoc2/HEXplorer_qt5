@@ -14,10 +14,6 @@ public:
     Data* inc;
     Data* dec;
     Data* prethd;
-    Data* debounce;
-    Data* setTime;
-    Data* resetTime;
-    Data* eventType;
     Data* agicycidn;
     Data* agicycthd;
     Data* opercycidn;

@@ -31,8 +31,7 @@ class SpreadsheetView : public QTableView
         ~SpreadsheetView();
 
 
-    private:
-        QWidget* mdimain;
+    private:        
         QAction *export2Excel;
         QAction *changeSize;
         QAction *selectAllLabel;
@@ -57,11 +56,8 @@ class SpreadsheetView : public QTableView
         QAction *findObdView;
         QAction *filterColumns;
         QAction *resetAllFilters;
-        QAction *saveAs;
-        QAction *hideColumns;
         void createActions();
         QString getExcelCell(int row, int col);
-        QMap<int, QString> hiddenHeaders;
 
     private slots:
         #ifdef Q_WS_WIN32
@@ -91,9 +87,6 @@ class SpreadsheetView : public QTableView
         void findInObdView();
         void filterColumn(QString value, bool activate);
         void resetAll_Filters();
-        void saveObdViewAs();
-        void hide_Columns(int i, QString str);
-        void show_Columns(int i, QString str);
         void contextMenuEvent( QPoint p );
         void updateActions(QModelIndex);
 

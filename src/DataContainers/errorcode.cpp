@@ -6,10 +6,6 @@ ErrorCode::ErrorCode(QString name)
     this->dec = nullptr;
     this->dtc = "";
     this->inc = nullptr;
-    this->debounce = nullptr;
-    this->setTime = nullptr;
-    this->resetTime = nullptr;
-    this->eventType = nullptr;
     this->name = name;
     this->prethd = nullptr;
     this->agicycidn = nullptr;

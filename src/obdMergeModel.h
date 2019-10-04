@@ -25,7 +25,6 @@
 #include "srecfile.h"
 #include "dcmfile.h"
 #include "cdfxfile.h"
-#include "csv.h"
 #include "errorcode.h"
 
 
@@ -34,8 +33,7 @@ class ObdMergeModel : public QAbstractTableModel
     public:
         ObdMergeModel(SrecFile *dataContainer, QObject *parent = 0);
         ObdMergeModel(CdfxFile *cdfx, QObject *parent = 0);
-        ObdMergeModel(Dcm *dcm, QObject *parent = 0);
-        ObdMergeModel(Csv *csv, QObject *parent = 0);
+        ObdMergeModel(Dcm *dcn, QObject *parent = 0);
         ~ObdMergeModel();
 
         int rowCount(const QModelIndex &parent) const;
@@ -49,12 +47,9 @@ class ObdMergeModel : public QAbstractTableModel
         QVariant headerData(int section, Qt::Orientation orientation, int role) const;
         Qt::ItemFlags flags(const QModelIndex &index) const;
         void sort(int column, Qt::SortOrder order=Qt::AscendingOrder);
-        bool exportAs(QString format, QString filename);
-        DataContainer* getDataContainer() {return dataContainer;}
 
     private:
         QList<ErrorCode*> listErrorCode;
-        QStringList listDataNameInView;
         DataContainer *dataContainer;
         int nColumn;
         int nRow;

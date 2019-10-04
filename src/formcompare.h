@@ -103,7 +103,7 @@ class FormCompare : public QWidget
         void checkDroppedFile_2(QString );
         void on_choose_clicked();        
 
-public slots:
+    public slots:
         void on_quicklook_clicked();
         void on_compare_clicked();
 

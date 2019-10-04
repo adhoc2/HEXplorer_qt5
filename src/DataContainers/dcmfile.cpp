@@ -168,7 +168,7 @@ bool Dcm::readFile()
     while(token == Comment)
     {
         token = mylex.getNextToken(in);
-        qDebug() << mylex.toString(token).c_str() <<  mylex.getLexem().c_str();
+        //qDebug() << mylex.toString(token).c_str() <<  mylex.getLexem().c_str();
 
     }
 
@@ -190,12 +190,12 @@ bool Dcm::readFile()
     }
 
     token = mylex.getNextToken(in);
-    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
 
     //parse the datas
     while (!in.atEnd())
     {        
-        qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+        //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
 
         if (token == Keyword && mylex.getLexem() == "FUNKTIONEN")
         {
@@ -208,7 +208,7 @@ bool Dcm::readFile()
         else if (token == Keyword && mylex.getLexem() == "FESTWERT")
         {
             token = mylex.getNextToken(in);
-            qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+            //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
 
             if (token == Identifier)
             {
@@ -256,7 +256,7 @@ bool Dcm::readFile()
                 if (data)
                 {
                     //do not use longname, unit,...
-                    qDebug() << "data created";
+                    //qDebug() << "data created";
                     token = mylex.getNextToken(in);
                     while(token != Keyword || (mylex.getLexem() != "WERT" && mylex.getLexem() != "TEXT"))
                     {
@@ -264,7 +264,7 @@ bool Dcm::readFile()
                     }
 
                     //read Z values
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
 
                     if (token == Keyword && ( mylex.getLexem() == "WERT"))
                     {
@@ -281,15 +281,6 @@ bool Dcm::readFile()
                             token = mylex.getNextToken(in);
                         }
 
-                        while (token ==  Identifier)
-                        {
-                            QString str = mylex.getLexem().c_str();
-                            list.append(str);
-                            token = mylex.getNextToken(in);
-                        }
-
-
-
                         // copy z values to data
                         foreach (QString str, list)
                         {
@@ -300,7 +291,7 @@ bool Dcm::readFile()
                             QString phys = data->hex2phys(hex, "z");
 
                             // copy PHYS value into Zaxis
-                            qDebug() << phys;
+                            //qDebug() << phys;
                             data->appendZ(phys);
                         }
 
@@ -323,18 +314,18 @@ bool Dcm::readFile()
                         // copy z values to data
                         foreach (QString str, list)
                         {
-                            qDebug() << str;
+                            //qDebug() << str;
 
                             // convert PHYS value from Dcm into HEX value
                             QString hex = data->phys2hex(str, "z");
 
-                            qDebug() << hex;
+                            //qDebug() << hex;
 
                             // convert HEX value into PHYS value
                             QString phys = data->hex2phys(hex, "z");
 
                             // copy PHYS value into Zaxis
-                            qDebug() << phys;
+                            //qDebug() << phys;
                             data->appendZ(phys);
                         }
                     }
@@ -356,7 +347,7 @@ bool Dcm::readFile()
                 if (token == Keyword && ( mylex.getLexem() == "END"))
                 {
 
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     token = mylex.getNextToken(in);
                 }
 
@@ -366,7 +357,7 @@ bool Dcm::readFile()
         else if (token == Keyword && mylex.getLexem() == "TEXTSTRING")
         {
             token = mylex.getNextToken(in);
-            qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+            //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
 
             if (token == Identifier)
             {
@@ -414,7 +405,7 @@ bool Dcm::readFile()
                 if (data)
                 {
                     //do not use longname, unit,...
-                    qDebug() << "data created";
+                    //qDebug() << "data created";
                     token = mylex.getNextToken(in);
                     while(token != Keyword || (mylex.getLexem() != "WERT" && mylex.getLexem() != "TEXT"))
                     {
@@ -422,7 +413,7 @@ bool Dcm::readFile()
                     }
 
                     //read Z values
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
 
                     if (token == Keyword && ( mylex.getLexem() == "WERT"))
                     {
@@ -449,7 +440,7 @@ bool Dcm::readFile()
                             QString phys = data->hex2phys(hex, "z");
 
                             // copy PHYS value into Zaxis
-                            qDebug() << phys;
+                            //qDebug() << phys;
                             data->appendZ(phys);
                         }
 
@@ -465,7 +456,7 @@ bool Dcm::readFile()
                         if (token ==  String)
                         {
                             text = mylex.getLexem().c_str();
-                            qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                            //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                             token = mylex.getNextToken(in);
                         }                   
 
@@ -503,7 +494,7 @@ bool Dcm::readFile()
                 if (token == Keyword && ( mylex.getLexem() == "END"))
                 {
 
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     token = mylex.getNextToken(in);
                 }
 
@@ -513,7 +504,7 @@ bool Dcm::readFile()
         else if (token == Keyword && mylex.getLexem() == "FESTWERTEBLOCK")
         {
             token = mylex.getNextToken(in);
-            qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+            //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
 
             if (token == Identifier)
             {
@@ -560,7 +551,7 @@ bool Dcm::readFile()
                 if (data)
                 {
                     //do not use longname, unit,...
-                    qDebug() << "data created";
+                    //qDebug() << "data created";
                     token = mylex.getNextToken(in);
                     while(token != Keyword || (mylex.getLexem() != "WERT" && mylex.getLexem() != "TEXT"))
                     {
@@ -568,7 +559,7 @@ bool Dcm::readFile()
                     }
 
                     //read Z values
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
 
 
                     // in case a label is twice in the subset!!
@@ -598,7 +589,7 @@ bool Dcm::readFile()
                                 QString phys = data->hex2phys(hex, "z");
 
                                 // copy PHYS value into Zaxis
-                                qDebug() << phys;
+                                //qDebug() << phys;
                                 data->appendZ(phys);
                             }
 
@@ -619,18 +610,18 @@ bool Dcm::readFile()
                             // copy z values to data
                             foreach (QString str, list)
                             {
-                                qDebug() << str;
+                                //qDebug() << str;
 
                                 // convert PHYS value from Dcm into HEX value
                                 QString hex = data->phys2hex(str, "z");
 
-                                qDebug() << hex;
+                                //qDebug() << hex;
 
                                 // convert HEX value into PHYS value
                                 QString phys = data->hex2phys(hex, "z");
 
                                 // copy PHYS value into Zaxis
-                                qDebug() << phys;
+                                //qDebug() << phys;
                                 data->appendZ(phys);
                             }
                         }
@@ -653,7 +644,7 @@ bool Dcm::readFile()
                 //check for Keyword END
                 if (token == Keyword && ( mylex.getLexem() == "END"))
                 {
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     token = mylex.getNextToken(in);
                 }
 
@@ -662,7 +653,7 @@ bool Dcm::readFile()
         else if (token == Keyword && mylex.getLexem() == "KENNLINIE")
         {
             token = mylex.getNextToken(in);
-            qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+            //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
 
             if (token == Identifier)
             {
@@ -709,7 +700,7 @@ bool Dcm::readFile()
                 if (data)
                 {
                     //do not use longname, unit,...
-                    qDebug() << "data created";
+                    //qDebug() << "data created";
                     token = mylex.getNextToken(in);
                     while(token != Keyword || (mylex.getLexem() != "ST/X" && mylex.getLexem() != "ST_TX/X"))
                     {
@@ -718,7 +709,7 @@ bool Dcm::readFile()
                     }
 
                     //read axis X values
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     if (token == Keyword && ( mylex.getLexem() == "ST/X" || mylex.getLexem() == "ST_TX/X"))
                     {
                         // in case a label is twice in the subset!!
@@ -748,7 +739,7 @@ bool Dcm::readFile()
                             QString phys = data->hex2phys(hex, "x");
 
                             // copy PHYS value into Zaxis
-                            qDebug() << phys;
+                            //qDebug() << phys;
                             data->appendX(phys);
                         }
 
@@ -759,7 +750,7 @@ bool Dcm::readFile()
                     }
 
                     //read Z values
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     if (token == Keyword && ( mylex.getLexem() == "WERT" || mylex.getLexem() == "TEXT"))
                     {
                         // in case a label is twice in the subset!!
@@ -789,7 +780,7 @@ bool Dcm::readFile()
                             QString phys = data->hex2phys(hex, "z");
 
                             // copy PHYS value into Zaxis
-                            qDebug() << phys;
+                            //qDebug() << phys;
                             data->appendZ(phys);
                         }
 
@@ -812,7 +803,7 @@ bool Dcm::readFile()
                 if (token == Keyword && ( mylex.getLexem() == "END"))
                 {
 
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     token = mylex.getNextToken(in);
                 }
 
@@ -821,7 +812,7 @@ bool Dcm::readFile()
         else if (token == Keyword && mylex.getLexem() == "FESTKENNLINIE")
         {
             token = mylex.getNextToken(in);
-            qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+            //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
 
             if (token == Identifier)
             {
@@ -868,7 +859,7 @@ bool Dcm::readFile()
                 if (data)
                 {
                     //do not use longname, unit,...
-                    qDebug() << "data created";
+                    //qDebug() << "data created";
                     token = mylex.getNextToken(in);
                     while(token != Keyword || (mylex.getLexem() != "ST/X" && mylex.getLexem() != "ST_TX/X"))
                     {
@@ -877,7 +868,7 @@ bool Dcm::readFile()
                     }
 
                     //read axis X values
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     if (token == Keyword && ( mylex.getLexem() == "ST/X" || mylex.getLexem() == "ST_TX/X"))
                     {
                         // in case a label is twice in the subset!!
@@ -907,7 +898,7 @@ bool Dcm::readFile()
                             QString phys = data->hex2phys(hex, "x");
 
                             // copy PHYS value into Zaxis
-                            qDebug() << str << hex << phys;
+                            //qDebug() << str << hex << phys;
                             data->appendX(phys);
                         }
 
@@ -918,7 +909,7 @@ bool Dcm::readFile()
                     }
 
                     //read Z values
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     if (token == Keyword && ( mylex.getLexem() == "WERT" || mylex.getLexem() == "TEXT"))
                     {
                         // in case a label is twice in the subset!!
@@ -948,7 +939,7 @@ bool Dcm::readFile()
                             QString phys = data->hex2phys(hex, "z");
 
                             // copy PHYS value into Zaxis
-                            qDebug() << phys;
+                            //qDebug() << phys;
                             data->appendZ(phys);
                         }
 
@@ -971,7 +962,7 @@ bool Dcm::readFile()
                 if (token == Keyword && ( mylex.getLexem() == "END"))
                 {
 
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     token = mylex.getNextToken(in);
                 }
 
@@ -980,7 +971,7 @@ bool Dcm::readFile()
         else if (token == Keyword && mylex.getLexem() == "GRUPPENKENNLINIE")
         {
             token = mylex.getNextToken(in);
-            qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+            //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
 
             if (token == Identifier)
             {
@@ -1026,7 +1017,7 @@ bool Dcm::readFile()
                 if (data)
                 {
                     //do not use longname, unit,...
-                    qDebug() << "data created";
+                    //qDebug() << "data created";
                     token = mylex.getNextToken(in);
                     while(token != Keyword || (mylex.getLexem() != "ST/X" && mylex.getLexem() != "ST_TX/X"))
                     {
@@ -1035,7 +1026,7 @@ bool Dcm::readFile()
                     }
 
                     //read axis X values
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     data->clearX();
                     QStringList listX;
                     while (token == Keyword && ( mylex.getLexem() == "ST/X" ||mylex.getLexem() == "ST_TX/X" ))
@@ -1064,13 +1055,13 @@ bool Dcm::readFile()
                         QString phys = data->hex2phys(hex, "x");
 
                         // copy PHYS value into Zaxis
-                        qDebug() << phys;
+                        //qDebug() << phys;
                         data->appendX(phys);
                     }
 
 
                     //read Z values
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     // in case a label is twice in the subset!!
                     data->clearY();
                     data->clearZ();
@@ -1103,7 +1094,7 @@ bool Dcm::readFile()
                                 QString phys = data->hex2phys(hex, "z");
 
                                 // copy PHYS value into Zaxis
-                                qDebug() << phys;
+                                //qDebug() << phys;
                                 data->appendZ(phys);
                             }
 
@@ -1171,7 +1162,7 @@ bool Dcm::readFile()
                 if (token == Keyword && ( mylex.getLexem() == "END"))
                 {
 
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     token = mylex.getNextToken(in);
                 }
 
@@ -1180,7 +1171,7 @@ bool Dcm::readFile()
         else if (token == Keyword && mylex.getLexem() == "KENNFELD")
         {
             token = mylex.getNextToken(in);
-            qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+            //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
 
             if (token == Identifier)
             {
@@ -1227,7 +1218,7 @@ bool Dcm::readFile()
                 if (data)
                 {
                     //do not use longname, unit,...
-                    qDebug() << "data created";
+                    //qDebug() << "data created";
                     token = mylex.getNextToken(in);
                     while(token != Keyword || (mylex.getLexem() != "ST/X" && mylex.getLexem() != "ST_TX/X"))
                     {
@@ -1236,7 +1227,7 @@ bool Dcm::readFile()
                     }
 
                     //read axis X values
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     data->clearX();
                     QStringList listX;
                     while (token == Keyword && ( mylex.getLexem() == "ST/X" || mylex.getLexem() == "ST_TX/X" ))
@@ -1261,13 +1252,13 @@ bool Dcm::readFile()
                         QString phys = data->hex2phys(hex, "x");
 
                         // copy PHYS value into Zaxis
-                        qDebug() << phys;
+                        //qDebug() << phys;
                         data->appendX(phys);
                     }
 
 
                     //read Y and Z values
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     // in case a label is twice in the subset!!
                     data->clearY();
                     data->clearZ();
@@ -1296,7 +1287,7 @@ bool Dcm::readFile()
                                 QString phys = data->hex2phys(hex, "z");
 
                                 // copy PHYS value into Zaxis
-                                qDebug() << phys;
+                                //qDebug() << phys;
                                 data->appendZ(phys);
                             }
 
@@ -1324,7 +1315,7 @@ bool Dcm::readFile()
                                 QString phys = data->hex2phys(hex, "y");
 
                                 // copy PHYS value into Zaxis
-                                qDebug() << phys;
+                                //qDebug() << phys;
                                 data->appendY(phys);
                             }
 
@@ -1351,7 +1342,7 @@ bool Dcm::readFile()
                 if (token == Keyword && ( mylex.getLexem() == "END"))
                 {
 
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     token = mylex.getNextToken(in);
                 }
 
@@ -1360,7 +1351,7 @@ bool Dcm::readFile()
         else if (token == Keyword && mylex.getLexem() == "GRUPPENKENNFELD")
         {
             token = mylex.getNextToken(in);
-            qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+            //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
 
             if (token == Identifier)
             {
@@ -1407,7 +1398,7 @@ bool Dcm::readFile()
                 if (data)
                 {
                     //do not use longname, unit,...
-                    qDebug() << "data created";
+                    //qDebug() << "data created";
                     token = mylex.getNextToken(in);
                     while(token != Keyword || mylex.getLexem() != "ST/X")
                     {
@@ -1416,7 +1407,7 @@ bool Dcm::readFile()
                     }
 
                     //read axis X values
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     QStringList listX;
                     data->clearX();
                     while (token == Keyword && ( mylex.getLexem() == "ST/X"))
@@ -1441,7 +1432,7 @@ bool Dcm::readFile()
                         QString phys = data->hex2phys(hex, "x");
 
                         // copy PHYS value into Zaxis
-                        qDebug() << phys;
+                        //qDebug() << phys;
                         data->appendX(phys);
                     }
 
@@ -1451,7 +1442,7 @@ bool Dcm::readFile()
 //                    }
 
                     //read Y and Z values
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     // in case a label is twice in the subset!!
                     data->clearY();
                     data->clearZ();
@@ -1480,7 +1471,7 @@ bool Dcm::readFile()
                                 QString phys = data->hex2phys(hex, "z");
 
                                 // copy PHYS value into Zaxis
-                                qDebug() << phys;
+                                //qDebug() << phys;
                                 data->appendZ(phys);
                             }
 
@@ -1508,7 +1499,7 @@ bool Dcm::readFile()
                                 QString phys = data->hex2phys(hex, "y");
 
                                 // copy PHYS value into Zaxis
-                                qDebug() << phys;
+                                //qDebug() << phys;
                                 data->appendY(phys);
                             }
 
@@ -1618,7 +1609,7 @@ bool Dcm::readFile()
                 if (token == Keyword && ( mylex.getLexem() == "END"))
                 {
 
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     token = mylex.getNextToken(in);
                 }
 
@@ -1627,7 +1618,7 @@ bool Dcm::readFile()
         else if (token == Keyword && mylex.getLexem() == "STUETZSTELLENVERTEILUNG")
         {
             token = mylex.getNextToken(in);
-            qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+            //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
 
             if (token == Identifier)
             {
@@ -1674,7 +1665,7 @@ bool Dcm::readFile()
                 if (data)
                 {
                     //do not use longname, unit,...
-                    qDebug() << "data created";
+                    //qDebug() << "data created";
                     token = mylex.getNextToken(in);
                     while(token != Keyword || (mylex.getLexem() != "ST/X" && mylex.getLexem() != "ST_TX/X"))
                     {
@@ -1683,7 +1674,7 @@ bool Dcm::readFile()
                     }
 
                     //read axis Z values
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     data->clearZ();
                     QStringList listZ;
                     while (token == Keyword && ( mylex.getLexem() == "ST/X" || mylex.getLexem() == "ST_TX/X"))
@@ -1712,7 +1703,7 @@ bool Dcm::readFile()
                         QString phys = data->hex2phys(hex, "z");
 
                         // copy PHYS value into Zaxis
-                        qDebug() << phys;
+                        //qDebug() << phys;
                         data->appendZ(phys);
                     }
 
@@ -1744,7 +1735,7 @@ bool Dcm::readFile()
                 if (token == Keyword && ( mylex.getLexem() == "END"))
                 {
 
-                    qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+                    //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
                     token = mylex.getNextToken(in);
                 }
 
@@ -1754,7 +1745,7 @@ bool Dcm::readFile()
         else if (token == Comment)
         {
             token = mylex.getNextToken(in);
-            qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
+            //qDebug() << mylex.toString(token).c_str() << mylex.getLexem().c_str();
         }
         else
         {
@@ -1770,6 +1761,7 @@ bool Dcm::readFile()
 
 bool Dcm::save(QString fileName)
 {
+
     if (fileName == "")
     {
       if (exportDataList2Dcm(getListNameData(), this->fullName()))
