@@ -43,83 +43,83 @@ bool errorLess_dtc_desc(const ErrorCode *a, const ErrorCode *b)
 
 bool errorLess_agicycidn_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   return (b->agicycidn->getZ(0).toLatin1() > a->agicycidn->getZ(0).toLatin1());
+   return (b->agicycidn.toLatin1() > a->agicycidn.toLatin1());
 }
 bool errorLess_agicycidn_desc(const ErrorCode *a, const ErrorCode *b)
 {
-   return (b->agicycidn->getZ(0).toLatin1() < a->agicycidn->getZ(0).toLatin1());
+   return (b->agicycidn.toLatin1() < a->agicycidn.toLatin1());
 }
 
 bool errorLess_opercycidn_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   return (b->opercycidn->getZ(0).toLatin1() > a->opercycidn->getZ(0).toLatin1());
+   return (b->opercycidn.toLatin1() > a->opercycidn.toLatin1());
 }
 bool errorLess_opercycidn_desc(const ErrorCode *a, const ErrorCode *b)
 {
-   return (b->opercycidn->getZ(0).toLatin1() < a->opercycidn->getZ(0).toLatin1());
+   return (b->opercycidn.toLatin1() < a->opercycidn.toLatin1());
 }
 
 bool errorLess_inc_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   return b->inc->getZ(0).toInt() > a->inc->getZ(0).toInt();
+   return b->inc.toInt() > a->inc.toInt();
 }
 bool errorLess_inc_desc(const ErrorCode *a, const ErrorCode *b)
 {
-       return b->inc->getZ(0).toInt() < a->inc->getZ(0).toInt();
+       return b->inc.toInt() < a->inc.toInt();
 }
 
 bool errorLess_dec_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   return b->dec->getZ(0).toInt() > a->dec->getZ(0).toInt();
+   return b->dec.toInt() > a->dec.toInt();
 }
 bool errorLess_dec_desc(const ErrorCode *a, const ErrorCode *b)
 {
-       return b->dec->getZ(0).toInt() < a->dec->getZ(0).toInt();
+       return b->dec.toInt() < a->dec.toInt();
 }
 
 bool errorLess_prethd_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   return b->prethd->getZ(0).toInt() > a->prethd->getZ(0).toInt();
+   return b->prethd.toInt() > a->prethd.toInt();
 }
 bool errorLess_prethd_desc(const ErrorCode *a, const ErrorCode *b)
 {
-       return b->prethd->getZ(0).toInt() < a->prethd->getZ(0).toInt();
+       return b->prethd.toInt() < a->prethd.toInt();
 }
 
 bool errorLess_prio_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   return b->prio->getZ(0).toInt() > a->prio->getZ(0).toInt();
+   return b->prio.toInt() > a->prio.toInt();
 }
 bool errorLess_prio_desc(const ErrorCode *a, const ErrorCode *b)
 {
-       return b->prio->getZ(0).toInt() < a->prio->getZ(0).toInt();
+       return b->prio.toInt() < a->prio.toInt();
 }
 
 bool errorLess_agicycthd_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   return b->agicycthd->getZ(0).toInt() > a->agicycthd->getZ(0).toInt();
+   return b->agicycthd.toInt() > a->agicycthd.toInt();
 }
 bool errorLess_agicycthd_desc(const ErrorCode *a, const ErrorCode *b)
 {
-       return b->agicycthd->getZ(0).toInt() < a->agicycthd->getZ(0).toInt();
+       return b->agicycthd.toInt() < a->agicycthd.toInt();
 }
 
 bool errorLess_opercycthd_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   return b->opercycthd->getZ(0).toInt() > a->opercycthd->getZ(0).toInt();
+   return b->opercycthd.toInt() > a->opercycthd.toInt();
 }
 bool errorLess_opercycthd_desc(const ErrorCode *a, const ErrorCode *b)
 {
-       return b->opercycthd->getZ(0).toInt() < a->opercycthd->getZ(0).toInt();
+       return b->opercycthd.toInt() < a->opercycthd.toInt();
 }
 
 bool errorLess_exclsncdn_asc(const ErrorCode *a, const ErrorCode *b)
 {
-   return b->exclsncdn->getZ(0).toInt() > a->exclsncdn->getZ(0).toInt();
+   return b->exclsncdn.toInt() > a->exclsncdn.toInt();
 }
 bool errorLess_exclsncdn_desc(const ErrorCode *a, const ErrorCode *b)
 {
-       return b->exclsncdn->getZ(0).toInt() < a->exclsncdn->getZ(0).toInt();
+       return b->exclsncdn.toInt() < a->exclsncdn.toInt();
 }
 
 
@@ -139,53 +139,53 @@ ObdMergeModel::ObdMergeModel(SrecFile *srecFile, QObject *parent)
            error->dtc = data->getComment().remove("DTC-ID: ");
            error->dtc.remove("\"");
            error->dtc.remove("\"");
-           error->prio = data;
+           error->prio = data->getZ(0);
 
            //find the rest  of error properties
            Data* _data = srec->getData(nameStr + "_C.Inc");
-           if (_data) {error->inc = _data;}
+           if (_data) {error->inc = _data->getZ(0);}
            _data = srec->getData(nameStr + "_C.Dec");
-           if (_data) {error->dec = _data;}
+           if (_data) {error->dec = _data->getZ(0);}
            _data = srec->getData(nameStr + "_C.PreThd");
-           if (_data) { error->prethd = _data; }
+           if (_data) { error->prethd = _data->getZ(0); }
            _data = srec->getData(nameStr + "_C.AgiCycIdn");
-           if (_data) {error->agicycidn = _data;}
+           if (_data) {error->agicycidn = _data->getZ(0);}
            _data = srec->getData(nameStr + "_C.AgiCycThd");
-           if (_data) { error->agicycthd = _data; }
+           if (_data) { error->agicycthd = _data->getZ(0); }
            _data = srec->getData(nameStr + "_C.OperCycIdn");
-           if (_data) { error->opercycidn = _data;}
+           if (_data) { error->opercycidn = _data->getZ(0);}
            _data = srec->getData(nameStr + "_C.OperCycThd");
-           if (_data) { error->opercycthd = _data;}
+           if (_data) { error->opercycthd = _data->getZ(0);}
            _data = srec->getData(nameStr + "_C.ExclsnCdn");
-           if (_data) { error->exclsncdn = _data;}
+           if (_data) { error->exclsncdn = _data->getZ(0);}
            _data = srec->getData(nameStr + "Frm_A[0].FltReactnId");
-           if (_data) {error->fltreactnid_0 = _data;}
+           if (_data) {error->fltreactnid_0 = _data->getZ(0);}
            _data = srec->getData(nameStr + "Frm_A[1].FltReactnId");
-           if (_data) {error->fltreactnid_1 = _data;}
+           if (_data) {error->fltreactnid_1 = _data->getZ(0);}
            _data = srec->getData(nameStr + "Frm_A[2].FltReactnId");
-           if (_data) {error->fltreactnid_2 = _data;}
+           if (_data) {error->fltreactnid_2 = _data->getZ(0);}
            _data = srec->getData(nameStr + "Frm_A[3].FltReactnId");
-           if (_data) {error->fltreactnid_3 = _data;}
+           if (_data) {error->fltreactnid_3 = _data->getZ(0);}
            _data = srec->getData(nameStr + "Frm_A[4].FltReactnId");
-           if (_data) {error->fltreactnid_4 = _data;}
+           if (_data) {error->fltreactnid_4 = _data->getZ(0);}
            _data = srec->getData(nameStr + "Frm_A[5].FltReactnId");
-           if (_data) {error->fltreactnid_5 = _data;}
+           if (_data) {error->fltreactnid_5 = _data->getZ(0);}
            _data = srec->getData(nameStr + "Frm_A[6].FltReactnId");
-           if (_data) {error->fltreactnid_6 = _data;}
+           if (_data) {error->fltreactnid_6 = _data->getZ(0);}
            _data = srec->getData(nameStr + "Frm_A[0].DelayId");
-           if (_data) {error->delayid_0 = _data;}
+           if (_data) {error->delayid_0 = _data->getZ(0);}
            _data = srec->getData(nameStr + "Frm_A[1].DelayId");
-           if (_data) {error->delayid_1 = _data;}
+           if (_data) {error->delayid_1 = _data->getZ(0);}
            _data = srec->getData(nameStr + "Frm_A[2].DelayId");
-           if (_data) {error->delayid_2 = _data;}
+           if (_data) {error->delayid_2 = _data->getZ(0);}
            _data = srec->getData(nameStr + "Frm_A[3].DelayId");
-           if (_data) {error->delayid_3 = _data;}
+           if (_data) {error->delayid_3 = _data->getZ(0);}
            _data = srec->getData(nameStr + "Frm_A[4].DelayId");
-           if (_data) {error->delayid_4 = _data;}
+           if (_data) {error->delayid_4 = _data->getZ(0);}
            _data = srec->getData(nameStr + "Frm_A[5].DelayId");
-           if (_data) {error->delayid_5 = _data;}
+           if (_data) {error->delayid_5 = _data->getZ(0);}
            _data = srec->getData(nameStr + "Frm_A[6].DelayId");
-           if (_data) {error->delayid_6 = _data;}
+           if (_data) {error->delayid_6 = _data->getZ(0);}
 
 
            this->listErrorCode.append(error);
@@ -234,19 +234,102 @@ QVariant ObdMergeModel::data(const QModelIndex &index, int role) const
                {
                    return this->listErrorCode.at(row)->name;
                }
-               else
+               else if (column == 2) //Inc
                {
-                   Data* data = this->getData(row, column);
-                   if (data)
-                   {
-                       return data->getZ(0);
-                   }
-                   else
-                       return "";
+                   return this->listErrorCode.at(row)->inc;
+               }
+               else if (column == 3) //Dec
+               {
+                  return this->listErrorCode.at(row)->dec;
+               }
+               else if (column == 4) //PreThd
+               {
+                   return this->listErrorCode.at(row)->prethd;
+               }
+               else if (column == 5) //Prio
+               {
+                   return this->listErrorCode.at(row)->prio;
+               }
+               else if (column == 6) //AgiCycIdn
+               {
+                   return this->listErrorCode.at(row)->agicycidn;
+               }
+               else if (column == 7) //AgiCycThd
+               {
+                   return this->listErrorCode.at(row)->agicycthd;
+               }
+               else if (column == 8) //OperCycIdn
+               {
+                   return this->listErrorCode.at(row)->opercycidn;
+               }
+               else if (column == 9) //OperCycThd
+               {
+                  return this->listErrorCode.at(row)->opercycthd;
+               }
+               else if (column == 10) //ExclsnCdn
+               {
+                   return this->listErrorCode.at(row)->exclsncdn;
+               }
+               else if (column == 11) //Reaction0
+               {
+                   return this->listErrorCode.at(row)->fltreactnid_0;
+               }
+               else if (column == 12) //Reaction_delay0
+               {
+                   return this->listErrorCode.at(row)->delayid_0;
+               }
+               else if (column == 13) //Reaction1
+               {
+                   return this->listErrorCode.at(row)->fltreactnid_1;
+               }
+               else if (column == 14) //Reaction_delay1
+               {
+                   return this->listErrorCode.at(row)->delayid_1;
+               }
+               else if (column == 15) //Reaction2
+               {
+                  return this->listErrorCode.at(row)->fltreactnid_2;
+               }
+               else if (column == 16) //Reaction_delay2
+               {
+                   return this->listErrorCode.at(row)->delayid_2;
+               }
+               else if (column == 17) //Reaction3
+               {
+                   return this->listErrorCode.at(row)->fltreactnid_3;
+               }
+               else if (column == 18) //Reaction_delay3
+               {
+                   return this->listErrorCode.at(row)->delayid_3;
+               }
+               else if (column == 19) //Reaction4
+               {
+
+                  return this->listErrorCode.at(row)->fltreactnid_4;
+               }
+               else if (column == 20) //Reaction_delay4
+               {
+                   return this->listErrorCode.at(row)->delayid_4;
+               }
+               else if (column == 21) //Reaction5
+               {
+                  return this->listErrorCode.at(row)->fltreactnid_5;
+               }
+               else if (column == 22) //Reaction_delay5
+               {
+                   return this->listErrorCode.at(row)->delayid_5;
+               }
+               else if (column == 23) //Reaction6
+               {
+                  return this->listErrorCode.at(row)->fltreactnid_6;
+               }
+               else if (column == 24) //Reaction_delay6
+               {
+                   return this->listErrorCode.at(row)->delayid_6;
                }
 
-
-               return QVariant();
+               else
+                   return QVariant();
 
             }
             break;
@@ -371,10 +454,11 @@ bool ObdMergeModel::setData(const QModelIndex &index, const QVariant &value, int
         Data* data = this->getData(row, col);
         if (data)
         {
+           //set the value
+           data->setZ(0, value.toString());
 
-            //set the value
-            data->setZ(0, value.toString());
-
+           //change errorObd
+           listErrorCode.at(row)->prio =  data->getZ(0);
 
            //update the tableView
            emit dataChanged(index, index);
@@ -405,6 +489,11 @@ bool ObdMergeModel::resetData(const QModelIndexList &indexList, int role)
                    //set the value
                    data->resetValZ(0);
 
+                   //change errorObd
+                   if (col == 5)
+                   {
+                    listErrorCode.at(row)->prio =  data->getZ(0);
+                   }
 
                    //update the tableView
                    emit dataChanged(index, index);
@@ -441,6 +530,12 @@ bool ObdMergeModel::undoData(const QModelIndexList &indexList, int role)
                 {
                    //set the value
                    data->undoValZ(0);
+
+                   //change errorObd
+                   if (col == 5)
+                   {
+                    listErrorCode.at(row)->prio =  data->getZ(0);
+                   }
 
                    //update the tableView
                    emit dataChanged(index, index);
@@ -806,30 +901,10 @@ Data* ObdMergeModel::getData(const int row, const int col) const
 {
     QString dataName = "";
     dataName += listErrorCode.at(row)->name;
-    if (col == 2) {  dataName += "_C.Inc";  }
-    else if (col == 3)   {  dataName += "_C.Dec";   }
-    else if (col == 4)  {  dataName += "_C.PreThd";   }
-    else if (col == 5)  {  dataName += "_C.Prio"; }
-    else if (col == 6)   {  dataName += "_C.AgiCycIdn";   }
-    else if (col == 7)  {  dataName += "_C.AgiCycThd";   }
-    else if (col == 8)  {  dataName += "_C.OperCycIdn"; }
-    else if (col == 9)   {  dataName += "_C.AgiCycThd";   }
-    else if (col == 10)  {  dataName += "_C.ExclsnCdn";   }
-    else if (col == 11)  {  dataName += "Frm_A[0].FltReactnId"; }
-    else if (col == 12)  {  dataName += "Frm_A[0].DelayId"; }
-    else if (col == 13)  {  dataName += "Frm_A[1].FltReactnId"; }
-    else if (col == 14)  {  dataName += "Frm_A[1].DelayId"; }
-    else if (col == 15)  {  dataName += "Frm_A[2].FltReactnId"; }
-    else if (col == 16)  {  dataName += "Frm_A[2].DelayId"; }
-    else if (col == 17)  {  dataName += "Frm_A[3].FltReactnId"; }
-    else if (col == 18)  {  dataName += "Frm_A[3].DelayId"; }
-    else if (col == 19)  {  dataName += "Frm_A[4].FltReactnId"; }
-    else if (col == 20)  {  dataName += "Frm_A[4].DelayId"; }
-    else if (col == 21)  {  dataName += "Frm_A[5].FltReactnId"; }
-    else if (col == 22)  {  dataName += "Frm_A[5].DelayId"; }
-    else if (col == 23)  {  dataName += "Frm_A[6].FltReactnId"; }
-    else if (col == 24)  {  dataName += "Frm_A[6].DelayId"; }
-
+    if (col == 5)
+    {
+        dataName += "_C.Prio";
+    }
 
     Data *data = srec->getData(dataName);
     return data;
