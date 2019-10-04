@@ -1,10 +1,13 @@
 <HEXplorer application="HEXplorer">
-    <revision version="0.7.16">https://api.github.com/repos/adhoc2/HEXplorer/releases/latest</revision>
-    <details>revision 0.7.16 (Q3/2019) beta :
-    - Improvement : OBD view
+    <revision version="0.7.13">https://api.github.com/repos/adhoc2/HEXplorer/releases/latest</revision>
+    <details>revision 0.7.14 (Q1/2017) :
+    TODO:
+    - improvement : inform user when opening a WD on the net which takes a lot of time.
+    - improvement : display/compare/copy choosing Phys or Hex values.
 
-revision 0.7.15 (Q1/2019) :
-    - Bug fix : in case of incomplete a2l preventing from reading all labels, remove the labels to display. (reduced .a2l with missing COM_AXIS)
+    DONE:
+    - improvement : Qt5.8.0
+    - improvement : Qt Data Visualization.
 
 revision 0.7.13 (Q4/2016) :
     - improvement : automatic check for updates on Github.
