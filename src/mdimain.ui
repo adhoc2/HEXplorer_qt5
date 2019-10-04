@@ -111,9 +111,6 @@
     <addaction name="separator"/>
     <addaction name="actionCheck_for_updates"/>
     <addaction name="separator"/>
-    <addaction name="actiondark_theme"/>
-    <addaction name="actionback_to_the_white_side_of_the_moon"/>
-    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -642,16 +639,6 @@
    </property>
    <property name="shortcut">
     <string>F5</string>
-   </property>
-  </action>
-  <action name="actiondark_theme">
-   <property name="text">
-    <string>dark theme</string>
-   </property>
-  </action>
-  <action name="actionback_to_the_white_side_of_the_moon">
-   <property name="text">
-    <string>back to the white side of the moon</string>
    </property>
   </action>
  </widget>

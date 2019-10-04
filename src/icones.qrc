@@ -185,12 +185,5 @@
         <file>icones/milky_importDcm.png</file>
         <file>files/cdf_v2.0.0.sl.dtd</file>
         <file>files/msrsw_v222_lai_iai_normalized.xml.dtd</file>
-        <file>files/darkstyle.qss</file>
-        <file>icones/stylesheet-branch-closed.png</file>
-        <file>icones/stylesheet-branch-end.png</file>
-        <file>icones/stylesheet-branch-more.png</file>
-        <file>icones/stylesheet-branch-open.png</file>
-        <file>icones/stylesheet-vline.png</file>
-        <file>files/darkstyle _org.qss</file>
     </qresource>
 </RCC>

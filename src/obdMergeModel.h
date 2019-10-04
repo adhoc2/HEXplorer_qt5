@@ -23,7 +23,6 @@
 #include <QAbstractTableModel>
 #include <Nodes/characteristic.h>
 #include "srecfile.h"
-#include "errorcode.h"
 
 class ObdMergeModel : public QAbstractTableModel
 {
@@ -33,22 +32,30 @@ class ObdMergeModel : public QAbstractTableModel
 
         int rowCount(const QModelIndex &parent) const;
         int columnCount(const QModelIndex &parent) const;
-        int getRow(const int col, const QString text) const;
-        Data* getData(const int row, const int col) const;
         QVariant data(const QModelIndex &index, int role) const;
-        bool setData(const QModelIndex &index, const QVariant &value, int role);
-        bool resetData(const QModelIndexList &indexList, int role);
-        bool undoData(const QModelIndexList &indexList, int role);
         QVariant headerData(int section, Qt::Orientation orientation, int role) const;
         Qt::ItemFlags flags(const QModelIndex &index) const;
         void sort(int column, Qt::SortOrder order=Qt::AscendingOrder);
 
     private:
-        QList<ErrorCode*> listErrorCode;
+        QMap<QString, Data*> listDataInc;
+        QMap<QString, Data*> listDataDec;
+        QMap<QString, Data*> listDataPreThd;
+        QMap<QString, Data*> listDataPrio;
+        QMap<QString, Data*> listDataAgiCycIdn;
+        QMap<QString, Data*> listDataAgiCycThd;
+        QMap<QString, Data*> listDataOperCycIdn;
+        QMap<QString, Data*> listDataOperCycThd;
+        QMap<QString, Data*> listDataExclsnCdn;
+
+        QMap<QString, Data*> listDataFnR0;
+        QMap<QString, Data*> listDataFnR1;
+        QMap<QString, Data*> listDataFnR2;
+        QMap<QString, Data*> listDataFnR3;
+        QMap<QString, Data*> listDataFnR4;
         SrecFile *srec;
         int nColumn;
         int nRow;
-
 
 };
 
