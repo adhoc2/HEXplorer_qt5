@@ -83,7 +83,6 @@
 #include "workingdirectory.h"
 #include "deletefiledialog.h"
 #include "treedirectory.h"
-#include "comboboxdelegate.h"
 
 #include "qdebug.h"
 
@@ -4138,7 +4137,6 @@ void MDImain::editObd_Merge()
 
             //create a new spreadSheet
             SpreadsheetView *view = new SpreadsheetView();
-            view->setItemDelegate(new ComboBoxDelegate(this));
             view->setModel(obdModel);
             srec->attach(view);
 
